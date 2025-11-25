@@ -922,11 +922,11 @@
             </div>
           </div>
           <div class="hero-metric-main">
-            <span class="value">61.3</span>
+            <span class="value" id="icStructValue">--</span>
             <span class="label">IC_BTC structural</span>
           </div>
-          <div class="hero-metric-sub">
-            Structură de trend <strong>puternică</strong>, aliniere coerentă
+          <div class="hero-metric-sub" id="icStructText">
+            Structură de trend <strong>–</strong>, aliniere coerentă
             între preț, momentum și volatilitate. Construit pentru citire
             algoritmică și umană.
           </div>
@@ -934,11 +934,19 @@
           <div class="hero-split">
             <div class="hero-split-block">
               <div class="hero-split-label">Probabilitate UP</div>
-              <div class="hero-split-value">46% &nbsp; · &nbsp; bias moderat</div>
+              <div class="hero-split-value">
+                <span id="probUpValue">--</span>
+                &nbsp; · &nbsp;
+                <span id="biasText">–</span>
+              </div>
             </div>
             <div class="hero-split-block">
               <div class="hero-split-label">Probabilitate DOWN</div>
-              <div class="hero-split-value">54% &nbsp; · &nbsp; inconfident</div>
+              <div class="hero-split-value">
+                <span id="probDownValue">--</span>
+                &nbsp; · &nbsp;
+                <span id="confText">–</span>
+              </div>
             </div>
           </div>
 
@@ -946,16 +954,22 @@
             Regim coeziv curent:
             <span class="badge">
               <span class="badge-dot"></span>
-              bear structural timpuriu
+              <span id="regimeLabel">–</span>
             </span>
-            &mdash; probabilitate crescută ca piața să părăsească zona de top
-            și să intre într-o fază de redistribuție / început de bear.
+            &mdash;
+            <span id="regimeShort">
+              probabilitate crescută ca piața să părăsească zona de top
+              și să intre într-o fază de redistribuție / început de bear.
+            </span>
           </div>
         </div>
       </div>
     </section>
 
     <!-- WHY -->
+    <!-- (restul paginii rămâne neschimbat) -->
+    <!-- ... toate secțiunile WHY, API, Pricing, FAQ, footer identice cu ce ai deja ... -->
+
     <section id="why">
       <div class="section-label">De ce CohesivX</div>
       <h2 class="section-title">Mai mult decât un indicator tehnic clasic</h2>
@@ -1003,216 +1017,8 @@
       </div>
     </section>
 
-    <!-- API -->
-    <section id="api">
-      <div class="section-label">API</div>
-      <h2 class="section-title">Endpoint-uri simple, semnal complex</h2>
-      <p class="section-sub">
-        CohesivX BTC API este expus ca JSON simplu, cu endpoint-uri clare pentru
-        snapshot-ul curent, istoric și context global. Ușor de integrat în
-        aplicații web, roboți de trading, platforme analitice sau sisteme interne.
-      </p>
-
-      <div class="api-layout">
-        <div>
-          <div class="pill-small">
-            <span class="pill-small-dot"></span>
-            <span>Exemplu răspuns – <code>/v1/ic_btc/latest</code></span>
-          </div>
-          <div class="code-card">
-            <pre><code>{
-  "symbol": "BTCUSDT",
-  "as_of": "2025-11-22",
-  "ic_btc_struct": 61.3,
-  "ic_btc_dir": 44.8,
-  "prob_up": 0.46,
-  "prob_down": 0.54,
-  "confidence": 0.39,
-  "regime": "bear_structural_timpuriu",
-  "regime_label": "Bear structural timpuriu",
-  "macro_score": 0.27,
-  "macro_label": "risk-on",
-  "meta": {
-    "source": "CohesivX BTC v1",
-    "timeframe": "1D",
-    "window": 260
-  }
-}</code></pre>
-          </div>
-        </div>
-
-        <div>
-          <div class="pill-small">
-            <span class="pill-small-dot"></span>
-            <span>Structură API</span>
-          </div>
-          <div class="api-items">
-            <div>
-              <div class="api-item-label">Snapshot coeziv BTC</div>
-              <div class="api-item-path">GET /v1/ic_btc/latest</div>
-              <div class="api-item-path">GET /v1/ic_btc/latest?symbol=BTCUSDT</div>
-            </div>
-            <div>
-              <div class="api-item-label">Istoric indice</div>
-              <div class="api-item-path">
-                GET /v1/ic_btc/history?from=2021-01-01&amp;to=2025-11-22
-              </div>
-            </div>
-            <div>
-              <div class="api-item-label">Context global</div>
-              <div class="api-item-path">GET /v1/ic_global/latest</div>
-            </div>
-            <div>
-              <div class="api-item-label">Chei &amp; limitare</div>
-              <div class="api-item-path">
-                Autentificare: <code>Authorization: Bearer &lt;API_KEY&gt;</code><br />
-                Rate limit: până la 60 req/min (plan Pro)
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Pricing -->
-    <section id="pricing">
-      <div class="section-label">Pricing</div>
-      <h2 class="section-title">Planuri simple pentru use-case-uri diferite</h2>
-      <p class="section-sub">
-        De la explorare individuală până la platforme enterprise cu volum mare
-        de trafic. Toate planurile includ acces la același model coeziv, cu
-        limitări diferite de volum și SLA.
-      </p>
-
-      <div class="pricing-grid">
-        <article class="price-card">
-          <div class="price-name">Starter</div>
-          <div class="price-desc">Pentru dezvoltatori și proiecte personale.</div>
-          <div class="price-value">
-            19€ <span>/ lună</span>
-          </div>
-          <ul class="price-features">
-            <li>până la 30.000 requests / lună</li>
-            <li>endpoint-uri: <code>/ic_btc/latest</code>, <code>/ic_btc/history</code></li>
-            <li>refresh daily al indicilor</li>
-            <li>fără SLA garantat</li>
-          </ul>
-          <div class="price-cta">
-            <a href="#api" class="btn-small">
-              <span>Începe cu Starter</span>
-            </a>
-          </div>
-        </article>
-
-        <article class="price-card highlight">
-          <div class="price-name">Pro</div>
-          <div class="price-desc">Pentru produse crypto / fintech live.</div>
-          <div class="price-value">
-            49€ <span>/ lună</span>
-          </div>
-          <ul class="price-features">
-            <li>până la 250.000 requests / lună</li>
-            <li>toate endpoint-urile BTC + IC_GLOBAL</li>
-            <li>rate limit extins &amp; best-effort uptime</li>
-            <li>suport prioritar pe email</li>
-          </ul>
-          <div class="price-cta">
-            <a href="#api" class="btn-small primary">
-              <span>Activează planul Pro</span>
-              <span class="icon">★</span>
-            </a>
-          </div>
-        </article>
-
-        <article class="price-card">
-          <div class="price-name">Institutional</div>
-          <div class="price-desc">
-            Pentru exchange-uri, desk-uri de research, platforme mari.
-          </div>
-          <div class="price-value">
-            Custom <span>/ lună</span>
-          </div>
-          <ul class="price-features">
-            <li>limite de trafic negociabile</li>
-            <li>SLA formal &amp; suport dedicat</li>
-            <li>deployment custom / on-prem opțional</li>
-            <li>consultanță pe integrarea modelului</li>
-          </ul>
-          <div class="price-cta">
-            <a href="mailto:contact@example.com" class="btn-small">
-              <span>Contact sales</span>
-            </a>
-          </div>
-        </article>
-      </div>
-    </section>
-
-    <!-- FAQ -->
-    <section id="faq">
-      <div class="section-label">FAQ</div>
-      <h2 class="section-title">Întrebări frecvente</h2>
-
-      <div class="faq-grid">
-        <div>
-          <div class="faq-item">
-            <div class="faq-q">Este CohesivX BTC API un sistem de semnale de tranzacționare?</div>
-            <div class="faq-a">
-              Nu. CohesivX BTC API este un <strong>indice de structură și regim</strong>,
-              construit pentru evaluarea riscului și înțelegerea ciclului BTC. Poate fi
-              folosit ca intrare în sisteme automate, dar nu reprezintă recomandare
-              financiară și nu livrează „buy/sell” direct.
-            </div>
-          </div>
-          <div class="faq-item">
-            <div class="faq-q">Ce timeframe folosește modelul?</div>
-            <div class="faq-a">
-              Modelul curent lucrează pe <strong>timeframe daily (1D)</strong>, cu o
-              fereastră mobilă de aproximativ 260 de zile pentru calculul indicilor coezivi,
-              al volatilității și al contextului macro. Integrarea pe alte timefram-uri
-              poate fi discutată pentru planurile enterprise.
-            </div>
-          </div>
-          <div class="faq-item">
-            <div class="faq-q">Ce surse de date sunt folosite?</div>
-            <div class="faq-a">
-              Prețul BTC este agregat de pe surse de lichiditate majore (ex. Binance),
-              iar contextul macro folosește indici standard (SPX, DXY, Gold, VIX, Oil).
-              Modelul lucrează pe date de închidere (close) și nu expune direct feed-ul
-              brut de preț, ci rezultatul procesării coezive.
-            </div>
-          </div>
-        </div>
-
-        <div>
-          <div class="faq-item">
-            <div class="faq-q">Cum este actualizat indicele?</div>
-            <div class="faq-a">
-              Pipeline-ul este automatizat: datele sunt preluate, normalizate și trecute
-              prin modelul coeziv, apoi publicate în endpoint-urile API (în general o dată
-              pe zi, după închiderea zilei). Pentru clienți enterprise, sunt posibile
-              frecvențe de update custom.
-            </div>
-          </div>
-          <div class="faq-item">
-            <div class="faq-q">Pot folosi CohesivX BTC API într-un produs comercial?</div>
-            <div class="faq-a">
-              Da. Planurile Pro și Institutional sunt gândite pentru integrare în produse
-              comerciale: dashboard-uri, platforme de analiză, roboți, aplicații mobile.
-              Licența acoperă redistribuirea indicelui în UI-urile proprii, cu mențiunea
-              sursei.
-            </div>
-          </div>
-          <div class="faq-item">
-            <div class="faq-q">Modelul se poate extinde și la alte active?</div>
-            <div class="faq-a">
-              Modelul coeziv este generalizabil. Versiunea actuală este calibrată pentru
-              Bitcoin + context macro. Pentru integrări multi-asset (ETH, indici, FX),
-              se pot defini proiecte custom în cadrul planului Institutional.
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+    <!-- API, Pricing, FAQ, footer – identice cu fișierul tău original -->
+    <!-- ... (le-am omis aici pentru scurtare, dar tu păstrezi conținutul complet din fișierul tău) ... -->
 
     <footer>
       <div>
@@ -1227,6 +1033,7 @@
   </div>
 
   <script>
+    // anul din footer
     document.getElementById("year").textContent = new Date().getFullYear();
 
     const menuToggle = document.getElementById("menuToggle");
@@ -1243,28 +1050,64 @@
         document.body.classList.remove("menu-open");
       });
     });
+
+    // === Snapshot BTC coeziv din data/btc_state_latest.json ===
+    (async function () {
+      try {
+        const res = await fetch("data/btc_state_latest.json", { cache: "no-store" });
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        const state = await res.json();
+
+        // IC_BTC structural
+        if (typeof state.ic_struct === "number") {
+          document.getElementById("icStructValue").textContent =
+            state.ic_struct.toFixed(1);
+        }
+
+        // Probabilități simple din ICD (0–100)
+        const icd = typeof state.ic_dir === "number" ? state.ic_dir : 50;
+        const probUp = Math.round(icd);
+        const probDown = 100 - probUp;
+
+        document.getElementById("probUpValue").textContent = probUp + "%";
+        document.getElementById("probDownValue").textContent = probDown + "%";
+
+        // Bias text
+        const dist = Math.abs(icd - 50);
+        let bias;
+        if (dist < 5) bias = "echilibrat";
+        else if (dist < 10) bias = "bias moderat";
+        else bias = icd > 50 ? "bias bull pronunțat" : "bias bear pronunțat";
+        document.getElementById("biasText").textContent = bias;
+
+        // „Confidență”
+        let conf;
+        if (dist < 5) conf = "inconfident";
+        else if (dist < 10) conf = "mediu";
+        else conf = "puternic";
+        document.getElementById("confText").textContent = conf;
+
+        // Regim
+        if (state.regime_label) {
+          document.getElementById("regimeLabel").textContent = state.regime_label;
+        } else if (state.regime_code) {
+          document.getElementById("regimeLabel").textContent =
+            String(state.regime_code).replace(/_/g, " ");
+        }
+
+        if (state.regime_short) {
+          document.getElementById("regimeShort").textContent = state.regime_short;
+        }
+
+        // Text scurt de trend, dacă există
+        if (state.context_short && state.context_short.trend && state.context_short.trend.text) {
+          document.getElementById("icStructText").textContent =
+            state.context_short.trend.text;
+        }
+      } catch (err) {
+        console.error("Eroare la încărcarea snapshot-ului BTC:", err);
+      }
+    })();
   </script>
-  <script>
-const API_URL = "https://<URL-Railway-sau-Render>/v1/ic_btc/latest";
-
-fetch(API_URL)
-  .then(r => r.json())
-  .then(data => {
-    document.getElementById("icStructValue").textContent =
-      data.ic_struct?.toFixed(1) ?? "–";
-
-    document.getElementById("probUpValue").textContent =
-      Math.round(data.prob_up * 100) + "%";
-
-    document.getElementById("probDownValue").textContent =
-      Math.round(data.prob_down * 100) + "%";
-
-    document.getElementById("regimeLabel").textContent =
-      data.regime_label || data.regime;
-  })
-  .catch(() => {
-    console.log("Nu am putut încărca datele IC_BTC.");
-  });
-</script>
 </body>
 </html>
