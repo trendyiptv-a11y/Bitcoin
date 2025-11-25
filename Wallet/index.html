@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <title>Wallet Coeziv – Demo Browser</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 16px;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+    }
+    button {
+      padding: 8px 16px;
+      font-size: 15px;
+      border-radius: 8px;
+      border: 1px solid #333;
+      cursor: pointer;
+      margin-bottom: 16px;
+    }
+    pre {
+      background: #f7f7f7;
+      padding: 12px;
+      border-radius: 8px;
+      overflow-x: auto;
+    }
+    small {
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <h1>Wallet Coeziv – Demo în browser</h1>
+  <p><strong>ATENȚIE:</strong> acesta este doar un demo educativ. Nu folosi ce vezi aici pentru Bitcoin real.</p>
+
+  <button id="btn-gen">Generează wallet demo</button>
+  <pre id="output">Apasă pe buton pentru a genera un wallet coeziv demo...</pre>
+
+  <small>
+    ESC = entropie, SDD = derivare seed, SEC = adresă expusă. Totul este simplificat.
+  </small>
+
+  <script>
+    // utilitar: bytes -> hex
+    function bytesToHex(bytes) {
+      return Array.from(bytes)
+        .map(b => b.toString(16).padStart(2, "0"))
+        .join("");
+    }
+
+    async function sha256(buffer) {
+      const hashBuf = await crypto.subtle.digest("SHA-256", buffer);
+      return new Uint8Array(hashBuf);
+    }
+
+    async function generateWalletDemo() {
+      // ESC – entropie
+      const entropy = new Uint8Array(16); // 128 biți demo
+      crypto.getRandomValues(entropy);
+
+      // SDD – seed = SHA256(entropie)
+      const seed = await sha256(entropy);
+
+      // cheie "privată" demo = SHA256(seed)
+      const privKey = await sha256(seed);
+
+      // "adresă" demo = primele 20 de bytes din SHA256(cheie privată)
+      const pubDemo = await sha256(privKey);
+      const addressDemo = bytesToHex(pubDemo.slice(0, 20));
+
+      const out = document.getElementById("output");
+      out.textContent =
+        "ESC – Entropie (hex):\n" + bytesToHex(entropy) + "\n\n" +
+        "SDD – Seed (SHA256(entropie)):\n" + bytesToHex(seed) + "\n\n" +
+        "Cheie privată DEMO (SHA256(seed)):\n" + bytesToHex(privKey) + "\n\n" +
+        "SEC – Adresă DEMO expusă:\n" + addressDemo + "\n\n" +
+        "NOTĂ: Nu este adresă Bitcoin reală, doar model coeziv educativ.";
+    }
+
+    document.getElementById("btn-gen").addEventListener("click", () => {
+      generateWalletDemo().catch(err => {
+        document.getElementById("output").textContent = "Eroare: " + err;
+      });
+    });
+  </script>
+</body>
+</html>
