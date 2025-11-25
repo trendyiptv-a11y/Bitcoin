@@ -12,6 +12,7 @@ Pași (backend pur, fără dependențe exotice):
 - derivă indici IC_BTC structural & ICD_BTC direcțional (0–100)
   folosind normalizare pe istoric (percentile)
 - clasifică regimul coeziv (acumulare, bull structural, bear structural etc.)
+- calculează probabilități UP/DOWN + bias + încredere coezivă
 - sintetizează un context scurt (trend, volatilitate, macro)
 - scrie rezultatul în data/btc_state_latest.json
 
@@ -109,6 +110,65 @@ def percentile_rank(history: List[float], value: float) -> float:
 
 def clamp(x: float, lo: float, hi: float) -> float:
     return max(lo, min(hi, x))
+
+
+# ---------- probabilități & bias coeziv ----------
+
+def compute_cohesive_probabilities(ic_struct: float, ic_dir: float) -> Dict[str, float | str]:
+    """
+    Calculează probabilități UP/DOWN și etichete de bias + încredere
+    pe baza IC_BTC structural (ic_struct) și ICD_BTC direcțional (ic_dir).
+
+    Logică coezivă:
+    - IC_DIR (0–100) dă sensul (bull/bear) și intensitatea direcțională.
+    - IC_STRUCT (0–100) dă calitatea / coerența structurii.
+    - scorul de încredere combină structura (60%) cu direcționalitatea (40%).
+    """
+
+    # 1. clamp la [0, 100]
+    ic_struct = clamp(float(ic_struct), 0.0, 100.0)
+    ic_dir = clamp(float(ic_dir), 0.0, 100.0)
+
+    # 2. centrare direcțională față de 50 (neutru)
+    dir_centered = ic_dir - 50.0          # -50 .. 50
+    dir_strength = abs(dir_centered) / 50.0   # 0 .. 1
+    struct_strength = ic_struct / 100.0       # 0 .. 1
+
+    # 3. scor de încredere coeziv (ponderăm mai mult structura)
+    confidence_score = 0.6 * struct_strength + 0.4 * dir_strength
+    confidence_score = clamp(confidence_score, 0.0, 1.0)
+
+    # 4. probabilitate brută UP din ICD (0..1)
+    base_prob_up = ic_dir / 100.0
+
+    # 5. "tragere" spre 0.5 când încrederea e mică
+    final_prob_up = 0.5 + (base_prob_up - 0.5) * confidence_score
+    final_prob_up = clamp(final_prob_up, 0.02, 0.98)
+    final_prob_down = 1.0 - final_prob_up
+
+    # 6. bias directionality
+    if abs(dir_centered) < 5:
+        bias_label = "echilibrat"
+    elif abs(dir_centered) < 12:
+        bias_label = "bias moderat bull" if dir_centered > 0 else "bias moderat bear"
+    else:
+        bias_label = "bias bull pronunțat" if dir_centered > 0 else "bias bear pronunțat"
+
+    # 7. etichete de încredere
+    if confidence_score < 0.33:
+        confidence_label = "inconfident"
+    elif confidence_score < 0.66:
+        confidence_label = "mediu"
+    else:
+        confidence_label = "puternic"
+
+    return {
+        "prob_up": final_prob_up,
+        "prob_down": final_prob_down,
+        "bias_label": bias_label,
+        "confidence_label": confidence_label,
+        "confidence_score": confidence_score * 100.0,
+    }
 
 
 # ---------- structuri pentru regim ----------
@@ -288,7 +348,7 @@ def compute_state_from_prices(
     latest_base = closes[-window_dir]
     latest_cum_ret = closes[-1] / latest_base - 1.0
     pct = percentile_rank(cum_ret_hist, latest_cum_ret)
-    # transformăm percentila 0–100 într-un index 0–100, dar centrat în jurul lui 50
+    # transformăm percentila 0–100 într-un index 0–100
     ic_dir = pct
 
     # volatilitate pe 30 de zile (annualizată, %)
@@ -423,6 +483,9 @@ def main() -> None:
         ic_struct, ic_dir, vol30_ann_pct, vol30_index, global_macro
     )
 
+    # probabilități & bias coeziv (calculate aici, nu în UI)
+    probs = compute_cohesive_probabilities(ic_struct, ic_dir)
+
     last_date = dates[-1]
     last_close = closes[-1]
 
@@ -439,6 +502,12 @@ def main() -> None:
         "regime_label": regime.label,
         "regime_short": regime.short,
         "regime_color": regime.color,
+        # snapshot probabilistic coeziv
+        "prob_up": round(probs["prob_up"], 4),
+        "prob_down": round(probs["prob_down"], 4),
+        "bias_label": probs["bias_label"],
+        "confidence_label": probs["confidence_label"],
+        "confidence_score": round(probs["confidence_score"], 1),
         # context scurt pentru front-end
         "context_short": context_short,
     }
