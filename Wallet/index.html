@@ -2,88 +2,424 @@
 <html lang="ro">
 <head>
   <meta charset="UTF-8" />
-  <title>Wallet Coeziv – Demo Browser</title>
+  <title>Wallet Coeziv – Dashboard Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
+    * { box-sizing: border-box; }
     body {
       font-family: system-ui, sans-serif;
-      max-width: 800px;
-      margin: 20px auto;
-      padding: 16px;
-      border: 1px solid #ddd;
+      margin: 0;
+      padding: 0;
+      background: #f5f5f7;
+    }
+    header {
+      background: #111827;
+      color: white;
+      padding: 16px 20px;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 20px;
+    }
+    header small {
+      color: #9ca3af;
+    }
+    main {
+      max-width: 1100px;
+      margin: 16px auto 32px;
+      padding: 0 12px;
+      display: grid;
+      grid-template-columns: 1.2fr 1.1fr;
+      gap: 16px;
+    }
+    @media (max-width: 800px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+    }
+    .card {
+      background: white;
       border-radius: 12px;
+      padding: 14px 16px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+    }
+    .card h2 {
+      margin: 0 0 8px;
+      font-size: 18px;
+    }
+    .card h3 {
+      margin: 10px 0 6px;
+      font-size: 15px;
     }
     button {
-      padding: 8px 16px;
-      font-size: 15px;
+      padding: 8px 14px;
+      font-size: 14px;
       border-radius: 8px;
-      border: 1px solid #333;
+      border: 1px solid #111827;
       cursor: pointer;
-      margin-bottom: 16px;
+      background: white;
+    }
+    button:hover {
+      background: #111827;
+      color: white;
+    }
+    button:disabled {
+      opacity: .5;
+      cursor: default;
+    }
+    label {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+    input[type="text"],
+    input[type="number"] {
+      width: 100%;
+      padding: 6px 8px;
+      border-radius: 8px;
+      border: 1px solid #d1d5db;
+      font-size: 13px;
+      margin-bottom: 10px;
     }
     pre {
-      background: #f7f7f7;
-      padding: 12px;
+      background: #f3f4f6;
+      padding: 10px;
       border-radius: 8px;
+      font-size: 12px;
       overflow-x: auto;
+      max-height: 260px;
+      white-space: pre-wrap;
+      word-break: break-word;
     }
-    small {
-      color: #666;
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      background: #e5e7eb;
+      color: #111827;
+      margin-left: 6px;
+    }
+    .pill-ok {
+      background: #dcfce7;
+      color: #166534;
+    }
+    .pill-bad {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    .muted {
+      font-size: 12px;
+      color: #6b7280;
     }
   </style>
 </head>
 <body>
-  <h1>Wallet Coeziv – Demo în browser</h1>
-  <p><strong>ATENȚIE:</strong> acesta este doar un demo educativ. Nu folosi ce vezi aici pentru Bitcoin real.</p>
+<header>
+  <h1>Wallet Coeziv – Dashboard Demo</h1>
+  <small>ESC = entropie, SDD = derivare seed, SEC = adresă expusă. Totul este simplificat, educativ, nu Bitcoin real.</small>
+</header>
 
-  <button id="btn-gen">Generează wallet demo</button>
-  <pre id="output">Apasă pe buton pentru a genera un wallet coeziv demo...</pre>
+<main>
+  <!-- COL 1 – WALLET & UTXO -->
+  <section class="card">
+    <h2>1. Nucleul Coeziv al Walletului (NCW)</h2>
+    <p class="muted">
+      Apasă pe buton pentru a genera un wallet demo în browser. Nu se salvează nicăieri.
+    </p>
+    <button id="btn-gen-wallet">Generează wallet demo</button>
+    <div id="wallet-status" class="muted" style="margin-top:8px;">Niciun wallet generat încă.</div>
 
-  <small>
-    ESC = entropie, SDD = derivare seed, SEC = adresă expusă. Totul este simplificat.
-  </small>
+    <h3>ESC – Entropie</h3>
+    <pre id="esc-box">—</pre>
 
-  <script>
-    // utilitar: bytes -> hex
-    function bytesToHex(bytes) {
-      return Array.from(bytes)
-        .map(b => b.toString(16).padStart(2, "0"))
-        .join("");
+    <h3>SDD – Seed & cheie privată</h3>
+    <pre id="sdd-box">—</pre>
+
+    <h3>SEC – Adresă expusă</h3>
+    <pre id="sec-box">—</pre>
+
+    <hr style="margin:16px 0;" />
+
+    <h2>2. Simulare UTXO (fonduri disponibile)</h2>
+    <p class="muted">
+      UTXO = “bucată de fonduri” care poate fi cheltuită într-o tranzacție.
+    </p>
+    <label for="utxo-amount">Valoare UTXO (satoshi):</label>
+    <input type="number" id="utxo-amount" value="100000" min="1" />
+    <button id="btn-create-utxo" disabled>Generează UTXO pentru acest wallet</button>
+    <pre id="utxo-box">Niciun UTXO generat.</pre>
+  </section>
+
+  <!-- COL 2 – TRANZACȚIE -->
+  <section class="card">
+    <h2>3. Tranzacție coezivă demo</h2>
+    <p class="muted">
+      Construcție educativă: tx_id + semnătură demo. Nu este tranzacție Bitcoin reală și nu se trimite nicăieri.
+    </p>
+
+    <label for="dest-address">Adresă destinație (text liber, demo):</label>
+    <input type="text" id="dest-address" value="tb1qDESTINATIE0000000000000000000" />
+
+    <label for="send-amount">Suma de trimis (satoshi):</label>
+    <input type="number" id="send-amount" value="30000" min="1" />
+
+    <label for="fee-amount">Fee (taxă) (satoshi):</label>
+    <input type="number" id="fee-amount" value="1000" min="0" />
+
+    <button id="btn-create-tx" disabled>Construiește tranzacție</button>
+
+    <div style="margin-top:10px; margin-bottom:6px;">
+      Status fee / balanță:
+      <span id="fee-status" class="badge">—</span>
+    </div>
+
+    <h3>Tranzacție (public view)</h3>
+    <pre id="tx-box">Nicio tranzacție încă.</pre>
+  </section>
+</main>
+
+<script>
+  // ---------- UTILITARE ----------
+  const enc = new TextEncoder();
+
+  function bytesToHex(bytes) {
+    return Array.from(bytes)
+      .map(b => b.toString(16).padStart(2, "0"))
+      .join("");
+  }
+
+  async function sha256Bytes(bytes) {
+    const buf = await crypto.subtle.digest("SHA-256", bytes);
+    return new Uint8Array(buf);
+  }
+
+  async function sha256HexFromBytes(bytes) {
+    const out = await sha256Bytes(bytes);
+    return bytesToHex(out);
+  }
+
+  function utf8Bytes(str) {
+    return enc.encode(str);
+  }
+
+  // ---------- STATE ----------
+  let currentWallet = null; // { entropyBytes, seedBytes, privBytes, address }
+  let currentUtxo = null;   // { txid, index, address, amount_sats }
+  let currentTx = null;     // obiect tranzacție
+
+  // ---------- WALLET ----------
+  async function generateWalletDemo() {
+    const entropy = new Uint8Array(16); // ESC: 128 biți demo
+    crypto.getRandomValues(entropy);
+
+    const seed = await sha256Bytes(entropy);    // SDD: seed
+    const priv = await sha256Bytes(seed);      // SDD: cheie privată demo
+    const pubDemo = await sha256Bytes(priv);   // derivare "publică" simplificată
+    const addressDemo = bytesToHex(pubDemo.slice(0, 20)); // SEC: adresă demo expusă
+
+    currentWallet = {
+      entropyBytes: entropy,
+      seedBytes: seed,
+      privBytes: priv,
+      address: addressDemo
+    };
+  }
+
+  function renderWallet() {
+    const escBox = document.getElementById("esc-box");
+    const sddBox = document.getElementById("sdd-box");
+    const secBox = document.getElementById("sec-box");
+    const status = document.getElementById("wallet-status");
+    const btnUtxo = document.getElementById("btn-create-utxo");
+
+    if (!currentWallet) {
+      status.textContent = "Niciun wallet generat încă.";
+      escBox.textContent = "—";
+      sddBox.textContent = "—";
+      secBox.textContent = "—";
+      btnUtxo.disabled = true;
+      return;
     }
 
-    async function sha256(buffer) {
-      const hashBuf = await crypto.subtle.digest("SHA-256", buffer);
-      return new Uint8Array(hashBuf);
+    status.textContent = "Wallet DEMO generat în memorie (nu se salvează nicăieri).";
+    escBox.textContent = "Entropie (hex):\n" + bytesToHex(currentWallet.entropyBytes);
+    sddBox.textContent =
+      "Seed (SHA256(entropie)):\n" + bytesToHex(currentWallet.seedBytes) + "\n\n" +
+      "Cheie privată DEMO (SHA256(seed)):\n" + bytesToHex(currentWallet.privBytes);
+    secBox.textContent = "Adresă DEMO expusă:\n" + currentWallet.address +
+      "\n\nNOTĂ: Nu este adresă Bitcoin reală, ci doar un identificator demo derivat.";
+
+    btnUtxo.disabled = false;
+  }
+
+  // ---------- UTXO ----------
+  function createDemoUtxo() {
+    if (!currentWallet) {
+      alert("Generează mai întâi un wallet.");
+      return;
+    }
+    const amountInput = document.getElementById("utxo-amount");
+    const amount = parseInt(amountInput.value, 10);
+    if (isNaN(amount) || amount <= 0) {
+      alert("Introdu o valoare UTXO > 0.");
+      return;
+    }
+    currentUtxo = {
+      txid: "demo_prev_tx_" + Date.now(),
+      index: 0,
+      address: currentWallet.address,
+      amount_sats: amount
+    };
+    renderUtxo();
+  }
+
+  function renderUtxo() {
+    const box = document.getElementById("utxo-box");
+    const btnTx = document.getElementById("btn-create-tx");
+    if (!currentUtxo) {
+      box.textContent = "Niciun UTXO generat.";
+      btnTx.disabled = true;
+      return;
+    }
+    box.textContent = JSON.stringify(currentUtxo, null, 2);
+    btnTx.disabled = false;
+  }
+
+  // ---------- TRANZACȚIE ----------
+  async function createCohesiveTx() {
+    if (!currentWallet) {
+      alert("Generează mai întâi un wallet.");
+      return;
+    }
+    if (!currentUtxo) {
+      alert("Generează un UTXO demo pentru acest wallet.");
+      return;
     }
 
-    async function generateWalletDemo() {
-      // ESC – entropie
-      const entropy = new Uint8Array(16); // 128 biți demo
-      crypto.getRandomValues(entropy);
-
-      // SDD – seed = SHA256(entropie)
-      const seed = await sha256(entropy);
-
-      // cheie "privată" demo = SHA256(seed)
-      const privKey = await sha256(seed);
-
-      // "adresă" demo = primele 20 de bytes din SHA256(cheie privată)
-      const pubDemo = await sha256(privKey);
-      const addressDemo = bytesToHex(pubDemo.slice(0, 20));
-
-      const out = document.getElementById("output");
-      out.textContent =
-        "ESC – Entropie (hex):\n" + bytesToHex(entropy) + "\n\n" +
-        "SDD – Seed (SHA256(entropie)):\n" + bytesToHex(seed) + "\n\n" +
-        "Cheie privată DEMO (SHA256(seed)):\n" + bytesToHex(privKey) + "\n\n" +
-        "SEC – Adresă DEMO expusă:\n" + addressDemo + "\n\n" +
-        "NOTĂ: Nu este adresă Bitcoin reală, doar model coeziv educativ.";
+    const dest = document.getElementById("dest-address").value.trim();
+    const amount = parseInt(document.getElementById("send-amount").value, 10);
+    const fee = parseInt(document.getElementById("fee-amount").value, 10);
+    if (!dest) {
+      alert("Introdu o adresă destinație (poate fi text simplu, demo).");
+      return;
+    }
+    if (isNaN(amount) || amount <= 0) {
+      alert("Suma trebuie să fie > 0.");
+      return;
+    }
+    if (isNaN(fee) || fee < 0) {
+      alert("Fee trebuie să fie ≥ 0.");
+      return;
+    }
+    if (amount + fee > currentUtxo.amount_sats) {
+      alert("Fonduri insuficiente în UTXO pentru amount + fee.");
+      return;
     }
 
-    document.getElementById("btn-gen").addEventListener("click", () => {
-      generateWalletDemo().catch(err => {
-        document.getElementById("output").textContent = "Eroare: " + err;
-      });
+    const createdAt = Date.now() / 1000;
+    const outputs = [];
+
+    outputs.push({
+      address: dest,
+      amount_sats: amount
     });
-  </script>
+
+    const change = currentUtxo.amount_sats - amount - fee;
+    if (change > 0) {
+      outputs.push({
+        address: currentWallet.address,
+        amount_sats: change
+      });
+    }
+
+    const txSkeleton = {
+      created_at: createdAt,
+      inputs: [ currentUtxo ],
+      outputs
+    };
+
+    // ID tranzacție = SHA256(JSON serializat)
+    const txId = await sha256HexFromBytes(
+      utf8Bytes(JSON.stringify(txSkeleton))
+    );
+
+    // Semnătură demo = SHA256( cheie_privată_bytes || tx_id_string )
+    const concat = new Uint8Array(
+      currentWallet.privBytes.length + utf8Bytes(txId).length
+    );
+    concat.set(currentWallet.privBytes, 0);
+    concat.set(utf8Bytes(txId), currentWallet.privBytes.length);
+    const sigHex = await sha256HexFromBytes(concat);
+
+    currentTx = {
+      tx_id: txId,
+      created_at: createdAt,
+      inputs: [ currentUtxo ],
+      outputs,
+      signature_demo: sigHex
+    };
+
+    renderTx();
+  }
+
+  function renderTx() {
+    const box = document.getElementById("tx-box");
+    const feeStatus = document.getElementById("fee-status");
+    if (!currentTx) {
+      box.textContent = "Nicio tranzacție încă.";
+      feeStatus.textContent = "—";
+      feeStatus.className = "badge";
+      return;
+    }
+
+    const totalIn = currentTx.inputs.reduce((s, i) => s + i.amount_sats, 0);
+    const totalOut = currentTx.outputs.reduce((s, o) => s + o.amount_sats, 0);
+    const fee = totalIn - totalOut;
+
+    const view = {
+      tx_id: currentTx.tx_id,
+      created_at: currentTx.created_at,
+      inputs: currentTx.inputs,
+      outputs: currentTx.outputs,
+      total_input_sats: totalIn,
+      total_output_sats: totalOut,
+      fee_sats: fee,
+      signature_demo: currentTx.signature_demo
+    };
+
+    box.textContent = JSON.stringify(view, null, 2);
+
+    feeStatus.textContent = fee + " sats";
+    if (fee >= 0) {
+      feeStatus.className = "badge pill-ok";
+    } else {
+      feeStatus.className = "badge pill-bad";
+    }
+  }
+
+  // ---------- HOOK-UP BUTOANE ----------
+  document.getElementById("btn-gen-wallet").addEventListener("click", async () => {
+    await generateWalletDemo();
+    currentUtxo = null;
+    currentTx = null;
+    renderWallet();
+    renderUtxo();
+    renderTx();
+  });
+
+  document.getElementById("btn-create-utxo").addEventListener("click", () => {
+    createDemoUtxo();
+  });
+
+  document.getElementById("btn-create-tx").addEventListener("click", async () => {
+    await createCohesiveTx();
+  });
+
+  // stare inițială
+  renderWallet();
+  renderUtxo();
+  renderTx();
+</script>
 </body>
 </html>
