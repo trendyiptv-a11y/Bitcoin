@@ -1244,5 +1244,27 @@
       });
     });
   </script>
+  <script>
+const API_URL = "https://<URL-Railway-sau-Render>/v1/ic_btc/latest";
+
+fetch(API_URL)
+  .then(r => r.json())
+  .then(data => {
+    document.getElementById("icStructValue").textContent =
+      data.ic_struct?.toFixed(1) ?? "–";
+
+    document.getElementById("probUpValue").textContent =
+      Math.round(data.prob_up * 100) + "%";
+
+    document.getElementById("probDownValue").textContent =
+      Math.round(data.prob_down * 100) + "%";
+
+    document.getElementById("regimeLabel").textContent =
+      data.regime_label || data.regime;
+  })
+  .catch(() => {
+    console.log("Nu am putut încărca datele IC_BTC.");
+  });
+</script>
 </body>
 </html>
