@@ -9,6 +9,11 @@
   "regime_label": "Bear structural",
   "regime_short": "Trend descendent în formare / structură în răcire.",
   "regime_color": "red",
+  "prob_up": 0.3345,
+  "prob_down": 0.6655,
+  "bias_label": "bias bear pronunțat",
+  "confidence_label": "mediu",
+  "confidence_score": 48.2,
   "context_short": {
     "trend": {
       "text": "Trend: zonă de tranziție (IC 35), bias direcțional bear (ICD 16).",
