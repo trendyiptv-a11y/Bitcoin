@@ -954,7 +954,7 @@
             Regim coeziv curent:
             <span class="badge">
               <span class="badge-dot"></span>
-              <span id="regimeLabel">–</span>
+              <span id="regimeLabel">Bear structural</span>
             </span>
             &mdash;
             <span id="regimeShort">
@@ -967,9 +967,6 @@
     </section>
 
     <!-- WHY -->
-    <!-- (restul paginii rămâne neschimbat) -->
-    <!-- ... toate secțiunile WHY, API, Pricing, FAQ, footer identice cu ce ai deja ... -->
-
     <section id="why">
       <div class="section-label">De ce CohesivX</div>
       <h2 class="section-title">Mai mult decât un indicator tehnic clasic</h2>
@@ -1017,8 +1014,206 @@
       </div>
     </section>
 
-    <!-- API, Pricing, FAQ, footer – identice cu fișierul tău original -->
-    <!-- ... (le-am omis aici pentru scurtare, dar tu păstrezi conținutul complet din fișierul tău) ... -->
+    <!-- API -->
+    <section id="api">
+      <div class="section-label">API</div>
+      <h2 class="section-title">JSON simplu, coeziv structural</h2>
+      <p class="section-sub">
+        CohesivX BTC API livrează un snapshot coerent (IC_BTC structural +
+        direcțional + regim + macro) într-un payload JSON compact. Ideal
+        pentru integrare în platforme existente, dashboard-uri sau agenți
+        algoritmici.
+      </p>
+
+      <div class="api-layout">
+        <div class="code-card">
+          <div class="pill-small">
+            <span class="pill-small-dot"></span>
+            <span>Exemplu de răspuns IC_BTC</span>
+          </div>
+          <pre><code>{
+  "as_of": "2025-02-21",
+  "close": 52341.21,
+  "ic_struct": 61.3,
+  "ic_dir": 54.2,
+  "vol30_ann_pct": 38.4,
+  "vol30_index": 64.1,
+  "regime_code": "bear_struct",
+  "regime_label": "Bear structural",
+  "regime_short": "Trend descendent în formare / structură în răcire.",
+  "prob_up": 0.46,
+  "prob_down": 0.54,
+  "bias_label": "bias moderat bear",
+  "confidence_label": "mediu",
+  "confidence_score": 58.2,
+  "context_short": {
+    "trend": {
+      "text": "Trend: zonă de tranziție (IC 61), bias direcțional bear (ICD 54).",
+      "color": "red"
+    },
+    "volatility": {
+      "text": "Volatilitate relativă: ridicată (vol30 ~ 38.4%).",
+      "color": "red"
+    },
+    "macro": {
+      "text": "Macro (scurt): echilibrat (scor risc 0.12).",
+      "color": "orange"
+    }
+  }
+}</code></pre>
+        </div>
+
+        <div>
+          <div class="api-items">
+            <div>
+              <div class="api-item-label">Snapshot BTC structural</div>
+              <div class="api-item-path">GET /v1/ic_btc/latest</div>
+              <p class="faq-a">
+                Răspuns JSON cu IC_BTC structural + direcțional, regim, probabilități și context macro scurt.
+              </p>
+            </div>
+            <div>
+              <div class="api-item-label">Seria IC_BTC</div>
+              <div class="api-item-path">GET /v1/ic_btc/series</div>
+              <p class="faq-a">
+                Seria daily a indicelui IC_BTC + ICD_BTC (0–100) pentru grafice, backtesting și scoring.
+              </p>
+            </div>
+            <div>
+              <div class="api-item-label">Mega-state BTC + Global</div>
+              <div class="api-item-path">GET /v1/ic_btc/mega</div>
+              <p class="faq-a">
+                Structură extinsă cu legături către regimul macro global, faze de ciclu și
+                stări coezive agregate – gata pentru agenți sau modele multi-asset.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRICING -->
+    <section id="pricing">
+      <div class="section-label">Pricing</div>
+      <h2 class="section-title">Structurat pentru desk-uri, produse și agenți</h2>
+      <p class="section-sub">
+        Modelul este gândit pentru a fi folosit atât în produse retail
+        (aplicații, dashboard-uri), cât și în setări instituționale
+        (desk-uri de risc, trading, research).
+      </p>
+
+      <div class="pricing-grid">
+        <article class="price-card">
+          <div class="price-name">Builder</div>
+          <div class="price-desc">
+            Pentru experimente, prototipuri, research intern.
+          </div>
+          <div class="price-value">
+            $99 <span>/ lună</span>
+          </div>
+          <ul class="price-features">
+            <li>Acces la /v1/ic_btc/latest</li>
+            <li>Limită rezonabilă de request-uri</li>
+            <li>Fără SLA formal, suport prin e-mail</li>
+          </ul>
+          <div class="price-cta">
+            <a href="#api" class="btn-small">
+              <span>Începe cu Builder</span>
+              <span class="icon">⟶</span>
+            </a>
+          </div>
+        </article>
+
+        <article class="price-card highlight">
+          <div class="price-name">Desk</div>
+          <div class="price-desc">
+            Pentru desk-uri de trading, risk sau research.
+          </div>
+          <div class="price-value">
+            $399 <span>/ lună</span>
+          </div>
+          <ul class="price-features">
+            <li>Acces complet la snapshot + serie</li>
+            <li>Prioritate în update-uri și ajustări de model</li>
+            <li>Integrare asistată și suport dedicat</li>
+          </ul>
+          <div class="price-cta">
+            <a href="#api" class="btn-small primary">
+              <span>Contact pentru Desk</span>
+              <span class="icon">↗</span>
+            </a>
+          </div>
+        </article>
+
+        <article class="price-card">
+          <div class="price-name">Enterprise / OEM</div>
+          <div class="price-desc">
+            Pentru platforme crypto, fintech și integrări white-label.
+          </div>
+          <div class="price-value">
+            Custom <span>/ volum</span>
+          </div>
+          <ul class="price-features">
+            <li>Licențiere white-label și OEM</li>
+            <li>Integrare în produse multi-asset</li>
+            <li>SLA dedicat, suport 24/7</li>
+          </ul>
+          <div class="price-cta">
+            <a href="#api" class="btn-small">
+              <span>Discută Enterprise</span>
+              <span class="icon">↗</span>
+            </a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq">
+      <div class="section-label">FAQ</div>
+      <h2 class="section-title">Întrebări frecvente</h2>
+      <div class="faq-grid">
+        <div>
+          <div class="faq-item">
+            <div class="faq-q">Ce înseamnă „indice coeziv” pentru Bitcoin?</div>
+            <div class="faq-a">
+              Modelul urmărește <strong>structura internă</strong> a trendului
+              (nu doar prețul) și o exprimă într-un scor între 0–100, plus un
+              regim de ciclu și probabilități UP/DOWN. Este gândit să fie
+              interpretabil și de oameni, și de algoritmi.
+            </div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q">Ce orizont de timp folosiți?</div>
+            <div class="faq-a">
+              Fereastra standard este ~260 de zile (1D), cu sub-ferestre pentru
+              direcționalitate, volatilitate și context macro. Modelul poate fi
+              extins la alte frecvențe în funcție de use-case.
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="faq-item">
+            <div class="faq-q">Pot folosi indicele în modele de risc proprii?</div>
+            <div class="faq-a">
+              Da. IC_BTC și ICD_BTC pot fi mapate direct în scoruri interne de
+              risc, semnale de alocare, filtre pentru roboți de trading sau
+              input-uri pentru agenți AI. Structura JSON este stabilă, gândită
+              pentru integrare programatică.
+            </div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q">Ce înseamnă „macro risk score”?</div>
+            <div class="faq-a">
+              Un scor agregat derivat din SPX, DXY, Gold, VIX și Oil,
+              normalizat într-un indicator simplu (<em>risk-on</em>,
+              <em>echilibrat</em>, <em>risk-off</em>). Acesta nu este un
+              predictor singular, ci un context coeziv pentru citirea lui Bitcoin.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <footer>
       <div>
@@ -1033,7 +1228,6 @@
   </div>
 
   <script>
-    // anul din footer
     document.getElementById("year").textContent = new Date().getFullYear();
 
     const menuToggle = document.getElementById("menuToggle");
@@ -1050,64 +1244,64 @@
         document.body.classList.remove("menu-open");
       });
     });
+  </script>
 
-    // === Snapshot BTC coeziv din data/btc_state_latest.json ===
-    (async function () {
-      try {
-        const res = await fetch("data/btc_state_latest.json", { cache: "no-store" });
-        if (!res.ok) throw new Error("HTTP " + res.status);
-        const state = await res.json();
+  <script>
+  (async function () {
+    try {
+      const res = await fetch("data/btc_state_latest.json", { cache: "no-store" });
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      const data = await res.json();
 
-        // IC_BTC structural
-        if (typeof state.ic_struct === "number") {
-          document.getElementById("icStructValue").textContent =
-            state.ic_struct.toFixed(1);
-        }
-
-        // Probabilități simple din ICD (0–100)
-        const icd = typeof state.ic_dir === "number" ? state.ic_dir : 50;
-        const probUp = Math.round(icd);
-        const probDown = 100 - probUp;
-
-        document.getElementById("probUpValue").textContent = probUp + "%";
-        document.getElementById("probDownValue").textContent = probDown + "%";
-
-        // Bias text
-        const dist = Math.abs(icd - 50);
-        let bias;
-        if (dist < 5) bias = "echilibrat";
-        else if (dist < 10) bias = "bias moderat";
-        else bias = icd > 50 ? "bias bull pronunțat" : "bias bear pronunțat";
-        document.getElementById("biasText").textContent = bias;
-
-        // „Confidență”
-        let conf;
-        if (dist < 5) conf = "inconfident";
-        else if (dist < 10) conf = "mediu";
-        else conf = "puternic";
-        document.getElementById("confText").textContent = conf;
-
-        // Regim
-        if (state.regime_label) {
-          document.getElementById("regimeLabel").textContent = state.regime_label;
-        } else if (state.regime_code) {
-          document.getElementById("regimeLabel").textContent =
-            String(state.regime_code).replace(/_/g, " ");
-        }
-
-        if (state.regime_short) {
-          document.getElementById("regimeShort").textContent = state.regime_short;
-        }
-
-        // Text scurt de trend, dacă există
-        if (state.context_short && state.context_short.trend && state.context_short.trend.text) {
-          document.getElementById("icStructText").textContent =
-            state.context_short.trend.text;
-        }
-      } catch (err) {
-        console.error("Eroare la încărcarea snapshot-ului BTC:", err);
+      // IC_BTC structural
+      if (typeof data.ic_struct === "number") {
+        document.getElementById("icStructValue").textContent =
+          data.ic_struct.toFixed(1);
       }
-    })();
+
+      // Probabilități reale din model (0–1 în JSON)
+      if (typeof data.prob_up === "number") {
+        document.getElementById("probUpValue").textContent =
+          Math.round(data.prob_up * 100) + "%";
+      }
+
+      if (typeof data.prob_down === "number") {
+        document.getElementById("probDownValue").textContent =
+          Math.round(data.prob_down * 100) + "%";
+      }
+
+      // Bias & încredere – direct din model
+      if (data.bias_label) {
+        document.getElementById("biasText").textContent = data.bias_label;
+      }
+
+      if (data.confidence_label) {
+        document.getElementById("confText").textContent = data.confidence_label;
+      }
+
+      // Regim coeziv
+      if (data.regime_label) {
+        document.getElementById("regimeLabel").textContent = data.regime_label;
+      } else if (data.regime_code) {
+        document.getElementById("regimeLabel").textContent =
+          String(data.regime_code).replace(/_/g, " ");
+      }
+
+      if (data.regime_short) {
+        document.getElementById("regimeShort").textContent = data.regime_short;
+      }
+
+      // Text scurt de trend (context_short.trend.text)
+      if (data.context_short &&
+          data.context_short.trend &&
+          data.context_short.trend.text) {
+        document.getElementById("icStructText").textContent =
+          data.context_short.trend.text;
+      }
+    } catch (e) {
+      console.log("Nu am putut încărca snapshot-ul IC_BTC:", e);
+    }
+  })();
   </script>
 </body>
 </html>
