@@ -24,8 +24,9 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Run Cohesiv Pipeline
-        run: python run_cohesiv_pipeline.py
-
+        run: |
+           python fetch_btc_daily.py
+           python run_cohesiv_pipeline.py
       - name: Commit updated JSON
         run: |
           git config --global user.name "github-actions"
