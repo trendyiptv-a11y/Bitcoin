@@ -30,7 +30,7 @@ from update_btc_state_latest_from_daily import (
     clamp,
 )
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parent
 DATA_DIR = ROOT / "data"
 INPUT_DAILY = DATA_DIR / "btc_daily.csv"
 OUT_PATH = DATA_DIR / "ic_btc_series.json"
