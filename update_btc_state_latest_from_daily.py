@@ -30,7 +30,7 @@ from statistics import mean, stdev
 from typing import Dict, List, Optional, Tuple
 
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parent
 DATA_BTC = ROOT / "data"
 DATA_GLOBAL = ROOT / "data_global"
 INPUT_DAILY = DATA_BTC / "btc_daily.csv"
