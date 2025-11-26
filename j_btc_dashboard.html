@@ -2,7 +2,7 @@
 <html lang="ro">
 <head>
   <meta charset="UTF-8" />
-  <title>J_BTC – Profil structural Bitcoin</title>
+  <title>J_BTC – Profil structural al rețelei</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <!-- Chart.js pentru grafice -->
@@ -264,8 +264,8 @@
     <p class="subtitle">
       Acest panou arată o estimare <strong>fenomenologică</strong> a tensiunii din rețeaua Bitcoin.
       J<sub>tech</sub> rezumă partea tehnică (mineri, noduri, mempool),
-      iar J<sub>soc</sub> rezumă presiunea socială / instituțională (custodie, guvernanță).
-      Toate valorile sunt normalizate între 0 și 1.
+      iar J<sub>soc</sub> rezumă <strong>presiunea de guvernanță</strong> (conflicte de consens, divergență între implementări).
+      Componenta de custody nu este, deocamdată, măsurată automat. Toate valorile sunt normalizate între 0 și 1.
     </p>
   </header>
 
@@ -277,8 +277,8 @@
         -- <span class="unit">/ 1.0</span>
       </div>
       <p class="card-desc" id="desc-jtot">
-        Valoare agregată dintre tensiunea tehnică și cea socială (instituții,
-        custody, guvernanță). Aproape de 0 = sistem relaxat; aproape de 1 = regim critic.
+        Valoare agregată dintre tensiunea tehnică și cea socială (guvernanță).
+        Aproape de 0 = sistem relaxat; aproape de 1 = regim critic.
       </p>
     </div>
 
@@ -295,13 +295,14 @@
     </div>
 
     <div class="card">
-      <div class="card-title">J<sub>soc</sub> · tensiune socială</div>
+      <div class="card-title">J<sub>soc</sub> · tensiune socială (guvernanță)</div>
       <div class="card-value" id="val-jsoc">
         -- <span class="unit">/ 1.0</span>
       </div>
       <p class="card-desc">
-        Derivă din <strong>C_custody</strong> (cât BTC e concentrat la custodi / exchange-uri)
-        și <strong>C_gov</strong> (câte conflicte de guvernanță există).
+        În această versiune, J<sub>soc</sub> este derivat exclusiv din <strong>C_gov</strong>:
+        intensitatea discuțiilor de consens (BIP-uri, PR-uri deschise) și
+        divergența între implementări/noduri.
       </p>
       <p class="card-desc muted-small" id="detail-soc"></p>
     </div>
@@ -322,7 +323,7 @@
           <span class="legend-dot tech"></span> J<sub>tech</sub> – componenta tehnică
         </div>
         <div class="legend-item">
-          <span class="legend-dot soc"></span> J<sub>soc</sub> – componenta socială
+          <span class="legend-dot soc"></span> J<sub>soc</sub> – componenta socială (guvernanță)
         </div>
       </div>
       <div id="chart-error" class="error" style="display:none;"></div>
@@ -351,7 +352,7 @@
     Generat pe baza fișierelor <code>data/j_btc_latest.json</code> și
     <code>data/j_btc_series.csv</code>.
     <br/>
-    Dacă aceste fișiere lipsesc sau au alt format, dashboard-ul nu va putea afișa valorile.
+    În prezent, componenta socială include doar C_gov (guvernanță); C_custody nu este încă măsurată automat.
   </footer>
 </div>
 
@@ -411,8 +412,8 @@
       }
       if (detSoc) {
         detSoc.textContent =
-          `C_custody=${soc_C_custody.toFixed(3)}, C_gov=${soc_C_gov.toFixed(3)} `
-          + `(conform fișierului j_soc_config.json).`;
+          `C_gov=${soc_C_gov.toFixed(3)} (din governance_snapshot.csv; `
+          + `C_custody este momentan setat la ${soc_C_custody.toFixed(3)} și nu este încă măsurat automat).`;
       }
     } catch (err) {
       console.error(err);
