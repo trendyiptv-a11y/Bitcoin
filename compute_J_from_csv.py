@@ -9,8 +9,7 @@ Tehnic (J_tech – date reale):
 - nodes_bitnodes.csv    -> C_nodes
 - mempool_snapshot.csv  -> C_mempool
 
-Social (J_soc – date reale):
-- custody_snapshot.csv      -> p_cust real (BTC pe exchange-uri / supply)
+Social (J_soc – date reale, din guvernanță):
 - governance_snapshot.csv   -> issues de consens + divergență implementări
 
 Output:
@@ -32,7 +31,6 @@ DATA_DIR = ROOT / "data"
 MINING_CSV = DATA_DIR / "mining_pools.csv"
 NODES_CSV = DATA_DIR / "nodes_bitnodes.csv"
 MEMPOOL_CSV = DATA_DIR / "mempool_snapshot.csv"
-CUSTODY_CSV = DATA_DIR / "custody_snapshot.csv"
 GOV_CSV = DATA_DIR / "governance_snapshot.csv"
 
 J_LATEST_JSON = DATA_DIR / "j_btc_latest.json"
@@ -78,13 +76,6 @@ def normalized_hhi(shares: Dict[str, float]) -> float:
 # ------------------------
 
 def compute_C_hash_from_csv(path: Path = MINING_CSV) -> float:
-    """
-    Folosește mining_pools.csv (mempool.space /api/v1/mining/pools).
-
-    Așteptăm coloane de tip:
-      - poolName
-      - blockCount   (principal)
-    """
     rows = read_csv_rows(path)
     if not rows:
         print("[WARN] mining_pools.csv gol – C_hash=0")
@@ -123,12 +114,6 @@ def compute_C_nodes_from_csv(
     N_ref: int = 10000,
     alpha: float = 0.5,
 ) -> float:
-    """
-    Folosește nodes_bitnodes.csv generat din Bitnodes snapshot.
-
-    Așteptăm cel puțin coloana:
-      - country
-    """
     rows = read_csv_rows(path)
     total_nodes = len(rows)
     if total_nodes == 0:
@@ -165,11 +150,6 @@ def compute_C_mempool_from_csv(
     fee_ref: int = 20,
     beta: float = 0.6,
 ) -> float:
-    """
-    mempool_snapshot.csv are un singur rând cu coloane de tip:
-      - mempool_count
-      - fee_fastestFee
-    """
     rows = read_csv_rows(path)
     if not rows:
         print("[WARN] mempool_snapshot.csv gol – C_mempool=0")
@@ -196,22 +176,8 @@ def compute_C_mempool_from_csv(
 
 
 # ------------------------
-# C_custody / C_gov din CSV-uri reale
+# C_gov din governance_snapshot.csv (J_soc 100% real)
 # ------------------------
-
-def read_custody_snapshot(path: Path = CUSTODY_CSV) -> float:
-    if not path.exists():
-        print(f"[WARN] {path} lipsește – C_custody=0.")
-        return 0.0
-    rows = read_csv_rows(path)
-    if not rows:
-        return 0.0
-    row = rows[-1]
-    try:
-        return float(row.get("p_cust", 0.0) or 0.0)
-    except ValueError:
-        return 0.0
-
 
 def read_governance_snapshot(path: Path = GOV_CSV) -> Dict[str, float]:
     if not path.exists():
@@ -240,14 +206,6 @@ def read_governance_snapshot(path: Path = GOV_CSV) -> Dict[str, float]:
     return out
 
 
-def compute_C_custody_real(p_cust: float, p_min: float = 0.10, p_max: float = 0.60) -> float:
-    if p_cust <= p_min:
-        return 0.0
-    if p_cust >= p_max:
-        return 1.0
-    return (p_cust - p_min) / (p_max - p_min)
-
-
 def compute_C_gov_real(
     issues_governance: float,
     prs_open: float,
@@ -255,17 +213,17 @@ def compute_C_gov_real(
     height_spread: float,
 ) -> float:
     """
-    Construim un scor C_gov în [0,1] din patru componente:
+    Construim un scor C_gov în [0,1] din patru componente reale:
 
-    - issues_governance: câte issues sensibile sunt deschise
+    - issues_governance: câte issues sensibile sunt deschise (BIP/consensus)
     - prs_open: câte PR-uri sunt deschise
     - impl_diversity: câte implementări distincte / nod
     - height_spread: cât de mult diferă înălțimile blocurilor
     """
-    C_issue = min(1.0, issues_governance / 50.0)   # 50+ issues sensibile = 1
-    C_pr = min(1.0, prs_open / 500.0)              # 500+ PR-uri = 1
-    C_impl = min(1.0, impl_diversity / 0.2)        # divergență mare peste 0.2
-    C_height = max(0.0, min(1.0, height_spread))   # deja 0-1
+    C_issue = min(1.0, issues_governance / 50.0)
+    C_pr = min(1.0, prs_open / 500.0)
+    C_impl = min(1.0, impl_diversity / 0.2)
+    C_height = max(0.0, min(1.0, height_spread))
 
     w_issue, w_pr, w_impl, w_height = 0.35, 0.15, 0.30, 0.20
     s = w_issue + w_pr + w_impl + w_height
@@ -311,14 +269,14 @@ def compute_J_tech_from_csv(
     }
 
 
-def compute_J_soc_from_csv(
-    w_custody: float = 0.5,
-    w_gov: float = 0.5,
-) -> Tuple[float, Dict[str, float]]:
-    p_cust = read_custody_snapshot()
+def compute_J_soc_from_csv() -> Tuple[float, Dict[str, float]]:
+    """
+    J_soc 100% real, dar doar pe componenta de guvernanță (C_gov).
+    Componenta de custody lipsește deocamdată (nu avem sursă free/automatizabilă).
+    """
     gov = read_governance_snapshot()
 
-    C_custody = compute_C_custody_real(p_cust)
+    C_custody = 0.0   # încă nemăsurat automat
     C_gov = compute_C_gov_real(
         issues_governance=gov["issues_governance"],
         prs_open=gov["prs_open"],
@@ -326,13 +284,8 @@ def compute_J_soc_from_csv(
         height_spread=gov["height_spread"],
     )
 
-    s = w_custody + w_gov
-    w_custody /= s
-    w_gov /= s
-
-    J_soc = w_custody * C_custody + w_gov * C_gov
-    J_soc = max(0.0, min(1.0, J_soc))
-    print(f"[INFO] J_soc(real) = {J_soc:.3f} (C_custody={C_custody:.3f}, C_gov={C_gov:.3f})")
+    J_soc = C_gov   # w_gov = 1, w_custody = 0
+    print(f"[INFO] J_soc(real, gov-only) = {J_soc:.3f} (C_gov={C_gov:.3f})")
 
     return J_soc, {
         "C_custody": C_custody,
