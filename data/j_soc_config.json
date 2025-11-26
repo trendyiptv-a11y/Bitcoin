@@ -1,0 +1,8 @@
+{
+  "p_cust": 0.12,
+  "events_E": 2,
+  "D_impl": 0.1,
+  "w_custody": 0.5,
+  "w_gov": 0.5,
+  "alpha": 0.5
+}
