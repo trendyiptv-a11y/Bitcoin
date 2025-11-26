@@ -2,16 +2,21 @@ name: Fetch J_BTC data
 
 on:
   schedule:
-    - cron: "0 5 * * *"   # zilnic la 05:00 UTC
-  workflow_dispatch:
+    - cron: "0 5 * * *"   # opțional: zilnic la 05:00 UTC
+  workflow_dispatch:       # ca să îl poți porni manual
+
+permissions:
+  contents: write          # IMPORTANT: permite commit/push
 
 jobs:
   fetch-data:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout repo
         uses: actions/checkout@v4
+        with:
+          persist-credentials: true
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -28,3 +33,18 @@ jobs:
         run: |
           source .venv/bin/activate
           python fetch_all_data.py
+
+      - name: Commit data changes
+        run: |
+          git config user.name "actions-user"
+          git config user.email "actions@github.com"
+
+          git add data
+
+          # dacă nu sunt schimbări, nu dăm fail job-ului
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Update J_BTC data [skip ci]"
+            git push
+          fi
