@@ -29,12 +29,26 @@ jobs:
           source .venv/bin/activate
           pip install -r requirements.txt
 
-      - name: Run fetch_all_data
+      - name: Run fetch_all_data (tech metrics)
         run: |
           source .venv/bin/activate
           python fetch_all_data.py
 
-      - name: Compute J_BTC from CSV
+      - name: Fetch custody data (C_custody real)
+        env:
+          GLASSNODE_API_KEY: ${{ secrets.GLASSNODE_API_KEY }}
+        run: |
+          source .venv/bin/activate
+          python fetch_custody.py
+
+      - name: Fetch governance data (C_gov real)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          source .venv/bin/activate
+          python fetch_governance.py
+
+      - name: Compute J_BTC from CSV (J_tech + J_soc + J_tot)
         run: |
           source .venv/bin/activate
           python compute_J_from_csv.py
