@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-    contents: write
+  contents: write
 
 jobs:
   build:
@@ -25,12 +25,22 @@ jobs:
 
       - name: Run Cohesiv Pipeline
         run: |
-           python fetch_btc_daily.py
-           python run_cohesiv_pipeline.py
+          python fetch_btc_daily.py
+          python run_cohesiv_pipeline.py
+
       - name: Commit updated JSON
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "actions@github.com"
+
+          # aduce ultimele schimbări de pe remote
+          git pull --rebase origin main || true
+
+          # adaugă doar datele generate
           git add data/*.json data/*.csv || true
-          git commit -m "Auto-update data" || true
-          git push
+
+          # dacă nu sunt schimbări, nu e problemă
+          git commit -m "Auto-update data" || echo "Nothing to commit"
+
+          # dacă push-ul e blocat (de ex. alt run în paralel), nu dărâmă jobul
+          git push origin main || echo "Push failed (will retry on next run)"
