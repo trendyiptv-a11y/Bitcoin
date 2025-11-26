@@ -4,32 +4,27 @@ compute_J_from_csv.py
 
 Calculează invariantul structural J_BTC plecând de la CSV-urile din `data/`:
 
+Tehnic (J_tech – date reale):
 - mining_pools.csv      -> C_hash
 - nodes_bitnodes.csv    -> C_nodes
 - mempool_snapshot.csv  -> C_mempool
-- j_soc_config.json     -> C_custody, C_gov (opțional)
+
+Social (J_soc – date reale):
+- custody_snapshot.csv      -> p_cust real (BTC pe exchange-uri / supply)
+- governance_snapshot.csv   -> issues de consens + divergență implementări
 
 Output:
 - data/j_btc_latest.json  (snapshot complet)
 - data/j_btc_series.csv   (istoric J_BTC în timp)
-
-Model:
-- J_tech = w_hash*C_hash + w_nodes*C_nodes + w_mempool*C_mempool
-- J_soc  = w_custody*C_custody + w_gov*C_gov
-- J_tot  = alpha*J_tech + (1-alpha)*J_soc
-
-Valorile sunt în [0,1].
 """
 
 from __future__ import annotations
 
 import csv
 import json
-import os
 from pathlib import Path
-from typing import Dict, List, Tuple, Optional
+from typing import Dict, List, Tuple
 from datetime import datetime
-
 
 ROOT = Path(__file__).resolve().parent
 DATA_DIR = ROOT / "data"
@@ -37,7 +32,8 @@ DATA_DIR = ROOT / "data"
 MINING_CSV = DATA_DIR / "mining_pools.csv"
 NODES_CSV = DATA_DIR / "nodes_bitnodes.csv"
 MEMPOOL_CSV = DATA_DIR / "mempool_snapshot.csv"
-J_SOC_CONFIG = DATA_DIR / "j_soc_config.json"
+CUSTODY_CSV = DATA_DIR / "custody_snapshot.csv"
+GOV_CSV = DATA_DIR / "governance_snapshot.csv"
 
 J_LATEST_JSON = DATA_DIR / "j_btc_latest.json"
 J_SERIES_CSV = DATA_DIR / "j_btc_series.csv"
@@ -97,7 +93,6 @@ def compute_C_hash_from_csv(path: Path = MINING_CSV) -> float:
     counts: Dict[str, float] = {}
     for row in rows:
         name = row.get("poolName") or row.get("name") or "unknown"
-        # încercăm mai multe nume posibile pentru coloană
         bc_raw = (
             row.get("blockCount")
             or row.get("blocks")
@@ -131,7 +126,7 @@ def compute_C_nodes_from_csv(
     """
     Folosește nodes_bitnodes.csv generat din Bitnodes snapshot.
 
-    Așteptăm cel puțin coloanele:
+    Așteptăm cel puțin coloana:
       - country
     """
     rows = read_csv_rows(path)
@@ -201,55 +196,51 @@ def compute_C_mempool_from_csv(
 
 
 # ------------------------
-# C_custody / C_gov din j_soc_config.json
+# C_custody / C_gov din CSV-uri reale
 # ------------------------
 
-def load_j_soc_config(path: Path = J_SOC_CONFIG) -> Dict[str, float]:
-    """
-    j_soc_config.json – fișier mic cu parametri sociali.
-
-    Structură recomandată:
-
-    {
-      "p_cust": 0.12,
-      "events_E": 2,
-      "D_impl": 0.1,
-      "w_custody": 0.5,
-      "w_gov": 0.5,
-      "alpha": 0.5
-    }
-
-    Dacă nu există, folosim valori default foarte conservatoare.
-    """
+def read_custody_snapshot(path: Path = CUSTODY_CSV) -> float:
     if not path.exists():
-        print(f"[WARN] {path} nu există – folosim valori default pentru J_soc.")
+        print(f"[WARN] {path} lipsește – C_custody=0.")
+        return 0.0
+    rows = read_csv_rows(path)
+    if not rows:
+        return 0.0
+    row = rows[-1]
+    try:
+        return float(row.get("p_cust", 0.0) or 0.0)
+    except ValueError:
+        return 0.0
+
+
+def read_governance_snapshot(path: Path = GOV_CSV) -> Dict[str, float]:
+    if not path.exists():
+        print(f"[WARN] {path} lipsește – C_gov=0.")
         return {
-            "p_cust": 0.12,
-            "events_E": 2,
-            "D_impl": 0.1,
-            "w_custody": 0.5,
-            "w_gov": 0.5,
-            "alpha": 0.5,
+            "issues_governance": 0.0,
+            "prs_open": 0.0,
+            "impl_diversity": 0.0,
+            "height_spread": 0.0,
         }
+    rows = read_csv_rows(path)
+    if not rows:
+        return {
+            "issues_governance": 0.0,
+            "prs_open": 0.0,
+            "impl_diversity": 0.0,
+            "height_spread": 0.0,
+        }
+    row = rows[-1]
+    out: Dict[str, float] = {}
+    for key in ["issues_governance", "prs_open", "impl_diversity", "height_spread"]:
+        try:
+            out[key] = float(row.get(key, 0.0) or 0.0)
+        except ValueError:
+            out[key] = 0.0
+    return out
 
-    with path.open("r", encoding="utf-8") as f:
-        data = json.load(f)
 
-    # completăm lipsurile cu default-uri
-    defaults = {
-        "p_cust": 0.12,
-        "events_E": 2,
-        "D_impl": 0.1,
-        "w_custody": 0.5,
-        "w_gov": 0.5,
-        "alpha": 0.5,
-    }
-    for k, v in defaults.items():
-        data.setdefault(k, v)
-    return data
-
-
-def compute_C_custody(p_cust: float, p_min: float = 0.10, p_max: float = 0.60) -> float:
+def compute_C_custody_real(p_cust: float, p_min: float = 0.10, p_max: float = 0.60) -> float:
     if p_cust <= p_min:
         return 0.0
     if p_cust >= p_max:
@@ -257,23 +248,46 @@ def compute_C_custody(p_cust: float, p_min: float = 0.10, p_max: float = 0.60) -
     return (p_cust - p_min) / (p_max - p_min)
 
 
-def compute_C_gov(events_E: int, E_max: int = 10, D_impl: float = 0.0, gamma: float = 0.5) -> float:
-    C_events = min(1.0, events_E / float(E_max))
-    C_div = max(0.0, min(1.0, D_impl))
-    C_g = gamma * C_events + (1.0 - gamma) * C_div
+def compute_C_gov_real(
+    issues_governance: float,
+    prs_open: float,
+    impl_diversity: float,
+    height_spread: float,
+) -> float:
+    """
+    Construim un scor C_gov în [0,1] din patru componente:
+
+    - issues_governance: câte issues sensibile sunt deschise
+    - prs_open: câte PR-uri sunt deschise
+    - impl_diversity: câte implementări distincte / nod
+    - height_spread: cât de mult diferă înălțimile blocurilor
+    """
+    C_issue = min(1.0, issues_governance / 50.0)   # 50+ issues sensibile = 1
+    C_pr = min(1.0, prs_open / 500.0)              # 500+ PR-uri = 1
+    C_impl = min(1.0, impl_diversity / 0.2)        # divergență mare peste 0.2
+    C_height = max(0.0, min(1.0, height_spread))   # deja 0-1
+
+    w_issue, w_pr, w_impl, w_height = 0.35, 0.15, 0.30, 0.20
+    s = w_issue + w_pr + w_impl + w_height
+    w_issue /= s
+    w_pr /= s
+    w_impl /= s
+    w_height /= s
+
+    C_g = (
+        w_issue * C_issue +
+        w_pr * C_pr +
+        w_impl * C_impl +
+        w_height * C_height
+    )
     return max(0.0, min(1.0, C_g))
 
-
-# ------------------------
-# J_tech, J_soc, J_tot
-# ------------------------
 
 def compute_J_tech_from_csv(
     w_hash: float = 0.4,
     w_nodes: float = 0.3,
     w_mempool: float = 0.3,
 ) -> Tuple[float, Dict[str, float]]:
-    # normalizăm ponderile
     s = w_hash + w_nodes + w_mempool
     w_hash /= s
     w_nodes /= s
@@ -297,23 +311,28 @@ def compute_J_tech_from_csv(
     }
 
 
-def compute_J_soc_from_config(cfg: Dict[str, float]) -> Tuple[float, Dict[str, float]]:
-    p_cust = float(cfg["p_cust"])
-    events_E = int(cfg["events_E"])
-    D_impl = float(cfg["D_impl"])
-    w_custody = float(cfg["w_custody"])
-    w_gov = float(cfg["w_gov"])
+def compute_J_soc_from_csv(
+    w_custody: float = 0.5,
+    w_gov: float = 0.5,
+) -> Tuple[float, Dict[str, float]]:
+    p_cust = read_custody_snapshot()
+    gov = read_governance_snapshot()
+
+    C_custody = compute_C_custody_real(p_cust)
+    C_gov = compute_C_gov_real(
+        issues_governance=gov["issues_governance"],
+        prs_open=gov["prs_open"],
+        impl_diversity=gov["impl_diversity"],
+        height_spread=gov["height_spread"],
+    )
 
     s = w_custody + w_gov
     w_custody /= s
     w_gov /= s
 
-    C_custody = compute_C_custody(p_cust)
-    C_gov = compute_C_gov(events_E, D_impl=D_impl)
-
     J_soc = w_custody * C_custody + w_gov * C_gov
     J_soc = max(0.0, min(1.0, J_soc))
-    print(f"[INFO] J_soc = {J_soc:.3f} (C_custody={C_custody:.3f}, C_gov={C_gov:.3f})")
+    print(f"[INFO] J_soc(real) = {J_soc:.3f} (C_custody={C_custody:.3f}, C_gov={C_gov:.3f})")
 
     return J_soc, {
         "C_custody": C_custody,
@@ -322,16 +341,15 @@ def compute_J_soc_from_config(cfg: Dict[str, float]) -> Tuple[float, Dict[str, f
 
 
 def compute_J_tot_from_csv() -> Dict[str, float]:
-    cfg = load_j_soc_config()
-    alpha = float(cfg.get("alpha", 0.5))
+    alpha = 0.5  # cât contează J_tech vs J_soc în J_tot
 
     J_tech, d_tech = compute_J_tech_from_csv()
-    J_soc, d_soc = compute_J_soc_from_config(cfg)
+    J_soc, d_soc = compute_J_soc_from_csv()
 
     J_tot = alpha * J_tech + (1.0 - alpha) * J_soc
     J_tot = max(0.0, min(1.0, J_tot))
 
-    snapshot = {
+    snapshot: Dict[str, float] = {
         "timestamp_utc": datetime.utcnow().isoformat(timespec="seconds") + "Z",
         "J_tot": J_tot,
         "J_tech": J_tech,
@@ -359,7 +377,6 @@ def write_latest_json(snapshot: Dict[str, float], path: Path = J_LATEST_JSON) ->
 def append_series_row(snapshot: Dict[str, float], path: Path = J_SERIES_CSV) -> None:
     path.parent.mkdir(exist_ok=True)
 
-    # definim coloanele în ordinea asta:
     fieldnames = [
         "timestamp_utc",
         "J_tot",
