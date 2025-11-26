@@ -34,6 +34,11 @@ jobs:
           source .venv/bin/activate
           python fetch_all_data.py
 
+      - name: Compute J_BTC from CSV
+        run: |
+          source .venv/bin/activate
+          python compute_J_from_csv.py
+
       - name: Commit data changes
         run: |
           git config user.name "actions-user"
