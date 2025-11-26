@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <title>J_BTC – Profil structural Bitcoin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Chart.js pentru grafice -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    :root {
+      --bg: #050914;
+      --bg-card: #0f172a;
+      --bg-card-soft: #020617;
+      --accent: #38bdf8;
+      --accent-soft: rgba(56, 189, 248, 0.15);
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --danger: #f97373;
+      --warning: #facc15;
+      --ok: #4ade80;
+      --border-subtle: #1f2937;
+      --radius-xl: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+        "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #0b1120 0, #020617 40%, #000 100%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px 16px 40px;
+    }
+
+    header {
+      margin-bottom: 24px;
+    }
+
+    .title {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .pill {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+    }
+
+    .subtitle {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 14px;
+      max-width: 640px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .card {
+      background: linear-gradient(135deg, var(--bg-card), var(--bg-card-soft));
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--border-subtle);
+      padding: 14px 16px 14px;
+      box-shadow: 0 18px 35px rgba(0, 0, 0, 0.65);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top right,
+              rgba(56, 189, 248, 0.25),
+              transparent 55%);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease-out;
+    }
+
+    .card:hover::before {
+      opacity: 1;
+    }
+
+    .card-title {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .card-value {
+      font-size: 26px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: baseline;
+      gap: 4px;
+    }
+
+    .card-value span.unit {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+    }
+
+    .card-desc {
+      margin-top: 6px;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    .badge-level {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      border: 1px solid transparent;
+      margin-left: 6px;
+    }
+
+    .level-low {
+      color: var(--ok);
+      border-color: rgba(74, 222, 128, 0.4);
+      background: rgba(22, 163, 74, 0.08);
+    }
+    .level-medium {
+      color: var(--warning);
+      border-color: rgba(250, 204, 21, 0.4);
+      background: rgba(161, 98, 7, 0.12);
+    }
+    .level-high {
+      color: var(--danger);
+      border-color: rgba(248, 113, 113, 0.4);
+      background: rgba(185, 28, 28, 0.14);
+    }
+
+    .section {
+      margin-top: 22px;
+    }
+
+    .section-title {
+      font-size: 15px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .box {
+      background: linear-gradient(135deg, #020617, #020617);
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--border-subtle);
+      padding: 12px 14px 14px;
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.7);
+    }
+
+    #chart-container {
+      position: relative;
+      width: 100%;
+      height: 320px;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+      font-size: 12px;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--muted);
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: #38bdf8;
+    }
+
+    .legend-dot.tech {
+      background: #a855f7;
+    }
+
+    .legend-dot.soc {
+      background: #f97316;
+    }
+
+    footer {
+      margin-top: 26px;
+      font-size: 11px;
+      color: var(--muted);
+      border-top: 1px solid rgba(31, 41, 55, 0.7);
+      padding-top: 10px;
+      line-height: 1.5;
+    }
+
+    code {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo,
+        Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 11px;
+      background: rgba(15, 23, 42, 0.9);
+      padding: 2px 5px;
+      border-radius: 5px;
+      border: 1px solid rgba(31, 41, 55, 0.9);
+    }
+
+    .muted-small {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .error {
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(248, 113, 113, 0.4);
+      background: rgba(127, 29, 29, 0.3);
+      color: #fecaca;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <div class="pill">Model coeziv – Bitcoin</div>
+    <div class="title">
+      J<sub>BTC</sub> · Profil structural al rețelei
+    </div>
+    <p class="subtitle">
+      Acest panou arată o estimare <strong>fenomenologică</strong> a tensiunii din rețeaua Bitcoin.
+      J<sub>tech</sub> rezumă partea tehnică (mineri, noduri, mempool),
+      iar J<sub>soc</sub> rezumă presiunea socială / instituțională (custodie, guvernanță).
+      Toate valorile sunt normalizate între 0 și 1.
+    </p>
+  </header>
+
+  <!-- CARDURI CU ULTIMELE VALORI -->
+  <section class="grid" id="cards">
+    <div class="card">
+      <div class="card-title">J<sub>tot</sub> · tensiune globală</div>
+      <div class="card-value" id="val-jtot">
+        -- <span class="unit">/ 1.0</span>
+      </div>
+      <p class="card-desc" id="desc-jtot">
+        Valoare agregată dintre tensiunea tehnică și cea socială (instituții,
+        custody, guvernanță). Aproape de 0 = sistem relaxat; aproape de 1 = regim critic.
+      </p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">J<sub>tech</sub> · tensiune tehnică</div>
+      <div class="card-value" id="val-jtech">
+        -- <span class="unit">/ 1.0</span>
+      </div>
+      <p class="card-desc">
+        Rezumă structura internă: distribuția minerilor (C_hash),
+        răspândirea nodurilor (C_nodes) și starea spațiului de bloc (C_mempool).
+      </p>
+      <p class="card-desc muted-small" id="detail-tech"></p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">J<sub>soc</sub> · tensiune socială</div>
+      <div class="card-value" id="val-jsoc">
+        -- <span class="unit">/ 1.0</span>
+      </div>
+      <p class="card-desc">
+        Derivă din <strong>C_custody</strong> (cât BTC e concentrat la custodi / exchange-uri)
+        și <strong>C_gov</strong> (câte conflicte de guvernanță există).
+      </p>
+      <p class="card-desc muted-small" id="detail-soc"></p>
+    </div>
+  </section>
+
+  <!-- GRAFIC SERIE TEMPORALĂ -->
+  <section class="section">
+    <div class="section-title">Evoluția lui J<sub>BTC</sub> în timp</div>
+    <div class="box">
+      <div id="chart-container">
+        <canvas id="jbtc-chart"></canvas>
+      </div>
+      <div class="legend">
+        <div class="legend-item">
+          <span class="legend-dot"></span> J<sub>tot</sub> – tensiune totală
+        </div>
+        <div class="legend-item">
+          <span class="legend-dot tech"></span> J<sub>tech</sub> – componenta tehnică
+        </div>
+        <div class="legend-item">
+          <span class="legend-dot soc"></span> J<sub>soc</sub> – componenta socială
+        </div>
+      </div>
+      <div id="chart-error" class="error" style="display:none;"></div>
+    </div>
+  </section>
+
+  <!-- EXPLICAȚII SCURTE -->
+  <section class="section">
+    <div class="section-title">Cum se citesc valorile</div>
+    <div class="box">
+      <ul style="margin: 0 0 4px 18px; padding: 0; font-size: 13px; color: var(--muted); line-height: 1.5;">
+        <li><strong>0.0 – 0.3</strong> · regim <strong>relaxat</strong> (verde) – structură stabilă, fără presiune majoră.</li>
+        <li><strong>0.3 – 0.7</strong> · regim <strong>tensionat</strong> (galben) – se acumulează stres în sistem,
+          adaptările devin importante.</li>
+        <li><strong>0.7 – 1.0</strong> · regim <strong>critic</strong> (roșu) – e probabilă o reorganizare:
+          schimbări de reguli, mutări mari de capital, sau conflicte de guvernanță.</li>
+      </ul>
+      <p class="muted-small" style="margin-top: 8px;">
+        J<sub>BTC</sub> este un <strong>indicator conceptual</strong>, nu un sfat financiar.
+        El comprimă un profil structural complex într-o scală ușor de urmărit.
+      </p>
+    </div>
+  </section>
+
+  <footer>
+    Generat pe baza fișierelor <code>data/j_btc_latest.json</code> și
+    <code>data/j_btc_series.csv</code>.
+    <br/>
+    Dacă aceste fișiere lipsesc sau au alt format, dashboard-ul nu va putea afișa valorile.
+  </footer>
+</div>
+
+<script>
+  // ---------- helper: level badge în funcție de valoare ----------
+  function levelBadge(value) {
+    if (value === null || isNaN(value)) return "";
+    let cls = "level-low";
+    let txt = "scăzută";
+    if (value >= 0.7) {
+      cls = "level-high";
+      txt = "critic";
+    } else if (value >= 0.3) {
+      cls = "level-medium";
+      txt = "tensionată";
+    }
+    return `<span class="badge-level ${cls}">${txt}</span>`;
+  }
+
+  // ---------- încarcă snapshotul curent ----------
+  async function loadLatestSnapshot() {
+    try {
+      const res = await fetch("data/j_btc_latest.json");
+      if (!res.ok) throw new Error("Nu pot citi j_btc_latest.json");
+      const data = await res.json();
+
+      const jtot = Number(data.J_tot ?? data.J_tot);
+      const jtech = Number(data.J_tech ?? data.J_tech);
+      const jsoc = Number(data.J_soc ?? data.J_soc);
+
+      const tech_C_hash = Number(data.tech_C_hash ?? data.tech_C_hash);
+      const tech_C_nodes = Number(data.tech_C_nodes ?? data.tech_C_nodes);
+      const tech_C_mempool = Number(data.tech_C_mempool ?? data.tech_C_mempool);
+      const soc_C_custody = Number(data.soc_C_custody ?? data.soc_C_custody);
+      const soc_C_gov = Number(data.soc_C_gov ?? data.soc_C_gov);
+
+      const elJtot = document.getElementById("val-jtot");
+      const elJtech = document.getElementById("val-jtech");
+      const elJsoc = document.getElementById("val-jsoc");
+      const detTech = document.getElementById("detail-tech");
+      const detSoc = document.getElementById("detail-soc");
+
+      if (elJtot) {
+        elJtot.innerHTML = `${jtot.toFixed(3)} <span class="unit">/ 1.0</span> ${levelBadge(jtot)}`;
+      }
+      if (elJtech) {
+        elJtech.innerHTML = `${jtech.toFixed(3)} <span class="unit">/ 1.0</span> ${levelBadge(jtech)}`;
+      }
+      if (elJsoc) {
+        elJsoc.innerHTML = `${jsoc.toFixed(3)} <span class="unit">/ 1.0</span> ${levelBadge(jsoc)}`;
+      }
+
+      if (detTech) {
+        detTech.textContent =
+          `C_hash=${tech_C_hash.toFixed(3)}, C_nodes=${tech_C_nodes.toFixed(3)}, `
+          + `C_mempool=${tech_C_mempool.toFixed(3)}.`;
+      }
+      if (detSoc) {
+        detSoc.textContent =
+          `C_custody=${soc_C_custody.toFixed(3)}, C_gov=${soc_C_gov.toFixed(3)} `
+          + `(conform fișierului j_soc_config.json).`;
+      }
+    } catch (err) {
+      console.error(err);
+      const el = document.getElementById("cards");
+      const msg = document.createElement("div");
+      msg.className = "error";
+      msg.textContent = "Nu am putut încărca j_btc_latest.json. Asigură-te că scriptul compute_J_from_csv.py a rulat și a generat fișierul.";
+      el.appendChild(msg);
+    }
+  }
+
+  // ---------- încarcă seria J_BTC ----------
+  function parseCsv(text) {
+    const lines = text.trim().split(/\r?\n/);
+    if (lines.length < 2) return [];
+    const headers = lines[0].split(",");
+    return lines.slice(1).map(line => {
+      const cols = line.split(",");
+      const row = {};
+      headers.forEach((h, i) => {
+        row[h.trim()] = (cols[i] ?? "").trim();
+      });
+      return row;
+    });
+  }
+
+  async function loadSeriesAndDrawChart() {
+    const errorBox = document.getElementById("chart-error");
+    try {
+      const res = await fetch("data/j_btc_series.csv");
+      if (!res.ok) {
+        throw new Error("Nu pot citi j_btc_series.csv");
+      }
+      const text = await res.text();
+      const rows = parseCsv(text);
+      if (!rows.length) throw new Error("Fișierul j_btc_series.csv este gol.");
+
+      const labels = [];
+      const jtot = [];
+      const jtech = [];
+      const jsoc = [];
+
+      rows.forEach(row => {
+        labels.push(row.timestamp_utc || "");
+        jtot.push(Number(row.J_tot || 0));
+        jtech.push(Number(row.J_tech || 0));
+        jsoc.push(Number(row.J_soc || 0));
+      });
+
+      const ctx = document.getElementById("jbtc-chart");
+      if (!ctx) return;
+
+      new Chart(ctx.getContext("2d"), {
+        type: "line",
+        data: {
+          labels,
+          datasets: [
+            {
+              label: "J_tot",
+              data: jtot,
+              borderWidth: 2,
+              tension: 0.25,
+              fill: false
+            },
+            {
+              label: "J_tech",
+              data: jtech,
+              borderWidth: 1.8,
+              borderDash: [4, 4],
+              tension: 0.25,
+              fill: false
+            },
+            {
+              label: "J_soc",
+              data: jsoc,
+              borderWidth: 1.8,
+              borderDash: [2, 3],
+              tension: 0.25,
+              fill: false
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              callbacks: {
+                label: function(ctx) {
+                  return `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(3)}`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              ticks: {
+                maxRotation: 45,
+                minRotation: 0,
+                color: "#9ca3af",
+                autoSkip: true,
+                maxTicksLimit: 6
+              },
+              grid: {
+                display: false
+              }
+            },
+            y: {
+              suggestedMin: 0,
+              suggestedMax: 1,
+              ticks: {
+                stepSize: 0.1,
+                color: "#9ca3af"
+              },
+              grid: {
+                color: "rgba(55,65,81,0.4)"
+              }
+            }
+          }
+        }
+      });
+    } catch (err) {
+      console.error(err);
+      if (errorBox) {
+        errorBox.style.display = "block";
+        errorBox.textContent =
+          "Nu am putut încărca seria istorică (j_btc_series.csv). "
+          + "Asigură-te că scriptul compute_J_from_csv.py a rulat măcar o dată.";
+      }
+    }
+  }
+
+  // ---------- init ----------
+  (function init() {
+    loadLatestSnapshot();
+    loadSeriesAndDrawChart();
+  })();
+</script>
+</body>
+</html>
