@@ -34,13 +34,6 @@ jobs:
           source .venv/bin/activate
           python fetch_all_data.py
 
-      - name: Fetch custody data (C_custody real)
-        env:
-          GLASSNODE_API_KEY: ${{ secrets.GLASSNODE_API_KEY }}
-        run: |
-          source .venv/bin/activate
-          python fetch_custody.py
-
       - name: Fetch governance data (C_gov real)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -60,10 +53,9 @@ jobs:
 
           git add data
 
-          # dacă nu sunt schimbări, nu dăm fail job-ului
           if git diff --cached --quiet; then
             echo "No changes to commit"
-          else
+          else:
             git commit -m "Update J_BTC data [skip ci]"
             git push
           fi
