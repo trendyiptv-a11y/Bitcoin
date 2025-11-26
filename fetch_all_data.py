@@ -5,16 +5,14 @@ fetch_all_data.py
 Script pentru a descărca automat dataset-urile relevante pentru J_BTC
 și a le salva în CSV-uri în directorul `data/`.
 
-Ce descarcă:
-- mining_pools.csv      (mempool.space / mining hashrate per pool)
+Ce descarcă acum:
+- mining_pools.csv      (mempool.space /api/v1/mining/pools – distribuție blocuri pe pool-uri)
 - nodes_bitnodes.csv    (Bitnodes snapshot - noduri + țări + versiune)
 - mempool_snapshot.csv  (mempool.space /api/mempool + /fees/recommended)
-- mempool_demand.csv    (Figshare "Demand CSV from Bitcoin mempool")
-- mempool_supply.csv    (Figshare "Supply CSV from Bitcoin mempool")
 
-NOTE:
-- Custody (C_custody) și Governance (C_gov) nu au surse publice simple CSV;
-  scriptul doar lasă hooks / TODO-uri în acest moment.
+Ce rămâne ca TODO:
+- mempool_demand.csv / mempool_supply.csv de la Figshare (trebuie actualizate manual ID-urile)
+- Custody (C_custody) și Governance (C_gov) – necesită surse cu API key sau construire manuală.
 """
 
 import os
@@ -22,7 +20,7 @@ import csv
 import json
 import sys
 from pathlib import Path
-from typing import Dict, Any
+from typing import Any
 import requests
 
 
@@ -51,30 +49,36 @@ def safe_get(url: str, timeout: int = 20) -> Any:
 # 1) Mining pools (C_hash)
 # -------------------------
 
-def fetch_mining_pools(time_period: str = "1m") -> None:
+def fetch_mining_pools() -> None:
     """
-    Folosește mempool.space REST API pentru a lua hashrate pe pool-uri:
-    GET /api/v1/mining/hashrate/pools/:timePeriod
+    Fallback stabil pentru mining pools:
+    folosim /api/v1/mining/pools (nu /hashrate/pools/1m, care poate fi instabil
+    sau filtrat de Cloudflare în GitHub Actions).
 
-    Docs: https://mempool.space/docs/api/rest
-    timePeriod: '1m', '3m', '6m', '1y', '2y', '3y'
+    Endpoint-ul întoarce o listă de pool-uri cu număr de blocuri minate
+    într-o fereastră recentă. Din blockCount poți deriva share-ul fiecărui pool.
     """
-    url = f"https://mempool.space/api/v1/mining/hashrate/pools/{time_period}"
+    url = "https://mempool.space/api/v1/mining/pools"
     r = safe_get(url, timeout=20)
     if r is None:
         return
 
-    data = r.json()  # listă de obiecte
-
-    out_path = DATA_DIR / f"mining_pools_{time_period}.csv"
-    if not data:
-        print(f"[WARN] No data returned for mining pools. Skipping {out_path}")
+    try:
+        data = r.json()  # listă de obiecte
+    except ValueError:
+        print("[ERROR] Response from mining/pools is not valid JSON.", file=sys.stderr)
         return
 
-    # extragem cheile comune
+    if not data:
+        print("[WARN] No data returned for mining pools. (fallback)")
+        return
+
+    out_path = DATA_DIR / "mining_pools.csv"
+    print(f"[INFO] Writing mining pools CSV -> {out_path}")
+
+    # câmpuri comune (poolId, poolName, blockCount, etc.)
     fieldnames = sorted({k for item in data for k in item.keys()})
 
-    print(f"[INFO] Writing mining pools CSV -> {out_path}")
     with out_path.open("w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
@@ -98,14 +102,18 @@ def fetch_bitnodes_snapshot() -> None:
     if r is None:
         return
 
-    data = r.json()
+    try:
+        data = r.json()
+    except ValueError:
+        print("[ERROR] Bitnodes snapshot is not valid JSON.", file=sys.stderr)
+        return
+
     nodes = data.get("nodes", {})
 
     out_path = DATA_DIR / "nodes_bitnodes.csv"
     print(f"[INFO] Writing Bitnodes snapshot -> {out_path}")
 
-    # Structura tipică: "ip:port": [timestamp, user_agent, height, ... country]
-    # Dar poate varia; tratăm generic.
+    # Structură tipică: "ip:port": [timestamp, user_agent, height, ... country]
     # Vom salva:
     # ip, port, timestamp, user_agent, height, country, raw
     fieldnames = [
@@ -133,7 +141,6 @@ def fetch_bitnodes_snapshot() -> None:
             ts = info[0] if len(info) > 0 else None
             ua = info[1] if len(info) > 1 else None
             height = info[2] if len(info) > 2 else None
-            # țara e adesea la index 7, dar nu mereu
             country = info[7] if len(info) > 7 else None
 
             writer.writerow({
@@ -169,8 +176,12 @@ def fetch_mempool_snapshot() -> None:
         print("[ERROR] Could not fetch mempool or fee data.")
         return
 
-    mem = r_mem.json()       # { count, vsize, total_fee }
-    fees = r_fee.json()      # { fastestFee, halfHourFee, hourFee, economyFee, minimumFee }
+    try:
+        mem = r_mem.json()       # { count, vsize, total_fee }
+        fees = r_fee.json()      # { fastestFee, halfHourFee, hourFee, economyFee, minimumFee }
+    except ValueError:
+        print("[ERROR] Mempool or fees response is not valid JSON.", file=sys.stderr)
+        return
 
     out_path = DATA_DIR / "mempool_snapshot.csv"
     print(f"[INFO] Writing mempool snapshot -> {out_path}")
@@ -190,24 +201,18 @@ def fetch_mempool_snapshot() -> None:
 
 
 # -------------------------
-# 4) Mempool Demand/Supply CSV (Figshare)
+# 4) Mempool Figshare (TODO)
 # -------------------------
 
 def download_figshare_file(figshare_file_id: str, out_filename: str) -> None:
     """
     Unele dataset-uri Figshare oferă direct 'ndownloader/files/<id>'.
 
-    Exemplu (din articol):
-    Demand CSV from Bitcoin mempool:
-      https://figshare.com/articles/dataset/Demand_CSV_from_Bitcoin_mempool/24183288
-    Are un fișier intern (id numeric) accesibil la:
+    Exemplu generic:
       https://figshare.com/ndownloader/files/<file_id>
 
-    Aici presupunem că știi file_id-ul. Pentru dataset-urile din articol:
-    - Demand CSV: file id verificat în pagina Figshare.
-    - Supply CSV: la fel.
-
-    Dacă se schimbă, trebuie actualizate ID-urile.
+    NOTĂ: file_id NU este același cu ID-ul dataset-ului.
+    Trebuie copiat manual din linkul de download al fișierului.
     """
     url = f"https://figshare.com/ndownloader/files/{figshare_file_id}"
     r = safe_get(url, timeout=60)
@@ -222,34 +227,24 @@ def download_figshare_file(figshare_file_id: str, out_filename: str) -> None:
 
 def fetch_mempool_figshare() -> None:
     """
-    Descărcăm:
+    Placeholder pentru:
     - Demand CSV from Bitcoin mempool
     - Supply CSV from Bitcoin mempool
 
-    NOTĂ: ID-urile fișierelor sunt luate din pagina Figshare
-    ('Download' -> 'Direct link').
-    Acestea pot fi actualizate dacă autorul schimbă fișierele.
+    Pentru a le activa:
+
+    1. Deschizi în browser paginile dataset-urilor Figshare.
+    2. Apeși "Download" și copiezi linkul direct (care conține /files/<ID>).
+    3. Actualizezi variablele demand_file_id / supply_file_id de mai jos.
+    4. Decomentezi apelurile la download_figshare_file(...).
+
+    Până atunci, funcția doar afișează un WARNING.
     """
-    # ID-urile din exemplul actual (pot fi diferite în timp; verifică pe figshare dacă apar erori)
-    demand_file_id = "24183288"  # <- aici e ID dataset, dar pentru fișier e un alt ID numeric; vezi notă mai jos
-    supply_file_id = "24190272"  # idem
-
-    # Observație importantă:
-    # De obicei, linkul direct de download are forma:
-    #   https://figshare.com/ndownloader/files/<some_big_numeric_id>
-    # iar acel ID NU este identic cu ID-ul dataset-ului.
-    #
-    # Așadar, cel mai robust mod este:
-    # 1. Intri în paginile:
-    #    - Demand: https://figshare.com/articles/dataset/Demand_CSV_from_Bitcoin_mempool/24183288
-    #    - Supply: https://figshare.com/articles/dataset/Supply_CSV_from_Bitcoin_mempool/24190272
-    # 2. Apeși "Download" și copiezi linkul direct (de forma /files/XXXXXXXX).
-    # 3. Înlocuiești mai jos valorile cu ID-urile corecte.
-
-    print("[WARN] ID-urile din fetch_mempool_figshare sunt placeholders.")
-    print("       Verifică în browser linkurile directe de download și actualizează ID-urile dacă e nevoie.")
-
-    # dacă vrei să le dezactivezi până actualizezi, comentează liniile de mai jos:
+    print("[WARN] fetch_mempool_figshare: ID-urile fișierelor sunt placeholders.")
+    print("       Verifică în browser linkurile directe de download și actualizează file_id-urile.")
+    # Exemplu după ce ai ID-uri:
+    # demand_file_id = "12345678"
+    # supply_file_id = "12345679"
     # download_figshare_file(demand_file_id, "mempool_demand.csv")
     # download_figshare_file(supply_file_id, "mempool_supply.csv")
 
@@ -258,10 +253,18 @@ def fetch_mempool_figshare() -> None:
 # 5) Hooks pentru custody / governance
 # -------------------------
 
-def note_custody_governance():
+def note_custody_governance() -> None:
     """
-    Aici doar printăm mesaje de TODO, ca să fie clar ce lipsește.
-    Custody & Governance nu au surse CSV publice simple la liber.
+    Custody (C_custody) și Governance (C_gov) nu sunt descărcate automat,
+    pentru că nu există surse CSV publice simple la liber.
+
+    În practică:
+    - pentru custody poți folosi Glassnode / CryptoQuant / Coinglass (API cu cheie),
+      și să salvezi tu CSV-urile în `data/custody_*.csv`.
+    - pentru governance poți construi un CSV din:
+      * repo-ul bitcoin/bips (lista BIP + status)
+      * lista de forks (Bitcoin Wiki)
+      * timeline blocksize wars, etc.
     """
     print("\n[INFO] Custody (C_custody) și Governance (C_gov) nu sunt descărcate automat.")
     print("       Pentru custody poți folosi, de exemplu, Glassnode / CryptoQuant / Coinglass (API cheie).")
@@ -275,22 +278,22 @@ def note_custody_governance():
 # MAIN
 # -------------------------
 
-def main():
+def main() -> None:
     print(f"[INFO] Data directory: {DATA_DIR}")
 
-    # 1) Mining pools
-    fetch_mining_pools(time_period="1m")
+    # 1) Mining pools (C_hash)
+    fetch_mining_pools()
 
-    # 2) Bitnodes snapshot
+    # 2) Bitnodes snapshot (C_nodes)
     fetch_bitnodes_snapshot()
 
-    # 3) Mempool snapshot
+    # 3) Mempool snapshot (C_mempool)
     fetch_mempool_snapshot()
 
-    # 4) Figshare mempool datasets (vezi notele despre ID-urile fișierelor)
+    # 4) Figshare mempool datasets (opțional, TODO)
     fetch_mempool_figshare()
 
-    # 5) Custody & Governance hooks
+    # 5) Custody & Governance hooks (doar info)
     note_custody_governance()
 
     print("[INFO] Done.")
