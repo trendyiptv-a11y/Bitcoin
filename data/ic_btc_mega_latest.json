@@ -1,12 +1,12 @@
 {
-  "date": "2025-11-27",
+  "date": "2025-11-28",
   "icc": 50.0,
-  "ic_struct": 38.73291466568157,
-  "ic_flux": 73.07898979043526,
-  "mega_score": 58.6,
+  "ic_struct": 40.29547553093259,
+  "ic_flux": 73.78223495702005,
+  "mega_score": 58.2,
   "mega_phase_code": "late_bull",
   "mega_phase_label": "Bull târziu / top structural posibil",
-  "structure_label": "Structură în răcire",
+  "structure_label": "Structură neutră",
   "direction_label": "Trend direcțional stabil",
   "subcycles_label": "Structură policentrică activă",
   "show_base_card": false
