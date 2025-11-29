@@ -1,6 +1,6 @@
 {
   "as_of": "2025-11-29",
-  "close": 90750.12,
+  "close": 90726.63,
   "ic_struct": 41.91,
   "ic_dir": 13.48,
   "vol30_ann_pct": 45.25,
@@ -20,7 +20,7 @@
       "color": "orange"
     },
     "volatility": {
-      "text": "Volatilitate relativă: scăzută (vol30 ~ 45.3%).",
+      "text": "Volatilitate relativă: scăzută (vol30 ~ 45.2%).",
       "color": "green"
     },
     "macro": {
