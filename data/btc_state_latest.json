@@ -1,9 +1,9 @@
 {
   "as_of": "2025-12-01",
-  "close": 85792.44,
+  "close": 85801.7,
   "ic_struct": 45.5,
   "ic_dir": 9.36,
-  "vol30_ann_pct": 47.36,
+  "vol30_ann_pct": 47.35,
   "vol30_index": 29.44,
   "regime_code": "bear_struct",
   "regime_label": "Bear structural",
@@ -20,7 +20,7 @@
       "color": "orange"
     },
     "volatility": {
-      "text": "Volatilitate relativă: scăzută (vol30 ~ 47.4%).",
+      "text": "Volatilitate relativă: scăzută (vol30 ~ 47.3%).",
       "color": "green"
     },
     "macro": {
