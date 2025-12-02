@@ -2,6 +2,7 @@
 <html lang="ro">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>BTC Swing Strategy – Dashboard</title>
   <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -14,12 +15,13 @@
       color: #e5e7eb;
     }
     header {
-      padding: 16px 24px;
+      padding: 12px 16px;
       border-bottom: 1px solid #1f2937;
       display: flex;
       justify-content: space-between;
       align-items: center;
       background: #020617;
+      gap: 8px;
     }
     header h1 {
       margin: 0;
@@ -31,22 +33,22 @@
       color: #9ca3af;
     }
     main {
-      padding: 16px 24px 32px;
+      padding: 16px 16px 24px;
     }
     .grid {
       display: grid;
       grid-template-columns: 1.4fr 1fr;
-      gap: 24px;
+      gap: 16px;
     }
     .card {
       background: #020617;
       border-radius: 16px;
-      padding: 16px;
+      padding: 12px;
       border: 1px solid #1f2937;
       box-shadow: 0 20px 25px -20px rgba(0,0,0,0.9);
     }
     .card h2 {
-      margin: 0 0 8px;
+      margin: 0 0 6px;
       font-size: 14px;
       font-weight: 500;
     }
@@ -57,30 +59,30 @@
     }
     .kpi-row {
       display: flex;
-      gap: 12px;
-      margin-bottom: 12px;
+      gap: 8px;
+      margin-bottom: 8px;
       flex-wrap: wrap;
     }
     .kpi {
-      padding: 6px 10px;
+      padding: 4px 8px;
       border-radius: 999px;
       background: #020617;
       border: 1px solid #1f2937;
-      font-size: 12px;
+      font-size: 11px;
       color: #e5e7eb;
     }
     .kpi span {
       color: #9ca3af;
-      margin-right: 6px;
+      margin-right: 4px;
     }
     #price-chart, #equity-chart {
       width: 100%;
-      height: 340px;
+      height: 360px;
     }
     #status {
-      font-size: 12px;
+      font-size: 11px;
       color: #9ca3af;
-      margin-top: 8px;
+      margin-top: 6px;
     }
     code {
       background: #020617;
@@ -89,9 +91,33 @@
       border: 1px solid #1f2937;
       font-size: 11px;
     }
-    @media (max-width: 900px) {
+
+    /* ✅ Responsive: pe ecrane mai mici, cardurile devin un singur coloană */
+    @media (max-width: 1024px) {
       .grid {
         grid-template-columns: 1fr;
+      }
+      main {
+        padding: 12px 12px 20px;
+      }
+      #price-chart, #equity-chart {
+        height: 320px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      header h1 {
+        font-size: 16px;
+      }
+      .card {
+        padding: 10px;
+      }
+      #price-chart, #equity-chart {
+        height: 280px;
       }
     }
   </style>
@@ -102,7 +128,7 @@
       <h1>BTC Swing Strategy</h1>
       <span>Preț BTC &amp; equity curve din CSV-uri locale</span>
     </div>
-    <div style="font-size:12px;color:#9ca3af;">
+    <div style="font-size:11px;color:#9ca3af;">
       View: <code>/btc-swing-strategy/index.html</code>
     </div>
   </header>
@@ -126,10 +152,8 @@
   </main>
 
   <script>
-    // ✔ path-uri aliniate cu structura actuală a repo-ului
-    // index.html este în /btc-swing-strategy
-    const PRICE_CSV = "../data/btc_daily.csv";  // fișierul tău original de preț
-    const EQUITY_CSV = "equity_curve.csv";      // generat de workflow în același folder
+    const PRICE_CSV = "../data/btc_daily.csv";
+    const EQUITY_CSV = "equity_curve.csv";
 
     async function loadCsv(path) {
       return new Promise((resolve, reject) => {
@@ -159,7 +183,6 @@
         .sort((a, b) => a.__date - b.__date);
     }
 
-    // ✔ folosim 'date' ca nume implicit pentru btc_daily.csv (așa cum e în fișier)
     function joinOnDate(priceRows, equityRows, priceDateKey = "date", equityDateKeyGuess = null) {
       if (!priceRows.length || !equityRows.length) return [];
 
@@ -266,7 +289,7 @@
         const joined = joinOnDate(priceRows, equityRows);
         if (!joined.length) {
           statusEl.textContent =
-            "Nu am reușit să aliniez datele. Verifică coloana 'date' în btc_daily.csv și 'date' / 'timestamp' în equity_curve.csv.";
+            "Nu am reușit să aliniez datele. Verifică coloana 'date' în btc_daily.csv și 'date'/'timestamp' în equity_curve.csv.";
           return;
         }
 
@@ -280,20 +303,37 @@
           `Zile: ${joined.length}, PNL total: ${kpis.pnl.toFixed(2)}%, ` +
           `maxDD: ${kpis.maxDd.toFixed(2)}%, CAGR: ${kpis.cagr.toFixed(2)}%.`;
 
-        Plotly.newPlot("price-chart", [{
-          x: dates,
-          y: prices,
-          type: "scatter",
-          mode: "lines",
-          name: "BTC Close"
-        }], {
+        const layoutPrice = {
           margin: { t: 24, r: 16, b: 32, l: 56 },
           yaxis: { type: "log", title: "BTC Close (log)" },
           xaxis: { title: "Timp" },
           paper_bgcolor: "#020617",
           plot_bgcolor: "#020617",
           font: { color: "#e5e7eb" }
-        });
+        };
+
+        const layoutEquity = {
+          margin: { t: 24, r: 16, b: 32, l: 56 },
+          yaxis: { title: "Equity (relativ)" },
+          xaxis: { title: "Timp" },
+          paper_bgcolor: "#020617",
+          plot_bgcolor: "#020617",
+          font: { color: "#e5e7eb" }
+        };
+
+        const config = {
+          responsive: true,
+          displaylogo: false,
+          modeBarButtonsToRemove: ["lasso2d", "select2d"]
+        };
+
+        Plotly.newPlot("price-chart", [{
+          x: dates,
+          y: prices,
+          type: "scatter",
+          mode: "lines",
+          name: "BTC Close"
+        }], layoutPrice, config);
 
         Plotly.newPlot("equity-chart", [{
           x: dates,
@@ -301,19 +341,18 @@
           type: "scatter",
           mode: "lines",
           name: "Equity"
-        }], {
-          margin: { t: 24, r: 16, b: 32, l: 56 },
-          yaxis: { title: "Equity (relativ)" },
-          xaxis: { title: "Timp" },
-          paper_bgcolor: "#020617",
-          plot_bgcolor: "#020617",
-          font: { color: "#e5e7eb" }
+        }], layoutEquity, config);
+
+        // asigurăm resize corect pe schimbarea dimensiunii
+        window.addEventListener("resize", () => {
+          Plotly.Plots.resize("price-chart");
+          Plotly.Plots.resize("equity-chart");
         });
 
       } catch (err) {
         console.error(err);
         statusEl.textContent =
-          "Eroare la încărcarea datelor. Verifică path-urile, existența fișierelor CSV și CORS (GitHub Pages).";
+          "Eroare la încărcarea datelor. Verifică path-urile, existența fișierelor CSV și CORS (dacă e hostuit extern).";
       }
     }
 
