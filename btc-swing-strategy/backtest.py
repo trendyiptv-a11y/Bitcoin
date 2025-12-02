@@ -48,22 +48,18 @@ def run_backtest(df, fee=0.001):
 
 def generate_signals(df, short_window=20, long_window=50, threshold=0.0):
     """
-    Generează semnale de tip swing folosind un crossover de medii mobile.
+    Generează semnale de tip swing folosind un crossover de medii mobile:
 
-    - 'long'  când SMA scurtă > SMA lungă (trend ascendent)
-    - 'short' când SMA scurtă < SMA lungă (trend descendent)
+    - 'long'  când SMA scurtă > SMA lungă
+    - 'short' când SMA scurtă < SMA lungă
     - 'flat'  când nu avem date suficiente sau diferența e mică
-
-    threshold poate fi folosit dacă vrei un mic buffer între ele
-    (0 înseamnă fără buffer).
     """
     df = df.copy()
 
     df["sma_short"] = df["close"].rolling(short_window).mean()
     df["sma_long"] = df["close"].rolling(long_window).mean()
 
-    # semnal implicit: flat
-    df["signal"] = "flat"
+    df["signal"] = "flat"  # implicit
 
     cond_long = df["sma_short"] > df["sma_long"] * (1 + threshold)
     cond_short = df["sma_short"] < df["sma_long"] * (1 - threshold)
@@ -75,11 +71,12 @@ def generate_signals(df, short_window=20, long_window=50, threshold=0.0):
 
 
 def main():
-    # Workflow-ul copiază data/btc_daily.csv în swing/data/btc_daily.csv,
-    # deci citim de acolo.
-    df = pd.read_csv("swing/data/btc_daily.csv")
+    # Rulat din rădăcina repo-ului:
+    #   python btc-swing-strategy/backtest.py
+    # → cwd = root, deci citim direct din data/btc_daily.csv
+    df = pd.read_csv("data/btc_daily.csv")
 
-    # 1. generează semnale reale pe baza prețului
+    # 1. generează semnale
     df_with_signals = generate_signals(df, short_window=20, long_window=50)
 
     # 2. rulează backtest-ul
