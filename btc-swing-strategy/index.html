@@ -3,102 +3,308 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>BTC – Coeziv</title>
+  <title>BTC – Mecanism Coeziv</title>
   <style>
+    :root {
+      --bg-main: #020617;
+      --bg-card: rgba(15, 23, 42, 0.96);
+      --border-card: #1f2937;
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --text-soft: #6b7280;
+      --accent-bull: #22c55e;
+      --accent-bear: #f97373;
+      --accent-neutral: #64748b;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
       min-height: 100vh;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: radial-gradient(circle at top, #0f172a 0, #020617 55%, #000 100%);
-      color: #e5e7eb;
+      background:
+        radial-gradient(circle at 10% -10%, #0f172a 0, transparent 55%),
+        radial-gradient(circle at 90% 110%, #020617 0, #000 60%);
+      color: var(--text-main);
       display: flex;
       align-items: center;
       justify-content: center;
+      padding: 16px;
     }
-    .card {
-      padding: 24px 20px;
-      border-radius: 20px;
-      border: 1px solid #1f2937;
-      box-shadow: 0 24px 60px rgba(0,0,0,0.7);
-      max-width: 380px;
+
+    .shell {
       width: 100%;
-      background: rgba(15,23,42,0.94);
-      text-align: center;
+      max-width: 520px;
     }
-    .title {
+
+    .title-bar {
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .app-name {
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-soft);
+    }
+
+    .card {
+      background: var(--bg-card);
+      border-radius: 24px;
+      border: 1px solid var(--border-card);
+      box-shadow: 0 28px 80px rgba(0, 0, 0, 0.85);
+      padding: 20px 20px 18px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      opacity: 0.12;
+      pointer-events: none;
+      background: radial-gradient(circle at 0 0, rgba(148, 163, 184, 0.6), transparent 55%);
+    }
+
+    .card-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    .asset-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .asset-main {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .asset-logo {
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+      background: radial-gradient(circle at 30% 0, #facc15, #f97316);
+      box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.9);
+      color: #0f172a;
+    }
+
+    .asset-text h1 {
+      margin: 0;
       font-size: 18px;
       font-weight: 600;
-      margin-bottom: 4px;
     }
-    .subtitle {
-      font-size: 12px;
-      color: #9ca3af;
-      margin-bottom: 16px;
-    }
-    .price {
-      font-size: 32px;
-      font-weight: 700;
-      letter-spacing: 0.03em;
-      margin-bottom: 4px;
-    }
-    .currency {
-      font-size: 12px;
-      color: #9ca3af;
-      margin-bottom: 16px;
-    }
-    .message {
-      font-size: 14px;
-      margin-bottom: 10px;
-    }
-    .updated {
+
+    .asset-text span {
+      display: block;
       font-size: 11px;
-      color: #9ca3af;
+      color: var(--text-muted);
     }
-    .error {
-      color: #f97373;
-      font-size: 12px;
-      margin-top: 8px;
+
+    .signal-chip {
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--accent-neutral);
+      color: var(--accent-neutral);
+      background: rgba(15, 23, 42, 0.9);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
     }
-    .dot {
+
+    .signal-dot {
       width: 8px;
       height: 8px;
       border-radius: 999px;
-      display: inline-block;
-      margin-right: 6px;
-      background: #22c55e;
+      background: var(--accent-neutral);
+    }
+
+    .signal-chip.bullish {
+      border-color: var(--accent-bull);
+      color: var(--accent-bull);
+    }
+    .signal-chip.bullish .signal-dot {
+      background: var(--accent-bull);
+    }
+
+    .signal-chip.bearish {
+      border-color: var(--accent-bear);
+      color: var(--accent-bear);
+    }
+    .signal-chip.bearish .signal-dot {
+      background: var(--accent-bear);
+    }
+
+    .signal-chip.neutral {
+      border-color: var(--accent-neutral);
+      color: var(--accent-neutral);
+    }
+    .signal-chip.neutral .signal-dot {
+      background: var(--accent-neutral);
+    }
+
+    .price-block {
+      text-align: center;
+      margin: 18px 0 16px;
+    }
+
+    .price-value {
+      font-size: 40px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    .currency {
+      font-size: 12px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 0.16em;
+      margin-top: 2px;
+    }
+
+    .message {
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--text-main);
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .meta {
+      font-size: 11px;
+      color: var(--text-soft);
+      text-align: center;
+    }
+
+    .meta span {
+      white-space: nowrap;
+    }
+
+    .meta-dot {
+      margin: 0 4px;
+      opacity: 0.6;
+    }
+
+    .error {
+      margin-top: 10px;
+      font-size: 12px;
+      color: #f97373;
+      text-align: center;
+    }
+
+    @media (max-width: 480px) {
+      .card {
+        padding: 18px 16px 16px;
+        border-radius: 20px;
+      }
+      .price-value {
+        font-size: 34px;
+      }
+      .asset-text h1 {
+        font-size: 16px;
+      }
+      .message {
+        font-size: 13px;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="card">
-    <div class="title">Bitcoin (BTC)</div>
-    <div class="subtitle">
-      Mecanism coeziv, actualizat aproximativ la fiecare oră.
+  <div class="shell">
+    <div class="title-bar">
+      <div class="app-name">Mecanism Coeziv BTC</div>
     </div>
 
-    <div id="price" class="price">–</div>
-    <div class="currency">USD</div>
+    <div class="card">
+      <div class="card-inner">
+        <div class="asset-row">
+          <div class="asset-main">
+            <div class="asset-logo">₿</div>
+            <div class="asset-text">
+              <h1>Bitcoin (BTC)</h1>
+              <span>Mecanism coeziv, actualizat aproximativ la fiecare oră.</span>
+            </div>
+          </div>
+          <div id="signal-chip" class="signal-chip neutral">
+            <span class="signal-dot"></span>
+            <span id="signal-label">Semnal neutru</span>
+          </div>
+        </div>
 
-    <div id="message" class="message">
-      Se încarcă mesajul coeziv...
-    </div>
+        <div class="price-block">
+          <div id="price" class="price-value">–</div>
+          <div class="currency">USD</div>
+        </div>
 
-    <div class="updated" id="updated">
-      <span class="dot"></span> Aștept ultimul snapshot coeziv.
+        <div id="message" class="message">
+          Se încarcă mesajul coeziv...
+        </div>
+
+        <div class="meta" id="meta">
+          <span>Snapshot: n/a</span>
+          <span class="meta-dot">•</span>
+          <span>Generat: n/a</span>
+        </div>
+
+        <div id="error" class="error"></div>
+      </div>
     </div>
-    <div class="error" id="error"></div>
   </div>
 
   <script>
     const PRICE_EL = document.getElementById("price");
     const MSG_EL = document.getElementById("message");
-    const UPDATED_EL = document.getElementById("updated");
+    const META_EL = document.getElementById("meta");
     const ERROR_EL = document.getElementById("error");
+    const SIGNAL_CHIP_EL = document.getElementById("signal-chip");
+    const SIGNAL_LABEL_EL = document.getElementById("signal-label");
+
+    function mapSignal(signal) {
+      const s = (signal || "").toLowerCase();
+      if (s === "long") {
+        return { tone: "bullish", label: "Semnal pozitiv (Long)" };
+      }
+      if (s === "short") {
+        return { tone: "bearish", label: "Semnal negativ (Short)" };
+      }
+      return { tone: "neutral", label: "Semnal neutru (Flat)" };
+    }
+
+    function formatDate(iso) {
+      if (!iso) return "n/a";
+      const d = new Date(iso);
+      if (Number.isNaN(d.getTime())) return "n/a";
+      return d.toLocaleString("ro-RO", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    }
 
     async function loadState() {
       try {
         ERROR_EL.textContent = "";
-        UPDATED_EL.textContent = "Încarc ultimul snapshot coeziv...";
+        MSG_EL.textContent = "Se încarcă mesajul coeziv...";
 
         const res = await fetch("coeziv_state.json", { cache: "no-store" });
         if (!res.ok) {
@@ -110,25 +316,43 @@
         const message = state.message;
         const ts = state.timestamp;
         const gen = state.generated_at;
+        const signal = state.signal;
 
-        PRICE_EL.textContent = typeof price === "number"
-          ? price.toLocaleString("en-US", {
-              minimumFractionDigits: 0,
-              maximumFractionDigits: 0
-            })
-          : "–";
+        // preț
+        if (typeof price === "number") {
+          PRICE_EL.textContent = price.toLocaleString("en-US", {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+          });
+        } else {
+          PRICE_EL.textContent = "–";
+        }
 
+        // mesaj coeziv (din backend, fără să-l schimbăm)
         MSG_EL.textContent = message || "Nu există mesaj coeziv pentru acest moment.";
 
-        UPDATED_EL.textContent = `Snapshot la ${ts || "n/a"} · generat la ${gen || "n/a"}`;
+        // semnal
+        const mapped = mapSignal(signal);
+        SIGNAL_LABEL_EL.textContent = mapped.label;
+        SIGNAL_CHIP_EL.classList.remove("bullish", "bearish", "neutral");
+        SIGNAL_CHIP_EL.classList.add(mapped.tone);
+
+        // meta (timp)
+        META_EL.innerHTML =
+          `<span>Snapshot: ${formatDate(ts)}</span>` +
+          `<span class="meta-dot">•</span>` +
+          `<span>Generat: ${formatDate(gen)}</span>`;
       } catch (err) {
         console.error(err);
-        ERROR_EL.textContent = "Nu am putut încărca coeziv_state.json. Verifică dacă workflow-ul de backend rulează.";
+        ERROR_EL.textContent =
+          "Nu am putut încărca coeziv_state.json. Verifică dacă workflow-ul de backend rulează corect.";
+        MSG_EL.textContent = "Nu am reușit să obținem mesajul coeziv.";
       }
     }
 
+    // load la intrarea pe pagină
     loadState();
-    // dacă vrei și refresh din browser: de ex. la 5 minute
+    // refresh UI la câteva minute (nu regenerează backend-ul, doar recitește JSON-ul)
     setInterval(loadState, 5 * 60 * 1000);
   </script>
 </body>
