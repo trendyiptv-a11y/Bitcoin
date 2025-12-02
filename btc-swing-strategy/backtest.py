@@ -1,7 +1,12 @@
 import pandas as pd
 
-def run_backtest(df, fee=0.001):
 
+def run_backtest(df, fee=0.001):
+    """
+    Rulează backtest-ul pe un DataFrame care conține cel puțin coloanele:
+    - 'close'  : prețul de închidere
+    - 'signal' : 'flat' / 'long' / 'short'
+    """
     df = df.copy()
 
     position = 0
@@ -39,3 +44,18 @@ def run_backtest(df, fee=0.001):
 
     df["equity"] = equity_curve
     return df
+
+
+def main():
+    # 1. încarcă datele exact din locul în care sunt în repo
+    df = pd.read_csv("data/btc_daily.csv")
+
+    # 2. rulează backtest-ul
+    df_bt = run_backtest(df, fee=0.001)
+
+    # 3. salvează equity curve-ul în fișierul așteptat de workflow
+    df_bt.to_csv("equity_curve.csv", index=False)
+
+
+if __name__ == "__main__":
+    main()
