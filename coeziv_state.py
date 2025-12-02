@@ -5,15 +5,36 @@ from datetime import datetime, timezone
 
 import pandas as pd
 
-from data_loader import load_ic_series  # e în root
-
-# 🔧 adăugăm folderul btc-swing-strategy în sys.path
+# 🔧 adăugăm folderul btc-swing-strategy în sys.path, ca să găsim btc_swing_strategy.py
 BASE_DIR = os.path.dirname(__file__)
 STRATEGY_DIR = os.path.join(BASE_DIR, "btc-swing-strategy")
 if STRATEGY_DIR not in sys.path:
     sys.path.append(STRATEGY_DIR)
 
-from btc_swing_strategy import generate_signals  # fișierul tău din screenshot
+from btc_swing_strategy import generate_signals  # fișierul tău din btc-swing-strategy/
+
+
+# ✅ am copiat aici logica din data_loader.load_ic_series,
+# ca să nu mai depindem de importul data_loader
+def load_ic_series(path=None):
+    if path is None:
+        path = os.path.join(BASE_DIR, "ic_btc_series.json")
+
+    with open(path, "r") as f:
+        raw = json.load(f)
+
+    df = pd.DataFrame(raw["series"])
+    df["date"] = pd.to_datetime(df["t"], unit="ms")
+    df = df.set_index("date").sort_index()
+
+    return df[[
+        "close",
+        "ic_struct",
+        "ic_dir",
+        "ic_flux",
+        "ic_cycle",
+        "regime",
+    ]]
 
 
 def build_message(signal: str, price: float) -> str:
@@ -37,8 +58,8 @@ def build_message(signal: str, price: float) -> str:
 
 
 def main():
-    # 1. încărcăm seria cu IC-uri (close + ic_struct + ic_dir + ic_flux + regime)
-    df = load_ic_series("ic_btc_series.json")
+    # 1. încărcăm seria cu IC-uri (close + ic_* + regime)
+    df = load_ic_series()
 
     # 2. generăm semnalele coezive (din btc_swing_strategy.py)
     df = generate_signals(df)
@@ -47,7 +68,7 @@ def main():
     last = df.iloc[-1]
     price = float(last["close"])
     signal = str(last["signal"])
-    ts = last.name  # index datetime, cel mai probabil
+    ts = last.name  # index datetime
 
     # 4. mesaj final
     message = build_message(signal, price)
