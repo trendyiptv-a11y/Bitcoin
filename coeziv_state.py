@@ -4,6 +4,7 @@ import sys
 from datetime import datetime, timezone
 
 import pandas as pd
+import requests
 
 # ============================
 #  SETĂRI DE PATH
@@ -76,11 +77,30 @@ def load_ic_series(path=None):
 
 
 # ============================
+#  PREȚ LIVE BTC (API GRATUIT)
+# ============================
+
+def get_live_btc_price():
+    """
+    Ia prețul BTC/USD din CoinGecko (API gratuit, fără cheie).
+    Dacă apare o eroare, excepția va fi prinsă în main() și
+    vom cădea pe prețul din model.
+    """
+    url = "https://api.coingecko.com/api/v3/simple/price"
+    params = {"ids": "bitcoin", "vs_currencies": "usd"}
+
+    resp = requests.get(url, params=params, timeout=10)
+    resp.raise_for_status()
+    data = resp.json()
+    return float(data["bitcoin"]["usd"])
+
+
+# ============================
 #  MESAJUL COEZIV
 # ============================
 
 def build_message(signal: str, price: float) -> str:
-    """Textul coeziv pentru dashboard."""
+    """Textul coeziv pentru dashboard, bazat pe semnal + prețul folosit în mesaj."""
 
     if signal == "long":
         return (
@@ -107,36 +127,51 @@ def build_message(signal: str, price: float) -> str:
 # ============================
 
 def main():
-    # 1. încărcăm datele IC
+    # 1. încărcăm datele IC (structură, direcție, flux, regim)
     df = load_ic_series()
 
     # 2. generăm semnalele coezive
     df = generate_signals(df)
 
-    # 3. extragem ultimul punct
+    # 3. extragem ultimul punct din serie
     last = df.iloc[-1]
-    price = float(last["close"])
+    model_price = float(last["close"])   # prețul din snapshot-ul modelului
     signal = str(last["signal"])
     ts = last.name  # index datetime
 
-    # 4. generăm mesajul
-    message = build_message(signal, price)
+    # 4. preț spot live (cu fallback la model_price)
+    price_source = "model"
+    price_for_text = model_price
+
+    try:
+        live_price = get_live_btc_price()
+        price_for_text = live_price
+        price_source = "spot"
+    except Exception as e:
+        # dacă API-ul nu merge, folosim prețul din model și lăsăm price_source="model"
+        print("Nu am putut obține prețul live BTC. Folosesc prețul din model.", e)
+
+    # 5. generăm mesajul pe baza semnalului + prețul folosit în text
+    message = build_message(signal, price_for_text)
 
     state = {
         "timestamp": ts.isoformat() if isinstance(ts, pd.Timestamp) else str(ts),
-        "price_usd": price,
+        "price_usd": price_for_text,        # ce vezi mare în UI
+        "model_price_usd": model_price,     # prețul folosit în snapshot-ul IC
+        "price_source": price_source,       # "spot" sau "model"
         "signal": signal,
         "message": message,
         "generated_at": datetime.now(timezone.utc).isoformat(),
     }
 
-    # 5. scriem JSON în folderul frontend-ului
+    # 6. scriem JSON în folderul frontend-ului
     output_path = os.path.join(STRATEGY_DIR, "coeziv_state.json")
 
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(state, f, ensure_ascii=False, indent=2)
 
     print("Stare coezivă generată:", output_path)
+    print("Semnal:", signal, "| Sursă preț:", price_source, "| Preț mesaj:", price_for_text)
 
 
 # ============================
