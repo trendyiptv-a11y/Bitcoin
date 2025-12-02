@@ -3,360 +3,133 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>BTC Swing Strategy – Dashboard</title>
-  <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <title>BTC – Coeziv</title>
   <style>
     body {
+      margin: 0;
+      min-height: 100vh;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #020617;
+      background: radial-gradient(circle at top, #0f172a 0, #020617 55%, #000 100%);
       color: #e5e7eb;
-    }
-    header {
-      padding: 12px 16px;
-      border-bottom: 1px solid #1f2937;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      background: #020617;
-      gap: 8px;
-    }
-    header h1 {
-      margin: 0;
-      font-size: 18px;
-      font-weight: 600;
-    }
-    header span {
-      font-size: 12px;
-      color: #9ca3af;
-    }
-    main {
-      padding: 16px 16px 24px;
-    }
-    .grid {
-      display: grid;
-      grid-template-columns: 1.4fr 1fr;
-      gap: 16px;
+      justify-content: center;
     }
     .card {
-      background: #020617;
-      border-radius: 16px;
-      padding: 12px;
+      padding: 24px 20px;
+      border-radius: 20px;
       border: 1px solid #1f2937;
-      box-shadow: 0 20px 25px -20px rgba(0,0,0,0.9);
+      box-shadow: 0 24px 60px rgba(0,0,0,0.7);
+      max-width: 380px;
+      width: 100%;
+      background: rgba(15,23,42,0.94);
+      text-align: center;
     }
-    .card h2 {
-      margin: 0 0 6px;
-      font-size: 14px;
-      font-weight: 500;
+    .title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 4px;
     }
-    .card p {
-      margin: 0 0 8px;
+    .subtitle {
       font-size: 12px;
       color: #9ca3af;
+      margin-bottom: 16px;
     }
-    .kpi-row {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 8px;
-      flex-wrap: wrap;
+    .price {
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      margin-bottom: 4px;
     }
-    .kpi {
-      padding: 4px 8px;
+    .currency {
+      font-size: 12px;
+      color: #9ca3af;
+      margin-bottom: 16px;
+    }
+    .message {
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+    .updated {
+      font-size: 11px;
+      color: #9ca3af;
+    }
+    .error {
+      color: #f97373;
+      font-size: 12px;
+      margin-top: 8px;
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
       border-radius: 999px;
-      background: #020617;
-      border: 1px solid #1f2937;
-      font-size: 11px;
-      color: #e5e7eb;
-    }
-    .kpi span {
-      color: #9ca3af;
-      margin-right: 4px;
-    }
-    #price-chart, #equity-chart {
-      width: 100%;
-      height: 360px;
-    }
-    #status {
-      font-size: 11px;
-      color: #9ca3af;
-      margin-top: 6px;
-    }
-    code {
-      background: #020617;
-      padding: 2px 4px;
-      border-radius: 4px;
-      border: 1px solid #1f2937;
-      font-size: 11px;
-    }
-
-    /* ✅ Responsive: pe ecrane mai mici, cardurile devin un singur coloană */
-    @media (max-width: 1024px) {
-      .grid {
-        grid-template-columns: 1fr;
-      }
-      main {
-        padding: 12px 12px 20px;
-      }
-      #price-chart, #equity-chart {
-        height: 320px;
-      }
-    }
-
-    @media (max-width: 640px) {
-      header {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-      header h1 {
-        font-size: 16px;
-      }
-      .card {
-        padding: 10px;
-      }
-      #price-chart, #equity-chart {
-        height: 280px;
-      }
+      display: inline-block;
+      margin-right: 6px;
+      background: #22c55e;
     }
   </style>
 </head>
 <body>
-  <header>
-    <div>
-      <h1>BTC Swing Strategy</h1>
-      <span>Preț BTC &amp; equity curve din CSV-uri locale</span>
+  <div class="card">
+    <div class="title">Bitcoin (BTC)</div>
+    <div class="subtitle">
+      Mecanism coeziv, actualizat aproximativ la fiecare oră.
     </div>
-    <div style="font-size:11px;color:#9ca3af;">
-      View: <code>/btc-swing-strategy/index.html</code>
-    </div>
-  </header>
 
-  <main>
-    <div class="grid">
-      <section class="card">
-        <h2>BTC price (daily, log)</h2>
-        <p>Seria <code>../data/btc_daily.csv</code> – coloane <code>date, open, high, low, close</code>.</p>
-        <div id="price-chart"></div>
-      </section>
+    <div id="price" class="price">–</div>
+    <div class="currency">USD</div>
 
-      <section class="card">
-        <h2>Equity curve – swing strategy</h2>
-        <p>Seria <code>equity_curve.csv</code> – capital relativ (pornire 1.0).</p>
-        <div class="kpi-row" id="kpis"></div>
-        <div id="equity-chart"></div>
-        <div id="status"></div>
-      </section>
+    <div id="message" class="message">
+      Se încarcă mesajul coeziv...
     </div>
-  </main>
+
+    <div class="updated" id="updated">
+      <span class="dot"></span> Aștept ultimul snapshot coeziv.
+    </div>
+    <div class="error" id="error"></div>
+  </div>
 
   <script>
-    const PRICE_CSV = "../data/btc_daily.csv";
-    const EQUITY_CSV = "equity_curve.csv";
+    const PRICE_EL = document.getElementById("price");
+    const MSG_EL = document.getElementById("message");
+    const UPDATED_EL = document.getElementById("updated");
+    const ERROR_EL = document.getElementById("error");
 
-    async function loadCsv(path) {
-      return new Promise((resolve, reject) => {
-        Papa.parse(path, {
-          download: true,
-          header: true,
-          dynamicTyping: true,
-          complete: results => {
-            if (results.errors && results.errors.length) {
-              console.warn("Erori la parsare CSV", path, results.errors);
-            }
-            resolve(results.data);
-          },
-          error: err => reject(err)
-        });
-      });
-    }
-
-    function parseDates(rows, dateKey) {
-      return rows
-        .filter(r => r[dateKey])
-        .map(r => ({
-          ...r,
-          __date: new Date(r[dateKey])
-        }))
-        .filter(r => !Number.isNaN(r.__date.getTime()))
-        .sort((a, b) => a.__date - b.__date);
-    }
-
-    function joinOnDate(priceRows, equityRows, priceDateKey = "date", equityDateKeyGuess = null) {
-      if (!priceRows.length || !equityRows.length) return [];
-
-      let equityDateKey = equityDateKeyGuess;
-      if (!equityDateKey) {
-        const sample = equityRows[0] || {};
-        const keys = Object.keys(sample);
-        const dateCandidate = keys.find(k =>
-          k.toLowerCase().includes("timestamp") || k.toLowerCase().includes("date")
-        );
-        equityDateKey = dateCandidate || keys[0];
-      }
-
-      const p = parseDates(priceRows, priceDateKey);
-      const e = parseDates(equityRows, equityDateKey);
-
-      const eByDate = new Map(
-        e.map(r => [r.__date.toISOString().slice(0, 10), r])
-      );
-      const joined = [];
-
-      for (const row of p) {
-        const key = row.__date.toISOString().slice(0, 10);
-        const eRow = eByDate.get(key);
-        if (!eRow) continue;
-
-        const equityCandidate =
-          eRow.equity ??
-          Object.values(eRow).find(v => typeof v === "number" && !Number.isNaN(v));
-
-        joined.push({
-          date: row.__date,
-          close: Number(row.close),
-          equity: Number(equityCandidate)
-        });
-      }
-
-      return joined.filter(
-        r => !Number.isNaN(r.close) && !Number.isNaN(r.equity)
-      );
-    }
-
-    function computeKpis(series) {
-      if (!series.length) return {};
-      const firstEq = series[0].equity;
-      const lastEq = series[series.length - 1].equity;
-      const pnl = ((lastEq / firstEq) - 1) * 100;
-
-      let peak = series[0].equity;
-      let maxDd = 0;
-      for (const p of series) {
-        if (p.equity > peak) peak = p.equity;
-        const dd = (p.equity / peak - 1) * 100;
-        if (dd < maxDd) maxDd = dd;
-      }
-
-      const n = series.length;
-      const years = n / 365;
-      const cagr = years > 0
-        ? (Math.pow(lastEq / firstEq, 1 / years) - 1) * 100
-        : 0;
-
-      return { pnl, maxDd, cagr, years };
-    }
-
-    function renderKpis(kpis) {
-      const el = document.getElementById("kpis");
-      el.innerHTML = "";
-
-      function chip(label, value) {
-        const div = document.createElement("div");
-        div.className = "kpi";
-        div.innerHTML = `<span>${label}</span>${value}`;
-        el.appendChild(div);
-      }
-
-      if (!kpis || !Number.isFinite(kpis.pnl)) return;
-
-      chip("PNL total", `${kpis.pnl.toFixed(2)}%`);
-      chip("Max drawdown", `${kpis.maxDd.toFixed(2)}%`);
-      chip("CAGR", `${kpis.cagr.toFixed(2)}%`);
-      chip("Ani acoperiți", kpis.years.toFixed(1));
-    }
-
-    async function main() {
-      const statusEl = document.getElementById("status");
-      statusEl.textContent = "Încarc CSV-urile...";
-
+    async function loadState() {
       try {
-        const [priceRows, equityRows] = await Promise.all([
-          loadCsv(PRICE_CSV),
-          loadCsv(EQUITY_CSV)
-        ]);
+        ERROR_EL.textContent = "";
+        UPDATED_EL.textContent = "Încarc ultimul snapshot coeziv...";
 
-        if (!priceRows.length) {
-          statusEl.textContent = "Nu am putut citi ../data/btc_daily.csv (fără rânduri).";
-          return;
+        const res = await fetch("coeziv_state.json", { cache: "no-store" });
+        if (!res.ok) {
+          throw new Error("HTTP " + res.status);
         }
-        if (!equityRows.length) {
-          statusEl.textContent = "Nu am putut citi equity_curve.csv (fără rânduri).";
-          return;
-        }
+        const state = await res.json();
 
-        const joined = joinOnDate(priceRows, equityRows);
-        if (!joined.length) {
-          statusEl.textContent =
-            "Nu am reușit să aliniez datele. Verifică coloana 'date' în btc_daily.csv și 'date'/'timestamp' în equity_curve.csv.";
-          return;
-        }
+        const price = state.price_usd;
+        const message = state.message;
+        const ts = state.timestamp;
+        const gen = state.generated_at;
 
-        const dates = joined.map(r => r.date);
-        const prices = joined.map(r => r.close);
-        const equities = joined.map(r => r.equity);
+        PRICE_EL.textContent = typeof price === "number"
+          ? price.toLocaleString("en-US", {
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 0
+            })
+          : "–";
 
-        const kpis = computeKpis(joined);
-        renderKpis(kpis);
-        statusEl.textContent =
-          `Zile: ${joined.length}, PNL total: ${kpis.pnl.toFixed(2)}%, ` +
-          `maxDD: ${kpis.maxDd.toFixed(2)}%, CAGR: ${kpis.cagr.toFixed(2)}%.`;
+        MSG_EL.textContent = message || "Nu există mesaj coeziv pentru acest moment.";
 
-        const layoutPrice = {
-          margin: { t: 24, r: 16, b: 32, l: 56 },
-          yaxis: { type: "log", title: "BTC Close (log)" },
-          xaxis: { title: "Timp" },
-          paper_bgcolor: "#020617",
-          plot_bgcolor: "#020617",
-          font: { color: "#e5e7eb" }
-        };
-
-        const layoutEquity = {
-          margin: { t: 24, r: 16, b: 32, l: 56 },
-          yaxis: { title: "Equity (relativ)" },
-          xaxis: { title: "Timp" },
-          paper_bgcolor: "#020617",
-          plot_bgcolor: "#020617",
-          font: { color: "#e5e7eb" }
-        };
-
-        const config = {
-          responsive: true,
-          displaylogo: false,
-          modeBarButtonsToRemove: ["lasso2d", "select2d"]
-        };
-
-        Plotly.newPlot("price-chart", [{
-          x: dates,
-          y: prices,
-          type: "scatter",
-          mode: "lines",
-          name: "BTC Close"
-        }], layoutPrice, config);
-
-        Plotly.newPlot("equity-chart", [{
-          x: dates,
-          y: equities,
-          type: "scatter",
-          mode: "lines",
-          name: "Equity"
-        }], layoutEquity, config);
-
-        // asigurăm resize corect pe schimbarea dimensiunii
-        window.addEventListener("resize", () => {
-          Plotly.Plots.resize("price-chart");
-          Plotly.Plots.resize("equity-chart");
-        });
-
+        UPDATED_EL.textContent = `Snapshot la ${ts || "n/a"} · generat la ${gen || "n/a"}`;
       } catch (err) {
         console.error(err);
-        statusEl.textContent =
-          "Eroare la încărcarea datelor. Verifică path-urile, existența fișierelor CSV și CORS (dacă e hostuit extern).";
+        ERROR_EL.textContent = "Nu am putut încărca coeziv_state.json. Verifică dacă workflow-ul de backend rulează.";
       }
     }
 
-    main();
+    loadState();
+    // dacă vrei și refresh din browser: de ex. la 5 minute
+    setInterval(loadState, 5 * 60 * 1000);
   </script>
 </body>
 </html>
