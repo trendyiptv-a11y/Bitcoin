@@ -46,12 +46,44 @@ def run_backtest(df, fee=0.001):
     return df
 
 
+def generate_signals(df, short_window=20, long_window=50, threshold=0.0):
+    """
+    Generează semnale de tip swing folosind un crossover de medii mobile.
+
+    - 'long'  când SMA scurtă > SMA lungă (trend ascendent)
+    - 'short' când SMA scurtă < SMA lungă (trend descendent)
+    - 'flat'  când nu avem date suficiente sau diferența e mică
+
+    threshold poate fi folosit dacă vrei un mic buffer între ele
+    (0 înseamnă fără buffer).
+    """
+    df = df.copy()
+
+    df["sma_short"] = df["close"].rolling(short_window).mean()
+    df["sma_long"] = df["close"].rolling(long_window).mean()
+
+    # semnal implicit: flat
+    df["signal"] = "flat"
+
+    cond_long = df["sma_short"] > df["sma_long"] * (1 + threshold)
+    cond_short = df["sma_short"] < df["sma_long"] * (1 - threshold)
+
+    df.loc[cond_long, "signal"] = "long"
+    df.loc[cond_short, "signal"] = "short"
+
+    return df
+
+
 def main():
-    # 1. încarcă datele exact din locul în care sunt în repo
-    df = pd.read_csv("data/btc_daily.csv")
+    # Workflow-ul copiază data/btc_daily.csv în swing/data/btc_daily.csv,
+    # deci citim de acolo.
+    df = pd.read_csv("swing/data/btc_daily.csv")
+
+    # 1. generează semnale reale pe baza prețului
+    df_with_signals = generate_signals(df, short_window=20, long_window=50)
 
     # 2. rulează backtest-ul
-    df_bt = run_backtest(df, fee=0.001)
+    df_bt = run_backtest(df_with_signals, fee=0.001)
 
     # 3. salvează equity curve-ul în fișierul așteptat de workflow
     df_bt.to_csv("equity_curve.csv", index=False)
