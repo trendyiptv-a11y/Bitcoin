@@ -3,7 +3,10 @@ name: Update BTC data & regenerate equity curve
 on:
   schedule:
     - cron: "0 3 * * *"   # rulează zilnic la 03:00 UTC
-  workflow_dispatch:       # permite rulare manuală
+  workflow_dispatch:      # permite rulare manuală
+
+permissions:
+       contents: write
 
 jobs:
   update:
