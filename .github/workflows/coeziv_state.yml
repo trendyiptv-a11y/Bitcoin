@@ -1,0 +1,42 @@
+name: Update Coeziv State
+
+on:
+  schedule:
+    - cron: "0 * * * *"   # la fix, în fiecare oră
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Update IC series & coeziv state
+        run: |
+          # aici pui pașii tăi de actualizare date
+          # exemplu:
+          python btc-swing-strategy/data_loader.py
+          python coeziv_state.py
+
+      - name: Auto-commit coeziv_state.json
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit_message: "Update coeziv_state.json (BTC)"
+          commit_user_name: github-actions
+          commit_user_email: actions@github.com
+          branch: main
