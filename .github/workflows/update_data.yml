@@ -1,0 +1,48 @@
+name: Update BTC data & regenerate equity curve
+
+on:
+  schedule:
+    - cron: "0 3 * * *"   # rulează zilnic la 03:00 UTC
+  workflow_dispatch:       # permite rulare manuală
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.11"
+
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+
+    - name: Run data loader (download BTC daily)
+      run: |
+        python data_loader.py
+
+    - name: Move BTC CSV into swing/data/
+      run: |
+        mkdir -p swing/data
+        cp data/btc_daily.csv swing/data/btc_daily.csv
+
+    - name: Run backtest (generate equity_curve.csv)
+      run: |
+        python backtest.py
+
+    - name: Move equity curve into swing folder
+      run: |
+        cp equity_curve.csv swing/equity_curve.csv
+
+    - name: Auto-commit results
+      uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_message: "Automated update: BTC data + equity curve"
+        commit_user_name: github-actions
+        commit_user_email: actions@github.com
+        branch: main
