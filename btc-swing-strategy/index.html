@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <title>BTC Swing Strategy Dashboard</title>
+  <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #0b1120;
+      color: #e5e7eb;
+    }
+    header {
+      padding: 16px 24px;
+      border-bottom: 1px solid #1f2937;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 600;
+    }
+    header span {
+      font-size: 12px;
+      color: #9ca3af;
+    }
+    main {
+      padding: 16px 24px 32px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 24px;
+    }
+    .card {
+      background: #020617;
+      border-radius: 16px;
+      padding: 16px;
+      border: 1px solid #1f2937;
+      box-shadow: 0 20px 25px -20px rgba(0,0,0,0.8);
+    }
+    .card h2 {
+      margin: 0 0 8px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #e5e7eb;
+    }
+    .card p {
+      margin: 0 0 8px;
+      font-size: 12px;
+      color: #9ca3af;
+    }
+    .kpi-row {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .kpi {
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: #020617;
+      border: 1px solid #1f2937;
+      font-size: 12px;
+      color: #e5e7eb;
+    }
+    .kpi span {
+      color: #9ca3af;
+      margin-right: 6px;
+    }
+    #price-chart, #equity-chart {
+      width: 100%;
+      height: 340px;
+    }
+    #status {
+      font-size: 12px;
+      color: #9ca3af;
+      margin-top: 8px;
+    }
+    a {
+      color: #38bdf8;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    @media (max-width: 900px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>BTC Swing Strategy</h1>
+      <span>Vizualizare preț &amp; equity – date locale CSV</span>
+    </div>
+    <div style="font-size:12px;color:#9ca3af;">
+      Repo: <code>btc-swing-strategy</code>
+    </div>
+  </header>
+
+  <main>
+    <div class="grid">
+      <section class="card">
+        <h2>BTC price (daily, log-scale)</h2>
+        <p>Seria <code>btc_daily.csv</code> – close price BTC.</p>
+        <div id="price-chart"></div>
+      </section>
+
+      <section class="card">
+        <h2>Equity curve – swing strategy</h2>
+        <p>Seria <code>equity_curve.csv</code> – capital relativ (pornind de la 1.0).</p>
+        <div class="kpi-row" id="kpis"></div>
+        <div id="equity-chart"></div>
+        <div id="status"></div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const PRICE_CSV = "data/btc_daily.csv";
+    const EQUITY_CSV = "equity_curve.csv";
+
+    async function loadCsv(path) {
+      return new Promise((resolve, reject) => {
+        Papa.parse(path, {
+          download: true,
+          header: true,
+          dynamicTyping: true,
+          complete: results => resolve(results.data),
+          error: err => reject(err)
+        });
+      });
+    }
+
+    function parseDates(rows, dateKey) {
+      return rows
+        .filter(r => r[dateKey])
+        .map(r => ({
+          ...r,
+          __date: new Date(r[dateKey])
+        }))
+        .sort((a, b) => a.__date - b.__date);
+    }
+
+    function joinOnDate(priceRows, equityRows, priceDateKey = "timestamp", equityDateKeyGuess = null) {
+      // ghicim numele coloanei de dată din equity_curve
+      let equityDateKey = equityDateKeyGuess;
+      if (!equityDateKey) {
+        const sample = equityRows[0] || {};
+        const keys = Object.keys(sample);
+        const dateCandidate = keys.find(k => k.toLowerCase().includes("timestamp") || k.toLowerCase().includes("date"));
+        equityDateKey = dateCandidate || keys[0];
+      }
+
+      const p = parseDates(priceRows, priceDateKey);
+      const e = parseDates(equityRows, equityDateKey);
+
+      const eByDate = new Map(e.map(r => [r.__date.toISOString().slice(0,10), r]));
+      const joined = [];
+
+      for (const row of p) {
+        const key = row.__date.toISOString().slice(0,10);
+        const eRow = eByDate.get(key);
+        if (!eRow) continue;
+        joined.push({
+          date: row.__date,
+          close: Number(row.close),
+          equity: Number(eRow.equity ?? Object.values(eRow).find(v => typeof v === "number" && v !== row.close))
+        });
+      }
+
+      return joined.filter(r => !Number.isNaN(r.close) && !Number.isNaN(r.equity));
+    }
+
+    function computeKpis(series) {
+      if (!series.length) return {};
+      const firstEq = series[0].equity;
+      const lastEq = series[series.length - 1].equity;
+      const pnl = ((lastEq / firstEq) - 1) * 100;
+
+      let peak = series[0].equity;
+      let maxDd = 0;
+      for (const p of series) {
+        if (p.equity > peak) peak = p.equity;
+        const dd = (p.equity / peak - 1) * 100;
+        if (dd < maxDd) maxDd = dd;
+      }
+
+      const n = series.length;
+      const years = n / 365;
+      const cagr = years > 0 ? (Math.pow(lastEq / firstEq, 1 / years) - 1) * 100 : 0;
+
+      return { pnl, maxDd, cagr, years };
+    }
+
+    function renderKpis(kpis) {
+      const el = document.getElementById("kpis");
+      el.innerHTML = "";
+
+      function chip(label, value) {
+        const div = document.createElement("div");
+        div.className = "kpi";
+        div.innerHTML = `<span>${label}</span>${value}`;
+        el.appendChild(div);
+      }
+
+      chip("PNL total", `${kpis.pnl.toFixed(2)}%`);
+      chip("Max drawdown", `${kpis.maxDd.toFixed(2)}%`);
+      chip("CAGR", `${kpis.cagr.toFixed(2)}%`);
+      chip("Ani acoperiți", kpis.years.toFixed(1));
+    }
+
+    async function main() {
+      const statusEl = document.getElementById("status");
+      statusEl.textContent = "Încarc CSV-urile...";
+
+      try {
+        const [priceRows, equityRows] = await Promise.all([
+          loadCsv(PRICE_CSV),
+          loadCsv(EQUITY_CSV)
+        ]);
+
+        const joined = joinOnDate(priceRows, equityRows);
+        if (!joined.length) {
+          statusEl.textContent = "Nu am reușit să aliniez datele. Verifică timestamp-urile din CSV-uri.";
+          return;
+        }
+
+        const dates = joined.map(r => r.date);
+        const prices = joined.map(r => r.close);
+        const equities = joined.map(r => r.equity);
+
+        // KPIs
+        const kpis = computeKpis(joined);
+        renderKpis(kpis);
+        statusEl.textContent = `Observații: ${joined.length} zile, PNL total ${kpis.pnl.toFixed(2)}%, maxDD ${kpis.maxDd.toFixed(2)}%.`;
+
+        // Price chart
+        Plotly.newPlot("price-chart", [{
+          x: dates,
+          y: prices,
+          type: "scatter",
+          mode: "lines",
+          name: "BTC Close"
+        }], {
+          margin: { t: 24, r: 16, b: 32, l: 56 },
+          yaxis: { type: "log", title: "BTC Close (log)" },
+          xaxis: { title: "Timp" },
+          paper_bgcolor: "#020617",
+          plot_bgcolor: "#020617",
+          font: { color: "#e5e7eb" }
+        });
+
+        // Equity chart
+        Plotly.newPlot("equity-chart", [{
+          x: dates,
+          y: equities,
+          type: "scatter",
+          mode: "lines",
+          name: "Equity"
+        }], {
+          margin: { t: 24, r: 16, b: 32, l: 56 },
+          yaxis: { title: "Equity (relativ)" },
+          xaxis: { title: "Timp" },
+          paper_bgcolor: "#020617",
+          plot_bgcolor: "#020617",
+          font: { color: "#e5e7eb" }
+        });
+
+      } catch (err) {
+        console.error(err);
+        statusEl.textContent = "Eroare la încărcarea datelor. Verifică path-urile și CORS (dacă rulezi de pe file://).";
+      }
+    }
+
+    main();
+  </script>
+</body>
+</html>
