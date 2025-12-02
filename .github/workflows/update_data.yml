@@ -24,7 +24,7 @@ jobs:
 
     - name: Run data loader (download BTC daily)
       run: |
-        python data_loader.py
+        python btc-swing-strategy/data_loader.py
 
     - name: Move BTC CSV into swing/data/
       run: |
