@@ -37,7 +37,7 @@ jobs:
 
     - name: Move equity curve into swing folder
       run: |
-        cp equity_curve.csv swing/equity_curve.csv
+        cp equity_curve.csv btc-swing-strategy/equity_curve.csv
 
     - name: Auto-commit results
       uses: stefanzweifel/git-auto-commit-action@v4
