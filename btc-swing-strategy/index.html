@@ -15,6 +15,7 @@
       --accent-bull: #22c55e;
       --accent-bear: #f97373;
       --accent-neutral: #64748b;
+      --accent-live: #38bdf8;
     }
 
     * {
@@ -163,7 +164,7 @@
 
     .price-block {
       text-align: center;
-      margin: 18px 0 16px;
+      margin: 18px 0 8px;
     }
 
     .price-value {
@@ -180,12 +181,46 @@
       margin-top: 2px;
     }
 
+    .live-row {
+      margin-top: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: baseline;
+      gap: 4px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .live-label {
+      color: var(--accent-live);
+      font-weight: 500;
+    }
+
+    .live-value {
+      font-weight: 500;
+    }
+
+    .live-delta {
+      font-size: 11px;
+      text-align: center;
+      margin-top: 2px;
+      color: var(--text-soft);
+    }
+
+    .live-delta.positive {
+      color: #4ade80;
+    }
+
+    .live-delta.negative {
+      color: #fb7185;
+    }
+
     .message {
       font-size: 14px;
       line-height: 1.5;
       color: var(--text-main);
       text-align: center;
-      margin-bottom: 16px;
+      margin: 16px 0;
     }
 
     .meta {
@@ -224,13 +259,16 @@
       .message {
         font-size: 13px;
       }
+      .live-row {
+        font-size: 11px;
+      }
     }
   </style>
 </head>
 <body>
   <div class="shell">
     <div class="title-bar">
-      <div class="app-name">Mecanism Coeziv BTC</div>
+      <div class="app-name">MECANISM COEZIV BTC</div>
     </div>
 
     <div class="card">
@@ -245,13 +283,23 @@
           </div>
           <div id="signal-chip" class="signal-chip neutral">
             <span class="signal-dot"></span>
-            <span id="signal-label">Semnal neutru</span>
+            <span id="signal-label">Semnal neutru (Flat)</span>
           </div>
         </div>
 
         <div class="price-block">
           <div id="price" class="price-value">–</div>
           <div class="currency">USD</div>
+
+          <!-- Preț live din CoinGecko -->
+          <div class="live-row">
+            <span class="live-label">Preț live:</span>
+            <span id="live-price" class="live-value">–</span>
+            <span class="live-currency">USD</span>
+          </div>
+          <div id="live-delta" class="live-delta">
+            Se compară prețul live cu prețul analizat de mecanism.
+          </div>
         </div>
 
         <div id="message" class="message">
@@ -276,6 +324,11 @@
     const ERROR_EL = document.getElementById("error");
     const SIGNAL_CHIP_EL = document.getElementById("signal-chip");
     const SIGNAL_LABEL_EL = document.getElementById("signal-label");
+
+    const LIVE_PRICE_EL = document.getElementById("live-price");
+    const LIVE_DELTA_EL = document.getElementById("live-delta");
+
+    let SNAPSHOT_PRICE = null; // prețul din coeziv_state.json
 
     function mapSignal(signal) {
       const s = (signal || "").toLowerCase();
@@ -318,13 +371,15 @@
         const gen = state.generated_at;
         const signal = state.signal;
 
-        // preț
+        // preț snapshot (folosit de mecanism)
         if (typeof price === "number") {
+          SNAPSHOT_PRICE = price;
           PRICE_EL.textContent = price.toLocaleString("en-US", {
             minimumFractionDigits: 0,
             maximumFractionDigits: 0
           });
         } else {
+          SNAPSHOT_PRICE = null;
           PRICE_EL.textContent = "–";
         }
 
@@ -350,10 +405,58 @@
       }
     }
 
-    // load la intrarea pe pagină
+    async function updateLivePrice() {
+      try {
+        const res = await fetch(
+          "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd",
+          { cache: "no-store" }
+        );
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        const data = await res.json();
+        const live = data?.bitcoin?.usd;
+
+        if (typeof live === "number") {
+          LIVE_PRICE_EL.textContent = live.toLocaleString("en-US", {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+          });
+
+          // dacă avem și snapshot, arătăm diferența
+          if (typeof SNAPSHOT_PRICE === "number") {
+            const diff = live - SNAPSHOT_PRICE;
+            const pct = (diff / SNAPSHOT_PRICE) * 100;
+
+            let text = "Se compară prețul live cu prețul analizat de mecanism.";
+            LIVE_DELTA_EL.classList.remove("positive", "negative");
+
+            if (Math.abs(pct) >= 0.05) { // prag mic de semnificație
+              const sign = diff > 0 ? "+" : "";
+              const pctStr = pct.toFixed(2);
+              const dir = diff > 0 ? "peste" : "sub";
+              text = `Prețul live este ${sign}${pctStr}% ${dir} prețul analizat de mecanism.`;
+              LIVE_DELTA_EL.classList.add(diff > 0 ? "positive" : "negative");
+            }
+
+            LIVE_DELTA_EL.textContent = text;
+          } else {
+            LIVE_DELTA_EL.textContent =
+              "Preț live încărcat. Așteptăm prețul analizat de mecanism.";
+          }
+        }
+      } catch (err) {
+        console.error("Nu am putut obține prețul live BTC", err);
+        // nu afișăm eroare mare în UI, doar lăsăm ultima valoare live
+      }
+    }
+
+    // load la intrare
     loadState();
-    // refresh UI la câteva minute (nu regenerează backend-ul, doar recitește JSON-ul)
+    updateLivePrice();
+
+    // refresh UI din JSON la 5 minute (dacă ai rulat workflow-ul între timp)
     setInterval(loadState, 5 * 60 * 1000);
+    // preț live la 15 secunde
+    setInterval(updateLivePrice, 15 * 1000);
   </script>
 </body>
 </html>
