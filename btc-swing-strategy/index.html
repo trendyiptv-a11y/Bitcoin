@@ -103,7 +103,7 @@
       <span>Preț BTC &amp; equity curve din CSV-uri locale</span>
     </div>
     <div style="font-size:12px;color:#9ca3af;">
-      View: <code>/swing/index.html</code>
+      View: <code>/btc-swing-strategy/index.html</code>
     </div>
   </header>
 
@@ -111,7 +111,7 @@
     <div class="grid">
       <section class="card">
         <h2>BTC price (daily, log)</h2>
-        <p>Seria <code>data/btc_daily.csv</code> – close price BTC.</p>
+        <p>Seria <code>../data/btc_daily.csv</code> – coloane <code>date, open, high, low, close</code>.</p>
         <div id="price-chart"></div>
       </section>
 
@@ -126,8 +126,10 @@
   </main>
 
   <script>
-    const PRICE_CSV = "data/btc_daily.csv";   // relative la /swing/
-    const EQUITY_CSV = "equity_curve.csv";    // în /swing/
+    // ✔ path-uri aliniate cu structura actuală a repo-ului
+    // index.html este în /btc-swing-strategy
+    const PRICE_CSV = "../data/btc_daily.csv";  // fișierul tău original de preț
+    const EQUITY_CSV = "equity_curve.csv";      // generat de workflow în același folder
 
     async function loadCsv(path) {
       return new Promise((resolve, reject) => {
@@ -135,7 +137,12 @@
           download: true,
           header: true,
           dynamicTyping: true,
-          complete: results => resolve(results.data),
+          complete: results => {
+            if (results.errors && results.errors.length) {
+              console.warn("Erori la parsare CSV", path, results.errors);
+            }
+            resolve(results.data);
+          },
           error: err => reject(err)
         });
       });
@@ -148,32 +155,40 @@
           ...r,
           __date: new Date(r[dateKey])
         }))
+        .filter(r => !Number.isNaN(r.__date.getTime()))
         .sort((a, b) => a.__date - b.__date);
     }
 
-    function joinOnDate(priceRows, equityRows, priceDateKey = "timestamp", equityDateKeyGuess = null) {
+    // ✔ folosim 'date' ca nume implicit pentru btc_daily.csv (așa cum e în fișier)
+    function joinOnDate(priceRows, equityRows, priceDateKey = "date", equityDateKeyGuess = null) {
+      if (!priceRows.length || !equityRows.length) return [];
+
       let equityDateKey = equityDateKeyGuess;
       if (!equityDateKey) {
         const sample = equityRows[0] || {};
         const keys = Object.keys(sample);
-        const dateCandidate = keys.find(k => k.toLowerCase().includes("timestamp") || k.toLowerCase().includes("date"));
+        const dateCandidate = keys.find(k =>
+          k.toLowerCase().includes("timestamp") || k.toLowerCase().includes("date")
+        );
         equityDateKey = dateCandidate || keys[0];
       }
 
       const p = parseDates(priceRows, priceDateKey);
       const e = parseDates(equityRows, equityDateKey);
 
-      const eByDate = new Map(e.map(r => [r.__date.toISOString().slice(0,10), r]));
+      const eByDate = new Map(
+        e.map(r => [r.__date.toISOString().slice(0, 10), r])
+      );
       const joined = [];
 
       for (const row of p) {
-        const key = row.__date.toISOString().slice(0,10);
+        const key = row.__date.toISOString().slice(0, 10);
         const eRow = eByDate.get(key);
         if (!eRow) continue;
 
-        const equityCandidate = eRow.equity ?? Object.values(eRow).find(
-          v => typeof v === "number" && !Number.isNaN(v)
-        );
+        const equityCandidate =
+          eRow.equity ??
+          Object.values(eRow).find(v => typeof v === "number" && !Number.isNaN(v));
 
         joined.push({
           date: row.__date,
@@ -182,7 +197,9 @@
         });
       }
 
-      return joined.filter(r => !Number.isNaN(r.close) && !Number.isNaN(r.equity));
+      return joined.filter(
+        r => !Number.isNaN(r.close) && !Number.isNaN(r.equity)
+      );
     }
 
     function computeKpis(series) {
@@ -201,7 +218,9 @@
 
       const n = series.length;
       const years = n / 365;
-      const cagr = years > 0 ? (Math.pow(lastEq / firstEq, 1 / years) - 1) * 100 : 0;
+      const cagr = years > 0
+        ? (Math.pow(lastEq / firstEq, 1 / years) - 1) * 100
+        : 0;
 
       return { pnl, maxDd, cagr, years };
     }
@@ -235,9 +254,19 @@
           loadCsv(EQUITY_CSV)
         ]);
 
+        if (!priceRows.length) {
+          statusEl.textContent = "Nu am putut citi ../data/btc_daily.csv (fără rânduri).";
+          return;
+        }
+        if (!equityRows.length) {
+          statusEl.textContent = "Nu am putut citi equity_curve.csv (fără rânduri).";
+          return;
+        }
+
         const joined = joinOnDate(priceRows, equityRows);
         if (!joined.length) {
-          statusEl.textContent = "Nu am reușit să aliniez datele. Verifică coloana 'timestamp' și indexul din equity_curve.";
+          statusEl.textContent =
+            "Nu am reușit să aliniez datele. Verifică coloana 'date' în btc_daily.csv și 'date' / 'timestamp' în equity_curve.csv.";
           return;
         }
 
@@ -247,7 +276,9 @@
 
         const kpis = computeKpis(joined);
         renderKpis(kpis);
-        statusEl.textContent = `Zile: ${joined.length}, PNL total: ${kpis.pnl.toFixed(2)}%, maxDD: ${kpis.maxDd.toFixed(2)}%.`;
+        statusEl.textContent =
+          `Zile: ${joined.length}, PNL total: ${kpis.pnl.toFixed(2)}%, ` +
+          `maxDD: ${kpis.maxDd.toFixed(2)}%, CAGR: ${kpis.cagr.toFixed(2)}%.`;
 
         Plotly.newPlot("price-chart", [{
           x: dates,
@@ -281,7 +312,8 @@
 
       } catch (err) {
         console.error(err);
-        statusEl.textContent = "Eroare la încărcarea datelor. Verifică path-urile și existența fișierelor CSV.";
+        statusEl.textContent =
+          "Eroare la încărcarea datelor. Verifică path-urile, existența fișierelor CSV și CORS (GitHub Pages).";
       }
     }
 
