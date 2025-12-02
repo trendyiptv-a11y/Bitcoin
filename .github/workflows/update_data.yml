@@ -33,7 +33,7 @@ jobs:
 
     - name: Run backtest (generate equity_curve.csv)
       run: |
-        python backtest.py
+        python btc-swing-strategy/backtest.py
 
     - name: Move equity curve into swing folder
       run: |
