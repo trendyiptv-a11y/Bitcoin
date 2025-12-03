@@ -528,73 +528,68 @@
     let CANDLE_DATA = [];
 
     function initChart() {
-      const container = document.getElementById("btc-chart");
-      if (!container) return;
+  const container = document.getElementById("btc-chart");
+  if (!container) return;
 
-      chart = LightweightCharts.createChart(container, {
-        layout: {
-          background: { color: "transparent" },
-          textColor: "#e5e7eb"
-        },
-        grid: {
-          vertLines: { color: "#1e293b" },
-          horzLines: { color: "#111827" }
-        },
-        rightPriceScale: {
-          borderVisible: false
-        },
-        timeScale: {
-          borderVisible: false
-        },
-        crosshair: {
-          mode: LightweightCharts.CrosshairMode.Normal
-        }
-      });
-
-      candleSeries = chart.addCandlestickSeries({
-        upColor: "#22c55e",
-        downColor: "#ef4444",
-        borderUpColor: "#22c55e",
-        borderDownColor: "#ef4444",
-        wickUpColor: "#22c55e",
-        wickDownColor: "#ef4444"
-      });
-
-      // OHLC BTC 24h din CoinGecko (interval ~5min)
-      fetch("https://api.coingecko.com/api/v3/coins/bitcoin/ohlc?vs_currency=usd&days=1", {
-        cache: "no-store"
-      })
-        .then((r) => {
-          if (!r.ok) throw new Error("HTTP " + r.status);
-          return r.json();
-        })
-        .then((rows) => {
-          CANDLE_DATA = rows.map((x) => ({
-            time: Math.floor(x[0] / 1000),
-            open: x[1],
-            high: x[2],
-            low: x[3],
-            close: x[4]
-          }));
-          candleSeries.setData(CANDLE_DATA);
-          chart.timeScale().fitContent();
-          // după ce avem date, putem desena și linia de semnal
-          updateSignalOverlay();
-        })
-        .catch((err) => {
-          console.error("Eroare la încărcarea datelor OHLC BTC", err);
-        });
-
-      // responsive
-      function resizeChart() {
-        if (!chart) return;
-        const { width, height } = container.getBoundingClientRect();
-        chart.applyOptions({ width, height });
-      }
-
-      window.addEventListener("resize", resizeChart);
-      resizeChart();
+  chart = LightweightCharts.createChart(container, {
+    layout: {
+      background: { color: "transparent" },
+      textColor: "#e5e7eb"
+    },
+    grid: {
+      vertLines: { color: "#1e293b" },
+      horzLines: { color: "#111827" }
+    },
+    rightPriceScale: {
+      borderVisible: false
+    },
+    timeScale: {
+      borderVisible: false
     }
+  });
+
+  candleSeries = chart.addCandlestickSeries({
+    upColor: "#22c55e",
+    downColor: "#ef4444",
+    borderUpColor: "#22c55e",
+    borderDownColor: "#ef4444",
+    wickUpColor: "#22c55e",
+    wickDownColor: "#ef4444"
+  });
+
+  fetch("https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=5m&limit=288", {
+    cache: "no-store"
+  })
+    .then((r) => {
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return r.json();
+    })
+    .then((rows) => {
+      CANDLE_DATA = rows.map((x) => ({
+        time: Math.floor(x[0] / 1000),
+        open: parseFloat(x[1]),
+        high: parseFloat(x[2]),
+        low: parseFloat(x[3]),
+        close: parseFloat(x[4])
+      }));
+
+      candleSeries.setData(CANDLE_DATA);
+      chart.timeScale().fitContent();
+      updateSignalOverlay();
+    })
+    .catch((err) => {
+      console.error("Eroare la încărcarea datelor OHLC Binance", err);
+    });
+
+  function resizeChart() {
+    if (!chart) return;
+    const { width, height } = container.getBoundingClientRect();
+    chart.applyOptions({ width, height });
+  }
+
+  window.addEventListener("resize", resizeChart);
+  resizeChart();
+}
 
     function updateSignalOverlay() {
       if (!chart || !candleSeries || !CANDLE_DATA.length) return;
