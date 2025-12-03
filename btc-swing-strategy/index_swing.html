@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ro">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mecanism Coeziv BTC</title>
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+      background: radial-gradient(circle at top, #0d1117, #000000 70%);
+      color: #ffffff;
+      display: flex;
+      justify-content: center;
+      padding: 40px 12px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 520px;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 28px;
+      border-radius: 24px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .title {
+      text-align: center;
+      font-size: 18px;
+      letter-spacing: 3px;
+      margin-bottom: 22px;
+      opacity: 0.65;
+    }
+
+    .header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .btc-title {
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    .sig {
+      background: rgba(255, 100, 100, 0.18);
+      border: 1px solid rgba(255, 90, 90, 0.4);
+      padding: 6px 14px;
+      border-radius: 14px;
+      font-size: 13px;
+    }
+
+    .price-main {
+      margin-top: 22px;
+      text-align: center;
+      font-size: 52px;
+      font-weight: 700;
+    }
+
+    .currency {
+      text-align: center;
+      font-size: 16px;
+      letter-spacing: 2px;
+      opacity: 0.7;
+      margin-top: -6px;
+      margin-bottom: 16px;
+    }
+
+    /* LIVE PRICE ROW */
+    .live-box {
+      margin-top: 10px;
+      font-size: 15px;
+      text-align: center;
+      color: #79a8ff;
+    }
+
+    .live-upd {
+      margin-top: 4px;
+      font-size: 13px;
+      opacity: 0.65;
+      text-align: center;
+    }
+
+    /* DESCRIPTION */
+    .desc {
+      margin-top: 18px;
+      font-size: 17px;
+      line-height: 1.45;
+      opacity: 0.9;
+      text-align: center;
+    }
+
+    /* FOOTER */
+    .footer {
+      margin-top: 22px;
+      font-size: 13px;
+      opacity: 0.55;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="card">
+    <div class="title">MECANISM COEZIV BTC</div>
+
+    <div class="header-row">
+      <div class="btc-title">Bitcoin (BTC)</div>
+      <div id="signal-badge" class="sig">—</div>
+    </div>
+
+    <!-- PREȚ MECANISM -->
+    <div id="price" class="price-main">—</div>
+    <div class="currency">USD</div>
+
+    <!-- PREȚ LIVE -->
+    <div class="live-box">
+      Preț live: <span id="live-price">—</span> USD
+    </div>
+    <div id="live-updated" class="live-upd">Actualizat: —</div>
+
+    <!-- DESCRIERE -->
+    <div id="desc" class="desc">—</div>
+
+    <!-- Timestamps -->
+    <div id="footer" class="footer">—</div>
+
+  </div>
+
+  <script>
+    /* ELEMENTE */
+    const EL_PRICE = document.getElementById("price");
+    const EL_SIGNAL = document.getElementById("signal-badge");
+    const EL_DESC = document.getElementById("desc");
+    const EL_FOOT = document.getElementById("footer");
+
+    const EL_LIVE = document.getElementById("live-price");
+    const EL_LIVE_UPD = document.getElementById("live-updated");
+
+    /* ÎNCARCĂ DATE MECANISM */
+    async function loadState() {
+      try {
+        const r = await fetch("/coeziv_state.json", { cache: "no-store" });
+        const st = await r.json();
+
+        EL_PRICE.textContent = st.price.toLocaleString("en-US");
+        EL_DESC.textContent = st.message;
+        EL_SIGNAL.textContent = st.signal_label;
+        EL_FOOT.textContent = `Snapshot: ${st.snapshot}  •  Generat: ${st.generated_at}`;
+      } catch (err) {
+        console.error("Eroare loadState()", err);
+      }
+    }
+
+    /* PREȚ LIVE */
+    async function updateLivePrice() {
+      try {
+        const r = await fetch(
+          "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd"
+        );
+        const data = await r.json();
+        const price = data.bitcoin.usd;
+
+        EL_LIVE.textContent = price.toLocaleString("en-US");
+
+        const t = new Date();
+        EL_LIVE_UPD.textContent =
+          "Actualizat: " +
+          t.toLocaleTimeString("ro-RO", {
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+          });
+      } catch (err) {
+        console.error("Eroare updateLivePrice()", err);
+      }
+    }
+
+    /* INITIALIZARE */
+    loadState();
+    updateLivePrice();
+
+    /* REFRESH LA INTERVAL */
+    setInterval(loadState, 5 * 60 * 1000);     // Actualizare mecanism (JSON)
+    setInterval(updateLivePrice, 10 * 1000);   // Preț live la 10 secunde
+  </script>
+
+</body>
+
+</html>
