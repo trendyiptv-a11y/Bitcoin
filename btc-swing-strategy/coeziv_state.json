@@ -1,9 +1,9 @@
 {
   "timestamp": "2025-12-03T00:00:00",
-  "price_usd": 93282.0,
-  "model_price_usd": 93296.33,
+  "price_usd": 93730.0,
+  "model_price_usd": 93941.25,
   "price_source": "spot",
   "signal": "short",
-  "message": "În jurul valorii de ~93,282 USD, mecanismul coeziv detectează riscuri crescute de scădere. Poți vinde sau reduce expunerea.",
-  "generated_at": "2025-12-03T05:28:20.284302+00:00"
+  "message": "În jurul valorii de ~93,730 USD, mecanismul coeziv detectează riscuri crescute de scădere. Poți vinde sau reduce expunerea.",
+  "generated_at": "2025-12-03T06:41:50.070887+00:00"
 }
