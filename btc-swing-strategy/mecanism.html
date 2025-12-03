@@ -35,6 +35,7 @@
     }
 
     .shell { width: 100%; max-width: 520px; }
+
     .title-bar {
       text-align: center;
       margin-bottom: 10px;
@@ -221,8 +222,8 @@
     }
   </style>
 
-  <!-- Lightweight Charts (fără logo TV) -->
-  <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+  <!-- Plotly.js – candlestick compatibil cu toate browserele -->
+  <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
 </head>
 <body>
   <div class="shell">
@@ -261,7 +262,7 @@
         <div class="chart-block">
           <div id="btc-chart"></div>
           <div id="chart-loader" class="chart-loader">
-            Se încarcă graficul BTC (Binance). Dacă nu apare, e posibil ca browserul sau o extensie să blocheze cererile externe.
+            Se încarcă graficul BTC. Dacă nu apare, poate fi o limitare temporară sau o extensie de browser.
           </div>
         </div>
 
@@ -292,7 +293,8 @@
     const SIGNAL_LABEL_EL = document.getElementById("signal-label");
     const CHART_LOADER_EL = document.getElementById("chart-loader");
 
-    const STATE_URL = "coeziv_state.json"; // mecanismul tău
+    // JSON-ul generat de backend (Structura 1)
+    const STATE_URL = "coeziv_state.json";
 
     const USD_FORMATTER = new Intl.NumberFormat("en-US", {
       minimumFractionDigits: 0,
@@ -300,10 +302,13 @@
     });
 
     let SNAPSHOT_PRICE = null;
-    let chart = null;
-    let candleSeries = null;
-    let signalSeries = null;
-    let CANDLES = [];
+
+    // Date OHLC pentru grafic
+    let oTimes = [];
+    let oOpen = [];
+    let oHigh = [];
+    let oLow = [];
+    let oClose = [];
 
     function mapSignal(signal) {
       const s = (signal || "").toLowerCase();
@@ -322,7 +327,7 @@
       });
     }
 
-    // --------- MECANISM JSON ---------
+    // ---------------- MECANISM (JSON) ----------------
 
     async function loadState() {
       try {
@@ -365,7 +370,7 @@
           LIVE_DELTA_EL.classList.remove("positive", "negative");
         }
 
-        updateSignalOverlay();
+        renderChart(); // redesenăm graficul cu linia mecanismului
       } catch (err) {
         console.error(err);
         SNAPSHOT_PRICE = null;
@@ -379,12 +384,12 @@
       }
     }
 
-    // --------- PREȚ LIVE BINANCE ---------
+    // ---------------- PREȚ LIVE BINANCE ----------------
 
     async function updateLivePrice() {
       try {
         const res = await fetch(
-          "https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=5m&limit=288",
+          "https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT",
           { cache: "no-store" }
         );
         if (!res.ok) throw new Error("HTTP " + res.status);
@@ -446,116 +451,127 @@
       }
     }
 
-    // --------- GRAFIC OHLC BINANCE (STABIL) ---------
+    // ---------------- OHLC PENTRU GRAFIC ----------------
 
-    function safeInitChart() {
+    async function fetchOHLC() {
+      // 1) încearcă proxy local /api/ohlc, dacă l-ai creat
       try {
-        if (!window.LightweightCharts) {
-          throw new Error("LightweightCharts nu este disponibil.");
+        const rLocal = await fetch("/api/ohlc");
+        if (rLocal.ok) {
+          return await rLocal.json();
         }
+      } catch (_) {
+        // ignorăm și cădem pe Binance direct
+      }
 
-        const container = document.getElementById("btc-chart");
-        chart = LightweightCharts.createChart(container, {
-          layout: {
-            background: { color: "transparent" },
-            textColor: "#e5e7eb"
-          },
-          grid: {
-            vertLines: { color: "#111827" },
-            horzLines: { color: "#111827" }
-          },
-          rightPriceScale: { borderVisible: false },
-          timeScale: { borderVisible: false }
+      // 2) fallback direct la Binance
+      const r = await fetch(
+        "https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=5m&limit=288",
+        { cache: "no-store" }
+      );
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return r.json();
+    }
+
+    async function loadOHLC() {
+      try {
+        CHART_LOADER_EL.style.display = "flex";
+
+        const rows = await fetchOHLC();
+
+        oTimes = [];
+        oOpen = [];
+        oHigh = [];
+        oLow = [];
+        oClose = [];
+
+        rows.forEach(k => {
+          oTimes.push(new Date(k[0]));
+          oOpen.push(parseFloat(k[1]));
+          oHigh.push(parseFloat(k[2]));
+          oLow.push(parseFloat(k[3]));
+          oClose.push(parseFloat(k[4]));
         });
 
-        candleSeries = chart.addCandlestickSeries({
-          upColor: "#22c55e",
-          downColor: "#ef4444",
-          borderUpColor: "#22c55e",
-          borderDownColor: "#ef4444",
-          wickUpColor: "#22c55e",
-          wickDownColor: "#ef4444"
-        });
-
-        signalSeries = chart.addLineSeries({
-          color: "#38bdf8",
-          lineWidth: 2
-        });
-
-        loadOHLC();
-
-        function resizeChart() {
-          if (!chart) return;
-          const { width, height } = container.getBoundingClientRect();
-          chart.applyOptions({ width, height });
-        }
-
-        window.addEventListener("resize", resizeChart);
-        resizeChart();
+        renderChart();
+        CHART_LOADER_EL.style.display = "none";
       } catch (err) {
-        console.error("Eroare init chart", err);
-        CHART_LOADER_EL.textContent = "Graficul nu poate fi inițializat în acest browser.";
+        console.error("Eroare la OHLC", err);
+        CHART_LOADER_EL.textContent =
+          "Nu am putut încărca graficul BTC. Poate fi o limitare temporară sau o extensie de browser.";
       }
     }
 
-    function loadOHLC() {
-      fetch("https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=5m&limit=288", {
-        cache: "no-store"
-      })
-        .then((r) => {
-          if (!r.ok) throw new Error("HTTP " + r.status);
-          return r.json();
-        })
-        .then((rows) => {
-          CANDLES = rows.map((k) => ({
-            time: Math.floor(k[0] / 1000),
-            open: parseFloat(k[1]),
-            high: parseFloat(k[2]),
-            low: parseFloat(k[3]),
-            close: parseFloat(k[4])
-          }));
-          candleSeries.setData(CANDLES);
-          chart.timeScale().fitContent();
-          CHART_LOADER_EL.style.display = "none";
-          updateSignalOverlay();
-        })
-        .catch((err) => {
-          console.error("Eroare la OHLC Binance", err);
-          CHART_LOADER_EL.textContent =
-            "Nu am putut încărca graficul din Binance. Poate fi o limitare temporară sau o extensie de browser.";
-        });
-    }
+    // ---------------- RENDER GRAFIC PLOTLY ----------------
 
-    function updateSignalOverlay() {
-      if (
-        !signalSeries ||
-        !CANDLES.length ||
-        typeof SNAPSHOT_PRICE !== "number" ||
-        !Number.isFinite(SNAPSHOT_PRICE)
-      ) {
-        return;
+    function renderChart() {
+      const el = document.getElementById("btc-chart");
+      if (!el || !window.Plotly) return;
+      if (!oTimes.length) return; // încă nu avem date OHLC
+
+      const candleTrace = {
+        x: oTimes,
+        open: oOpen,
+        high: oHigh,
+        low: oLow,
+        close: oClose,
+        type: "candlestick",
+        name: "BTCUSDT",
+        increasing: { line: { color: "#22c55e" } },
+        decreasing: { line: { color: "#ef4444" } }
+      };
+
+      const traces = [candleTrace];
+
+      if (typeof SNAPSHOT_PRICE === "number" && Number.isFinite(SNAPSHOT_PRICE)) {
+        const lineTrace = {
+          x: [oTimes[0], oTimes[oTimes.length - 1]],
+          y: [SNAPSHOT_PRICE, SNAPSHOT_PRICE],
+          type: "scatter",
+          mode: "lines",
+          line: { color: "#38bdf8", width: 2, dash: "dot" },
+          name: "Preț mecanism"
+        };
+        traces.push(lineTrace);
       }
 
-      const lineData = CANDLES.map((c) => ({
-        time: c.time,
-        value: SNAPSHOT_PRICE
-      }));
-      signalSeries.setData(lineData);
+      const layout = {
+        margin: { l: 40, r: 8, t: 10, b: 25 },
+        paper_bgcolor: "rgba(15,23,42,0)",
+        plot_bgcolor: "rgba(15,23,42,0)",
+        xaxis: {
+          showgrid: false,
+          zeroline: false,
+          tickfont: { color: "#9ca3af" }
+        },
+        yaxis: {
+          showgrid: true,
+          gridcolor: "#111827",
+          tickfont: { color: "#9ca3af" }
+        },
+        showlegend: false
+      };
+
+      const config = {
+        displayModeBar: false,
+        responsive: true
+      };
+
+      Plotly.newPlot(el, traces, layout, config);
     }
 
-    // --------- PORNIRE INTERVALE ---------
+    // ---------------- START ----------------
 
     function start() {
       loadState();
       updateLivePrice();
-      safeInitChart();
+      loadOHLC();
 
       setInterval(updateLivePrice, 10 * 1000);
       setInterval(loadState, 5 * 60 * 1000);
       setInterval(loadOHLC, 60 * 1000);
     }
 
-    // rulăm după ce DOM-ul este gata
     document.addEventListener("DOMContentLoaded", start);
   </script>
 </body>
