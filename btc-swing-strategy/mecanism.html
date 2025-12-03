@@ -170,6 +170,17 @@
     .live-delta.positive { color: #4ade80; }
     .live-delta.negative { color: #fb7185; }
 
+    .deviation-status {
+      margin-top: 4px;
+      font-size: 11px;
+      text-align: center;
+      color: var(--text-soft);
+    }
+    .deviation-status.dev-normal { color: #9ca3af; }
+    .deviation-status.dev-mild { color: #22c55e; }
+    .deviation-status.dev-tension { color: #facc15; }
+    .deviation-status.dev-extreme { color: #f97373; }
+
     .chart-block {
       margin: 14px 0 10px;
       border-radius: 14px;
@@ -396,6 +407,9 @@
           <div id="live-delta" class="live-delta">
             Se compară prețul live cu prețul analizat de mecanism.
           </div>
+          <div id="deviation-status" class="deviation-status">
+            Status deviație: n/a (așteptăm un snapshot al modelului).
+          </div>
         </div>
 
         <div class="chart-block">
@@ -445,6 +459,7 @@
     const PRICE_EL = document.getElementById("price");
     const LIVE_PRICE_EL = document.getElementById("live-price");
     const LIVE_DELTA_EL = document.getElementById("live-delta");
+    const DEV_STATUS_EL = document.getElementById("deviation-status");
     const MSG_EL = document.getElementById("message");
     const META_EL = document.getElementById("meta");
     const ERROR_EL = document.getElementById("error");
@@ -503,6 +518,12 @@
       });
     }
 
+    function resetDeviationStatus(text) {
+      if (!DEV_STATUS_EL) return;
+      DEV_STATUS_EL.classList.remove("dev-normal", "dev-mild", "dev-tension", "dev-extreme");
+      DEV_STATUS_EL.textContent = text || "Status deviație: n/a";
+    }
+
     // ---------------- MECANISM (JSON) ----------------
 
     async function loadState() {
@@ -514,7 +535,8 @@
         if (!res.ok) throw new Error("HTTP " + res.status);
         const state = await res.json();
 
-        const price = state.price_usd;
+        const modelPrice = state.model_price_usd;
+        const fallbackPrice = state.price_usd;
         const message = state.message;
         const ts = state.timestamp;
         const gen = state.generated_at;
@@ -529,9 +551,16 @@
 
         SIGNAL_HISTORY = Array.isArray(history) ? history : [];
 
-        if (typeof price === "number" && Number.isFinite(price) && price > 0) {
-          SNAPSHOT_PRICE = price;
-          PRICE_EL.textContent = USD_FORMATTER.format(price);
+        let displayPrice = null;
+        if (typeof modelPrice === "number" && Number.isFinite(modelPrice) && modelPrice > 0) {
+          displayPrice = modelPrice;
+        } else if (typeof fallbackPrice === "number" && Number.isFinite(fallbackPrice) && fallbackPrice > 0) {
+          displayPrice = fallbackPrice;
+        }
+
+        if (displayPrice !== null) {
+          SNAPSHOT_PRICE = displayPrice;
+          PRICE_EL.textContent = USD_FORMATTER.format(displayPrice);
         } else {
           SNAPSHOT_PRICE = null;
           PRICE_EL.textContent = "–";
@@ -553,6 +582,9 @@
           LIVE_DELTA_EL.textContent =
             "Preț live încărcat. Așteptăm un snapshot de preț valid din mecanism.";
           LIVE_DELTA_EL.classList.remove("positive", "negative");
+          resetDeviationStatus(
+            "Status deviație: n/a (așteptăm un snapshot al modelului)."
+          );
         }
 
         renderChart();
@@ -567,6 +599,9 @@
         MSG_EL.textContent = "Nu am reușit să obținem mesajul coeziv.";
         ERROR_EL.textContent =
           "Nu am putut încărca coeziv_state.json. Verifică workflow-ul de backend.";
+        resetDeviationStatus(
+          "Status deviație: n/a (nu avem date suficiente de la mecanism)."
+        );
       }
     }
 
@@ -601,6 +636,7 @@
           if (diff === 0) {
             LIVE_DELTA_EL.textContent =
               "Prețul live este egal cu prețul analizat de mecanism.";
+            resetDeviationStatus("Status deviație: Normală (fără abatere față de model).");
             renderChart();
             return;
           }
@@ -611,17 +647,28 @@
           const usdStr = USD_FORMATTER.format(Math.abs(diff));
 
           let magnitudeHint;
+          let zoneLabel;
+          let zoneClass;
+
           if (absPct < 0.25) {
             magnitudeHint = "Diferență foarte mică (zgomot normal de piață).";
+            zoneLabel = "Normală (zgomot de piață)";
+            zoneClass = "dev-normal";
           } else if (absPct < 1) {
             magnitudeHint =
               "Mișcare mică; semnalul mecanismului rămâne reperul principal.";
+            zoneLabel = "Controlată";
+            zoneClass = "dev-mild";
           } else if (absPct < 3) {
             magnitudeHint =
               "Mișcare relevantă; poți ajusta timing-ul intrării sau ieșirii.";
+            zoneLabel = "Tensionată";
+            zoneClass = "dev-tension";
           } else {
             magnitudeHint =
               "Mișcare puternică; verifică contextul și lichiditatea.";
+            zoneLabel = "Extremă";
+            zoneClass = "dev-extreme";
           }
 
           LIVE_DELTA_EL.textContent =
@@ -629,10 +676,19 @@
             `${directionWord} prețul mecanismului. ${magnitudeHint}`;
 
           LIVE_DELTA_EL.classList.add(diff > 0 ? "positive" : "negative");
+
+          if (DEV_STATUS_EL) {
+            resetDeviationStatus();
+            DEV_STATUS_EL.classList.add(zoneClass);
+            DEV_STATUS_EL.textContent = `Status deviație: ${zoneLabel}.`;
+          }
         } else {
           LIVE_DELTA_EL.textContent =
             "Preț live încărcat. Așteptăm un snapshot de preț valid din mecanism.";
           LIVE_DELTA_EL.classList.remove("positive", "negative");
+          resetDeviationStatus(
+            "Status deviație: n/a (așteptăm un snapshot al modelului)."
+          );
         }
 
         renderChart();
