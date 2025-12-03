@@ -17,6 +17,7 @@
       --accent-bear: #f97373;
       --accent-neutral: #64748b;
       --accent-live: #38bdf8;
+      --accent-bg-chip: rgba(15,23,42,0.9);
     }
 
     * { box-sizing: border-box; }
@@ -53,6 +54,7 @@
       padding: 20px;
       position: relative;
       overflow: hidden;
+      margin-bottom: 14px;
     }
 
     .card::before {
@@ -60,12 +62,18 @@
       position: absolute;
       inset: 0;
       pointer-events: none;
-      opacity: .14;
+      opacity: .12;
       background:
         radial-gradient(circle at 0 0, rgba(148, 163, 184, .7), transparent 55%);
     }
 
     .card-inner { position: relative; z-index: 1; }
+
+    .card-secondary::before {
+      opacity: .06;
+      background:
+        radial-gradient(circle at 100% 0, rgba(37, 99, 235, .35), transparent 55%);
+    }
 
     .asset-row {
       display: flex;
@@ -115,7 +123,7 @@
       align-items: center;
       gap: 6px;
       white-space: nowrap;
-      background: rgba(15,23,42,0.9);
+      background: var(--accent-bg-chip);
     }
 
     .signal-dot {
@@ -213,6 +221,137 @@
       text-align: center;
     }
 
+    /* Card istoric */
+
+    .history-header {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 10px;
+    }
+
+    .history-title {
+      font-size: 13px;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .history-subtitle {
+      font-size: 12px;
+      color: var(--text-soft);
+    }
+
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 10px;
+      max-height: 220px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .history-empty {
+      font-size: 12px;
+      color: var(--text-soft);
+      text-align: center;
+      padding: 12px 6px;
+    }
+
+    .history-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 10px;
+      border-radius: 10px;
+      background: rgba(15,23,42,0.9);
+      border: 1px solid rgba(31,41,55,0.9);
+      font-size: 11px;
+    }
+
+    .history-left {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .history-date {
+      color: var(--text-main);
+      font-weight: 500;
+    }
+
+    .history-signal-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--accent-neutral);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      background: rgba(15,23,42,0.95);
+    }
+
+    .history-signal-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--accent-neutral);
+    }
+
+    .history-signal-long {
+      border-color: var(--accent-bull);
+      color: var(--accent-bull);
+    }
+    .history-signal-long .history-signal-dot {
+      background: var(--accent-bull);
+    }
+    .history-signal-short {
+      border-color: var(--accent-bear);
+      color: var(--accent-bear);
+    }
+    .history-signal-short .history-signal-dot {
+      background: var(--accent-bear);
+    }
+    .history-signal-flat {
+      border-color: var(--accent-neutral);
+      color: var(--accent-neutral);
+    }
+
+    .history-right {
+      text-align: right;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .history-price {
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .history-tag {
+      font-size: 10px;
+      color: var(--text-soft);
+    }
+
+    .history-meta {
+      font-size: 11px;
+      color: var(--text-soft);
+      text-align: center;
+    }
+
+    .history-meta span {
+      white-space: nowrap;
+    }
+
+    .history-meta-dot {
+      margin: 0 4px;
+      opacity: .6;
+    }
+
     @media (max-width: 480px) {
       .card { padding: 18px 16px 16px; border-radius: 20px; }
       .price-value { font-size: 34px; }
@@ -222,13 +361,13 @@
     }
   </style>
 
-  <!-- Plotly.js – compatibil cu toate browserele -->
   <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
 </head>
 <body>
   <div class="shell">
     <div class="title-bar">MECANISM COEZIV BTC</div>
 
+    <!-- CARD PRINCIPAL: Semnal curent + grafic -->
     <div class="card">
       <div class="card-inner">
         <div class="asset-row">
@@ -279,6 +418,26 @@
         <div id="error" class="error"></div>
       </div>
     </div>
+
+    <!-- CARD SECUNDAR: Istoric semnale + info -->
+    <div class="card card-secondary">
+      <div class="card-inner">
+        <div class="history-header">
+          <div class="history-title">ISTORIC SEMNALE</div>
+          <div class="history-subtitle">
+            Ultimele snapshot-uri ale mecanismului. Nu sunt semnale de intrare automată, ci context.
+          </div>
+        </div>
+
+        <div id="history-list" class="history-list">
+          <div class="history-empty">
+            Istoricul nu este disponibil încă. Va apărea după următorul update al mecanismului.
+          </div>
+        </div>
+
+        <div id="history-meta" class="history-meta"></div>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -293,7 +452,9 @@
     const SIGNAL_LABEL_EL = document.getElementById("signal-label");
     const CHART_LOADER_EL = document.getElementById("chart-loader");
 
-    // JSON-ul mecanismului (Structura 1)
+    const HISTORY_LIST_EL = document.getElementById("history-list");
+    const HISTORY_META_EL = document.getElementById("history-meta");
+
     const STATE_URL = "coeziv_state.json";
 
     const USD_FORMATTER = new Intl.NumberFormat("en-US", {
@@ -303,7 +464,9 @@
 
     let SNAPSHOT_PRICE = null;
     let LIVE_PRICE = null;
-    let LAST_SIGNAL_RAW = null; // "long" / "short" / "flat"
+    let LAST_SIGNAL_RAW = null;
+    let LAST_SNAPSHOT_TIME = null;
+    let SIGNAL_HISTORY = [];
 
     // OHLC arrays
     let oTimes = [];
@@ -330,7 +493,17 @@
       });
     }
 
-    // ------------- MECANISM (JSON) -------------
+    function formatShortDate(iso) {
+      if (!iso) return "n/a";
+      const d = new Date(iso);
+      if (Number.isNaN(d.getTime())) return "n/a";
+      return d.toLocaleString("ro-RO", {
+        day: "2-digit", month: "2-digit",
+        hour: "2-digit", minute: "2-digit"
+      });
+    }
+
+    // ---------------- MECANISM (JSON) ----------------
 
     async function loadState() {
       try {
@@ -346,8 +519,15 @@
         const ts = state.timestamp;
         const gen = state.generated_at;
         const signal = state.signal;
+        const history = state.signal_history;
 
         LAST_SIGNAL_RAW = (signal || "").toLowerCase();
+        LAST_SNAPSHOT_TIME = ts ? new Date(ts) : null;
+        if (LAST_SNAPSHOT_TIME && Number.isNaN(LAST_SNAPSHOT_TIME.getTime())) {
+          LAST_SNAPSHOT_TIME = null;
+        }
+
+        SIGNAL_HISTORY = Array.isArray(history) ? history : [];
 
         if (typeof price === "number" && Number.isFinite(price) && price > 0) {
           SNAPSHOT_PRICE = price;
@@ -375,7 +555,8 @@
           LIVE_DELTA_EL.classList.remove("positive", "negative");
         }
 
-        renderChart(); // redesenăm graficul cu linia mecanismului și markerul
+        renderChart();
+        renderHistory();
       } catch (err) {
         console.error(err);
         SNAPSHOT_PRICE = null;
@@ -389,7 +570,7 @@
       }
     }
 
-    // ------------- PREȚ LIVE BINANCE -------------
+    // ---------------- PREȚ LIVE BINANCE ----------------
 
     async function updateLivePrice() {
       try {
@@ -420,7 +601,7 @@
           if (diff === 0) {
             LIVE_DELTA_EL.textContent =
               "Prețul live este egal cu prețul analizat de mecanism.";
-            renderChart(); // actualizăm linia de preț live
+            renderChart();
             return;
           }
 
@@ -454,26 +635,22 @@
           LIVE_DELTA_EL.classList.remove("positive", "negative");
         }
 
-        renderChart(); // linia de preț live
+        renderChart();
       } catch (err) {
         console.error("Eroare preț live Binance", err);
       }
     }
 
-    // ------------- OHLC PENTRU GRAFIC -------------
+    // ---------------- OHLC PENTRU GRAFIC ----------------
 
     async function fetchOHLC() {
-      // 1) încearcă proxy local /api/ohlc, dacă există
       try {
         const rLocal = await fetch("/api/ohlc");
         if (rLocal.ok) {
           return await rLocal.json();
         }
-      } catch (_) {
-        // ignorăm și cădem pe Binance direct
-      }
+      } catch (_) {}
 
-      // 2) fallback direct la Binance
       const r = await fetch(
         "https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=5m&limit=288",
         { cache: "no-store" }
@@ -513,12 +690,12 @@
       }
     }
 
-    // ------------- RENDER GRAFIC PLOTLY + VOLUM + LINII -------------
+    // ---------------- RENDER GRAFIC PLOTLY ----------------
 
     function renderChart() {
       const el = document.getElementById("btc-chart");
       if (!el || !window.Plotly) return;
-      if (!oTimes.length) return; // încă nu avem date
+      if (!oTimes.length) return;
 
       const candleTrace = {
         x: oTimes,
@@ -533,10 +710,9 @@
         yaxis: "y"
       };
 
-      // volum colorat în funcție de direcție
-      const volColors = oClose.map((c, i) => (
+      const volColors = oClose.map((c, i) =>
         c >= oOpen[i] ? "rgba(34,197,94,0.5)" : "rgba(239,68,68,0.5)"
-      ));
+      );
 
       const volumeTrace = {
         x: oTimes,
@@ -549,7 +725,6 @@
 
       const traces = [candleTrace, volumeTrace];
 
-      // linia prețului mecanismului
       if (typeof SNAPSHOT_PRICE === "number" && Number.isFinite(SNAPSHOT_PRICE)) {
         const lineTrace = {
           x: [oTimes[0], oTimes[oTimes.length - 1]],
@@ -563,7 +738,6 @@
         traces.push(lineTrace);
       }
 
-      // linia prețului live (ultimul preț cunoscut)
       if (typeof LIVE_PRICE === "number" && Number.isFinite(LIVE_PRICE)) {
         const liveTrace = {
           x: [oTimes[0], oTimes[oTimes.length - 1]],
@@ -577,30 +751,28 @@
         traces.push(liveTrace);
       }
 
-      // marker pentru semnal (pe ultima lumânare)
       if (LAST_SIGNAL_RAW === "long" || LAST_SIGNAL_RAW === "short") {
         const lastIdx = oTimes.length - 1;
-        const basePrice = oClose[lastIdx];
-        const offset = basePrice * 0.002; // 0.2%
-
-        const yMark = LAST_SIGNAL_RAW === "long"
-          ? basePrice - offset
-          : basePrice + offset;
+        const price = oClose[lastIdx];
 
         const markerTrace = {
           x: [oTimes[lastIdx]],
-          y: [yMark],
+          y: [price],
           type: "scatter",
-          mode: "markers",
+          mode: "markers+text",
           marker: {
-            symbol: LAST_SIGNAL_RAW === "long" ? "triangle-up" : "triangle-down",
-            size: 12,
+            symbol: "hexagon",
+            size: 18,
             color: LAST_SIGNAL_RAW === "long" ? "#22c55e" : "#f97373",
-            line: { width: 1, color: "#020617" }
+            line: { width: 2, color: "#020617" }
           },
-          name: "Semnal mecanism",
+          text: [LAST_SIGNAL_RAW.toUpperCase()],
+          textposition: "top center",
+          textfont: { color: "#ffffff", size: 10 },
+          name: "Semnal",
           yaxis: "y"
         };
+
         traces.push(markerTrace);
       }
 
@@ -637,14 +809,112 @@
       };
 
       const config = {
-        displayModeBar: false,
+        displayModeBar: true,
+        displaylogo: false,
+        scrollZoom: true,
+        modeBarButtonsToRemove: ["select2d", "lasso2d"],
         responsive: true
       };
 
       Plotly.newPlot(el, traces, layout, config);
     }
 
-    // ------------- START  -------------
+    // ---------------- ISTORIC SEMNALE (CARD 2) ----------------
+
+    function renderHistory() {
+      if (!HISTORY_LIST_EL) return;
+
+      HISTORY_LIST_EL.innerHTML = "";
+
+      if (!Array.isArray(SIGNAL_HISTORY) || SIGNAL_HISTORY.length === 0) {
+        HISTORY_LIST_EL.innerHTML =
+          '<div class="history-empty">Istoricul nu este disponibil încă. Va apărea după următorul update al mecanismului.</div>';
+        if (HISTORY_META_EL) HISTORY_META_EL.textContent = "";
+        return;
+      }
+
+      const maxItems = Math.min(SIGNAL_HISTORY.length, 8);
+      const items = SIGNAL_HISTORY.slice(-maxItems).reverse();
+
+      let countLong = 0;
+      let countShort = 0;
+      let countFlat = 0;
+
+      items.forEach(entry => {
+        if (!entry) return;
+        const sig = String(entry.signal || "").toLowerCase();
+        const ts = entry.timestamp;
+        const price = entry.model_price_usd;
+
+        if (sig === "long") countLong++;
+        else if (sig === "short") countShort++;
+        else countFlat++;
+
+        const row = document.createElement("div");
+        row.className = "history-row";
+
+        const left = document.createElement("div");
+        left.className = "history-left";
+
+        const dateEl = document.createElement("div");
+        dateEl.className = "history-date";
+        dateEl.textContent = formatShortDate(ts);
+
+        const sigChip = document.createElement("div");
+        sigChip.className = "history-signal-chip";
+        if (sig === "long") sigChip.classList.add("history-signal-long");
+        else if (sig === "short") sigChip.classList.add("history-signal-short");
+        else sigChip.classList.add("history-signal-flat");
+
+        const dot = document.createElement("span");
+        dot.className = "history-signal-dot";
+
+        const label = document.createElement("span");
+        label.textContent = sig.toUpperCase();
+
+        sigChip.appendChild(dot);
+        sigChip.appendChild(label);
+
+        left.appendChild(dateEl);
+        left.appendChild(sigChip);
+
+        const right = document.createElement("div");
+        right.className = "history-right";
+
+        const priceEl = document.createElement("div");
+        priceEl.className = "history-price";
+        if (typeof price === "number" && Number.isFinite(price)) {
+          priceEl.textContent = USD_FORMATTER.format(price) + " USD";
+        } else {
+          priceEl.textContent = "–";
+        }
+
+        const tagEl = document.createElement("div");
+        tagEl.className = "history-tag";
+        tagEl.textContent = "Preț model la snapshot";
+
+        right.appendChild(priceEl);
+        right.appendChild(tagEl);
+
+        row.appendChild(left);
+        row.appendChild(right);
+
+        HISTORY_LIST_EL.appendChild(row);
+      });
+
+      if (HISTORY_META_EL) {
+        HISTORY_META_EL.innerHTML =
+          `<span>Total semnale: ${SIGNAL_HISTORY.length}</span>` +
+          `<span class="history-meta-dot">•</span>` +
+          `<span>Long: ${countLong}</span>` +
+          `<span class="history-meta-dot">•</span>` +
+          `<span>Short: ${countShort}</span>` +
+          `<span class="history-meta-dot">•</span>` +
+          `<span>Flat: ${countFlat}</span>`;
+      }
+    }
+
+    // ---------------- START ----------------
 
     function start() {
       loadState();
