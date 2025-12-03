@@ -91,4 +91,4 @@ jobs:
           commit_message: "Update coeziv_state.json (BTC)"
           branch: main
           file_pattern: "btc-swing-strategy/coeziv_state.json"
-          skip_dirty: true
+          skip_dirty_check: true
