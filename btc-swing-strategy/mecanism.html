@@ -216,6 +216,20 @@
       color: #fb7185;
     }
 
+    /* blocul de chart */
+    .chart-block {
+      margin: 12px 0 6px;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid rgba(30, 64, 175, 0.35);
+      background: radial-gradient(circle at 20% 0, rgba(37, 99, 235, 0.24), rgba(15, 23, 42, 0.95));
+    }
+
+    #btc-chart {
+      width: 100%;
+      height: 220px;
+    }
+
     .message {
       font-size: 14px;
       line-height: 1.5;
@@ -263,8 +277,14 @@
       .live-row {
         font-size: 11px;
       }
+      #btc-chart {
+        height: 190px;
+      }
     }
   </style>
+
+  <!-- TradingView Lightweight Charts -->
+  <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
 </head>
 <body>
   <div class="shell">
@@ -303,6 +323,11 @@
           </div>
         </div>
 
+        <!-- chart-ul tip TradingView -->
+        <div class="chart-block">
+          <div id="btc-chart"></div>
+        </div>
+
         <div id="message" class="message">
           Se încarcă mesajul coeziv...
         </div>
@@ -329,9 +354,9 @@
     const LIVE_PRICE_EL = document.getElementById("live-price");
     const LIVE_DELTA_EL = document.getElementById("live-delta");
 
+    // IMPORTANT: fișierul JSON este în folderul btc-swing-strategy
     const STATE_URL = "btc-swing-strategy/coeziv_state.json";
 
-    // Formatter reutilizabil pentru USD, fără zecimale
     const USD_FORMATTER = new Intl.NumberFormat("en-US", {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0
@@ -359,7 +384,8 @@
         month: "2-digit",
         day: "2-digit",
         hour: "2-digit",
-        minute: "2-digit"
+        minute: "2-digit",
+        timeZone: "Europe/Bucharest"
       });
     }
 
@@ -368,7 +394,6 @@
         ERROR_EL.textContent = "";
         MSG_EL.textContent = "Se încarcă mesajul coeziv...";
 
-        // cache-busting
         const url = STATE_URL + "?t=" + Date.now();
         const res = await fetch(url, { cache: "no-store" });
         if (!res.ok) {
@@ -382,7 +407,6 @@
         const gen = state.generated_at;
         const signal = state.signal;
 
-        // preț snapshot (folosit de mecanism)
         if (typeof price === "number" && Number.isFinite(price) && price > 0) {
           SNAPSHOT_PRICE = price;
           PRICE_EL.textContent = USD_FORMATTER.format(price);
@@ -391,28 +415,27 @@
           PRICE_EL.textContent = "–";
         }
 
-        // mesaj coeziv (din backend)
         MSG_EL.textContent = message || "Nu există mesaj coeziv pentru acest moment.";
 
-        // semnal
         const mapped = mapSignal(signal);
         SIGNAL_LABEL_EL.textContent = mapped.label;
         SIGNAL_CHIP_EL.classList.remove("bullish", "bearish", "neutral");
         SIGNAL_CHIP_EL.classList.add(mapped.tone);
         SIGNAL_CHIP_EL.setAttribute("aria-label", mapped.label);
 
-        // meta (timp)
         META_EL.innerHTML =
           `<span>Snapshot: ${formatDate(ts)}</span>` +
           `<span class="meta-dot">•</span>` +
           `<span>Generat: ${formatDate(gen)}</span>`;
 
-        // dacă nu avem snapshot valid, clarificăm mesajul pentru live delta
         if (SNAPSHOT_PRICE === null) {
           LIVE_DELTA_EL.textContent =
             "Așteptăm un snapshot de preț valid din mecanism.";
           LIVE_DELTA_EL.classList.remove("positive", "negative");
         }
+
+        // la fiecare update al state-ului, actualizăm și overlay-ul de semnal pe chart
+        updateSignalOverlay();
       } catch (err) {
         console.error(err);
 
@@ -441,7 +464,6 @@
         if (typeof live === "number" && Number.isFinite(live)) {
           LIVE_PRICE_EL.textContent = USD_FORMATTER.format(live);
 
-          // dacă avem și snapshot valid, arătăm diferența într-un mod util pentru trader
           if (
             typeof SNAPSHOT_PRICE === "number" &&
             Number.isFinite(SNAPSHOT_PRICE) &&
@@ -495,11 +517,107 @@
         }
       } catch (err) {
         console.error("Nu am putut obține prețul live BTC", err);
-        // nu afișăm eroare mare în UI, doar lăsăm ultima valoare live
       }
     }
 
-    // gestionăm intervalele în funcție de vizibilitatea tab-ului
+    // --------------- GRAFIC TIP TRADINGVIEW -----------------
+
+    let chart = null;
+    let candleSeries = null;
+    let signalSeries = null;
+    let CANDLE_DATA = [];
+
+    function initChart() {
+      const container = document.getElementById("btc-chart");
+      if (!container) return;
+
+      chart = LightweightCharts.createChart(container, {
+        layout: {
+          background: { color: "transparent" },
+          textColor: "#e5e7eb"
+        },
+        grid: {
+          vertLines: { color: "#1e293b" },
+          horzLines: { color: "#111827" }
+        },
+        rightPriceScale: {
+          borderVisible: false
+        },
+        timeScale: {
+          borderVisible: false
+        },
+        crosshair: {
+          mode: LightweightCharts.CrosshairMode.Normal
+        }
+      });
+
+      candleSeries = chart.addCandlestickSeries({
+        upColor: "#22c55e",
+        downColor: "#ef4444",
+        borderUpColor: "#22c55e",
+        borderDownColor: "#ef4444",
+        wickUpColor: "#22c55e",
+        wickDownColor: "#ef4444"
+      });
+
+      // OHLC BTC 24h din CoinGecko (interval ~5min)
+      fetch("https://api.coingecko.com/api/v3/coins/bitcoin/ohlc?vs_currency=usd&days=1", {
+        cache: "no-store"
+      })
+        .then((r) => {
+          if (!r.ok) throw new Error("HTTP " + r.status);
+          return r.json();
+        })
+        .then((rows) => {
+          CANDLE_DATA = rows.map((x) => ({
+            time: Math.floor(x[0] / 1000),
+            open: x[1],
+            high: x[2],
+            low: x[3],
+            close: x[4]
+          }));
+          candleSeries.setData(CANDLE_DATA);
+          chart.timeScale().fitContent();
+          // după ce avem date, putem desena și linia de semnal
+          updateSignalOverlay();
+        })
+        .catch((err) => {
+          console.error("Eroare la încărcarea datelor OHLC BTC", err);
+        });
+
+      // responsive
+      function resizeChart() {
+        if (!chart) return;
+        const { width, height } = container.getBoundingClientRect();
+        chart.applyOptions({ width, height });
+      }
+
+      window.addEventListener("resize", resizeChart);
+      resizeChart();
+    }
+
+    function updateSignalOverlay() {
+      if (!chart || !candleSeries || !CANDLE_DATA.length) return;
+      if (typeof SNAPSHOT_PRICE !== "number" || !Number.isFinite(SNAPSHOT_PRICE)) return;
+
+      // dacă nu există încă, creăm seria de semnal
+      if (!signalSeries) {
+        signalSeries = chart.addLineSeries({
+          lineWidth: 2,
+          color: "#f97373"
+        });
+      }
+
+      // linie orizontală la prețul mecanismului, pe tot istoricul recent
+      const lineData = CANDLE_DATA.map((p) => ({
+        time: p.time,
+        value: SNAPSHOT_PRICE
+      }));
+      signalSeries.setData(lineData);
+    }
+
+    // ----------------- INTERVALE & INIT -----------------
+
     let stateInterval = null;
     let liveInterval = null;
 
@@ -533,7 +651,8 @@
       }
     });
 
-    // load inițial și pornire intervale
+    // load inițial & chart
+    initChart();
     loadState();
     updateLivePrice();
     startIntervals();
