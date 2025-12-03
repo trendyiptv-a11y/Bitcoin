@@ -384,7 +384,7 @@
     async function updateLivePrice() {
       try {
         const res = await fetch(
-          "/api/ohlc",
+          "https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=5m&limit=288",
           { cache: "no-store" }
         );
         if (!res.ok) throw new Error("HTTP " + res.status);
