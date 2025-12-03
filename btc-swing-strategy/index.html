@@ -370,7 +370,7 @@
         ERROR_EL.textContent = "";
         MSG_EL.textContent = "Se încarcă mesajul coeziv...";
 
-        const res = await fetch("btc-swing-strategy/coeziv_state.json", { cache: "no-store" });
+        const res = await fetch("coeziv_state.json", { cache: "no-store" });
         if (!res.ok) {
           throw new Error("HTTP " + res.status);
         }
