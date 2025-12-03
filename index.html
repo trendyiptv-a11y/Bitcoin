@@ -2,1306 +2,661 @@
 <html lang="ro">
 <head>
   <meta charset="UTF-8" />
-  <title>CohesivX BTC API – Bitcoin Structural Risk Index</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta
-    name="description"
-    content="CohesivX BTC API – indice coeziv Bitcoin cu structură, direcționalitate și regim, disponibil ca API enterprise pentru platforme crypto, fintech și desk-uri de research."
-  />
-
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-    rel="stylesheet"
-  />
+  <title>Mecanism Coeziv BTC</title>
 
   <style>
     :root {
-      --bg: #020617;
-      --bg-soft: #020617;
-      --bg-elevated: #020b1a;
-      --card: #020b1f;
-      --border-subtle: rgba(148, 163, 184, 0.18);
-      --border-strong: rgba(148, 163, 184, 0.35);
-      --accent: #38bdf8;
-      --accent-strong: #22c55e;
-      --accent-soft: rgba(56, 189, 248, 0.18);
-      --danger: #fb7185;
-      --text: #e5e7eb;
-      --text-soft: #9ca3af;
-      --text-muted: #6b7280;
-      --text-strong: #f9fafb;
-      --radius-xl: 1.5rem;
-      --radius-lg: 1.1rem;
-      --radius-pill: 999px;
-      --shadow-soft: 0 28px 80px rgba(15, 23, 42, 0.88);
+      --bg-main: #020617;
+      --bg-card: rgba(15, 23, 42, 0.96);
+      --border-card: #1f2937;
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --text-soft: #6b7280;
+      --accent-bull: #22c55e;
+      --accent-bear: #f97373;
+      --accent-neutral: #64748b;
+      --accent-live: #38bdf8;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
-    html,
     body {
       margin: 0;
-      padding: 0;
-      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont,
-        "SF Pro Text", "Segoe UI", sans-serif;
-      background:
-        radial-gradient(circle at top, #0f172a 0, #020617 40%, #000 100%);
-      color: var(--text);
-      -webkit-font-smoothing: antialiased;
-      scroll-behavior: smooth;
-    }
-
-    body {
       min-height: 100vh;
-    }
-
-    a {
-      color: inherit;
-    }
-
-    .shell {
-      max-width: 1120px;
-      margin: 0 auto;
-      padding: 1.25rem 1rem 3.5rem;
-    }
-
-    @media (min-width: 1024px) {
-      .shell {
-        padding: 1.8rem 0.75rem 4rem;
-      }
-    }
-
-    header.nav {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1.5rem;
-      margin-bottom: 1.6rem;
-      position: relative;
-      z-index: 10;
-    }
-
-    .brand {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.6rem;
-      flex-shrink: 0;
-    }
-
-    .brand-mark {
-      width: 1.9rem;
-      height: 1.9rem;
-      border-radius: 0.9rem;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background:
-        conic-gradient(
-          from 220deg,
-          #22c55e,
-          #38bdf8,
-          #6366f1,
-          #22c55e
-        );
-      box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.8),
-        0 0 24px rgba(56, 189, 248, 0.6);
+        radial-gradient(circle at 10% -10%, #0f172a 0, transparent 55%),
+        radial-gradient(circle at 90% 110%, #020617 0, #000 60%);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .shell { width: 100%; max-width: 520px; }
+
+    .title-bar {
+      text-align: center;
+      margin-bottom: 10px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      font-size: 14px;
+      color: var(--text-soft);
+    }
+
+    .card {
+      background: var(--bg-card);
+      border-radius: 24px;
+      border: 1px solid var(--border-card);
+      box-shadow: 0 28px 80px rgba(0, 0, 0, 0.9);
+      padding: 20px;
       position: relative;
       overflow: hidden;
     }
 
-    .brand-mark::after {
+    .card::before {
       content: "";
       position: absolute;
-      inset: 22%;
-      border-radius: inherit;
-      background: radial-gradient(circle at 30% 0, #0f172a 0, #020617 60%);
+      inset: 0;
+      pointer-events: none;
+      opacity: .14;
+      background:
+        radial-gradient(circle at 0 0, rgba(148, 163, 184, .7), transparent 55%);
     }
 
-    .brand-text-main {
-      font-size: 0.98rem;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--text-strong);
-    }
+    .card-inner { position: relative; z-index: 1; }
 
-    .brand-text-sub {
-      font-size: 0.72rem;
-      color: var(--text-soft);
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-    }
-
-    nav ul {
-      list-style: none;
+    .asset-row {
       display: flex;
-      gap: 1.1rem;
-      padding: 0;
-      margin: 0;
-      font-size: 0.82rem;
-      color: var(--text-soft);
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
     }
 
-    nav a {
-      text-decoration: none;
-      padding: 0.35rem 0.2rem;
-      border-radius: 999px;
-    }
-
-    nav a:hover {
-      color: var(--text-strong);
-    }
-
-    .cta-row {
+    .asset-main {
       display: flex;
       align-items: center;
-      gap: 0.65rem;
-      flex-shrink: 0;
+      gap: 10px;
     }
 
-    .btn-primary,
-    .btn-outline {
-      border-radius: var(--radius-pill);
-      padding: 0.45rem 1.1rem;
-      font-size: 0.82rem;
-      border: 1px solid transparent;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      cursor: pointer;
-      white-space: nowrap;
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, #22c55e, #38bdf8);
-      color: #020617;
-      font-weight: 600;
-      box-shadow: 0 14px 40px rgba(34, 197, 94, 0.35);
-    }
-
-    .btn-primary span.icon {
-      font-size: 1rem;
-      transform: translateY(0.5px);
-    }
-
-    .btn-outline {
-      border-color: rgba(148, 163, 184, 0.5);
-      color: var(--text-soft);
-      background: rgba(15, 23, 42, 0.85);
-    }
-
-    .btn-outline:hover {
-      border-color: rgba(148, 163, 184, 0.8);
-      color: var(--text-strong);
-    }
-
-    /* mobile menu toggle */
-    .menu-toggle {
-      display: none;
-      border: 1px solid rgba(148, 163, 184, 0.45);
+    .asset-logo {
+      width: 28px;
+      height: 28px;
       border-radius: 999px;
-      background: rgba(15, 23, 42, 0.9);
-      width: 2.25rem;
-      height: 2.25rem;
+      background: radial-gradient(circle at 30% 0, #facc15, #f97316);
+      color: #0f172a;
+      display: flex;
       align-items: center;
       justify-content: center;
-      padding: 0;
-      cursor: pointer;
+      font-weight: 700;
+      font-size: 15px;
     }
 
-    .menu-toggle-bars {
-      width: 1.2rem;
-      height: 0.9rem;
-      position: relative;
-    }
-
-    .menu-toggle-bars span {
-      position: absolute;
-      left: 0;
-      right: 0;
-      height: 2px;
-      border-radius: 999px;
-      background: var(--text-soft);
-      transition: transform 0.2s ease, opacity 0.2s ease, top 0.2s ease,
-        bottom 0.2s ease;
-    }
-
-    .menu-toggle-bars span:nth-child(1) {
-      top: 0;
-    }
-    .menu-toggle-bars span:nth-child(2) {
-      top: 50%;
-      transform: translateY(-50%);
-    }
-    .menu-toggle-bars span:nth-child(3) {
-      bottom: 0;
-    }
-
-    body.menu-open .menu-toggle-bars span:nth-child(1) {
-      top: 50%;
-      transform: translateY(-50%) rotate(45deg);
-    }
-    body.menu-open .menu-toggle-bars span:nth-child(2) {
-      opacity: 0;
-    }
-    body.menu-open .menu-toggle-bars span:nth-child(3) {
-      bottom: 50%;
-      transform: translateY(50%) rotate(-45deg);
-    }
-
-    /* hero */
-    .hero {
-      margin-top: 0.8rem;
-      margin-bottom: 2.1rem;
-      display: grid;
-      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.1fr);
-      gap: 1.4rem;
-    }
-
-    @media (max-width: 880px) {
-      .hero {
-        grid-template-columns: minmax(0, 1fr);
-      }
-    }
-
-    .hero-left h1 {
-      margin: 0 0 0.75rem;
-      font-size: clamp(2rem, 3vw, 2.4rem);
-      line-height: 1.12;
-      letter-spacing: 0.03em;
-      text-transform: uppercase;
-    }
-
-    .hero-highlight {
-      background: linear-gradient(135deg, #22c55e, #38bdf8);
-      -webkit-background-clip: text;
-      color: transparent;
-    }
-
-    .hero-left p {
-      margin: 0 0 1.1rem;
-      font-size: 0.96rem;
-      color: var(--text-soft);
-      max-width: 34rem;
-      line-height: 1.6;
-    }
-
-    .hero-meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.6rem;
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      margin-top: 0.8rem;
-    }
-
-    .hero-meta span {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.35rem;
-    }
-
-    .hero-dot {
-      width: 0.4rem;
-      height: 0.4rem;
-      border-radius: 999px;
-      background: var(--accent-strong);
-    }
-
-    .hero-right {
-      position: relative;
-    }
-
-    .hero-card {
-      position: relative;
-      border-radius: var(--radius-xl);
-      padding: 1.1rem 1.15rem 1.15rem;
-      background: radial-gradient(circle at top, #020b1f, #020617 60%);
-      border: 1px solid var(--border-subtle);
-      box-shadow: var(--shadow-soft);
-      overflow: hidden;
-    }
-
-    .hero-card::before {
-      content: "";
-      position: absolute;
-      inset: -40%;
-      background:
-        radial-gradient(circle at 0 0, rgba(56, 189, 248, 0.25) 0, transparent 55%);
-      opacity: 0.9;
-      pointer-events: none;
-    }
-
-    .hero-card-header {
-      position: relative;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 0.7rem;
-    }
-
-    .hero-card-title {
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 0.15em;
-      color: var(--text-soft);
-    }
-
-    .hero-chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      padding: 0.25rem 0.7rem;
-      border-radius: var(--radius-pill);
-      border: 1px solid rgba(74, 222, 128, 0.6);
-      background: rgba(22, 163, 74, 0.1);
-      font-size: 0.72rem;
-      color: #bbf7d0;
-    }
-
-    .hero-chip-dot {
-      width: 0.42rem;
-      height: 0.42rem;
-      border-radius: 999px;
-      background: #4ade80;
-    }
-
-    .hero-metric-main {
-      position: relative;
-      display: flex;
-      align-items: baseline;
-      gap: 0.4rem;
-      margin-bottom: 0.35rem;
-    }
-
-    .hero-metric-main span.value {
-      font-size: 2.1rem;
-      font-weight: 650;
-      color: var(--text-strong);
-    }
-
-    .hero-metric-main span.label {
-      font-size: 0.78rem;
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-      color: var(--text-soft);
-    }
-
-    .hero-metric-sub {
-      position: relative;
-      font-size: 0.78rem;
-      color: var(--text-soft);
-      margin-bottom: 0.4rem;
-    }
-
-    .hero-split {
-      position: relative;
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 0.5rem;
-      margin-top: 0.6rem;
-      font-size: 0.78rem;
-    }
-
-    .hero-split-block {
-      padding: 0.5rem 0.55rem;
-      border-radius: 0.9rem;
-      border: 1px solid rgba(148, 163, 184, 0.28);
-      background: radial-gradient(circle at top, rgba(15, 23, 42, 0.7), #020617);
-    }
-
-    .hero-split-label {
-      font-size: 0.72rem;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: var(--text-muted);
-      margin-bottom: 0.12rem;
-    }
-
-    .hero-split-value {
-      font-size: 0.9rem;
-      color: var(--text-strong);
-      font-weight: 500;
-    }
-
-    .hero-regime {
-      position: relative;
-      margin-top: 0.6rem;
-      padding-top: 0.55rem;
-      border-top: 1px dashed rgba(148, 163, 184, 0.35);
-      font-size: 0.78rem;
-      color: var(--text-soft);
-    }
-
-    .hero-regime span.badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.35rem;
-      padding: 0.16rem 0.55rem;
-      border-radius: 999px;
-      border: 1px solid rgba(248, 113, 113, 0.7);
-      background: rgba(127, 29, 29, 0.3);
-      font-size: 0.7rem;
-      color: #fecaca;
-      margin-left: 0.2rem;
-    }
-
-    .hero-regime span.badge-dot {
-      width: 0.4rem;
-      height: 0.4rem;
-      border-radius: 999px;
-      background: var(--danger);
-    }
-
-    /* sections */
-    section {
-      margin-bottom: 2.4rem;
-    }
-
-    .section-label {
-      font-size: 0.78rem;
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-      color: var(--text-muted);
-      margin-bottom: 0.4rem;
-    }
-
-    .section-title {
-      font-size: 1.15rem;
-      color: var(--text-strong);
-      margin: 0 0 0.6rem;
-    }
-
-    .section-sub {
-      font-size: 0.9rem;
-      color: var(--text-soft);
-      max-width: 40rem;
-      margin: 0 0 1.2rem;
-    }
-
-    /* features */
-    .features-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 0.9rem;
-    }
-
-    @media (max-width: 900px) {
-      .features-grid {
-        grid-template-columns: minmax(0, 1fr);
-      }
-    }
-
-    .feature-card {
-      border-radius: var(--radius-lg);
-      border: 1px solid var(--border-subtle);
-      background: radial-gradient(circle at top, #020b1a, #020617 60%);
-      padding: 0.9rem 0.95rem 1rem;
-      font-size: 0.84rem;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .feature-tag {
-      font-size: 0.72rem;
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-      color: var(--text-muted);
-      margin-bottom: 0.3rem;
-    }
-
-    .feature-title {
-      font-size: 0.9rem;
-      margin-bottom: 0.25rem;
-      color: var(--text-strong);
-    }
-
-    .feature-text {
-      color: var(--text-soft);
-      line-height: 1.5;
-    }
-
-    /* API panel */
-    .api-layout {
-      display: grid;
-      grid-template-columns: minmax(0, 1.15fr) minmax(0, 1.1fr);
-      gap: 1rem;
-    }
-
-    @media (max-width: 900px) {
-      .api-layout {
-        grid-template-columns: minmax(0, 1fr);
-      }
-    }
-
-    .code-card {
-      border-radius: var(--radius-xl);
-      border: 1px solid var(--border-strong);
-      background: #020617;
-      box-shadow: var(--shadow-soft);
-      padding: 0.9rem 0.95rem 1rem;
-      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo,
-        Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      font-size: 0.8rem;
-      color: #e5e7eb;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .code-card::before {
-      content: "";
-      position: absolute;
-      inset: -30%;
-      background:
-        radial-gradient(circle at -10% 0, rgba(56, 189, 248, 0.25), transparent 50%);
-      opacity: 0.8;
-      pointer-events: none;
-    }
-
-    pre {
+    .asset-text h1 {
       margin: 0;
-      overflow-x: auto;
-      padding: 0.55rem 0.7rem;
-      border-radius: 0.75rem;
-      background: rgba(15, 23, 42, 0.96);
-      border: 1px solid rgba(15, 23, 42, 0.9);
-    }
-
-    code {
-      font-family: inherit;
-      font-size: 0.78rem;
-      line-height: 1.6;
-    }
-
-    .pill-small {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.35rem;
-      padding: 0.22rem 0.6rem;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.4);
-      font-size: 0.72rem;
-      color: var(--text-soft);
-      margin-bottom: 0.45rem;
-    }
-
-    .pill-small-dot {
-      width: 0.36rem;
-      height: 0.36rem;
-      border-radius: 999px;
-      background: var(--accent);
-    }
-
-    .api-items {
-      display: grid;
-      gap: 0.5rem;
-      font-size: 0.8rem;
-    }
-
-    .api-item-label {
-      font-weight: 500;
-      color: var(--text-strong);
-    }
-
-    .api-item-path {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-        "Liberation Mono", "Courier New", monospace;
-      font-size: 0.78rem;
-      color: var(--text-soft);
-    }
-
-    /* pricing */
-    .pricing-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 0.9rem;
-    }
-
-    @media (max-width: 960px) {
-      .pricing-grid {
-        grid-template-columns: minmax(0, 1fr);
-      }
-    }
-
-    .price-card {
-      border-radius: var(--radius-xl);
-      border: 1px solid var(--border-subtle);
-      background: radial-gradient(circle at top, #020b1a, #020617 60%);
-      padding: 1rem 1.05rem 1.1rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .price-card.highlight {
-      border-color: rgba(56, 189, 248, 0.9);
-      box-shadow: 0 24px 70px rgba(56, 189, 248, 0.5);
-    }
-
-    .price-name {
-      font-size: 0.9rem;
-      color: var(--text-strong);
+      font-size: 18px;
       font-weight: 600;
     }
 
-    .price-desc {
-      font-size: 0.8rem;
-      color: var(--text-soft);
+    .asset-text span {
+      display: block;
+      font-size: 11px;
+      color: var(--text-muted);
     }
+
+    .signal-chip {
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--accent-neutral);
+      color: var(--accent-neutral);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      background: rgba(15,23,42,0.9);
+    }
+
+    .signal-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--accent-neutral);
+    }
+
+    .signal-chip.bullish { border-color: var(--accent-bull); color: var(--accent-bull); }
+    .signal-chip.bullish .signal-dot { background: var(--accent-bull); }
+
+    .signal-chip.bearish { border-color: var(--accent-bear); color: var(--accent-bear); }
+    .signal-chip.bearish .signal-dot { background: var(--accent-bear); }
+
+    .price-block { text-align: center; margin: 16px 0 8px; }
 
     .price-value {
-      font-size: 1.35rem;
-      font-weight: 600;
-      margin-top: 0.2rem;
-      color: var(--text-strong);
+      font-size: 40px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
     }
 
-    .price-value span {
-      font-size: 0.8rem;
+    .currency {
+      font-size: 12px;
       color: var(--text-muted);
-      font-weight: 400;
+      letter-spacing: 0.16em;
+      margin-top: 2px;
     }
 
-    .price-features {
-      margin-top: 0.4rem;
-      font-size: 0.8rem;
+    .live-row {
+      margin-top: 6px;
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .live-label { color: var(--accent-live); }
+    .live-delta {
+      margin-top: 4px;
+      font-size: 11px;
+      text-align: center;
       color: var(--text-soft);
-      padding-left: 1.1rem;
+    }
+    .live-delta.positive { color: #4ade80; }
+    .live-delta.negative { color: #fb7185; }
+
+    .chart-block {
+      margin: 14px 0 10px;
+      border-radius: 14px;
+      border: 1px solid rgba(37, 99, 235, 0.35);
+      overflow: hidden;
+      background: radial-gradient(circle at 20% 0, rgba(37,99,235,0.3), rgba(15,23,42,0.95));
+      height: 230px;
+      position: relative;
     }
 
-    .price-features li {
-      margin-bottom: 0.18rem;
+    #btc-chart {
+      width: 100%;
+      height: 100%;
     }
 
-    .price-cta {
-      margin-top: auto;
-      padding-top: 0.6rem;
-    }
-
-    .btn-small {
-      font-size: 0.8rem;
-      padding: 0.38rem 0.9rem;
-      border-radius: var(--radius-pill);
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      background: rgba(15, 23, 42, 0.92);
-      color: var(--text-soft);
-      text-decoration: none;
-      display: inline-flex;
+    .chart-loader {
+      position: absolute;
+      inset: 0;
+      display: flex;
       align-items: center;
-      gap: 0.3rem;
-    }
-
-    .btn-small.primary {
-      border-color: rgba(56, 189, 248, 0.9);
-      color: var(--accent-strong);
-      background: rgba(15, 23, 42, 0.98);
-    }
-
-    .btn-small span.icon {
-      font-size: 0.9rem;
-      transform: translateY(0.5px);
-    }
-
-    /* FAQ */
-    .faq-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
-      gap: 1rem;
-    }
-
-    @media (max-width: 880px) {
-      .faq-grid {
-        grid-template-columns: minmax(0, 1fr);
-      }
-    }
-
-    .faq-item {
-      padding: 0.7rem 0.1rem;
-      border-bottom: 1px solid rgba(31, 41, 55, 0.7);
-    }
-
-    .faq-q {
-      font-size: 0.9rem;
-      color: var(--text-strong);
-      margin-bottom: 0.25rem;
-    }
-
-    .faq-a {
-      font-size: 0.82rem;
+      justify-content: center;
+      font-size: 11px;
       color: var(--text-soft);
+      pointer-events: none;
+      text-align: center;
+      padding: 0 16px;
+    }
+
+    .message {
+      font-size: 14px;
       line-height: 1.5;
+      text-align: center;
+      margin: 10px 0 14px;
     }
 
-    footer {
-      margin-top: 1.8rem;
-      border-top: 1px solid rgba(15, 23, 42, 0.9);
-      padding-top: 0.9rem;
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.6rem;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    footer a {
-      color: var(--text-soft);
-      text-decoration: none;
-    }
-
-    footer a:hover {
-      color: var(--text-strong);
-    }
-
-    .badges-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.4rem;
-      font-size: 0.72rem;
-    }
-
-    .badge-soft {
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.4);
-      padding: 0.15rem 0.6rem;
+    .meta {
+      font-size: 11px;
+      text-align: center;
       color: var(--text-soft);
     }
 
-    /* anchor offset */
-    [id] {
-      scroll-margin-top: 80px;
+    .meta span { white-space: nowrap; }
+    .meta-dot { margin: 0 4px; opacity: .6; }
+
+    .error {
+      margin-top: 10px;
+      font-size: 12px;
+      color: #f97373;
+      text-align: center;
     }
 
-    /* mobile layout tweaks */
-    @media (max-width: 720px) {
-      header.nav {
-        align-items: center;
-        gap: 0.75rem;
-      }
-
-      .shell {
-        padding-inline: 1rem;
-      }
-
-      nav {
-        display: none;
-        width: 100%;
-      }
-
-      .cta-row {
-        display: none;
-        width: 100%;
-      }
-
-      .menu-toggle {
-        display: inline-flex;
-      }
-
-      body.menu-open nav {
-        display: block;
-      }
-
-      body.menu-open .cta-row {
-        display: flex;
-        flex-direction: column;
-        align-items: stretch;
-        margin-top: 0.75rem;
-        gap: 0.5rem;
-      }
-
-      nav ul {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.6rem;
-        padding: 0.75rem 0 0.25rem;
-      }
-
-      nav a {
-        padding-inline: 0;
-      }
-
-      .hero-left h1 {
-        font-size: 1.8rem;
-      }
-
-      .hero-left p {
-        font-size: 0.9rem;
-      }
-
-      .hero-card {
-        margin-top: 0.4rem;
-      }
+    @media (max-width: 480px) {
+      .card { padding: 18px 16px 16px; border-radius: 20px; }
+      .price-value { font-size: 34px; }
+      .asset-text h1 { font-size: 16px; }
+      .message { font-size: 13px; }
+      .chart-block { height: 210px; }
     }
   </style>
+
+  <!-- Plotly.js – compatibil cu toate browserele -->
+  <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
 </head>
 <body>
   <div class="shell">
-    <header class="nav">
-      <div class="brand">
-        <div class="brand-mark"></div>
-        <div>
-          <div class="brand-text-main">CohesivX BTC API</div>
-          <div class="brand-text-sub">Bitcoin structural risk index</div>
-        </div>
-      </div>
+    <div class="title-bar">MECANISM COEZIV BTC</div>
 
-      <button class="menu-toggle" id="menuToggle" aria-label="Deschide meniul de navigare">
-        <div class="menu-toggle-bars" aria-hidden="true">
-          <span></span>
-          <span></span>
-          <span></span>
-        </div>
-      </button>
-
-      <nav>
-        <ul>
-          <li><a href="#why">De ce CohesivX</a></li>
-          <li><a href="#api">API</a></li>
-          <li><a href="#pricing">Pricing</a></li>
-          <li><a href="#faq">FAQ</a></li>
-        </ul>
-      </nav>
-      <div class="cta-row">
-        <a href="#pricing" class="btn-outline">View pricing</a>
-        <a href="#api" class="btn-primary">
-          <span>Get API access</span>
-          <span class="icon">↗</span>
-        </a>
-      </div>
-    </header>
-
-    <!-- HERO -->
-    <section class="hero">
-      <div class="hero-left">
-        <h1>
-          <span class="hero-highlight">Indice coeziv Bitcoin</span><br />
-          livrat ca API enterprise
-        </h1>
-        <p>
-          CohesivX BTC API transformă structura și direcționalitatea pieței
-          Bitcoin într-un <strong>indice de risc între 0–100</strong>,
-          completat de probabilități UP/DOWN și regim de ciclu. Gândit pentru
-          platforme crypto, roboți de trading, desk-uri de research și aplicații fintech.
-        </p>
-        <div class="cta-row">
-          <a href="#api" class="btn-primary">
-            <span>Începe integrarea</span>
-            <span class="icon">⟶</span>
-          </a>
-          <a href="#why" class="btn-outline">Cum funcționează modelul</a>
-        </div>
-        <div class="hero-meta">
-          <span>
-            <span class="hero-dot"></span>
-            IC_BTC structural + direcțional + regim
-          </span>
-          <span>
-            <span class="hero-dot"></span>
-            context macro: SPX, DXY, Gold, VIX, Oil
-          </span>
-          <span>
-            <span class="hero-dot"></span>
-            actualizare automată (daily) prin pipeline
-          </span>
-        </div>
-      </div>
-
-      <div class="hero-right">
-        <div class="hero-card">
-          <div class="hero-card-header">
-            <div>
-              <div class="hero-card-title">BTC coeziv – snapshot API</div>
-            </div>
-            <div class="hero-chip">
-              <span class="hero-chip-dot"></span>
-              <span>LIVE SAMPLE</span>
+    <div class="card">
+      <div class="card-inner">
+        <div class="asset-row">
+          <div class="asset-main">
+            <div class="asset-logo">₿</div>
+            <div class="asset-text">
+              <h1>Bitcoin (BTC)</h1>
+              <span>Mecanism coeziv, actualizat aproximativ la fiecare oră.</span>
             </div>
           </div>
-          <div class="hero-metric-main">
-            <span class="value" id="icStructValue">--</span>
-            <span class="label">IC_BTC structural</span>
-          </div>
-          <div class="hero-metric-sub" id="icStructText">
-            Structură de trend <strong>–</strong>, aliniere coerentă
-            între preț, momentum și volatilitate. Construit pentru citire
-            algoritmică și umană.
-          </div>
-
-          <div class="hero-split">
-            <div class="hero-split-block">
-              <div class="hero-split-label">Probabilitate UP</div>
-              <div class="hero-split-value">
-                <span id="probUpValue">--</span>
-                &nbsp; · &nbsp;
-                <span id="biasText">–</span>
-              </div>
-            </div>
-            <div class="hero-split-block">
-              <div class="hero-split-label">Probabilitate DOWN</div>
-              <div class="hero-split-value">
-                <span id="probDownValue">--</span>
-                &nbsp; · &nbsp;
-                <span id="confText">–</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="hero-regime">
-            Regim coeziv curent:
-            <span class="badge">
-              <span class="badge-dot"></span>
-              <span id="regimeLabel">Bear structural</span>
-            </span>
-            &mdash;
-            <span id="regimeShort">
-              probabilitate crescută ca piața să părăsească zona de top
-              și să intre într-o fază de redistribuție / început de bear.
-            </span>
+          <div id="signal-chip" class="signal-chip neutral">
+            <span class="signal-dot"></span>
+            <span id="signal-label">Semnal neutru (Flat)</span>
           </div>
         </div>
-      </div>
-    </section>
 
-    <!-- WHY -->
-    <section id="why">
-      <div class="section-label">De ce CohesivX</div>
-      <h2 class="section-title">Mai mult decât un indicator tehnic clasic</h2>
-      <p class="section-sub">
-        RSI și MACD îți arată forma prețului. CohesivX BTC API merge mai adânc:
-        traduce <strong>structura internă</strong> a trendului Bitcoin și
-        <strong>contextul macro global</strong> într-un set de indici
-        normalizați și ușor de consumat în aplicații, dashboard-uri sau modele
-        de risc.
-      </p>
+        <div class="price-block">
+          <div id="price" class="price-value">–</div>
+          <div class="currency">USD</div>
 
-      <div class="features-grid">
-        <article class="feature-card">
-          <div class="feature-tag">IC_BTC &amp; ICD_BTC</div>
-          <div class="feature-title">Structură + direcționalitate între 0–100</div>
-          <p class="feature-text">
-            <strong>IC_BTC structural</strong> măsoară coerența trendului
-            (raport între flux, preț și volatilitate). <strong>ICD_BTC direcțional</strong>
-            măsoară cât de aliniate sunt mișcările zilnice cu trendul dominant
-            (bull vs bear). Totul normalizat în 0–100, gata pentru scoring intern.
-          </p>
-        </article>
-
-        <article class="feature-card">
-          <div class="feature-tag">Regim coeziv</div>
-          <div class="feature-title">Regim de ciclu Bitcoin, explicit</div>
-          <p class="feature-text">
-            Modelul derivă automat un <strong>regim de ciclu</strong>:
-            bază, acumulare, bull structural, bull târziu / top,
-            bear structural timpuriu, bear avansat, reechilibrare.
-            Ușor de mapping în UI sau în modele de alocare dinamice.
-          </p>
-        </article>
-
-        <article class="feature-card">
-          <div class="feature-tag">Context global</div>
-          <div class="feature-title">Scor de risc macro agregat</div>
-          <p class="feature-text">
-            Integrare directă cu SPX, DXY, Gold, VIX și Oil într-un
-            <strong>macro risk score</strong> și un label simplu:
-            <em>risk-on</em>, <em>echilibrat</em> sau <em>risk-off</em>.
-            Bitcoin este citit în context, nu izolat.
-          </p>
-        </article>
-      </div>
-    </section>
-
-    <!-- API -->
-    <section id="api">
-      <div class="section-label">API</div>
-      <h2 class="section-title">JSON simplu, coeziv structural</h2>
-      <p class="section-sub">
-        CohesivX BTC API livrează un snapshot coerent (IC_BTC structural +
-        direcțional + regim + macro) într-un payload JSON compact. Ideal
-        pentru integrare în platforme existente, dashboard-uri sau agenți
-        algoritmici.
-      </p>
-
-      <div class="api-layout">
-        <div class="code-card">
-          <div class="pill-small">
-            <span class="pill-small-dot"></span>
-            <span>Exemplu de răspuns IC_BTC</span>
+          <div class="live-row">
+            <span class="live-label">Preț live:</span>
+            <span id="live-price" class="live-value">–</span>
+            <span class="live-currency">USD</span>
           </div>
-          <pre><code>{
-  "as_of": "2025-02-21",
-  "close": 52341.21,
-  "ic_struct": 61.3,
-  "ic_dir": 54.2,
-  "vol30_ann_pct": 38.4,
-  "vol30_index": 64.1,
-  "regime_code": "bear_struct",
-  "regime_label": "Bear structural",
-  "regime_short": "Trend descendent în formare / structură în răcire.",
-  "prob_up": 0.46,
-  "prob_down": 0.54,
-  "bias_label": "bias moderat bear",
-  "confidence_label": "mediu",
-  "confidence_score": 58.2,
-  "context_short": {
-    "trend": {
-      "text": "Trend: zonă de tranziție (IC 61), bias direcțional bear (ICD 54).",
-      "color": "red"
-    },
-    "volatility": {
-      "text": "Volatilitate relativă: ridicată (vol30 ~ 38.4%).",
-      "color": "red"
-    },
-    "macro": {
-      "text": "Macro (scurt): echilibrat (scor risc 0.12).",
-      "color": "orange"
-    }
-  }
-}</code></pre>
+          <div id="live-delta" class="live-delta">
+            Se compară prețul live cu prețul analizat de mecanism.
+          </div>
         </div>
 
-        <div>
-          <div class="api-items">
-            <div>
-              <div class="api-item-label">Snapshot BTC structural</div>
-              <div class="api-item-path">GET /v1/ic_btc/latest</div>
-              <p class="faq-a">
-                Răspuns JSON cu IC_BTC structural + direcțional, regim, probabilități și context macro scurt.
-              </p>
-            </div>
-            <div>
-              <div class="api-item-label">Seria IC_BTC</div>
-              <div class="api-item-path">GET /v1/ic_btc/series</div>
-              <p class="faq-a">
-                Seria daily a indicelui IC_BTC + ICD_BTC (0–100) pentru grafice, backtesting și scoring.
-              </p>
-            </div>
-            <div>
-              <div class="api-item-label">Mega-state BTC + Global</div>
-              <div class="api-item-path">GET /v1/ic_btc/mega</div>
-              <p class="faq-a">
-                Structură extinsă cu legături către regimul macro global, faze de ciclu și
-                stări coezive agregate – gata pentru agenți sau modele multi-asset.
-              </p>
-            </div>
+        <div class="chart-block">
+          <div id="btc-chart"></div>
+          <div id="chart-loader" class="chart-loader">
+            Se încarcă graficul BTC. Dacă nu apare, poate fi o limitare temporară sau o extensie de browser.
           </div>
         </div>
-      </div>
-    </section>
 
-    <!-- PRICING -->
-    <section id="pricing">
-      <div class="section-label">Pricing</div>
-      <h2 class="section-title">Structurat pentru desk-uri, produse și agenți</h2>
-      <p class="section-sub">
-        Modelul este gândit pentru a fi folosit atât în produse retail
-        (aplicații, dashboard-uri), cât și în setări instituționale
-        (desk-uri de risc, trading, research).
-      </p>
-
-      <div class="pricing-grid">
-        <article class="price-card">
-          <div class="price-name">Builder</div>
-          <div class="price-desc">
-            Pentru experimente, prototipuri, research intern.
-          </div>
-          <div class="price-value">
-            $99 <span>/ lună</span>
-          </div>
-          <ul class="price-features">
-            <li>Acces la /v1/ic_btc/latest</li>
-            <li>Limită rezonabilă de request-uri</li>
-            <li>Fără SLA formal, suport prin e-mail</li>
-          </ul>
-          <div class="price-cta">
-            <a href="#api" class="btn-small">
-              <span>Începe cu Builder</span>
-              <span class="icon">⟶</span>
-            </a>
-          </div>
-        </article>
-
-        <article class="price-card highlight">
-          <div class="price-name">Desk</div>
-          <div class="price-desc">
-            Pentru desk-uri de trading, risk sau research.
-          </div>
-          <div class="price-value">
-            $399 <span>/ lună</span>
-          </div>
-          <ul class="price-features">
-            <li>Acces complet la snapshot + serie</li>
-            <li>Prioritate în update-uri și ajustări de model</li>
-            <li>Integrare asistată și suport dedicat</li>
-          </ul>
-          <div class="price-cta">
-            <a href="#api" class="btn-small primary">
-              <span>Contact pentru Desk</span>
-              <span class="icon">↗</span>
-            </a>
-          </div>
-        </article>
-
-        <article class="price-card">
-          <div class="price-name">Enterprise / OEM</div>
-          <div class="price-desc">
-            Pentru platforme crypto, fintech și integrări white-label.
-          </div>
-          <div class="price-value">
-            Custom <span>/ volum</span>
-          </div>
-          <ul class="price-features">
-            <li>Licențiere white-label și OEM</li>
-            <li>Integrare în produse multi-asset</li>
-            <li>SLA dedicat, suport 24/7</li>
-          </ul>
-          <div class="price-cta">
-            <a href="#api" class="btn-small">
-              <span>Discută Enterprise</span>
-              <span class="icon">↗</span>
-            </a>
-          </div>
-        </article>
-      </div>
-    </section>
-
-    <!-- FAQ -->
-    <section id="faq">
-      <div class="section-label">FAQ</div>
-      <h2 class="section-title">Întrebări frecvente</h2>
-      <div class="faq-grid">
-        <div>
-          <div class="faq-item">
-            <div class="faq-q">Ce înseamnă „indice coeziv” pentru Bitcoin?</div>
-            <div class="faq-a">
-              Modelul urmărește <strong>structura internă</strong> a trendului
-              (nu doar prețul) și o exprimă într-un scor între 0–100, plus un
-              regim de ciclu și probabilități UP/DOWN. Este gândit să fie
-              interpretabil și de oameni, și de algoritmi.
-            </div>
-          </div>
-          <div class="faq-item">
-            <div class="faq-q">Ce orizont de timp folosiți?</div>
-            <div class="faq-a">
-              Fereastra standard este ~260 de zile (1D), cu sub-ferestre pentru
-              direcționalitate, volatilitate și context macro. Modelul poate fi
-              extins la alte frecvențe în funcție de use-case.
-            </div>
-          </div>
+        <div id="message" class="message">
+          Se încarcă mesajul coeziv...
         </div>
-        <div>
-          <div class="faq-item">
-            <div class="faq-q">Pot folosi indicele în modele de risc proprii?</div>
-            <div class="faq-a">
-              Da. IC_BTC și ICD_BTC pot fi mapate direct în scoruri interne de
-              risc, semnale de alocare, filtre pentru roboți de trading sau
-              input-uri pentru agenți AI. Structura JSON este stabilă, gândită
-              pentru integrare programatică.
-            </div>
-          </div>
-          <div class="faq-item">
-            <div class="faq-q">Ce înseamnă „macro risk score”?</div>
-            <div class="faq-a">
-              Un scor agregat derivat din SPX, DXY, Gold, VIX și Oil,
-              normalizat într-un indicator simplu (<em>risk-on</em>,
-              <em>echilibrat</em>, <em>risk-off</em>). Acesta nu este un
-              predictor singular, ci un context coeziv pentru citirea lui Bitcoin.
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
 
-    <footer>
-      <div>
-        © <span id="year"></span> CohesivX BTC API. All rights reserved.
+        <div class="meta" id="meta">
+          <span>Snapshot: n/a</span>
+          <span class="meta-dot">•</span>
+          <span>Generat: n/a</span>
+        </div>
+
+        <div id="error" class="error"></div>
       </div>
-      <div class="badges-row">
-        <span class="badge-soft">Model coeziv structural 3.14 / 2π</span>
-        <span class="badge-soft">Daily BTC 1D window ~260 zile</span>
-        <span class="badge-soft">API JSON over HTTPS</span>
-      </div>
-    </footer>
+    </div>
   </div>
 
   <script>
-    document.getElementById("year").textContent = new Date().getFullYear();
+    // Elemente UI
+    const PRICE_EL = document.getElementById("price");
+    const LIVE_PRICE_EL = document.getElementById("live-price");
+    const LIVE_DELTA_EL = document.getElementById("live-delta");
+    const MSG_EL = document.getElementById("message");
+    const META_EL = document.getElementById("meta");
+    const ERROR_EL = document.getElementById("error");
+    const SIGNAL_CHIP_EL = document.getElementById("signal-chip");
+    const SIGNAL_LABEL_EL = document.getElementById("signal-label");
+    const CHART_LOADER_EL = document.getElementById("chart-loader");
 
-    const menuToggle = document.getElementById("menuToggle");
-    const navLinks = document.querySelectorAll("nav a");
+    // JSON-ul mecanismului (Structura 1)
+    const STATE_URL = "coeziv_state.json";
 
-    if (menuToggle) {
-      menuToggle.addEventListener("click", () => {
-        document.body.classList.toggle("menu-open");
-      });
-    }
-
-    navLinks.forEach((link) => {
-      link.addEventListener("click", () => {
-        document.body.classList.remove("menu-open");
-      });
+    const USD_FORMATTER = new Intl.NumberFormat("en-US", {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
     });
-  </script>
 
-  <script>
-  (async function () {
-    try {
-      const res = await fetch("data/btc_state_latest.json", { cache: "no-store" });
-      if (!res.ok) throw new Error("HTTP " + res.status);
-      const data = await res.json();
+    let SNAPSHOT_PRICE = null;
+    let LIVE_PRICE = null;
+    let LAST_SIGNAL_RAW = null; // "long" / "short" / "flat"
 
-      // IC_BTC structural
-      if (typeof data.ic_struct === "number") {
-        document.getElementById("icStructValue").textContent =
-          data.ic_struct.toFixed(1);
-      }
+    // OHLC arrays
+    let oTimes = [];
+    let oOpen = [];
+    let oHigh = [];
+    let oLow = [];
+    let oClose = [];
+    let oVolume = [];
 
-      // Probabilități reale din model (0–1 în JSON)
-      if (typeof data.prob_up === "number") {
-        document.getElementById("probUpValue").textContent =
-          Math.round(data.prob_up * 100) + "%";
-      }
-
-      if (typeof data.prob_down === "number") {
-        document.getElementById("probDownValue").textContent =
-          Math.round(data.prob_down * 100) + "%";
-      }
-
-      // Bias & încredere – direct din model
-      if (data.bias_label) {
-        document.getElementById("biasText").textContent = data.bias_label;
-      }
-
-      if (data.confidence_label) {
-        document.getElementById("confText").textContent = data.confidence_label;
-      }
-
-      // Regim coeziv
-      if (data.regime_label) {
-        document.getElementById("regimeLabel").textContent = data.regime_label;
-      } else if (data.regime_code) {
-        document.getElementById("regimeLabel").textContent =
-          String(data.regime_code).replace(/_/g, " ");
-      }
-
-      if (data.regime_short) {
-        document.getElementById("regimeShort").textContent = data.regime_short;
-      }
-
-      // Text scurt de trend (context_short.trend.text)
-      if (data.context_short &&
-          data.context_short.trend &&
-          data.context_short.trend.text) {
-        document.getElementById("icStructText").textContent =
-          data.context_short.trend.text;
-      }
-    } catch (e) {
-      console.log("Nu am putut încărca snapshot-ul IC_BTC:", e);
+    function mapSignal(signal) {
+      const s = (signal || "").toLowerCase();
+      if (s === "long")  return { tone: "bullish", label: "Semnal pozitiv (Long)" };
+      if (s === "short") return { tone: "bearish", label: "Semnal negativ (Short)" };
+      return { tone: "neutral", label: "Semnal neutru (Flat)" };
     }
-  })();
+
+    function formatDate(iso) {
+      if (!iso) return "n/a";
+      const d = new Date(iso);
+      if (Number.isNaN(d.getTime())) return "n/a";
+      return d.toLocaleString("ro-RO", {
+        year: "numeric", month: "2-digit", day: "2-digit",
+        hour: "2-digit", minute: "2-digit"
+      });
+    }
+
+    // ------------- MECANISM (JSON) -------------
+
+    async function loadState() {
+      try {
+        ERROR_EL.textContent = "";
+        MSG_EL.textContent = "Se încarcă mesajul coeziv...";
+
+        const res = await fetch(STATE_URL + "?t=" + Date.now(), { cache: "no-store" });
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        const state = await res.json();
+
+        const price = state.price_usd;
+        const message = state.message;
+        const ts = state.timestamp;
+        const gen = state.generated_at;
+        const signal = state.signal;
+
+        LAST_SIGNAL_RAW = (signal || "").toLowerCase();
+
+        if (typeof price === "number" && Number.isFinite(price) && price > 0) {
+          SNAPSHOT_PRICE = price;
+          PRICE_EL.textContent = USD_FORMATTER.format(price);
+        } else {
+          SNAPSHOT_PRICE = null;
+          PRICE_EL.textContent = "–";
+        }
+
+        MSG_EL.textContent = message || "Nu există mesaj coeziv pentru acest moment.";
+
+        const mapped = mapSignal(signal);
+        SIGNAL_LABEL_EL.textContent = mapped.label;
+        SIGNAL_CHIP_EL.classList.remove("bullish", "bearish", "neutral");
+        SIGNAL_CHIP_EL.classList.add(mapped.tone);
+
+        META_EL.innerHTML =
+          `<span>Snapshot: ${formatDate(ts)}</span>` +
+          `<span class="meta-dot">•</span>` +
+          `<span>Generat: ${formatDate(gen)}</span>`;
+
+        if (SNAPSHOT_PRICE === null) {
+          LIVE_DELTA_EL.textContent =
+            "Preț live încărcat. Așteptăm un snapshot de preț valid din mecanism.";
+          LIVE_DELTA_EL.classList.remove("positive", "negative");
+        }
+
+        renderChart(); // redesenăm graficul cu linia mecanismului și markerul
+      } catch (err) {
+        console.error(err);
+        SNAPSHOT_PRICE = null;
+        PRICE_EL.textContent = "–";
+        LIVE_DELTA_EL.textContent =
+          "Nu am putut încărca snapshotul de preț. Așteptăm ca mecanismul să revină.";
+        LIVE_DELTA_EL.classList.remove("positive", "negative");
+        MSG_EL.textContent = "Nu am reușit să obținem mesajul coeziv.";
+        ERROR_EL.textContent =
+          "Nu am putut încărca coeziv_state.json. Verifică workflow-ul de backend.";
+      }
+    }
+
+    // ------------- PREȚ LIVE BINANCE -------------
+
+    async function updateLivePrice() {
+      try {
+        const res = await fetch(
+          "https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT",
+          { cache: "no-store" }
+        );
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        const data = await res.json();
+        const live = parseFloat(data.price);
+
+        if (!Number.isFinite(live)) return;
+
+        LIVE_PRICE = live;
+        LIVE_PRICE_EL.textContent = USD_FORMATTER.format(live);
+
+        if (
+          typeof SNAPSHOT_PRICE === "number" &&
+          Number.isFinite(SNAPSHOT_PRICE) &&
+          SNAPSHOT_PRICE > 0
+        ) {
+          const diff = live - SNAPSHOT_PRICE;
+          const pct = (diff / SNAPSHOT_PRICE) * 100;
+          const absPct = Math.abs(pct);
+
+          LIVE_DELTA_EL.classList.remove("positive", "negative");
+
+          if (diff === 0) {
+            LIVE_DELTA_EL.textContent =
+              "Prețul live este egal cu prețul analizat de mecanism.";
+            renderChart(); // actualizăm linia de preț live
+            return;
+          }
+
+          const directionWord = diff > 0 ? "peste" : "sub";
+          const sign = diff > 0 ? "+" : "−";
+          const pctStr = absPct.toFixed(2);
+          const usdStr = USD_FORMATTER.format(Math.abs(diff));
+
+          let magnitudeHint;
+          if (absPct < 0.25) {
+            magnitudeHint = "Diferență foarte mică (zgomot normal de piață).";
+          } else if (absPct < 1) {
+            magnitudeHint =
+              "Mișcare mică; semnalul mecanismului rămâne reperul principal.";
+          } else if (absPct < 3) {
+            magnitudeHint =
+              "Mișcare relevantă; poți ajusta timing-ul intrării sau ieșirii.";
+          } else {
+            magnitudeHint =
+              "Mișcare puternică; verifică contextul și lichiditatea.";
+          }
+
+          LIVE_DELTA_EL.textContent =
+            `Prețul live este ${sign}${pctStr}% (${sign}${usdStr} USD) ` +
+            `${directionWord} prețul mecanismului. ${magnitudeHint}`;
+
+          LIVE_DELTA_EL.classList.add(diff > 0 ? "positive" : "negative");
+        } else {
+          LIVE_DELTA_EL.textContent =
+            "Preț live încărcat. Așteptăm un snapshot de preț valid din mecanism.";
+          LIVE_DELTA_EL.classList.remove("positive", "negative");
+        }
+
+        renderChart(); // linia de preț live
+      } catch (err) {
+        console.error("Eroare preț live Binance", err);
+      }
+    }
+
+    // ------------- OHLC PENTRU GRAFIC -------------
+
+    async function fetchOHLC() {
+      // 1) încearcă proxy local /api/ohlc, dacă există
+      try {
+        const rLocal = await fetch("/api/ohlc");
+        if (rLocal.ok) {
+          return await rLocal.json();
+        }
+      } catch (_) {
+        // ignorăm și cădem pe Binance direct
+      }
+
+      // 2) fallback direct la Binance
+      const r = await fetch(
+        "https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=5m&limit=288",
+        { cache: "no-store" }
+      );
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return r.json();
+    }
+
+    async function loadOHLC() {
+      try {
+        CHART_LOADER_EL.style.display = "flex";
+
+        const rows = await fetchOHLC();
+
+        oTimes = [];
+        oOpen = [];
+        oHigh = [];
+        oLow = [];
+        oClose = [];
+        oVolume = [];
+
+        rows.forEach(k => {
+          oTimes.push(new Date(k[0]));
+          oOpen.push(parseFloat(k[1]));
+          oHigh.push(parseFloat(k[2]));
+          oLow.push(parseFloat(k[3]));
+          oClose.push(parseFloat(k[4]));
+          oVolume.push(parseFloat(k[5]));
+        });
+
+        CHART_LOADER_EL.style.display = "none";
+        renderChart();
+      } catch (err) {
+        console.error("Eroare la OHLC", err);
+        CHART_LOADER_EL.textContent =
+          "Nu am putut încărca graficul BTC. Poate fi o limitare temporară sau o extensie de browser.";
+      }
+    }
+
+    // ------------- RENDER GRAFIC PLOTLY + VOLUM + LINII -------------
+
+    function renderChart() {
+      const el = document.getElementById("btc-chart");
+      if (!el || !window.Plotly) return;
+      if (!oTimes.length) return; // încă nu avem date
+
+      const candleTrace = {
+        x: oTimes,
+        open: oOpen,
+        high: oHigh,
+        low: oLow,
+        close: oClose,
+        type: "candlestick",
+        name: "BTCUSDT",
+        increasing: { line: { color: "#22c55e" } },
+        decreasing: { line: { color: "#ef4444" } },
+        yaxis: "y"
+      };
+
+      // volum colorat în funcție de direcție
+      const volColors = oClose.map((c, i) => (
+        c >= oOpen[i] ? "rgba(34,197,94,0.5)" : "rgba(239,68,68,0.5)"
+      ));
+
+      const volumeTrace = {
+        x: oTimes,
+        y: oVolume,
+        type: "bar",
+        yaxis: "y2",
+        marker: { color: volColors },
+        name: "Volum"
+      };
+
+      const traces = [candleTrace, volumeTrace];
+
+      // linia prețului mecanismului
+      if (typeof SNAPSHOT_PRICE === "number" && Number.isFinite(SNAPSHOT_PRICE)) {
+        const lineTrace = {
+          x: [oTimes[0], oTimes[oTimes.length - 1]],
+          y: [SNAPSHOT_PRICE, SNAPSHOT_PRICE],
+          type: "scatter",
+          mode: "lines",
+          line: { color: "#38bdf8", width: 2, dash: "dot" },
+          name: "Preț mecanism",
+          yaxis: "y"
+        };
+        traces.push(lineTrace);
+      }
+
+      // linia prețului live (ultimul preț cunoscut)
+      if (typeof LIVE_PRICE === "number" && Number.isFinite(LIVE_PRICE)) {
+        const liveTrace = {
+          x: [oTimes[0], oTimes[oTimes.length - 1]],
+          y: [LIVE_PRICE, LIVE_PRICE],
+          type: "scatter",
+          mode: "lines",
+          line: { color: "#facc15", width: 1.5, dash: "dash" },
+          name: "Preț live",
+          yaxis: "y"
+        };
+        traces.push(liveTrace);
+      }
+
+      // marker pentru semnal (pe ultima lumânare)
+      if (LAST_SIGNAL_RAW === "long" || LAST_SIGNAL_RAW === "short") {
+        const lastIdx = oTimes.length - 1;
+        const basePrice = oClose[lastIdx];
+        const offset = basePrice * 0.002; // 0.2%
+
+        const yMark = LAST_SIGNAL_RAW === "long"
+          ? basePrice - offset
+          : basePrice + offset;
+
+        const markerTrace = {
+          x: [oTimes[lastIdx]],
+          y: [yMark],
+          type: "scatter",
+          mode: "markers",
+          marker: {
+            symbol: LAST_SIGNAL_RAW === "long" ? "triangle-up" : "triangle-down",
+            size: 12,
+            color: LAST_SIGNAL_RAW === "long" ? "#22c55e" : "#f97373",
+            line: { width: 1, color: "#020617" }
+          },
+          name: "Semnal mecanism",
+          yaxis: "y"
+        };
+        traces.push(markerTrace);
+      }
+
+      const layout = {
+        margin: { l: 40, r: 8, t: 10, b: 25 },
+        paper_bgcolor: "rgba(15,23,42,0)",
+        plot_bgcolor: "rgba(15,23,42,0)",
+        xaxis: {
+          showgrid: false,
+          zeroline: false,
+          tickfont: { color: "#9ca3af", size: 10 },
+          rangeselector: {
+            buttons: [
+              { count: 6,  label: "6h",  step: "hour", stepmode: "backward" },
+              { count: 24, label: "24h", step: "hour", stepmode: "backward" },
+              { count: 3,  label: "3d", step: "day", stepmode: "backward" },
+              { step: "all", label: "All" }
+            ]
+          },
+          rangeslider: { visible: false }
+        },
+        yaxis: {
+          domain: [0.35, 1],
+          showgrid: true,
+          gridcolor: "#111827",
+          tickfont: { color: "#9ca3af", size: 10 }
+        },
+        yaxis2: {
+          domain: [0, 0.28],
+          showgrid: false,
+          tickfont: { color: "#6b7280", size: 9 }
+        },
+        showlegend: false
+      };
+
+      const config = {
+        displayModeBar: false,
+        responsive: true
+      };
+
+      Plotly.newPlot(el, traces, layout, config);
+    }
+
+    // ------------- START  -------------
+
+    function start() {
+      loadState();
+      updateLivePrice();
+      loadOHLC();
+
+      setInterval(updateLivePrice, 10 * 1000);
+      setInterval(loadState, 5 * 60 * 1000);
+      setInterval(loadOHLC, 60 * 1000);
+    }
+
+    document.addEventListener("DOMContentLoaded", start);
   </script>
 </body>
 </html>
