@@ -200,10 +200,17 @@
       font-weight: 500;
     }
 
+    .live-updated {
+      margin-top: 4px;
+      font-size: 11px;
+      text-align: center;
+      color: var(--text-soft);
+    }
+
     .live-delta {
       font-size: 11px;
       text-align: center;
-      margin-top: 2px;
+      margin-top: 4px;
       color: var(--text-soft);
     }
 
@@ -291,11 +298,14 @@
           <div id="price" class="price-value">–</div>
           <div class="currency">USD</div>
 
-          <!-- Preț live din CoinGecko -->
+          <!-- Preț live din API -->
           <div class="live-row">
             <span class="live-label">Preț live:</span>
             <span id="live-price" class="live-value">–</span>
             <span class="live-currency">USD</span>
+          </div>
+          <div id="live-updated" class="live-updated">
+            Actualizat: n/a
           </div>
           <div id="live-delta" class="live-delta">
             Se compară prețul live cu prețul analizat de mecanism.
@@ -326,6 +336,7 @@
     const SIGNAL_LABEL_EL = document.getElementById("signal-label");
 
     const LIVE_PRICE_EL = document.getElementById("live-price");
+    const LIVE_UPDATED_EL = document.getElementById("live-updated");
     const LIVE_DELTA_EL = document.getElementById("live-delta");
 
     let SNAPSHOT_PRICE = null; // prețul din coeziv_state.json
@@ -359,7 +370,7 @@
         ERROR_EL.textContent = "";
         MSG_EL.textContent = "Se încarcă mesajul coeziv...";
 
-        const res = await fetch("coeziv_state.json", { cache: "no-store" });
+        const res = await fetch("btc-swing-strategy/coeziv_state.json", { cache: "no-store" });
         if (!res.ok) {
           throw new Error("HTTP " + res.status);
         }
@@ -383,7 +394,7 @@
           PRICE_EL.textContent = "–";
         }
 
-        // mesaj coeziv (din backend, fără să-l schimbăm)
+        // mesaj coeziv (din backend)
         MSG_EL.textContent = message || "Nu există mesaj coeziv pentru acest moment.";
 
         // semnal
@@ -407,6 +418,7 @@
 
     async function updateLivePrice() {
       try {
+        // CoinGecko – API gratuit
         const res = await fetch(
           "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd",
           { cache: "no-store" }
@@ -415,37 +427,53 @@
         const data = await res.json();
         const live = data?.bitcoin?.usd;
 
-        if (typeof live === "number") {
-          LIVE_PRICE_EL.textContent = live.toLocaleString("en-US", {
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0
+        if (typeof live !== "number") {
+          throw new Error("Răspuns API neașteptat");
+        }
+
+        LIVE_PRICE_EL.textContent = live.toLocaleString("en-US", {
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0
+        });
+
+        // timestamp actualizare
+        const now = new Date();
+        LIVE_UPDATED_EL.textContent =
+          "Actualizat: " +
+          now.toLocaleTimeString("ro-RO", {
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit"
           });
 
-          // dacă avem și snapshot, arătăm diferența
-          if (typeof SNAPSHOT_PRICE === "number") {
-            const diff = live - SNAPSHOT_PRICE;
-            const pct = (diff / SNAPSHOT_PRICE) * 100;
+        // comparație cu prețul analizat de mecanism
+        if (typeof SNAPSHOT_PRICE === "number") {
+          const diff = live - SNAPSHOT_PRICE;
+          const pct = (diff / SNAPSHOT_PRICE) * 100;
 
-            let text = "Se compară prețul live cu prețul analizat de mecanism.";
-            LIVE_DELTA_EL.classList.remove("positive", "negative");
-
-            if (Math.abs(pct) >= 0.05) { // prag mic de semnificație
-              const sign = diff > 0 ? "+" : "";
-              const pctStr = pct.toFixed(2);
-              const dir = diff > 0 ? "peste" : "sub";
-              text = `Prețul live este ${sign}${pctStr}% ${dir} prețul analizat de mecanism.`;
-              LIVE_DELTA_EL.classList.add(diff > 0 ? "positive" : "negative");
-            }
-
-            LIVE_DELTA_EL.textContent = text;
+          LIVE_DELTA_EL.classList.remove("positive", "negative");
+          if (Math.abs(pct) >= 0.05) {
+            const sign = diff > 0 ? "+" : "";
+            const pctStr = pct.toFixed(2);
+            const dir = diff > 0 ? "peste" : "sub";
+            LIVE_DELTA_EL.textContent =
+              `Prețul live este ${sign}${pctStr}% ${dir} prețul analizat de mecanism.`;
+            LIVE_DELTA_EL.classList.add(diff > 0 ? "positive" : "negative");
           } else {
             LIVE_DELTA_EL.textContent =
-              "Preț live încărcat. Așteptăm prețul analizat de mecanism.";
+              "Prețul live este foarte apropiat de prețul analizat de mecanism.";
           }
+        } else {
+          LIVE_DELTA_EL.textContent =
+            "Preț live încărcat. Așteptăm prețul analizat de mecanism.";
         }
       } catch (err) {
         console.error("Nu am putut obține prețul live BTC", err);
-        // nu afișăm eroare mare în UI, doar lăsăm ultima valoare live
+        LIVE_PRICE_EL.textContent = "n/a";
+        LIVE_UPDATED_EL.textContent = "Actualizat: eroare API live";
+        LIVE_DELTA_EL.classList.remove("positive", "negative");
+        LIVE_DELTA_EL.textContent =
+          "Nu am putut obține prețul live (posibil limitare sau eroare de rețea).";
       }
     }
 
@@ -455,8 +483,8 @@
 
     // refresh UI din JSON la 5 minute (dacă ai rulat workflow-ul între timp)
     setInterval(loadState, 5 * 60 * 1000);
-    // preț live la 15 secunde
-    setInterval(updateLivePrice, 15 * 1000);
+    // preț live la 10 secunde
+    setInterval(updateLivePrice, 10 * 1000);
   </script>
 </body>
 </html>
