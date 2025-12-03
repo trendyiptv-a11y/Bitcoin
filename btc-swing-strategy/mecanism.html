@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>BTC – Mecanism Coeziv</title>
+  <title>Mecanism Coeziv BTC</title>
+
   <style>
     :root {
       --bg-main: #020617;
@@ -18,639 +19,310 @@
       --accent-live: #38bdf8;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
       min-height: 100vh;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background:
-        radial-gradient(circle at 10% -10%, #0f172a 0, transparent 55%),
-        radial-gradient(circle at 90% 110%, #020617 0, #000 60%);
+      font-family: system-ui, sans-serif;
+      background: radial-gradient(circle at 40% -10%, #0f172a, #000);
       color: var(--text-main);
       display: flex;
-      align-items: center;
       justify-content: center;
       padding: 16px;
     }
 
-    .shell {
-      width: 100%;
-      max-width: 520px;
-    }
-
-    .title-bar {
-      text-align: center;
-      margin-bottom: 12px;
-    }
-
-    .app-name {
-      font-size: 14px;
-      font-weight: 500;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--text-soft);
-    }
+    .shell { width: 100%; max-width: 520px; }
+    .app-name { text-align:center; margin-bottom:6px; font-size:14px; opacity:.5; letter-spacing:.1em; }
 
     .card {
       background: var(--bg-card);
       border-radius: 24px;
       border: 1px solid var(--border-card);
-      box-shadow: 0 28px 80px rgba(0, 0, 0, 0.85);
-      padding: 20px 20px 18px;
-      position: relative;
-      overflow: hidden;
+      padding: 20px;
+      box-shadow: 0 25px 70px rgba(0,0,0,.8);
     }
 
-    .card::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      opacity: 0.12;
-      pointer-events: none;
-      background: radial-gradient(circle at 0 0, rgba(148, 163, 184, 0.6), transparent 55%);
-    }
-
-    .card-inner {
-      position: relative;
-      z-index: 1;
-    }
-
-    .asset-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      margin-bottom: 4px;
-    }
-
-    .asset-main {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
+    .asset-row { display:flex; justify-content:space-between; align-items:center; }
+    .asset-main { display:flex; gap:10px; align-items:center; }
     .asset-logo {
-      width: 28px;
-      height: 28px;
-      border-radius: 999px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 14px;
+      width:28px; height:28px; border-radius:50%;
+      font-size:15px; font-weight:700;
+      display:flex; align-items:center; justify-content:center;
       background: radial-gradient(circle at 30% 0, #facc15, #f97316);
-      box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.9);
-      color: #0f172a;
-    }
-
-    .asset-text h1 {
-      margin: 0;
-      font-size: 18px;
-      font-weight: 600;
-    }
-
-    .asset-text span {
-      display: block;
-      font-size: 11px;
-      color: var(--text-muted);
+      color:#0f172a;
     }
 
     .signal-chip {
-      font-size: 11px;
-      padding: 4px 10px;
-      border-radius: 999px;
-      border: 1px solid var(--accent-neutral);
-      color: var(--accent-neutral);
-      background: rgba(15, 23, 42, 0.9);
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      white-space: nowrap;
+      padding:4px 10px;
+      font-size:11px;
+      border-radius:999px;
+      border:1px solid var(--accent-neutral);
+      color:var(--accent-neutral);
+      display:inline-flex; gap:6px; align-items:center;
     }
+    .signal-dot { width:8px; height:8px; border-radius:50%; background:var(--accent-neutral); }
 
-    .signal-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      background: var(--accent-neutral);
-    }
+    .signal-chip.bullish { border-color:var(--accent-bull); color:var(--accent-bull); }
+    .signal-chip.bullish .signal-dot { background:var(--accent-bull); }
 
-    .signal-chip.bullish {
-      border-color: var(--accent-bull);
-      color: var(--accent-bull);
-    }
-    .signal-chip.bullish .signal-dot {
-      background: var(--accent-bull);
-    }
+    .signal-chip.bearish { border-color:var(--accent-bear); color:var(--accent-bear); }
+    .signal-chip.bearish .signal-dot { background:var(--accent-bear); }
 
-    .signal-chip.bearish {
-      border-color: var(--accent-bear);
-      color: var(--accent-bear);
-    }
-    .signal-chip.bearish .signal-dot {
-      background: var(--accent-bear);
-    }
+    .price-value { text-align:center; font-size:40px; font-weight:700; margin:18px 0 0; }
+    .currency { text-align:center; font-size:12px; color:var(--text-muted); letter-spacing:.15em; }
 
-    .signal-chip.neutral {
-      border-color: var(--accent-neutral);
-      color: var(--accent-neutral);
-    }
-    .signal-chip.neutral .signal-dot {
-      background: var(--accent-neutral);
-    }
+    .live-row { text-align:center; margin-top:6px; font-size:12px; }
+    .live-label { color:var(--accent-live); }
+    .live-delta { margin-top:6px; text-align:center; font-size:11px; }
+    .live-delta.positive { color:#4ade80; }
+    .live-delta.negative { color:#fb7185; }
 
-    .price-block {
-      text-align: center;
-      margin: 18px 0 8px;
-    }
-
-    .price-value {
-      font-size: 40px;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-    }
-
-    .currency {
-      font-size: 12px;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      letter-spacing: 0.16em;
-      margin-top: 2px;
-    }
-
-    .live-row {
-      margin-top: 10px;
-      display: flex;
-      justify-content: center;
-      align-items: baseline;
-      gap: 4px;
-      font-size: 12px;
-      color: var(--text-muted);
-    }
-
-    .live-label {
-      color: var(--accent-live);
-      font-weight: 500;
-    }
-
-    .live-value {
-      font-weight: 500;
-    }
-
-    .live-delta {
-      font-size: 11px;
-      text-align: center;
-      margin-top: 4px;
-      color: var(--text-soft);
-      line-height: 1.4;
-    }
-
-    .live-delta.positive {
-      color: #4ade80;
-    }
-
-    .live-delta.negative {
-      color: #fb7185;
-    }
-
-    /* blocul de chart */
     .chart-block {
-      margin: 12px 0 6px;
-      border-radius: 14px;
-      overflow: hidden;
-      border: 1px solid rgba(30, 64, 175, 0.35);
-      background: radial-gradient(circle at 20% 0, rgba(37, 99, 235, 0.24), rgba(15, 23, 42, 0.95));
+      margin:14px 0; height:240px;
+      border-radius:12px; border:1px solid rgba(37,99,235,.25);
+      overflow:hidden;
+      background:radial-gradient(circle at 25% 0, rgba(37,99,235,.25), rgba(15,23,42,.92));
     }
 
-    #btc-chart {
-      width: 100%;
-      height: 220px;
-    }
+    #btc-chart { width:100%; height:100%; }
 
-    .message {
-      font-size: 14px;
-      line-height: 1.5;
-      color: var(--text-main);
-      text-align: center;
-      margin: 16px 0;
-    }
-
-    .meta {
-      font-size: 11px;
-      color: var(--text-soft);
-      text-align: center;
-    }
-
-    .meta span {
-      white-space: nowrap;
-    }
-
-    .meta-dot {
-      margin: 0 4px;
-      opacity: 0.6;
-    }
-
-    .error {
-      margin-top: 10px;
-      font-size: 12px;
-      color: #f97373;
-      text-align: center;
-    }
-
-    @media (max-width: 480px) {
-      .card {
-        padding: 18px 16px 16px;
-        border-radius: 20px;
-      }
-      .price-value {
-        font-size: 34px;
-      }
-      .asset-text h1 {
-        font-size: 16px;
-      }
-      .message {
-        font-size: 13px;
-      }
-      .live-row {
-        font-size: 11px;
-      }
-      #btc-chart {
-        height: 190px;
-      }
-    }
+    .message { text-align:center; margin:16px 0; font-size:14px; }
+    .meta { text-align:center; font-size:11px; opacity:.7; }
+    .error { text-align:center; margin-top:10px; color:#f97373; font-size:12px; }
   </style>
 
-  <!-- TradingView Lightweight Charts -->
   <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
 </head>
+
 <body>
   <div class="shell">
-    <div class="title-bar">
-      <div class="app-name">MECANISM COEZIV BTC</div>
-    </div>
+    <div class="app-name">MECANISM COEZIV BTC</div>
 
     <div class="card">
-      <div class="card-inner">
-        <div class="asset-row">
-          <div class="asset-main">
-            <div class="asset-logo">₿</div>
-            <div class="asset-text">
-              <h1>Bitcoin (BTC)</h1>
-              <span>Mecanism coeziv, actualizat aproximativ la fiecare oră.</span>
-            </div>
-          </div>
-          <div id="signal-chip" class="signal-chip neutral">
-            <span class="signal-dot"></span>
-            <span id="signal-label">Semnal neutru (Flat)</span>
+      <div class="asset-row">
+        <div class="asset-main">
+          <div class="asset-logo">₿</div>
+          <div>
+            <div style="font-weight:600; font-size:18px;">Bitcoin (BTC)</div>
+            <div style="font-size:11px; color:var(--text-muted);">Mecanism coeziv, actualizat orar.</div>
           </div>
         </div>
 
-        <div class="price-block">
-          <div id="price" class="price-value">–</div>
-          <div class="currency">USD</div>
-
-          <!-- Preț live din CoinGecko -->
-          <div class="live-row">
-            <span class="live-label">Preț live:</span>
-            <span id="live-price" class="live-value">–</span>
-            <span class="live-currency">USD</span>
-          </div>
-          <div id="live-delta" class="live-delta">
-            Se compară prețul live cu prețul analizat de mecanism.
-          </div>
+        <div id="signal-chip" class="signal-chip neutral">
+          <span class="signal-dot"></span>
+          <span id="signal-label">Semnal neutru (Flat)</span>
         </div>
-
-        <!-- chart-ul tip TradingView -->
-        <div class="chart-block">
-          <div id="btc-chart"></div>
-        </div>
-
-        <div id="message" class="message">
-          Se încarcă mesajul coeziv...
-        </div>
-
-        <div class="meta" id="meta">
-          <span>Snapshot: n/a</span>
-          <span class="meta-dot">•</span>
-          <span>Generat: n/a</span>
-        </div>
-
-        <div id="error" class="error"></div>
       </div>
+
+      <div class="price-value" id="price">–</div>
+      <div class="currency">USD</div>
+
+      <div class="live-row">
+        <span class="live-label">Preț live:</span>
+        <span id="live-price">–</span> USD
+      </div>
+
+      <div id="live-delta" class="live-delta">Se compară prețul live cu prețul mecanismului.</div>
+
+      <div class="chart-block"><div id="btc-chart"></div></div>
+
+      <div id="message" class="message">Se încarcă mesajul coeziv...</div>
+
+      <div id="meta" class="meta">Snapshot: n/a • Generat: n/a</div>
+
+      <div id="error" class="error"></div>
     </div>
   </div>
 
-  <script>
-    const PRICE_EL = document.getElementById("price");
-    const MSG_EL = document.getElementById("message");
-    const META_EL = document.getElementById("meta");
-    const ERROR_EL = document.getElementById("error");
-    const SIGNAL_CHIP_EL = document.getElementById("signal-chip");
-    const SIGNAL_LABEL_EL = document.getElementById("signal-label");
+<script>
+/* ================================
+      CONFIG & UTILITARE
+================================= */
 
-    const LIVE_PRICE_EL = document.getElementById("live-price");
-    const LIVE_DELTA_EL = document.getElementById("live-delta");
+const STATE_URL = "coeziv_state.json";
 
-    // IMPORTANT: fișierul JSON este în folderul btc-swing-strategy
-    const STATE_URL = "coeziv_state.json";
+const USD = new Intl.NumberFormat("en-US", { maximumFractionDigits:0 });
 
-    const USD_FORMATTER = new Intl.NumberFormat("en-US", {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    });
+function formatRO(iso) {
+  if (!iso) return "n/a";
+  const d = new Date(iso);
+  return d.toLocaleString("ro-RO",{hour:"2-digit",minute:"2-digit",year:"numeric",month:"2-digit",day:"2-digit"});
+}
 
-    let SNAPSHOT_PRICE = null; // prețul din coeziv_state.json
+function mapSignal(s) {
+  s = (s||"").toLowerCase();
+  if (s==="long")  return {tone:"bullish", label:"Semnal pozitiv (Long)"};
+  if (s==="short") return {tone:"bearish", label:"Semnal negativ (Short)"};
+  return {tone:"neutral", label:"Semnal neutru (Flat)"};
+}
 
-    function mapSignal(signal) {
-      const s = (signal || "").toLowerCase();
-      if (s === "long") {
-        return { tone: "bullish", label: "Semnal pozitiv (Long)" };
-      }
-      if (s === "short") {
-        return { tone: "bearish", label: "Semnal negativ (Short)" };
-      }
-      return { tone: "neutral", label: "Semnal neutru (Flat)" };
+/* ================================
+      VARIABILE GLOBALE
+================================= */
+
+let SNAPSHOT_PRICE = null;
+let chart, candleSeries, signalSeries;
+let CANDLES = [];
+
+/* ================================
+      ÎNCĂRCARE MECANISM JSON
+================================= */
+
+async function loadState() {
+  try {
+    const res = await fetch(STATE_URL + "?t=" + Date.now());
+    const data = await res.json();
+
+    SNAPSHOT_PRICE = data.price_usd || null;
+
+    document.getElementById("price").textContent =
+      SNAPSHOT_PRICE ? USD.format(SNAPSHOT_PRICE) : "–";
+
+    const sig = mapSignal(data.signal);
+    const chip = document.getElementById("signal-chip");
+    chip.classList.remove("bullish","bearish","neutral");
+    chip.classList.add(sig.tone);
+    document.getElementById("signal-label").textContent = sig.label;
+
+    document.getElementById("message").textContent =
+      data.message || "Nu există mesaj coeziv.";
+
+    document.getElementById("meta").innerHTML =
+      `Snapshot: ${formatRO(data.timestamp)} • Generat: ${formatRO(data.generated_at)}`;
+
+    updateSignalLine();
+  } catch(e) {
+    document.getElementById("error").textContent =
+      "Nu am putut încărca coeziv_state.json.";
+  }
+}
+
+/* ================================
+      PREȚ LIVE BINANCE
+================================= */
+
+async function updateLivePrice() {
+  try {
+    const r = await fetch("https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT");
+    const d = await r.json();
+    const live = parseFloat(d.price);
+
+    document.getElementById("live-price").textContent = USD.format(live);
+
+    if (!SNAPSHOT_PRICE) return;
+
+    const diff = live - SNAPSHOT_PRICE;
+    const pct = diff / SNAPSHOT_PRICE * 100;
+
+    const delta = document.getElementById("live-delta");
+    delta.classList.remove("positive","negative");
+
+    let t = "";
+    const s = diff>=0 ? "+" : "";
+    t += `Prețul live este ${s}${pct.toFixed(2)}% (${s}${USD.format(Math.abs(diff))} USD) `;
+
+    if (diff > 0) {
+      t += "peste prețul mecanismului.";
+      delta.classList.add("positive");
+    } else {
+      t += "sub prețul mecanismului.";
+      delta.classList.add("negative");
     }
 
-    function formatDate(iso) {
-      if (!iso) return "n/a";
-      const d = new Date(iso);
-      if (Number.isNaN(d.getTime())) return "n/a";
-      return d.toLocaleString("ro-RO", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        timeZone: "Europe/Bucharest"
-      });
-    }
+    delta.textContent = t;
+  } catch(e){}
+}
 
-    async function loadState() {
-      try {
-        ERROR_EL.textContent = "";
-        MSG_EL.textContent = "Se încarcă mesajul coeziv...";
+/* ================================
+      GRAFIC OHLC BINANCE (5M)
+================================= */
 
-        const url = STATE_URL + "?t=" + Date.now();
-        const res = await fetch(url, { cache: "no-store" });
-        if (!res.ok) {
-          throw new Error("HTTP " + res.status);
-        }
-        const state = await res.json();
-
-        const price = state.price_usd;
-        const message = state.message;
-        const ts = state.timestamp;
-        const gen = state.generated_at;
-        const signal = state.signal;
-
-        if (typeof price === "number" && Number.isFinite(price) && price > 0) {
-          SNAPSHOT_PRICE = price;
-          PRICE_EL.textContent = USD_FORMATTER.format(price);
-        } else {
-          SNAPSHOT_PRICE = null;
-          PRICE_EL.textContent = "–";
-        }
-
-        MSG_EL.textContent = message || "Nu există mesaj coeziv pentru acest moment.";
-
-        const mapped = mapSignal(signal);
-        SIGNAL_LABEL_EL.textContent = mapped.label;
-        SIGNAL_CHIP_EL.classList.remove("bullish", "bearish", "neutral");
-        SIGNAL_CHIP_EL.classList.add(mapped.tone);
-        SIGNAL_CHIP_EL.setAttribute("aria-label", mapped.label);
-
-        META_EL.innerHTML =
-          `<span>Snapshot: ${formatDate(ts)}</span>` +
-          `<span class="meta-dot">•</span>` +
-          `<span>Generat: ${formatDate(gen)}</span>`;
-
-        if (SNAPSHOT_PRICE === null) {
-          LIVE_DELTA_EL.textContent =
-            "Așteptăm un snapshot de preț valid din mecanism.";
-          LIVE_DELTA_EL.classList.remove("positive", "negative");
-        }
-
-        // la fiecare update al state-ului, actualizăm și overlay-ul de semnal pe chart
-        updateSignalOverlay();
-      } catch (err) {
-        console.error(err);
-
-        SNAPSHOT_PRICE = null;
-        PRICE_EL.textContent = "–";
-        LIVE_DELTA_EL.textContent =
-          "Nu am putut încărca snapshotul de preț. Așteptăm ca mecanismul să revină.";
-        LIVE_DELTA_EL.classList.remove("positive", "negative");
-
-        ERROR_EL.textContent =
-          "Nu am putut încărca coeziv_state.json. Verifică dacă workflow-ul de backend rulează corect.";
-        MSG_EL.textContent = "Nu am reușit să obținem mesajul coeziv.";
-      }
-    }
-
-    async function updateLivePrice() {
-      try {
-        const res = await fetch(
-          "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd",
-          { cache: "no-store" }
-        );
-        if (!res.ok) throw new Error("HTTP " + res.status);
-        const data = await res.json();
-        const live = data?.bitcoin?.usd;
-
-        if (typeof live === "number" && Number.isFinite(live)) {
-          LIVE_PRICE_EL.textContent = USD_FORMATTER.format(live);
-
-          if (
-            typeof SNAPSHOT_PRICE === "number" &&
-            Number.isFinite(SNAPSHOT_PRICE) &&
-            SNAPSHOT_PRICE > 0
-          ) {
-            const diff = live - SNAPSHOT_PRICE;
-            const pct = (diff / SNAPSHOT_PRICE) * 100;
-            const absPct = Math.abs(pct);
-
-            LIVE_DELTA_EL.classList.remove("positive", "negative");
-
-            if (diff === 0) {
-              LIVE_DELTA_EL.textContent =
-                "Prețul live este egal cu prețul analizat de mecanism.";
-              return;
-            }
-
-            const directionWord = diff > 0 ? "peste" : "sub";
-            const sign = diff > 0 ? "+" : "−";
-            const pctStr = absPct.toFixed(2);
-            const usdStr = USD_FORMATTER.format(Math.abs(diff));
-
-            let magnitudeHint;
-            if (absPct < 0.25) {
-              magnitudeHint = "Diferență foarte mică (zgomot normal de piață).";
-            } else if (absPct < 1) {
-              magnitudeHint =
-                "Mișcare mică; semnalul mecanismului rămâne reperul principal.";
-            } else if (absPct < 3) {
-              magnitudeHint =
-                "Mișcare relevantă; poți ajusta timing-ul intrării sau ieșirii.";
-            } else {
-              magnitudeHint =
-                "Mișcare puternică; verifică contextul și lichiditatea înainte de a acționa.";
-            }
-
-            LIVE_DELTA_EL.textContent =
-              `Prețul live este ${sign}${pctStr}% (${sign}${usdStr} USD) ` +
-              `${directionWord} prețul analizat de mecanism. ${magnitudeHint}`;
-
-            if (diff > 0) {
-              LIVE_DELTA_EL.classList.add("positive");
-            } else {
-              LIVE_DELTA_EL.classList.add("negative");
-            }
-          } else {
-            LIVE_DELTA_EL.textContent =
-              "Preț live încărcat. Așteptăm un snapshot de preț valid din mecanism.";
-            LIVE_DELTA_EL.classList.remove("positive", "negative");
-          }
-        }
-      } catch (err) {
-        console.error("Nu am putut obține prețul live BTC", err);
-      }
-    }
-
-    // --------------- GRAFIC TIP TRADINGVIEW -----------------
-
-    let chart = null;
-    let candleSeries = null;
-    let signalSeries = null;
-    let CANDLE_DATA = [];
-
-    function initChart() {
-  const container = document.getElementById("btc-chart");
-  if (!container) return;
-
-  chart = LightweightCharts.createChart(container, {
-    layout: {
-      background: { color: "transparent" },
-      textColor: "#e5e7eb"
-    },
-    grid: {
-      vertLines: { color: "#1e293b" },
-      horzLines: { color: "#111827" }
-    },
-    rightPriceScale: {
-      borderVisible: false
-    },
-    timeScale: {
-      borderVisible: false
-    }
+function initChart() {
+  const el = document.getElementById("btc-chart");
+  chart = LightweightCharts.createChart(el,{
+    layout:{ background:{color:"transparent"}, textColor:"#e5e7eb" },
+    grid:{ vertLines:{color:"#1e293b"}, horzLines:{color:"#1e293b"} },
+    timeScale:{ borderVisible:false },
+    rightPriceScale:{ borderVisible:false }
   });
 
   candleSeries = chart.addCandlestickSeries({
-    upColor: "#22c55e",
-    downColor: "#ef4444",
-    borderUpColor: "#22c55e",
-    borderDownColor: "#ef4444",
-    wickUpColor: "#22c55e",
-    wickDownColor: "#ef4444"
+    upColor:"#22c55e", downColor:"#ef4444",
+    borderUpColor:"#22c55e", borderDownColor:"#ef4444",
+    wickUpColor:"#22c55e", wickDownColor:"#ef4444"
   });
 
-  fetch("https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=5m&limit=288", {
-    cache: "no-store"
-  })
-    .then((r) => {
-      if (!r.ok) throw new Error("HTTP " + r.status);
-      return r.json();
-    })
-    .then((rows) => {
-      CANDLE_DATA = rows.map((x) => ({
-        time: Math.floor(x[0] / 1000),
-        open: parseFloat(x[1]),
-        high: parseFloat(x[2]),
-        low: parseFloat(x[3]),
-        close: parseFloat(x[4])
-      }));
+  signalSeries = chart.addLineSeries({ color:"#38bdf8", lineWidth:2 });
 
-      candleSeries.setData(CANDLE_DATA);
-      chart.timeScale().fitContent();
-      updateSignalOverlay();
-    })
-    .catch((err) => {
-      console.error("Eroare la încărcarea datelor OHLC Binance", err);
-    });
-
-  function resizeChart() {
-    if (!chart) return;
-    const { width, height } = container.getBoundingClientRect();
-    chart.applyOptions({ width, height });
-  }
-
-  window.addEventListener("resize", resizeChart);
-  resizeChart();
+  loadOHLC();
+  setupWebSocket();
 }
 
-    function updateSignalOverlay() {
-      if (!chart || !candleSeries || !CANDLE_DATA.length) return;
-      if (typeof SNAPSHOT_PRICE !== "number" || !Number.isFinite(SNAPSHOT_PRICE)) return;
-
-      // dacă nu există încă, creăm seria de semnal
-      if (!signalSeries) {
-        signalSeries = chart.addLineSeries({
-          lineWidth: 2,
-          color: "#f97373"
-        });
-      }
-
-      // linie orizontală la prețul mecanismului, pe tot istoricul recent
-      const lineData = CANDLE_DATA.map((p) => ({
-        time: p.time,
-        value: SNAPSHOT_PRICE
+function loadOHLC() {
+  fetch("https://api.binance.com/api/v1/klines?symbol=BTCUSDT&interval=5m&limit=288")
+    .then(r=>r.json())
+    .then(rows=>{
+      CANDLES = rows.map(k=>({
+        time:k[0]/1000,
+        open:parseFloat(k[1]),
+        high:parseFloat(k[2]),
+        low:parseFloat(k[3]),
+        close:parseFloat(k[4])
       }));
-      signalSeries.setData(lineData);
-    }
-
-    // ----------------- INTERVALE & INIT -----------------
-
-    let stateInterval = null;
-    let liveInterval = null;
-
-    function startIntervals() {
-      if (!stateInterval) {
-        stateInterval = setInterval(loadState, 5 * 60 * 1000); // coeziv_state la 5 minute
-      }
-      if (!liveInterval) {
-        liveInterval = setInterval(updateLivePrice, 15 * 1000); // preț live la 15 secunde
-      }
-    }
-
-    function stopIntervals() {
-      if (stateInterval) {
-        clearInterval(stateInterval);
-        stateInterval = null;
-      }
-      if (liveInterval) {
-        clearInterval(liveInterval);
-        liveInterval = null;
-      }
-    }
-
-    document.addEventListener("visibilitychange", () => {
-      if (document.visibilityState === "visible") {
-        loadState();
-        updateLivePrice();
-        startIntervals();
-      } else {
-        stopIntervals();
-      }
+      candleSeries.setData(CANDLES);
+      chart.timeScale().fitContent();
+      updateSignalLine();
     });
+}
 
-    // load inițial & chart
-    initChart();
-    loadState();
-    updateLivePrice();
-    startIntervals();
-  </script>
+/* ================================
+      WebSocket 5m LIVE CANDLES
+================================= */
+
+function setupWebSocket() {
+  const ws = new WebSocket("wss://stream.binance.com:9443/ws/btcusdt@kline_5m");
+
+  ws.onmessage = (msg)=>{
+    const json = JSON.parse(msg.data);
+    const k = json.k;
+
+    const newCandle = {
+      time: k.t/1000,
+      open: parseFloat(k.o),
+      high: parseFloat(k.h),
+      low: parseFloat(k.l),
+      close: parseFloat(k.c)
+    };
+
+    CANDLES[CANDLES.length-1] = newCandle;
+    candleSeries.update(newCandle);
+    updateSignalLine();
+  };
+}
+
+/* ================================
+      TRASARE LINIE MECANISM
+================================= */
+
+function updateSignalLine() {
+  if (!SNAPSHOT_PRICE || !CANDLES.length) return;
+  const lineData = CANDLES.map(c=>({time:c.time, value:SNAPSHOT_PRICE}));
+  signalSeries.setData(lineData);
+}
+
+/* ================================
+      START
+================================= */
+
+setTimeout(()=>initChart(),150);
+
+loadState();
+updateLivePrice();
+
+setInterval(updateLivePrice, 8000);
+setInterval(loadState, 5*60*1000);
+
+</script>
 </body>
 </html>
