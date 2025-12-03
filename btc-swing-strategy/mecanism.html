@@ -203,8 +203,9 @@
     .live-delta {
       font-size: 11px;
       text-align: center;
-      margin-top: 2px;
+      margin-top: 4px;
       color: var(--text-soft);
+      line-height: 1.4;
     }
 
     .live-delta.positive {
@@ -328,7 +329,6 @@
     const LIVE_PRICE_EL = document.getElementById("live-price");
     const LIVE_DELTA_EL = document.getElementById("live-delta");
 
-    // URL de bază pentru state-ul mecanismului
     const STATE_URL = "coeziv_state.json";
 
     // Formatter reutilizabil pentru USD, fără zecimale
@@ -368,7 +368,7 @@
         ERROR_EL.textContent = "";
         MSG_EL.textContent = "Se încarcă mesajul coeziv...";
 
-        // cache-busting pentru a evita state vechi servit din cache
+        // cache-busting
         const url = STATE_URL + "?t=" + Date.now();
         const res = await fetch(url, { cache: "no-store" });
         if (!res.ok) {
@@ -391,7 +391,7 @@
           PRICE_EL.textContent = "–";
         }
 
-        // mesaj coeziv (din backend, fără să-l schimbăm)
+        // mesaj coeziv (din backend)
         MSG_EL.textContent = message || "Nu există mesaj coeziv pentru acest moment.";
 
         // semnal
@@ -441,37 +441,57 @@
         if (typeof live === "number" && Number.isFinite(live)) {
           LIVE_PRICE_EL.textContent = USD_FORMATTER.format(live);
 
-          // dacă avem și snapshot valid, arătăm diferența
+          // dacă avem și snapshot valid, arătăm diferența într-un mod util pentru trader
           if (
-  typeof SNAPSHOT_PRICE === "number" &&
-  Number.isFinite(SNAPSHOT_PRICE) &&
-  SNAPSHOT_PRICE > 0
-) {
-  const diff = live - SNAPSHOT_PRICE;
-  const pct = (diff / SNAPSHOT_PRICE) * 100;
+            typeof SNAPSHOT_PRICE === "number" &&
+            Number.isFinite(SNAPSHOT_PRICE) &&
+            SNAPSHOT_PRICE > 0
+          ) {
+            const diff = live - SNAPSHOT_PRICE;
+            const pct = (diff / SNAPSHOT_PRICE) * 100;
+            const absPct = Math.abs(pct);
 
-  const sign = diff > 0 ? "+" : "";
-  const dir = diff > 0 ? "peste" : "sub";
-  const pctStr = pct.toFixed(2);
+            LIVE_DELTA_EL.classList.remove("positive", "negative");
 
-  const SIGNIFICANT_MOVE = 0.5; // 0.5% prag „serios”
+            if (diff === 0) {
+              LIVE_DELTA_EL.textContent =
+                "Prețul live este egal cu prețul analizat de mecanism.";
+              return;
+            }
 
-  LIVE_DELTA_EL.classList.remove("positive", "negative");
+            const directionWord = diff > 0 ? "peste" : "sub";
+            const sign = diff > 0 ? "+" : "−";
+            const pctStr = absPct.toFixed(2);
+            const usdStr = USD_FORMATTER.format(Math.abs(diff));
 
-  if (Math.abs(pct) >= SIGNIFICANT_MOVE) {
-    LIVE_DELTA_EL.textContent =
-      `Prețul live este ${sign}${pctStr}% ${dir} prețul analizat de mecanism.`;
-    LIVE_DELTA_EL.classList.add(diff > 0 ? "positive" : "negative");
-  } else {
-    LIVE_DELTA_EL.textContent =
-      `Prețul live este ${sign}${pctStr}% ${dir} prețul analizat de mecanism (diferență mică).`;
-    // fără culoare verde/roșie, tocmai ca să nu exagereze importanța
-  }
-} else {
-  LIVE_DELTA_EL.textContent =
-    "Preț live încărcat. Așteptăm un snapshot de preț valid din mecanism.";
-  LIVE_DELTA_EL.classList.remove("positive", "negative");
-}
+            let magnitudeHint;
+            if (absPct < 0.25) {
+              magnitudeHint = "Diferență foarte mică (zgomot normal de piață).";
+            } else if (absPct < 1) {
+              magnitudeHint =
+                "Mișcare mică; semnalul mecanismului rămâne reperul principal.";
+            } else if (absPct < 3) {
+              magnitudeHint =
+                "Mișcare relevantă; poți ajusta timing-ul intrării sau ieșirii.";
+            } else {
+              magnitudeHint =
+                "Mișcare puternică; verifică contextul și lichiditatea înainte de a acționa.";
+            }
+
+            LIVE_DELTA_EL.textContent =
+              `Prețul live este ${sign}${pctStr}% (${sign}${usdStr} USD) ` +
+              `${directionWord} prețul analizat de mecanism. ${magnitudeHint}`;
+
+            if (diff > 0) {
+              LIVE_DELTA_EL.classList.add("positive");
+            } else {
+              LIVE_DELTA_EL.classList.add("negative");
+            }
+          } else {
+            LIVE_DELTA_EL.textContent =
+              "Preț live încărcat. Așteptăm un snapshot de preț valid din mecanism.";
+            LIVE_DELTA_EL.classList.remove("positive", "negative");
+          }
         }
       } catch (err) {
         console.error("Nu am putut obține prețul live BTC", err);
@@ -505,12 +525,10 @@
 
     document.addEventListener("visibilitychange", () => {
       if (document.visibilityState === "visible") {
-        // când revii în tab, faci un refresh imediat și repornești intervalele
         loadState();
         updateLivePrice();
         startIntervals();
       } else {
-        // dacă tab-ul nu e vizibil, nu mai batem API-urile inutil
         stopIntervals();
       }
     });
@@ -519,7 +537,6 @@
     loadState();
     updateLivePrice();
     startIntervals();
-
   </script>
 </body>
 </html>
