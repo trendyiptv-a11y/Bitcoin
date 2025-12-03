@@ -147,7 +147,7 @@
     /* ÎNCARCĂ DATE MECANISM */
     async function loadState() {
       try {
-        const r = await fetch("/coeziv_state.json", { cache: "no-store" });
+        const r = await fetch("btc-swing-strategy/coeziv_state.json", { cache: "no-store" });
         const st = await r.json();
 
         EL_PRICE.textContent = st.price.toLocaleString("en-US");
@@ -196,3 +196,4 @@
 
 
 </html>
+
