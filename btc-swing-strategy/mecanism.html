@@ -222,7 +222,7 @@
     }
   </style>
 
-  <!-- Plotly.js – candlestick compatibil cu toate browserele -->
+  <!-- Plotly.js – compatibil cu toate browserele -->
   <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
 </head>
 <body>
@@ -293,7 +293,7 @@
     const SIGNAL_LABEL_EL = document.getElementById("signal-label");
     const CHART_LOADER_EL = document.getElementById("chart-loader");
 
-    // JSON-ul generat de backend (Structura 1)
+    // JSON-ul mecanismului (Structura 1)
     const STATE_URL = "coeziv_state.json";
 
     const USD_FORMATTER = new Intl.NumberFormat("en-US", {
@@ -302,13 +302,16 @@
     });
 
     let SNAPSHOT_PRICE = null;
+    let LIVE_PRICE = null;
+    let LAST_SIGNAL_RAW = null; // "long" / "short" / "flat"
 
-    // Date OHLC pentru grafic
+    // OHLC arrays
     let oTimes = [];
     let oOpen = [];
     let oHigh = [];
     let oLow = [];
     let oClose = [];
+    let oVolume = [];
 
     function mapSignal(signal) {
       const s = (signal || "").toLowerCase();
@@ -327,7 +330,7 @@
       });
     }
 
-    // ---------------- MECANISM (JSON) ----------------
+    // ------------- MECANISM (JSON) -------------
 
     async function loadState() {
       try {
@@ -343,6 +346,8 @@
         const ts = state.timestamp;
         const gen = state.generated_at;
         const signal = state.signal;
+
+        LAST_SIGNAL_RAW = (signal || "").toLowerCase();
 
         if (typeof price === "number" && Number.isFinite(price) && price > 0) {
           SNAPSHOT_PRICE = price;
@@ -370,7 +375,7 @@
           LIVE_DELTA_EL.classList.remove("positive", "negative");
         }
 
-        renderChart(); // redesenăm graficul cu linia mecanismului
+        renderChart(); // redesenăm graficul cu linia mecanismului și markerul
       } catch (err) {
         console.error(err);
         SNAPSHOT_PRICE = null;
@@ -384,7 +389,7 @@
       }
     }
 
-    // ---------------- PREȚ LIVE BINANCE ----------------
+    // ------------- PREȚ LIVE BINANCE -------------
 
     async function updateLivePrice() {
       try {
@@ -398,6 +403,7 @@
 
         if (!Number.isFinite(live)) return;
 
+        LIVE_PRICE = live;
         LIVE_PRICE_EL.textContent = USD_FORMATTER.format(live);
 
         if (
@@ -414,6 +420,7 @@
           if (diff === 0) {
             LIVE_DELTA_EL.textContent =
               "Prețul live este egal cu prețul analizat de mecanism.";
+            renderChart(); // actualizăm linia de preț live
             return;
           }
 
@@ -446,15 +453,17 @@
             "Preț live încărcat. Așteptăm un snapshot de preț valid din mecanism.";
           LIVE_DELTA_EL.classList.remove("positive", "negative");
         }
+
+        renderChart(); // linia de preț live
       } catch (err) {
         console.error("Eroare preț live Binance", err);
       }
     }
 
-    // ---------------- OHLC PENTRU GRAFIC ----------------
+    // ------------- OHLC PENTRU GRAFIC -------------
 
     async function fetchOHLC() {
-      // 1) încearcă proxy local /api/ohlc, dacă l-ai creat
+      // 1) încearcă proxy local /api/ohlc, dacă există
       try {
         const rLocal = await fetch("/api/ohlc");
         if (rLocal.ok) {
@@ -484,6 +493,7 @@
         oHigh = [];
         oLow = [];
         oClose = [];
+        oVolume = [];
 
         rows.forEach(k => {
           oTimes.push(new Date(k[0]));
@@ -491,10 +501,11 @@
           oHigh.push(parseFloat(k[2]));
           oLow.push(parseFloat(k[3]));
           oClose.push(parseFloat(k[4]));
+          oVolume.push(parseFloat(k[5]));
         });
 
-        renderChart();
         CHART_LOADER_EL.style.display = "none";
+        renderChart();
       } catch (err) {
         console.error("Eroare la OHLC", err);
         CHART_LOADER_EL.textContent =
@@ -502,12 +513,12 @@
       }
     }
 
-    // ---------------- RENDER GRAFIC PLOTLY ----------------
+    // ------------- RENDER GRAFIC PLOTLY + VOLUM + LINII -------------
 
     function renderChart() {
       const el = document.getElementById("btc-chart");
       if (!el || !window.Plotly) return;
-      if (!oTimes.length) return; // încă nu avem date OHLC
+      if (!oTimes.length) return; // încă nu avem date
 
       const candleTrace = {
         x: oTimes,
@@ -518,11 +529,27 @@
         type: "candlestick",
         name: "BTCUSDT",
         increasing: { line: { color: "#22c55e" } },
-        decreasing: { line: { color: "#ef4444" } }
+        decreasing: { line: { color: "#ef4444" } },
+        yaxis: "y"
       };
 
-      const traces = [candleTrace];
+      // volum colorat în funcție de direcție
+      const volColors = oClose.map((c, i) => (
+        c >= oOpen[i] ? "rgba(34,197,94,0.5)" : "rgba(239,68,68,0.5)"
+      ));
 
+      const volumeTrace = {
+        x: oTimes,
+        y: oVolume,
+        type: "bar",
+        yaxis: "y2",
+        marker: { color: volColors },
+        name: "Volum"
+      };
+
+      const traces = [candleTrace, volumeTrace];
+
+      // linia prețului mecanismului
       if (typeof SNAPSHOT_PRICE === "number" && Number.isFinite(SNAPSHOT_PRICE)) {
         const lineTrace = {
           x: [oTimes[0], oTimes[oTimes.length - 1]],
@@ -530,9 +557,51 @@
           type: "scatter",
           mode: "lines",
           line: { color: "#38bdf8", width: 2, dash: "dot" },
-          name: "Preț mecanism"
+          name: "Preț mecanism",
+          yaxis: "y"
         };
         traces.push(lineTrace);
+      }
+
+      // linia prețului live (ultimul preț cunoscut)
+      if (typeof LIVE_PRICE === "number" && Number.isFinite(LIVE_PRICE)) {
+        const liveTrace = {
+          x: [oTimes[0], oTimes[oTimes.length - 1]],
+          y: [LIVE_PRICE, LIVE_PRICE],
+          type: "scatter",
+          mode: "lines",
+          line: { color: "#facc15", width: 1.5, dash: "dash" },
+          name: "Preț live",
+          yaxis: "y"
+        };
+        traces.push(liveTrace);
+      }
+
+      // marker pentru semnal (pe ultima lumânare)
+      if (LAST_SIGNAL_RAW === "long" || LAST_SIGNAL_RAW === "short") {
+        const lastIdx = oTimes.length - 1;
+        const basePrice = oClose[lastIdx];
+        const offset = basePrice * 0.002; // 0.2%
+
+        const yMark = LAST_SIGNAL_RAW === "long"
+          ? basePrice - offset
+          : basePrice + offset;
+
+        const markerTrace = {
+          x: [oTimes[lastIdx]],
+          y: [yMark],
+          type: "scatter",
+          mode: "markers",
+          marker: {
+            symbol: LAST_SIGNAL_RAW === "long" ? "triangle-up" : "triangle-down",
+            size: 12,
+            color: LAST_SIGNAL_RAW === "long" ? "#22c55e" : "#f97373",
+            line: { width: 1, color: "#020617" }
+          },
+          name: "Semnal mecanism",
+          yaxis: "y"
+        };
+        traces.push(markerTrace);
       }
 
       const layout = {
@@ -542,12 +611,27 @@
         xaxis: {
           showgrid: false,
           zeroline: false,
-          tickfont: { color: "#9ca3af" }
+          tickfont: { color: "#9ca3af", size: 10 },
+          rangeselector: {
+            buttons: [
+              { count: 6,  label: "6h",  step: "hour", stepmode: "backward" },
+              { count: 24, label: "24h", step: "hour", stepmode: "backward" },
+              { count: 3,  label: "3d", step: "day", stepmode: "backward" },
+              { step: "all", label: "All" }
+            ]
+          },
+          rangeslider: { visible: false }
         },
         yaxis: {
+          domain: [0.35, 1],
           showgrid: true,
           gridcolor: "#111827",
-          tickfont: { color: "#9ca3af" }
+          tickfont: { color: "#9ca3af", size: 10 }
+        },
+        yaxis2: {
+          domain: [0, 0.28],
+          showgrid: false,
+          tickfont: { color: "#6b7280", size: 9 }
         },
         showlegend: false
       };
@@ -560,7 +644,7 @@
       Plotly.newPlot(el, traces, layout, config);
     }
 
-    // ---------------- START ----------------
+    // ------------- START  -------------
 
     function start() {
       loadState();
