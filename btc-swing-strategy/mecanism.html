@@ -24,305 +24,526 @@
     body {
       margin: 0;
       min-height: 100vh;
-      font-family: system-ui, sans-serif;
-      background: radial-gradient(circle at 40% -10%, #0f172a, #000);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 10% -10%, #0f172a 0, transparent 55%),
+        radial-gradient(circle at 90% 110%, #020617 0, #000 60%);
       color: var(--text-main);
       display: flex;
       justify-content: center;
       padding: 16px;
     }
 
-    .shell { width: 100%; max-width: 520px; }
-    .app-name { text-align:center; margin-bottom:6px; font-size:14px; opacity:.5; letter-spacing:.1em; }
+    .shell {
+      width: 100%;
+      max-width: 520px;
+    }
+
+    .title-bar {
+      text-align: center;
+      margin-bottom: 10px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      font-size: 14px;
+      color: var(--text-soft);
+    }
 
     .card {
       background: var(--bg-card);
       border-radius: 24px;
       border: 1px solid var(--border-card);
+      box-shadow: 0 28px 80px rgba(0, 0, 0, 0.9);
       padding: 20px;
-      box-shadow: 0 25px 70px rgba(0,0,0,.8);
+      position: relative;
+      overflow: hidden;
     }
 
-    .asset-row { display:flex; justify-content:space-between; align-items:center; }
-    .asset-main { display:flex; gap:10px; align-items:center; }
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: .14;
+      background:
+        radial-gradient(circle at 0 0, rgba(148, 163, 184, .7), transparent 55%);
+    }
+
+    .card-inner { position: relative; z-index: 1; }
+
+    .asset-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+
+    .asset-main {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
     .asset-logo {
-      width:28px; height:28px; border-radius:50%;
-      font-size:15px; font-weight:700;
-      display:flex; align-items:center; justify-content:center;
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
       background: radial-gradient(circle at 30% 0, #facc15, #f97316);
-      color:#0f172a;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    .asset-text h1 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .asset-text span {
+      display: block;
+      font-size: 11px;
+      color: var(--text-muted);
     }
 
     .signal-chip {
-      padding:4px 10px;
-      font-size:11px;
-      border-radius:999px;
-      border:1px solid var(--accent-neutral);
-      color:var(--accent-neutral);
-      display:inline-flex; gap:6px; align-items:center;
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--accent-neutral);
+      color: var(--accent-neutral);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      background: rgba(15,23,42,0.9);
     }
-    .signal-dot { width:8px; height:8px; border-radius:50%; background:var(--accent-neutral); }
 
-    .signal-chip.bullish { border-color:var(--accent-bull); color:var(--accent-bull); }
-    .signal-chip.bullish .signal-dot { background:var(--accent-bull); }
+    .signal-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--accent-neutral);
+    }
 
-    .signal-chip.bearish { border-color:var(--accent-bear); color:var(--accent-bear); }
-    .signal-chip.bearish .signal-dot { background:var(--accent-bear); }
+    .signal-chip.bullish { border-color: var(--accent-bull); color: var(--accent-bull); }
+    .signal-chip.bullish .signal-dot { background: var(--accent-bull); }
 
-    .price-value { text-align:center; font-size:40px; font-weight:700; margin:18px 0 0; }
-    .currency { text-align:center; font-size:12px; color:var(--text-muted); letter-spacing:.15em; }
+    .signal-chip.bearish { border-color: var(--accent-bear); color: var(--accent-bear); }
+    .signal-chip.bearish .signal-dot { background: var(--accent-bear); }
 
-    .live-row { text-align:center; margin-top:6px; font-size:12px; }
-    .live-label { color:var(--accent-live); }
-    .live-delta { margin-top:6px; text-align:center; font-size:11px; }
-    .live-delta.positive { color:#4ade80; }
-    .live-delta.negative { color:#fb7185; }
+    .price-block {
+      text-align: center;
+      margin: 16px 0 8px;
+    }
+
+    .price-value {
+      font-size: 40px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    .currency {
+      font-size: 12px;
+      color: var(--text-muted);
+      letter-spacing: 0.16em;
+      margin-top: 2px;
+    }
+
+    .live-row {
+      margin-top: 6px;
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .live-label { color: var(--accent-live); }
+    .live-delta {
+      margin-top: 4px;
+      font-size: 11px;
+      text-align: center;
+      color: var(--text-soft);
+    }
+    .live-delta.positive { color: #4ade80; }
+    .live-delta.negative { color: #fb7185; }
 
     .chart-block {
-      margin:14px 0; height:240px;
-      border-radius:12px; border:1px solid rgba(37,99,235,.25);
-      overflow:hidden;
-      background:radial-gradient(circle at 25% 0, rgba(37,99,235,.25), rgba(15,23,42,.92));
+      margin: 14px 0 10px;
+      border-radius: 14px;
+      border: 1px solid rgba(37, 99, 235, 0.35);
+      overflow: hidden;
+      background: radial-gradient(circle at 20% 0, rgba(37,99,235,0.3), rgba(15,23,42,0.95));
+      height: 230px;
+      position: relative;
     }
 
-    #btc-chart { width:100%; height:100%; }
+    #btc-chart {
+      width: 100%;
+      height: 100%;
+    }
 
-    .message { text-align:center; margin:16px 0; font-size:14px; }
-    .meta { text-align:center; font-size:11px; opacity:.7; }
-    .error { text-align:center; margin-top:10px; color:#f97373; font-size:12px; }
+    .chart-loader {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: var(--text-soft);
+      pointer-events: none;
+    }
+
+    .message {
+      font-size: 14px;
+      line-height: 1.5;
+      text-align: center;
+      margin: 10px 0 14px;
+    }
+
+    .meta {
+      font-size: 11px;
+      text-align: center;
+      color: var(--text-soft);
+    }
+
+    .meta span { white-space: nowrap; }
+    .meta-dot { margin: 0 4px; opacity: .6; }
+
+    .error {
+      margin-top: 10px;
+      font-size: 12px;
+      color: #f97373;
+      text-align: center;
+    }
+
+    @media (max-width: 480px) {
+      .card { padding: 18px 16px 16px; border-radius: 20px; }
+      .price-value { font-size: 34px; }
+      .asset-text h1 { font-size: 16px; }
+      .message { font-size: 13px; }
+      .chart-block { height: 210px; }
+    }
   </style>
 
   <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
 </head>
-
 <body>
   <div class="shell">
-    <div class="app-name">MECANISM COEZIV BTC</div>
+    <div class="title-bar">MECANISM COEZIV BTC</div>
 
     <div class="card">
-      <div class="asset-row">
-        <div class="asset-main">
-          <div class="asset-logo">₿</div>
-          <div>
-            <div style="font-weight:600; font-size:18px;">Bitcoin (BTC)</div>
-            <div style="font-size:11px; color:var(--text-muted);">Mecanism coeziv, actualizat orar.</div>
+      <div class="card-inner">
+        <div class="asset-row">
+          <div class="asset-main">
+            <div class="asset-logo">₿</div>
+            <div class="asset-text">
+              <h1>Bitcoin (BTC)</h1>
+              <span>Mecanism coeziv, actualizat aproximativ la fiecare oră.</span>
+            </div>
+          </div>
+          <div id="signal-chip" class="signal-chip neutral">
+            <span class="signal-dot"></span>
+            <span id="signal-label">Semnal neutru (Flat)</span>
           </div>
         </div>
 
-        <div id="signal-chip" class="signal-chip neutral">
-          <span class="signal-dot"></span>
-          <span id="signal-label">Semnal neutru (Flat)</span>
+        <div class="price-block">
+          <div id="price" class="price-value">–</div>
+          <div class="currency">USD</div>
+
+          <div class="live-row">
+            <span class="live-label">Preț live:</span>
+            <span id="live-price" class="live-value">–</span>
+            <span class="live-currency">USD</span>
+          </div>
+          <div id="live-delta" class="live-delta">
+            Se compară prețul live cu prețul analizat de mecanism.
+          </div>
         </div>
+
+        <div class="chart-block">
+          <div id="btc-chart"></div>
+          <div id="chart-loader" class="chart-loader">Se încarcă graficul BTC (Binance)…</div>
+        </div>
+
+        <div id="message" class="message">
+          Se încarcă mesajul coeziv...
+        </div>
+
+        <div class="meta" id="meta">
+          <span>Snapshot: n/a</span>
+          <span class="meta-dot">•</span>
+          <span>Generat: n/a</span>
+        </div>
+
+        <div id="error" class="error"></div>
       </div>
-
-      <div class="price-value" id="price">–</div>
-      <div class="currency">USD</div>
-
-      <div class="live-row">
-        <span class="live-label">Preț live:</span>
-        <span id="live-price">–</span> USD
-      </div>
-
-      <div id="live-delta" class="live-delta">Se compară prețul live cu prețul mecanismului.</div>
-
-      <div class="chart-block"><div id="btc-chart"></div></div>
-
-      <div id="message" class="message">Se încarcă mesajul coeziv...</div>
-
-      <div id="meta" class="meta">Snapshot: n/a • Generat: n/a</div>
-
-      <div id="error" class="error"></div>
     </div>
   </div>
 
-<script>
-/* ================================
-      CONFIG & UTILITARE
-================================= */
+  <script>
+    // Elemente UI
+    const PRICE_EL = document.getElementById("price");
+    const LIVE_PRICE_EL = document.getElementById("live-price");
+    const LIVE_DELTA_EL = document.getElementById("live-delta");
+    const MSG_EL = document.getElementById("message");
+    const META_EL = document.getElementById("meta");
+    const ERROR_EL = document.getElementById("error");
+    const SIGNAL_CHIP_EL = document.getElementById("signal-chip");
+    const SIGNAL_LABEL_EL = document.getElementById("signal-label");
+    const CHART_LOADER_EL = document.getElementById("chart-loader");
 
-const STATE_URL = "coeziv_state.json";
+    const STATE_URL = "coeziv_state.json"; // Structura 1: același folder
 
-const USD = new Intl.NumberFormat("en-US", { maximumFractionDigits:0 });
+    const USD_FORMATTER = new Intl.NumberFormat("en-US", {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    });
 
-function formatRO(iso) {
-  if (!iso) return "n/a";
-  const d = new Date(iso);
-  return d.toLocaleString("ro-RO",{hour:"2-digit",minute:"2-digit",year:"numeric",month:"2-digit",day:"2-digit"});
-}
+    let SNAPSHOT_PRICE = null;  // price_usd din mecanism
+    let chart = null;
+    let candleSeries = null;
+    let signalSeries = null;
+    let CANDLES = [];
 
-function mapSignal(s) {
-  s = (s||"").toLowerCase();
-  if (s==="long")  return {tone:"bullish", label:"Semnal pozitiv (Long)"};
-  if (s==="short") return {tone:"bearish", label:"Semnal negativ (Short)"};
-  return {tone:"neutral", label:"Semnal neutru (Flat)"};
-}
-
-/* ================================
-      VARIABILE GLOBALE
-================================= */
-
-let SNAPSHOT_PRICE = null;
-let chart, candleSeries, signalSeries;
-let CANDLES = [];
-
-/* ================================
-      ÎNCĂRCARE MECANISM JSON
-================================= */
-
-async function loadState() {
-  try {
-    const res = await fetch(STATE_URL + "?t=" + Date.now());
-    const data = await res.json();
-
-    SNAPSHOT_PRICE = data.price_usd || null;
-
-    document.getElementById("price").textContent =
-      SNAPSHOT_PRICE ? USD.format(SNAPSHOT_PRICE) : "–";
-
-    const sig = mapSignal(data.signal);
-    const chip = document.getElementById("signal-chip");
-    chip.classList.remove("bullish","bearish","neutral");
-    chip.classList.add(sig.tone);
-    document.getElementById("signal-label").textContent = sig.label;
-
-    document.getElementById("message").textContent =
-      data.message || "Nu există mesaj coeziv.";
-
-    document.getElementById("meta").innerHTML =
-      `Snapshot: ${formatRO(data.timestamp)} • Generat: ${formatRO(data.generated_at)}`;
-
-    updateSignalLine();
-  } catch(e) {
-    document.getElementById("error").textContent =
-      "Nu am putut încărca coeziv_state.json.";
-  }
-}
-
-/* ================================
-      PREȚ LIVE BINANCE
-================================= */
-
-async function updateLivePrice() {
-  try {
-    const r = await fetch("https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT");
-    const d = await r.json();
-    const live = parseFloat(d.price);
-
-    document.getElementById("live-price").textContent = USD.format(live);
-
-    if (!SNAPSHOT_PRICE) return;
-
-    const diff = live - SNAPSHOT_PRICE;
-    const pct = diff / SNAPSHOT_PRICE * 100;
-
-    const delta = document.getElementById("live-delta");
-    delta.classList.remove("positive","negative");
-
-    let t = "";
-    const s = diff>=0 ? "+" : "";
-    t += `Prețul live este ${s}${pct.toFixed(2)}% (${s}${USD.format(Math.abs(diff))} USD) `;
-
-    if (diff > 0) {
-      t += "peste prețul mecanismului.";
-      delta.classList.add("positive");
-    } else {
-      t += "sub prețul mecanismului.";
-      delta.classList.add("negative");
+    function mapSignal(signal) {
+      const s = (signal || "").toLowerCase();
+      if (s === "long")  return { tone: "bullish", label: "Semnal pozitiv (Long)" };
+      if (s === "short") return { tone: "bearish", label: "Semnal negativ (Short)" };
+      return { tone: "neutral", label: "Semnal neutru (Flat)" };
     }
 
-    delta.textContent = t;
-  } catch(e){}
-}
+    function formatDate(iso) {
+      if (!iso) return "n/a";
+      const d = new Date(iso);
+      if (Number.isNaN(d.getTime())) return "n/a";
+      return d.toLocaleString("ro-RO", {
+        year: "numeric", month: "2-digit", day: "2-digit",
+        hour: "2-digit", minute: "2-digit"
+      });
+    }
 
-/* ================================
-      GRAFIC OHLC BINANCE (5M)
-================================= */
+    async function loadState() {
+      try {
+        ERROR_EL.textContent = "";
+        MSG_EL.textContent = "Se încarcă mesajul coeziv...";
 
-function initChart() {
-  const el = document.getElementById("btc-chart");
-  chart = LightweightCharts.createChart(el,{
-    layout:{ background:{color:"transparent"}, textColor:"#e5e7eb" },
-    grid:{ vertLines:{color:"#1e293b"}, horzLines:{color:"#1e293b"} },
-    timeScale:{ borderVisible:false },
-    rightPriceScale:{ borderVisible:false }
-  });
+        const res = await fetch(STATE_URL + "?t=" + Date.now(), { cache: "no-store" });
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        const state = await res.json();
 
-  candleSeries = chart.addCandlestickSeries({
-    upColor:"#22c55e", downColor:"#ef4444",
-    borderUpColor:"#22c55e", borderDownColor:"#ef4444",
-    wickUpColor:"#22c55e", wickDownColor:"#ef4444"
-  });
+        const price = state.price_usd;
+        const message = state.message;
+        const ts = state.timestamp;
+        const gen = state.generated_at;
+        const signal = state.signal;
 
-  signalSeries = chart.addLineSeries({ color:"#38bdf8", lineWidth:2 });
+        if (typeof price === "number" && Number.isFinite(price) && price > 0) {
+          SNAPSHOT_PRICE = price;
+          PRICE_EL.textContent = USD_FORMATTER.format(price);
+        } else {
+          SNAPSHOT_PRICE = null;
+          PRICE_EL.textContent = "–";
+        }
 
-  loadOHLC();
-  setupWebSocket();
-}
+        MSG_EL.textContent = message || "Nu există mesaj coeziv pentru acest moment.";
 
-function loadOHLC() {
-  fetch("https://api.binance.com/api/v1/klines?symbol=BTCUSDT&interval=5m&limit=288")
-    .then(r=>r.json())
-    .then(rows=>{
-      CANDLES = rows.map(k=>({
-        time:k[0]/1000,
-        open:parseFloat(k[1]),
-        high:parseFloat(k[2]),
-        low:parseFloat(k[3]),
-        close:parseFloat(k[4])
+        const mapped = mapSignal(signal);
+        SIGNAL_LABEL_EL.textContent = mapped.label;
+        SIGNAL_CHIP_EL.classList.remove("bullish", "bearish", "neutral");
+        SIGNAL_CHIP_EL.classList.add(mapped.tone);
+
+        META_EL.innerHTML =
+          `<span>Snapshot: ${formatDate(ts)}</span>` +
+          `<span class="meta-dot">•</span>` +
+          `<span>Generat: ${formatDate(gen)}</span>`;
+
+        if (SNAPSHOT_PRICE === null) {
+          LIVE_DELTA_EL.textContent =
+            "Preț live încărcat. Așteptăm un snapshot de preț valid din mecanism.";
+          LIVE_DELTA_EL.classList.remove("positive", "negative");
+        }
+
+        updateSignalOverlay();
+      } catch (err) {
+        console.error(err);
+        SNAPSHOT_PRICE = null;
+        PRICE_EL.textContent = "–";
+        LIVE_DELTA_EL.textContent =
+          "Nu am putut încărca snapshotul de preț. Așteptăm ca mecanismul să revină.";
+        LIVE_DELTA_EL.classList.remove("positive", "negative");
+        MSG_EL.textContent = "Nu am reușit să obținem mesajul coeziv.";
+        ERROR_EL.textContent =
+          "Nu am putut încărca coeziv_state.json. Verifică workflow-ul de backend.";
+      }
+    }
+
+    async function updateLivePrice() {
+      try {
+        const res = await fetch(
+          "https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT",
+          { cache: "no-store" }
+        );
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        const data = await res.json();
+        const live = parseFloat(data.price);
+
+        if (!Number.isFinite(live)) return;
+
+        LIVE_PRICE_EL.textContent = USD_FORMATTER.format(live);
+
+        if (
+          typeof SNAPSHOT_PRICE === "number" &&
+          Number.isFinite(SNAPSHOT_PRICE) &&
+          SNAPSHOT_PRICE > 0
+        ) {
+          const diff = live - SNAPSHOT_PRICE;
+          const pct = (diff / SNAPSHOT_PRICE) * 100;
+          const absPct = Math.abs(pct);
+
+          LIVE_DELTA_EL.classList.remove("positive", "negative");
+
+          if (diff === 0) {
+            LIVE_DELTA_EL.textContent =
+              "Prețul live este egal cu prețul analizat de mecanism.";
+            return;
+          }
+
+          const directionWord = diff > 0 ? "peste" : "sub";
+          const sign = diff > 0 ? "+" : "−";
+          const pctStr = absPct.toFixed(2);
+          const usdStr = USD_FORMATTER.format(Math.abs(diff));
+
+          let magnitudeHint;
+          if (absPct < 0.25) {
+            magnitudeHint = "Diferență foarte mică (zgomot normal de piață).";
+          } else if (absPct < 1) {
+            magnitudeHint = "Mișcare mică; semnalul mecanismului rămâne reperul principal.";
+          } else if (absPct < 3) {
+            magnitudeHint = "Mișcare relevantă; poți ajusta timing-ul intrării sau ieșirii.";
+          } else {
+            magnitudeHint = "Mișcare puternică; verifică contextul și lichiditatea.";
+          }
+
+          LIVE_DELTA_EL.textContent =
+            `Prețul live este ${sign}${pctStr}% (${sign}${usdStr} USD) ` +
+            `${directionWord} prețul mecanismului. ${magnitudeHint}`;
+
+          LIVE_DELTA_EL.classList.add(diff > 0 ? "positive" : "negative");
+        } else {
+          LIVE_DELTA_EL.textContent =
+            "Preț live încărcat. Așteptăm un snapshot de preț valid din mecanism.";
+          LIVE_DELTA_EL.classList.remove("positive", "negative");
+        }
+      } catch (err) {
+        console.error("Eroare preț live Binance", err);
+      }
+    }
+
+    // ---------- GRAFIC ----------
+
+    function initChart() {
+      const container = document.getElementById("btc-chart");
+      chart = LightweightCharts.createChart(container, {
+        layout: {
+          background: { color: "transparent" },
+          textColor: "#e5e7eb"
+        },
+        grid: {
+          vertLines: { color: "#111827" },
+          horzLines: { color: "#111827" }
+        },
+        rightPriceScale: { borderVisible: false },
+        timeScale: { borderVisible: false }
+      });
+
+      candleSeries = chart.addCandlestickSeries({
+        upColor: "#22c55e",
+        downColor: "#ef4444",
+        borderUpColor: "#22c55e",
+        borderDownColor: "#ef4444",
+        wickUpColor: "#22c55e",
+        wickDownColor: "#ef4444"
+      });
+
+      signalSeries = chart.addLineSeries({
+        color: "#38bdf8",
+        lineWidth: 2
+      });
+
+      loadOHLC();
+
+      function resizeChart() {
+        if (!chart) return;
+        const { width, height } = container.getBoundingClientRect();
+        chart.applyOptions({ width, height });
+      }
+
+      window.addEventListener("resize", resizeChart);
+      resizeChart();
+    }
+
+    function loadOHLC() {
+      // 24h de istoric la 5 minute (288 lumânări)
+      fetch("https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=5m&limit=288", {
+        cache: "no-store"
+      })
+        .then((r) => {
+          if (!r.ok) throw new Error("HTTP " + r.status);
+          return r.json();
+        })
+        .then((rows) => {
+          CANDLES = rows.map((k) => ({
+            time: Math.floor(k[0] / 1000),
+            open: parseFloat(k[1]),
+            high: parseFloat(k[2]),
+            low: parseFloat(k[3]),
+            close: parseFloat(k[4])
+          }));
+          candleSeries.setData(CANDLES);
+          chart.timeScale().fitContent();
+          CHART_LOADER_EL.style.display = "none";
+          updateSignalOverlay();
+        })
+        .catch((err) => {
+          console.error("Eroare la OHLC Binance", err);
+          CHART_LOADER_EL.textContent = "Nu am putut încărca graficul (Binance).";
+        });
+    }
+
+    function updateSignalOverlay() {
+      if (
+        !signalSeries ||
+        !CANDLES.length ||
+        typeof SNAPSHOT_PRICE !== "number" ||
+        !Number.isFinite(SNAPSHOT_PRICE)
+      ) {
+        return;
+      }
+
+      const lineData = CANDLES.map((c) => ({
+        time: c.time,
+        value: SNAPSHOT_PRICE
       }));
-      candleSeries.setData(CANDLES);
-      chart.timeScale().fitContent();
-      updateSignalLine();
-    });
-}
+      signalSeries.setData(lineData);
+    }
 
-/* ================================
-      WebSocket 5m LIVE CANDLES
-================================= */
+    // ---------- INTERVALE & START ----------
 
-function setupWebSocket() {
-  const ws = new WebSocket("wss://stream.binance.com:9443/ws/btcusdt@kline_5m");
+    function startIntervals() {
+      updateLivePrice();
+      loadState();
+      loadOHLC();
 
-  ws.onmessage = (msg)=>{
-    const json = JSON.parse(msg.data);
-    const k = json.k;
+      setInterval(updateLivePrice, 10 * 1000);   // preț live la 10s
+      setInterval(loadState,       5 * 60 * 1000); // mecanism la 5 min
+      setInterval(loadOHLC,        60 * 1000);   // refresh grafic la 60s
+    }
 
-    const newCandle = {
-      time: k.t/1000,
-      open: parseFloat(k.o),
-      high: parseFloat(k.h),
-      low: parseFloat(k.l),
-      close: parseFloat(k.c)
-    };
-
-    CANDLES[CANDLES.length-1] = newCandle;
-    candleSeries.update(newCandle);
-    updateSignalLine();
-  };
-}
-
-/* ================================
-      TRASARE LINIE MECANISM
-================================= */
-
-function updateSignalLine() {
-  if (!SNAPSHOT_PRICE || !CANDLES.length) return;
-  const lineData = CANDLES.map(c=>({time:c.time, value:SNAPSHOT_PRICE}));
-  signalSeries.setData(lineData);
-}
-
-/* ================================
-      START
-================================= */
-
-setTimeout(()=>initChart(),150);
-
-loadState();
-updateLivePrice();
-
-setInterval(updateLivePrice, 8000);
-setInterval(loadState, 5*60*1000);
-
-</script>
+    // inițializare
+    initChart();
+    startIntervals();
+  </script>
 </body>
 </html>
