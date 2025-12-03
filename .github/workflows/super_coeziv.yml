@@ -78,7 +78,7 @@ jobs:
         run: |
           # dacă coeziv_state.py își ia singur datele din fișierele tocmai actualizate,
           # nu mai trebuie altceva aici.
-          python btc-swing-strategy/coeziv_state.py
+          python coeziv_state.py
 
       - name: Clean pycache and pyc files
         run: |
