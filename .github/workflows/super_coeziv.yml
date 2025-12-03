@@ -2,7 +2,7 @@ name: Super Coeziv – Update Data + Coeziv State
 
 on:
   schedule:
-    - cron: "0 3 * * *"    # rulează în fiecare zi la 03:00 UTC (poți schimba)
+    - cron: "0 * * * *"    # rulează în fiecare zi la 03:00 UTC (poți schimba)
   workflow_dispatch:        # îl poți porni și manual din Actions
 
 permissions:
