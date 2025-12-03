@@ -443,32 +443,35 @@
 
           // dacă avem și snapshot valid, arătăm diferența
           if (
-            typeof SNAPSHOT_PRICE === "number" &&
-            Number.isFinite(SNAPSHOT_PRICE) &&
-            SNAPSHOT_PRICE > 0
-          ) {
-            const diff = live - SNAPSHOT_PRICE;
-            const pct = (diff / SNAPSHOT_PRICE) * 100;
+  typeof SNAPSHOT_PRICE === "number" &&
+  Number.isFinite(SNAPSHOT_PRICE) &&
+  SNAPSHOT_PRICE > 0
+) {
+  const diff = live - SNAPSHOT_PRICE;
+  const pct = (diff / SNAPSHOT_PRICE) * 100;
 
-            let text = "Se compară prețul live cu prețul analizat de mecanism.";
-            LIVE_DELTA_EL.classList.remove("positive", "negative");
+  const sign = diff > 0 ? "+" : "";
+  const dir = diff > 0 ? "peste" : "sub";
+  const pctStr = pct.toFixed(2);
 
-            const SIGNIFICANT_MOVE = 0.5; // prag de ~0.5%
+  const SIGNIFICANT_MOVE = 0.5; // 0.5% prag „serios”
 
-            if (Math.abs(pct) >= SIGNIFICANT_MOVE) {
-              const sign = diff > 0 ? "+" : "";
-              const pctStr = pct.toFixed(2);
-              const dir = diff > 0 ? "peste" : "sub";
-              text = `Prețul live este ${sign}${pctStr}% ${dir} prețul analizat de mecanism.`;
-              LIVE_DELTA_EL.classList.add(diff > 0 ? "positive" : "negative");
-            }
+  LIVE_DELTA_EL.classList.remove("positive", "negative");
 
-            LIVE_DELTA_EL.textContent = text;
-          } else {
-            LIVE_DELTA_EL.textContent =
-              "Preț live încărcat. Așteptăm un snapshot de preț valid din mecanism.";
-            LIVE_DELTA_EL.classList.remove("positive", "negative");
-          }
+  if (Math.abs(pct) >= SIGNIFICANT_MOVE) {
+    LIVE_DELTA_EL.textContent =
+      `Prețul live este ${sign}${pctStr}% ${dir} prețul analizat de mecanism.`;
+    LIVE_DELTA_EL.classList.add(diff > 0 ? "positive" : "negative");
+  } else {
+    LIVE_DELTA_EL.textContent =
+      `Prețul live este ${sign}${pctStr}% ${dir} prețul analizat de mecanism (diferență mică).`;
+    // fără culoare verde/roșie, tocmai ca să nu exagereze importanța
+  }
+} else {
+  LIVE_DELTA_EL.textContent =
+    "Preț live încărcat. Așteptăm un snapshot de preț valid din mecanism.";
+  LIVE_DELTA_EL.classList.remove("positive", "negative");
+}
         }
       } catch (err) {
         console.error("Nu am putut obține prețul live BTC", err);
