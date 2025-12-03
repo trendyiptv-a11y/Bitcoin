@@ -2,11 +2,14 @@ name: Update BTC data & regenerate equity curve
 
 on:
   schedule:
-    - cron: "0 3 * * *"   # rulează zilnic la 03:00 UTC
-  workflow_dispatch:      # permite rulare manuală
+    - cron: "0 3 * * *"
+  workflow_dispatch:
 
 permissions:
-       contents: write
+  contents: write
+
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
 
 jobs:
   update:
@@ -41,6 +44,11 @@ jobs:
     - name: Move equity curve into swing folder
       run: |
         cp equity_curve.csv btc-swing-strategy/equity_curve.csv
+
+    - name: Remove pycache
+      run: |
+        find . -type d -name "__pycache__" -exec rm -rf {} +
+        find . -name "*.pyc" -delete
 
     - name: Auto-commit results
       uses: stefanzweifel/git-auto-commit-action@v4
