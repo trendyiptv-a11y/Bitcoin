@@ -123,6 +123,49 @@ def build_message(signal: str, price: float) -> str:
 
 
 # ============================
+#  ISTORIC DE SEMNALE
+# ============================
+
+def build_signal_history(df: pd.DataFrame, limit: int = 30):
+    """
+    Construiește un mic istoric de semnale pentru UI:
+    ultimele `limit` intrări din serie, fiecare cu:
+      - timestamp
+      - signal
+      - model_price_usd (close)
+    Structura fiecărui element:
+      {
+        "timestamp": "...",
+        "signal": "long" | "short" | "flat",
+        "model_price_usd": <float sau null>
+      }
+    """
+    history = []
+    tail = df.tail(limit)
+
+    for ts, row in tail.iterrows():
+        sig = str(row.get("signal", "")).lower()
+        if sig not in ("long", "short", "flat"):
+            # dacă generate_signals nu a populat încă semnalul pentru rândul ăsta,
+            # îl ignorăm în istoric
+            continue
+
+        close_val = row.get("close", None)
+        try:
+            close_val = float(close_val) if close_val is not None else None
+        except (TypeError, ValueError):
+            close_val = None
+
+        history.append({
+            "timestamp": ts.isoformat() if isinstance(ts, pd.Timestamp) else str(ts),
+            "signal": sig,
+            "model_price_usd": close_val,
+        })
+
+    return history
+
+
+# ============================
 #  MAIN – GENERAREA STĂRII COEZIVE
 # ============================
 
@@ -154,6 +197,9 @@ def main():
     # 5. generăm mesajul pe baza semnalului + prețul folosit în text
     message = build_message(signal, price_for_text)
 
+    # 6. istoric de semnale (ultimele N puncte)
+    signal_history = build_signal_history(df, limit=30)
+
     state = {
         "timestamp": ts.isoformat() if isinstance(ts, pd.Timestamp) else str(ts),
         "price_usd": price_for_text,        # ce vezi mare în UI
@@ -161,10 +207,11 @@ def main():
         "price_source": price_source,       # "spot" sau "model"
         "signal": signal,
         "message": message,
+        "signal_history": signal_history,   # folosit de cardul de istoric
         "generated_at": datetime.now(timezone.utc).isoformat(),
     }
 
-    # 6. scriem JSON în folderul frontend-ului
+    # 7. scriem JSON în folderul frontend-ului
     output_path = os.path.join(STRATEGY_DIR, "coeziv_state.json")
 
     with open(output_path, "w", encoding="utf-8") as f:
@@ -172,6 +219,7 @@ def main():
 
     print("Stare coezivă generată:", output_path)
     print("Semnal:", signal, "| Sursă preț:", price_source, "| Preț mesaj:", price_for_text)
+    print("Istoric semnale livrat:", len(signal_history), "puncte")
 
 
 # ============================
