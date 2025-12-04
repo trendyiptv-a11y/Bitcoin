@@ -1,170 +1,180 @@
 {
-  "timestamp": "2025-12-04T00:00:00+00:00",
-  "price_usd": 92666.0,
-  "model_price_usd": 92679.09,
+  "timestamp": "2025-12-04T00:00:00",
+  "price_usd": 93043.0,
+  "model_price_usd": 93057.7,
   "price_source": "spot",
   "signal": "short",
-  "message": "În jurul valorii de ~92,666 USD, mecanismul coeziv detectează riscuri crescute de scădere. Poți vinde sau reduce expunerea.",
+  "message": "La un preț de ~93,043 USD, mecanismul observă risc crescut de scădere. Redu expunerea dacă este necesar.",
   "signal_history": [
     {
-      "timestamp": "2025-11-05T00:00:00+00:00",
+      "timestamp": "2025-11-05T00:00:00",
       "signal": "short",
       "model_price_usd": 103893.5
     },
     {
-      "timestamp": "2025-11-06T00:00:00+00:00",
+      "timestamp": "2025-11-06T00:00:00",
       "signal": "short",
       "model_price_usd": 101302.75
     },
     {
-      "timestamp": "2025-11-07T00:00:00+00:00",
+      "timestamp": "2025-11-07T00:00:00",
       "signal": "short",
       "model_price_usd": 103301.61
     },
     {
-      "timestamp": "2025-11-08T00:00:00+00:00",
+      "timestamp": "2025-11-08T00:00:00",
       "signal": "short",
       "model_price_usd": 102304.79
     },
     {
-      "timestamp": "2025-11-09T00:00:00+00:00",
+      "timestamp": "2025-11-09T00:00:00",
       "signal": "short",
       "model_price_usd": 104721.32
     },
     {
-      "timestamp": "2025-11-10T00:00:00+00:00",
+      "timestamp": "2025-11-10T00:00:00",
       "signal": "short",
       "model_price_usd": 105988.36
     },
     {
-      "timestamp": "2025-11-11T00:00:00+00:00",
+      "timestamp": "2025-11-11T00:00:00",
       "signal": "short",
       "model_price_usd": 103033.54
     },
     {
-      "timestamp": "2025-11-12T00:00:00+00:00",
+      "timestamp": "2025-11-12T00:00:00",
       "signal": "short",
       "model_price_usd": 101660.22
     },
     {
-      "timestamp": "2025-11-13T00:00:00+00:00",
+      "timestamp": "2025-11-13T00:00:00",
       "signal": "short",
       "model_price_usd": 99644.14
     },
     {
-      "timestamp": "2025-11-14T00:00:00+00:00",
+      "timestamp": "2025-11-14T00:00:00",
       "signal": "short",
       "model_price_usd": 94531.81
     },
     {
-      "timestamp": "2025-11-15T00:00:00+00:00",
+      "timestamp": "2025-11-15T00:00:00",
       "signal": "short",
       "model_price_usd": 95555.28
     },
     {
-      "timestamp": "2025-11-16T00:00:00+00:00",
+      "timestamp": "2025-11-16T00:00:00",
       "signal": "short",
       "model_price_usd": 94244.44
     },
     {
-      "timestamp": "2025-11-17T00:00:00+00:00",
+      "timestamp": "2025-11-17T00:00:00",
       "signal": "short",
       "model_price_usd": 92141.25
     },
     {
-      "timestamp": "2025-11-18T00:00:00+00:00",
+      "timestamp": "2025-11-18T00:00:00",
       "signal": "short",
       "model_price_usd": 92946.24
     },
     {
-      "timestamp": "2025-11-19T00:00:00+00:00",
+      "timestamp": "2025-11-19T00:00:00",
       "signal": "short",
       "model_price_usd": 91483.02
     },
     {
-      "timestamp": "2025-11-20T00:00:00+00:00",
+      "timestamp": "2025-11-20T00:00:00",
       "signal": "short",
       "model_price_usd": 86553.58
     },
     {
-      "timestamp": "2025-11-21T00:00:00+00:00",
+      "timestamp": "2025-11-21T00:00:00",
       "signal": "short",
       "model_price_usd": 85087.62
     },
     {
-      "timestamp": "2025-11-22T00:00:00+00:00",
+      "timestamp": "2025-11-22T00:00:00",
       "signal": "short",
       "model_price_usd": 84696.98
     },
     {
-      "timestamp": "2025-11-23T00:00:00+00:00",
+      "timestamp": "2025-11-23T00:00:00",
       "signal": "short",
       "model_price_usd": 86823.45
     },
     {
-      "timestamp": "2025-11-24T00:00:00+00:00",
+      "timestamp": "2025-11-24T00:00:00",
       "signal": "short",
       "model_price_usd": 88288.33
     },
     {
-      "timestamp": "2025-11-25T00:00:00+00:00",
+      "timestamp": "2025-11-25T00:00:00",
       "signal": "short",
       "model_price_usd": 87340.82
     },
     {
-      "timestamp": "2025-11-26T00:00:00+00:00",
+      "timestamp": "2025-11-26T00:00:00",
       "signal": "short",
       "model_price_usd": 90487.28
     },
     {
-      "timestamp": "2025-11-27T00:00:00+00:00",
+      "timestamp": "2025-11-27T00:00:00",
       "signal": "short",
       "model_price_usd": 91327.26
     },
     {
-      "timestamp": "2025-11-28T00:00:00+00:00",
+      "timestamp": "2025-11-28T00:00:00",
       "signal": "short",
       "model_price_usd": 90917.53
     },
     {
-      "timestamp": "2025-11-29T00:00:00+00:00",
+      "timestamp": "2025-11-29T00:00:00",
       "signal": "short",
       "model_price_usd": 90842.76
     },
     {
-      "timestamp": "2025-11-30T00:00:00+00:00",
+      "timestamp": "2025-11-30T00:00:00",
       "signal": "short",
       "model_price_usd": 90381.34
     },
     {
-      "timestamp": "2025-12-01T00:00:00+00:00",
+      "timestamp": "2025-12-01T00:00:00",
       "signal": "short",
       "model_price_usd": 86302.37
     },
     {
-      "timestamp": "2025-12-02T00:00:00+00:00",
+      "timestamp": "2025-12-02T00:00:00",
       "signal": "short",
       "model_price_usd": 91315.07
     },
     {
-      "timestamp": "2025-12-03T00:00:00+00:00",
+      "timestamp": "2025-12-03T00:00:00",
       "signal": "short",
       "model_price_usd": 93464.62
     },
     {
-      "timestamp": "2025-12-04T00:00:00+00:00",
+      "timestamp": "2025-12-04T00:00:00",
       "signal": "short",
-      "model_price_usd": 92679.09
+      "model_price_usd": 93057.7
     }
   ],
-  "signal_probability": 0.37440109514031483,
+  "signal_probability": 0.3737166324435318,
   "signal_prob_samples": 1461,
   "signal_prob_horizon_hours": 24,
   "signal_prob_source": "ohlc",
   "signal_prob_breakdown": {
-    "in_direction": 0.37440109514031483,
+    "in_direction": 0.3737166324435318,
     "opposite": 0.3867214236824093,
-    "flat": 0.23887748117727584
+    "flat": 0.23956194387405885
   },
-  "generated_at": "2025-12-04T14:26:34.788423+00:00"
+  "signal_expected_drift": {
+    "horizon_hours": 24,
+    "p10": -0.03300487540121463,
+    "p50": 0.0001612529719650102,
+    "p90": 0.03091778814322174
+  },
+  "market_regime": {
+    "label": "Range cu bias pozitiv cu deviație normală față de model",
+    "code": "range_bias_up_dev_normal"
+  },
+  "generated_at": "2025-12-04T15:46:43.263939+00:00"
 }
