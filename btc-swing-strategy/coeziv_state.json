@@ -1,10 +1,10 @@
 {
   "timestamp": "2025-12-04T00:00:00+00:00",
-  "price_usd": 93072.0,
-  "model_price_usd": 93097.74,
+  "price_usd": 92743.0,
+  "model_price_usd": 92876.81,
   "price_source": "spot",
   "signal": "short",
-  "message": "În jurul valorii de ~93,072 USD, mecanismul coeziv detectează riscuri crescute de scădere. Poți vinde sau reduce expunerea.",
+  "message": "În jurul valorii de ~92,743 USD, mecanismul coeziv detectează riscuri crescute de scădere. Poți vinde sau reduce expunerea.",
   "signal_history": [
     {
       "timestamp": "2025-11-05T00:00:00+00:00",
@@ -154,17 +154,17 @@
     {
       "timestamp": "2025-12-04T00:00:00+00:00",
       "signal": "short",
-      "model_price_usd": 93097.74
+      "model_price_usd": 92876.81
     }
   ],
-  "signal_probability": 0.3737166324435318,
+  "signal_probability": 0.37440109514031483,
   "signal_prob_samples": 1461,
   "signal_prob_horizon_hours": 24,
   "signal_prob_source": "ohlc",
   "signal_prob_breakdown": {
-    "in_direction": 0.3737166324435318,
+    "in_direction": 0.37440109514031483,
     "opposite": 0.3867214236824093,
-    "flat": 0.23956194387405885
+    "flat": 0.23887748117727584
   },
-  "generated_at": "2025-12-04T12:53:36.773982+00:00"
+  "generated_at": "2025-12-04T13:39:41.260125+00:00"
 }
