@@ -1,7 +1,8 @@
 import json
 import os
 import sys
-from datetime import datetime, timedelta, timezone
+import math
+from datetime import datetime, timezone
 
 import pandas as pd
 import requests
@@ -17,7 +18,7 @@ STRATEGY_DIR = os.path.join(BASE_DIR, "btc-swing-strategy")
 if STRATEGY_DIR not in sys.path:
     sys.path.append(STRATEGY_DIR)
 
-# importă generate_signals din fișierul tău de strategie
+# importă generate_signals din fișierul tău principal de strategie
 from btc_swing_strategy import generate_signals
 
 
@@ -30,11 +31,18 @@ def load_ic_series(path: str | None = None) -> pd.DataFrame:
     Încarcă seria IC BTC din ic_btc_series.json.
 
     Caută fișierul în mai multe locații posibile:
-    - ./ic_btc_series.json
-    - ./j-btc-coeziv/ic_btc_series.json
-    - ./data/ic_btc_series.json
-    """
+      - ./ic_btc_series.json
+      - ./j-btc-coeziv/ic_btc_series.json
+      - ./data/ic_btc_series.json
 
+    Returnează un DataFrame indexat pe dată, cu cel puțin coloanele:
+      - close
+      - ic_struct
+      - ic_dir
+      - ic_flux
+      - ic_cycle
+      - regime
+    """
     candidates: list[str] = []
 
     if path is not None:
@@ -64,11 +72,9 @@ def load_ic_series(path: str | None = None) -> pd.DataFrame:
         raw = json.load(f)
 
     df = pd.DataFrame(raw["series"])
-    # presupunem că 't' este în milisecunde epoch
     df["date"] = pd.to_datetime(df["t"], unit="ms", utc=True)
     df = df.set_index("date").sort_index()
 
-    # returnăm strict coloanele necesare pentru generate_signals
     return df[
         [
             "close",
@@ -79,94 +85,6 @@ def load_ic_series(path: str | None = None) -> pd.DataFrame:
             "regime",
         ]
     ]
-
-
-# ============================
-#  ÎNCĂRCARE OHLC REAL (PIAȚĂ)
-# ============================
-
-def load_ohlc(path: str | None = None) -> pd.DataFrame | None:
-    """
-    Încarcă seriile OHLC reale pentru BTC dintr-un fișier local (CSV).
-
-    Caută fișierul în mai multe locații posibile:
-    - ./data/btc_ohlc.csv
-    - ./data/btc_daily.csv
-    - ./btc_ohlc.csv
-    - ./btc_daily.csv
-
-    Presupunem că fișierul are cel puțin:
-    - o coloană de timp: una dintre ['timestamp','time','date','Date','open_time','t']
-    - o coloană de preț de închidere: una dintre ['close','Close','c','C']
-    """
-
-    candidates: list[str] = []
-
-    if path is not None:
-        candidates.append(path)
-    else:
-        candidates.extend(
-            [
-                os.path.join(BASE_DIR, "data", "btc_ohlc.csv"),
-                os.path.join(BASE_DIR, "data", "btc_daily.csv"),
-                os.path.join(BASE_DIR, "btc_ohlc.csv"),
-                os.path.join(BASE_DIR, "btc_daily.csv"),
-            ]
-        )
-
-    chosen: str | None = None
-    for c in candidates:
-        if os.path.exists(c):
-            chosen = c
-            break
-
-    if chosen is None:
-        # nu forțăm eroare: întoarcem None => vom cădea pe varianta doar cu model
-        return None
-
-    df = pd.read_csv(chosen)
-
-    # detectăm coloana de timp
-    time_col = None
-    for cand in ["timestamp", "time", "date", "Date", "open_time", "t"]:
-        if cand in df.columns:
-            time_col = cand
-            break
-
-    if time_col is None:
-        raise ValueError(
-            f"Nu am găsit nicio coloană de timp în fișierul OHLC {chosen}. "
-            "Aștept una dintre: timestamp, time, date, Date, open_time, t."
-        )
-
-    # detectăm coloana de close
-    close_col = None
-    for cand in ["close", "Close", "c", "C"]:
-        if cand in df.columns:
-            close_col = cand
-            break
-
-    if close_col is None:
-        raise ValueError(
-            f"Nu am găsit nicio coloană de close în fișierul OHLC {chosen}. "
-            "Aștept una dintre: close, Close, c, C."
-        )
-
-    # parsăm timpul
-    if time_col == "t":
-        # presupunem milisecunde epoch
-        df["dt"] = pd.to_datetime(df[time_col], unit="ms", utc=True)
-    else:
-        df["dt"] = pd.to_datetime(df[time_col], utc=True, errors="coerce")
-
-    df = df.dropna(subset=["dt"])
-    df = df.set_index("dt").sort_index()
-
-    out = pd.DataFrame(index=df.index.copy())
-    out["close"] = pd.to_numeric(df[close_col], errors="coerce")
-    out = out.dropna(subset=["close"])
-
-    return out
 
 
 # ============================
@@ -193,24 +111,23 @@ def get_live_btc_price() -> float:
 # ============================
 
 def build_message(signal: str, price: float) -> str:
-    """
-    Textul coeziv pentru dashboard, bazat pe semnal + prețul folosit în mesaj.
-    """
+    """Textul coeziv pentru dashboard, bazat pe semnal + prețul folosit în mesaj."""
 
-    s = (signal or "").lower()
+    signal = (signal or "").lower()
 
-    if s == "long":
+    if signal == "long":
         return (
             f"La prețul actual de ~{price:,.0f} USD, mecanismul coeziv vede "
             f"context favorabil pentru acumulare. Poți cumpăra, dar decizia finală îți aparține."
         )
 
-    if s == "short":
+    if signal == "short":
         return (
             f"În jurul valorii de ~{price:,.0f} USD, mecanismul coeziv detectează "
             f"riscuri crescute de scădere. Poți vinde sau reduce expunerea."
         )
 
+    # neutru / orice altceva
     return (
         f"Bitcoin se tranzacționează în jur de ~{price:,.0f} USD. "
         f"Mecanismul coeziv este neutru: poți cumpăra și poți vinde, "
@@ -219,28 +136,21 @@ def build_message(signal: str, price: float) -> str:
 
 
 # ============================
-#  ISTORIC DE SEMNALE PENTRU UI
+#  ISTORIC DE SEMNALE
 # ============================
 
 def build_signal_history(df: pd.DataFrame, limit: int = 30) -> list[dict]:
-    """
-    Construiește un mic istoric de semnale pentru UI:
-    ultimele `limit` intrări din serie, fiecare cu:
-      - timestamp
-      - signal
-      - model_price_usd (close)
-    """
+    """Construiește un istoric scurt de semnale pentru UI (ultimele `limit` snapshot-uri)."""
     history: list[dict] = []
-    tail = df.tail(limit)
 
+    tail = df.tail(limit)
     for ts, row in tail.iterrows():
         sig = str(row.get("signal", "")).lower()
         if sig not in ("long", "short", "flat"):
-            # dacă generate_signals nu a populat încă semnalul pentru rândul ăsta,
-            # îl ignorăm în istoric
-            continue
+            # normalizăm orice altceva la 'flat' pentru UI
+            sig = "flat"
 
-        close_val = row.get("close", None)
+        close_val = row.get("close")
         try:
             close_val = float(close_val) if close_val is not None else None
         except (TypeError, ValueError):
@@ -258,184 +168,135 @@ def build_signal_history(df: pd.DataFrame, limit: int = 30) -> list[dict]:
 
 
 # ============================
-#  OUTCOME & PROBABILITATE
+#  STATISTICĂ ISTORICĂ A SEMNALULUI
 # ============================
 
-def compute_signal_outcomes(
-    df_signals: pd.DataFrame,
-    df_ohlc: pd.DataFrame | None = None,
+def compute_signal_stats(
+    df: pd.DataFrame,
     horizon_hours: int = 24,
-    threshold_pct: float = 0.005,
-) -> pd.DataFrame:
-    """
-    Pentru fiecare snapshot cu semnal Long/Short, calculăm dacă semnalul
-    a fost 'reușit' în următoarele horizon_hours.
-
-    Outcome:
-      1 = prețul a mers în direcția semnalului cu cel puțin threshold_pct
-      0 = altfel
-
-    Dacă df_ohlc este furnizat, folosim datele reale OHLC (piață).
-    Dacă nu, folosim doar seria IC (close) ca proxy.
-    """
-
-    df = df_signals.copy()
-
-    if not isinstance(df.index, pd.DatetimeIndex):
-        raise ValueError("DataFrame-ul de semnale trebuie să aibă index datetime.")
-
-    df = df.sort_index()
-
-    # Alegem sursa de preț pentru viitor
-    if df_ohlc is not None and not df_ohlc.empty:
-        price_index = df_ohlc.index.sort_values()
-        price_series = df_ohlc["close"].sort_index()
-        use_ohlc = True
-    else:
-        price_index = df.index.sort_values()
-        price_series = df["close"].sort_index()
-        use_ohlc = False
-
-    horizon = timedelta(hours=horizon_hours)
-    future_prices: list[float | None] = []
-
-    for ts in df.index:
-        target = ts + horizon
-        # găsim primul punct de preț cu timestamp >= target
-        pos = price_index.searchsorted(target, side="left")
-        if pos >= len(price_index):
-            # nu avem date suficient de în viitor; marcăm None
-            future_prices.append(None)
-        else:
-            future_ts = price_index[pos]
-            future_prices.append(float(price_series.loc[future_ts]))
-
-    df["future_close"] = future_prices
-    df["outcome"] = None
-
-    for idx, row in df.iterrows():
-        sig = str(row.get("signal", "")).lower()
-        c0 = row.get("close", None)
-        cf = row.get("future_close", None)
-
-        if sig not in ("long", "short") or c0 is None or cf is None:
-            df.at[idx, "outcome"] = None
-            continue
-
-        try:
-            c0 = float(c0)
-            cf = float(cf)
-        except (TypeError, ValueError):
-            df.at[idx, "outcome"] = None
-            continue
-
-        if c0 <= 0:
-            df.at[idx, "outcome"] = None
-            continue
-
-        ret = (cf - c0) / c0  # randament relativ
-
-        if sig == "long":
-            df.at[idx, "outcome"] = 1 if ret >= threshold_pct else 0
-        else:  # short
-            df.at[idx, "outcome"] = 1 if ret <= -threshold_pct else 0
-
-    df.attrs["outcome_source"] = "ohlc" if use_ohlc else "model"
-
-    return df
-
-
-def estimate_signal_probability(
-    df_signals: pd.DataFrame,
-    df_ohlc: pd.DataFrame | None = None,
-    horizon_hours: int = 24,
-    threshold_pct: float = 0.005,
+    move_threshold: float = 0.005,
+    min_samples: int = 100,
 ) -> dict:
+    """Calculează probabilitatea istorică a semnalului curent + breakdown.
+
+    Pentru fiecare snapshot istoric cu un semnal valid (long / short / flat),
+    măsurăm randamentul pe o fereastră de `horizon_hours` în viitor și
+    clasificăm:
+      - "în direcție"   (mișcare relevantă în direcția semnalului)
+      - "contra"        (mișcare relevantă în sens opus)
+      - "flat/zgomot"   (mișcare mică, sub pragul move_threshold)
+
+    Întoarce un dict cu cheile:
+      - probability         (float sau None)
+      - samples             (număr de cazuri comparabile)
+      - horizon_hours       (int)
+      - source              (string, de ex. "ohlc")
+      - breakdown           (dict sau None) cu cheile in_direction / opposite / flat
     """
-    Estimăm probabilitatea ca semnalul curent să fie 'reușit'
-    pe baza istoricului de semnale similare.
 
-    Returnăm:
-      {
-        "probability": float în [0,1] sau None,
-        "samples": int,
-        "horizon_hours": int,
-        "source": "ohlc" | "model"
-      }
-    """
-
-    df = compute_signal_outcomes(
-        df_signals, df_ohlc=df_ohlc, horizon_hours=horizon_hours, threshold_pct=threshold_pct
-    )
-
-    # rândul curent (ultimul)
-    last = df.iloc[-1]
-    sig = str(last.get("signal", "")).lower()
-    if sig not in ("long", "short"):
-        return {
-            "probability": None,
-            "samples": 0,
-            "horizon_hours": horizon_hours,
-            "source": df.attrs.get("outcome_source", "unknown"),
-        }
-
-    last_regime = last.get("regime", None)
-    last_dir = last.get("ic_dir", None)
-
-    # filtrăm istoricul (excludem ultimul rând)
-    hist = df.iloc[:-1].copy()
-    hist = hist[hist["signal"].astype(str).str.lower().isin(["long", "short"])]
-    hist = hist[hist["outcome"].isin([0, 1])]
-
-    # condiții de similaritate
-    mask = hist["signal"].astype(str).str.lower() == sig
-
-    # regim similar (același semn, dacă este numeric)
-    if pd.notna(last_regime):
-        try:
-            reg_sign = 1 if float(last_regime) > 0 else (-1 if float(last_regime) < 0 else 0)
-            hist_reg_sign = hist["regime"].astype(float).apply(
-                lambda x: 1 if x > 0 else (-1 if x < 0 else 0)
-            )
-            mask &= hist_reg_sign.eq(reg_sign)
-        except Exception:
-            # dacă nu putem interpreta regimul numeric, ignorăm criteriul
-            pass
-
-    # direcție IC similară (semn)
-    if pd.notna(last_dir):
-        try:
-            dir_sign = 1 if float(last_dir) > 0 else (-1 if float(last_dir) < 0 else 0)
-            hist_dir_sign = hist["ic_dir"].astype(float).apply(
-                lambda x: 1 if x > 0 else (-1 if x < 0 else 0)
-            )
-            mask &= hist_dir_sign.eq(dir_sign)
-        except Exception:
-            # ignorăm criteriul dacă nu e numeric
-            pass
-
-    subset = hist[mask]
-
-    n_total = int(subset.shape[0])
-    if n_total == 0:
-        return {
-            "probability": None,
-            "samples": 0,
-            "horizon_hours": horizon_hours,
-            "source": df.attrs.get("outcome_source", "unknown"),
-        }
-
-    n_success = int(subset["outcome"].sum())
-
-    # Laplace smoothing (evităm 0% / 100% pe eșantioane mici)
-    prob = (n_success + 1.0) / (n_total + 2.0)
-
-    return {
-        "probability": float(prob),
-        "samples": n_total,
+    out = {
+        "probability": None,
+        "samples": 0,
         "horizon_hours": horizon_hours,
-        "source": df.attrs.get("outcome_source", "unknown"),
+        "source": "ohlc",
+        "breakdown": None,
     }
+
+    if df is None or df.empty:
+        return out
+
+    if "close" not in df.columns or "signal" not in df.columns:
+        return out
+
+    df = df.copy()
+    df = df.dropna(subset=["close"])
+    if df.empty:
+        return out
+
+    # normalizăm semnalele
+    df["signal_clean"] = df["signal"].astype(str).str.lower()
+
+    # deducem pasul de timp tipic (presupunem serie regulată)
+    idx = df.index.to_series().sort_values()
+    if len(idx) >= 2:
+        step_sec = (idx.iloc[1] - idx.iloc[0]).total_seconds()
+        if not step_sec or not math.isfinite(step_sec):
+            step_sec = 3600.0
+    else:
+        step_sec = 3600.0
+
+    horizon_steps = max(1, int(round(horizon_hours * 3600.0 / step_sec)))
+
+    closes = df["close"].astype(float).values
+    sig_series = df["signal_clean"]
+
+    records: list[tuple[str, float]] = []
+    limit = len(df) - horizon_steps
+    for i in range(max(0, limit)):
+        sig = sig_series.iloc[i]
+        if sig not in ("long", "short", "flat"):
+            continue
+
+        p0 = closes[i]
+        pH = closes[i + horizon_steps]
+        if not (math.isfinite(p0) and math.isfinite(pH) and p0 > 0):
+            continue
+
+        ret = (pH - p0) / p0
+        records.append((sig, ret))
+
+    if not records:
+        return out
+
+    # filtrăm doar cazurile cu același semnal ca ultimul snapshot
+    last_sig = sig_series.iloc[-1]
+    same = [r for r in records if r[0] == last_sig]
+    n = len(same)
+    out["samples"] = n
+
+    if n < max(1, min_samples):
+        # avem ceva istoric, dar nu suficient de bogat pentru o probabilitate robustă
+        return out
+
+    in_dir = 0
+    opp = 0
+    flat = 0
+
+    for _, ret in same:
+        if last_sig == "long":
+            if ret >= move_threshold:
+                in_dir += 1
+            elif ret <= -move_threshold:
+                opp += 1
+            else:
+                flat += 1
+        elif last_sig == "short":
+            if ret <= -move_threshold:
+                in_dir += 1
+            elif ret >= move_threshold:
+                opp += 1
+            else:
+                flat += 1
+        else:  # last_sig == "flat" sau altceva
+            if abs(ret) < move_threshold:
+                in_dir += 1  # tratăm "flat" drept succes când piața rămâne în range
+            elif ret > 0:
+                opp += 1
+            else:
+                flat += 1
+
+    total = in_dir + opp + flat
+    if total == 0:
+        return out
+
+    prob_dir = in_dir / total
+    out["probability"] = prob_dir
+    out["breakdown"] = {
+        "in_direction": prob_dir,
+        "opposite": opp / total,
+        "flat": flat / total,
+    }
+    return out
 
 
 # ============================
@@ -444,87 +305,78 @@ def estimate_signal_probability(
 
 def main() -> None:
     # 1. încărcăm datele IC (structură, direcție, flux, regim)
-    df_ic = load_ic_series()
+    df = load_ic_series()
 
-    # 2. generăm semnalele coezive
-    df_ic = generate_signals(df_ic)
+    # 2. generăm semnalele coezive (completează coloana "signal")
+    df = generate_signals(df)
 
-    # 3. încărcăm (opțional) seriile OHLC reale pentru probabilitate
-    try:
-        df_ohlc = load_ohlc()
-    except Exception as e:
-        print("Nu am putut încărca fișierul OHLC. Vom folosi doar seria IC pentru probabilitate.", e)
-        df_ohlc = None
-
-    # 4. extragem ultimul punct din serie
-    last = df_ic.iloc[-1]
-    model_price = float(last["close"])   # prețul din snapshot-ul modelului
-    signal = str(last["signal"])
+    # 3. extragem ultimul punct din serie
+    last = df.iloc[-1]
+    model_price = float(last["close"])  # prețul din snapshot-ul modelului
+    signal = str(last.get("signal", "flat"))
     ts = last.name  # index datetime
 
-    # 5. preț spot live (cu fallback la model_price)
+    # 4. preț spot live (cu fallback la model_price)
     price_source = "model"
     price_for_text = model_price
 
     try:
         live_price = get_live_btc_price()
-        price_for_text = live_price
-        price_source = "spot"
-    except Exception as e:
-        # dacă API-ul nu merge, folosim prețul din model și lăsăm price_source="model"
+        if math.isfinite(live_price) and live_price > 0:
+            price_for_text = float(live_price)
+            price_source = "spot"
+    except Exception as e:  # log, dar nu cădem
         print("Nu am putut obține prețul live BTC. Folosesc prețul din model.", e)
 
-    # 6. generăm mesajul pe baza semnalului + prețul folosit în text
+    # 5. generăm mesajul pe baza semnalului + prețul folosit în text
     message = build_message(signal, price_for_text)
 
-    # 7. istoric de semnale (ultimele N puncte)
-    signal_history = build_signal_history(df_ic, limit=30)
+    # 6. istoric de semnale (ultimele N puncte)
+    signal_history = build_signal_history(df, limit=30)
 
-    # 8. probabilitate istorică pentru semnalul curent
-    prob_info = estimate_signal_probability(
-        df_ic,
-        df_ohlc=df_ohlc,
-        horizon_hours=24,
-        threshold_pct=0.005,
-    )
-    signal_probability = prob_info.get("probability")
-    signal_prob_samples = prob_info.get("samples", 0)
-    signal_prob_horizon = prob_info.get("horizon_hours", 24)
-    signal_prob_source = prob_info.get("source", "unknown")
+    # 7. statistică istorică pentru semnalul curent
+    stats = compute_signal_stats(df, horizon_hours=24, move_threshold=0.005, min_samples=100)
 
     state = {
         "timestamp": ts.isoformat() if isinstance(ts, pd.Timestamp) else str(ts),
-        "price_usd": price_for_text,        # ce vezi mare în UI
-        "model_price_usd": model_price,     # prețul folosit în snapshot-ul IC
-        "price_source": price_source,       # "spot" sau "model"
+        "price_usd": price_for_text,          # ce vezi mare în UI
+        "model_price_usd": model_price,       # prețul folosit în snapshot-ul IC
+        "price_source": price_source,         # "spot" sau "model"
         "signal": signal,
         "message": message,
-        "signal_history": signal_history,   # folosit de cardul de istoric
-        "signal_probability": signal_probability,                # 0–1 sau null
-        "signal_prob_samples": signal_prob_samples,              # câte cazuri similare
-        "signal_prob_horizon_hours": signal_prob_horizon,        # ex. 24
-        "signal_prob_source": signal_prob_source,                # "ohlc" sau "model"
+        "signal_history": signal_history,     # folosit de cardul de istoric
+        "signal_probability": stats.get("probability"),
+        "signal_prob_samples": stats.get("samples"),
+        "signal_prob_horizon_hours": stats.get("horizon_hours"),
+        "signal_prob_source": stats.get("source"),
+        "signal_prob_breakdown": stats.get("breakdown"),
         "generated_at": datetime.now(timezone.utc).isoformat(),
     }
 
-    # 9. scriem JSON în folderul frontend-ului
+    # 8. scriem JSON în folderul frontend-ului
     output_path = os.path.join(STRATEGY_DIR, "coeziv_state.json")
+    os.makedirs(STRATEGY_DIR, exist_ok=True)
 
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(state, f, ensure_ascii=False, indent=2)
 
     print("Stare coezivă generată:", output_path)
-    print("Semnal:", signal, "| Sursă preț:", price_source, "| Preț mesaj:", price_for_text)
+    print(
+        "Semnal:",
+        signal,
+        "| Sursă preț:",
+        price_source,
+        "| Preț mesaj:",
+        price_for_text,
+    )
     print("Istoric semnale livrat:", len(signal_history), "puncte")
     print(
-        "Probabilitate semnal:",
-        signal_probability,
-        "| Eșantioane similare:",
-        signal_prob_samples,
-        "| Orizont ore:",
-        signal_prob_horizon,
-        "| Sursă outcome:",
-        signal_prob_source,
+        "Prob semnal:",
+        stats.get("probability"),
+        "| samples:",
+        stats.get("samples"),
+        "| breakdown:",
+        stats.get("breakdown"),
     )
 
 
