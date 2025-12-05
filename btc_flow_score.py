@@ -19,13 +19,28 @@ def compute_flow_from_daily_csv(path: str = DATA_PATH):
     df = pd.read_csv(path)
 
     # Asigurare coloane minime
-    expected = {"timestamp", "open", "high", "low", "close", "volume"}
-    if not expected.issubset(df.columns):
+    required_cols = {"open", "high", "low", "close", "volume"}
+
+    # Acceptăm fie 'timestamp', fie 'date' ca și coloană de timp
+    if "timestamp" in df.columns:
+        timestamp_col = "timestamp"
+    elif "date" in df.columns:
+        timestamp_col = "date"
+    else:
         raise ValueError(
-            f"Fișierul {path} nu conține coloanele obligatorii: {expected}"
+            f"Fișierul {path} nu conține coloana obligatorie 'timestamp' sau 'date'. "
+            f"Coloane găsite: {set(df.columns)}"
         )
 
-    # Sortare după timp
+    # Verificăm restul coloanelor
+    if not required_cols.issubset(df.columns):
+        raise ValueError(
+            f"Fișierul {path} nu conține coloanele obligatorii: {required_cols}. "
+            f"Coloane găsite: {set(df.columns)}"
+        )
+
+    # Normalizăm numele coloanei de timp și sortăm
+    df = df.rename(columns={timestamp_col: "timestamp"})
     df = df.sort_values("timestamp")
 
     # Alegem ultima zi
