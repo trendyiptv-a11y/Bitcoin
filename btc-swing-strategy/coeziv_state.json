@@ -1,11 +1,11 @@
 {
   "timestamp": "2025-12-05T00:00:00+00:00",
-  "price_usd": 88897.0,
-  "model_price_usd": 89253.34,
+  "price_usd": 88982.0,
+  "model_price_usd": 88739.3,
   "price_source": "spot",
   "signal": "short",
-  "message": "Bitcoin se tranzacționează acum în jur de ~88,897 USD. Mecanismul vede un context risc de scădere al riscului structural. Prețul este semnificativ sub costul estimat de producție al rețelei, zonă asociată istoric cu stres ridicat asupra minerilor. Istoric, în contexte similare, mișcarea pe următoarele ~24 ore a fost de aproximativ -3.3% în scenariile mai pesimiste, 0.0% în scenariile mediene și până la 3.1% în scenariile mai favorabile. Nu este o recomandare de tranzacționare, ci o interpretare structurată a riscului.",
-  "generated_at": "2025-12-05T17:08:23.780623+00:00",
+  "message": "Bitcoin se tranzacționează acum în jur de ~88,982 USD. Mecanismul vede un context risc de scădere al riscului structural. Prețul este semnificativ sub costul estimat de producție al rețelei, zonă asociată istoric cu stres ridicat asupra minerilor. Istoric, în contexte similare, mișcarea pe următoarele ~24 ore a fost de aproximativ -3.3% în scenariile mai pesimiste, 0.0% în scenariile mediene și până la 3.1% în scenariile mai favorabile. Nu este o recomandare de tranzacționare, ci o interpretare structurată a riscului.",
+  "generated_at": "2025-12-05T17:23:07.729375+00:00",
   "signal_history": [
     {
       "timestamp": "2025-11-06T00:00:00+00:00",
@@ -155,7 +155,7 @@
     {
       "timestamp": "2025-12-05T00:00:00+00:00",
       "signal": "short",
-      "model_price_usd": 89253.34
+      "model_price_usd": 88739.3
     }
   ],
   "signal_probability": 0.3748290013679891,
@@ -169,7 +169,7 @@
   },
   "signal_expected_drift": {
     "horizon_hours": 24,
-    "p10": -0.03300480990431128,
+    "p10": -0.033048946906373194,
     "p50": 0.00014396827324943983,
     "p90": 0.03089375538769806
   },
@@ -178,8 +178,8 @@
     "code": "range_bias_up_dev_normal"
   },
   "production_cost_usd": 359096526.2361523,
-  "production_cost_as_of": "2025-12-05T17:08:23.690748+00:00",
-  "deviation_from_production": -0.999752442606639,
+  "production_cost_as_of": "2025-12-05T17:23:07.641670+00:00",
+  "deviation_from_production": -0.999752205901481,
   "flow_score": null,
   "flow_bias": null,
   "flow_strength": null,
