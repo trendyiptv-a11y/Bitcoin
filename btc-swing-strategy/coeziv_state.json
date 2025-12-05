@@ -1,160 +1,160 @@
 {
-  "timestamp": "2025-12-05T00:00:00",
-  "price_usd": 91343.0,
-  "model_price_usd": 91403.41,
+  "timestamp": "2025-12-05T00:00:00+00:00",
+  "price_usd": 91532.0,
+  "model_price_usd": 91553.88,
   "price_source": "spot",
   "signal": "short",
-  "message": "La un preț de ~91,343 USD, mecanismul observă risc crescut de scădere. Redu expunerea dacă este necesar.",
+  "message": "La un preț de ~91,532 USD, mecanismul observă riscuri crescute de scădere. Redu expunerea dacă este necesar.",
   "signal_history": [
     {
-      "timestamp": "2025-11-06T00:00:00",
+      "timestamp": "2025-11-06T00:00:00+00:00",
       "signal": "short",
       "model_price_usd": 101302.75
     },
     {
-      "timestamp": "2025-11-07T00:00:00",
+      "timestamp": "2025-11-07T00:00:00+00:00",
       "signal": "short",
       "model_price_usd": 103301.61
     },
     {
-      "timestamp": "2025-11-08T00:00:00",
+      "timestamp": "2025-11-08T00:00:00+00:00",
       "signal": "short",
       "model_price_usd": 102304.79
     },
     {
-      "timestamp": "2025-11-09T00:00:00",
+      "timestamp": "2025-11-09T00:00:00+00:00",
       "signal": "short",
       "model_price_usd": 104721.32
     },
     {
-      "timestamp": "2025-11-10T00:00:00",
+      "timestamp": "2025-11-10T00:00:00+00:00",
       "signal": "short",
       "model_price_usd": 105988.36
     },
     {
-      "timestamp": "2025-11-11T00:00:00",
+      "timestamp": "2025-11-11T00:00:00+00:00",
       "signal": "short",
       "model_price_usd": 103033.54
     },
     {
-      "timestamp": "2025-11-12T00:00:00",
+      "timestamp": "2025-11-12T00:00:00+00:00",
       "signal": "short",
       "model_price_usd": 101660.22
     },
     {
-      "timestamp": "2025-11-13T00:00:00",
+      "timestamp": "2025-11-13T00:00:00+00:00",
       "signal": "short",
       "model_price_usd": 99644.14
     },
     {
-      "timestamp": "2025-11-14T00:00:00",
+      "timestamp": "2025-11-14T00:00:00+00:00",
       "signal": "short",
       "model_price_usd": 94531.81
     },
     {
-      "timestamp": "2025-11-15T00:00:00",
+      "timestamp": "2025-11-15T00:00:00+00:00",
       "signal": "short",
       "model_price_usd": 95555.28
     },
     {
-      "timestamp": "2025-11-16T00:00:00",
+      "timestamp": "2025-11-16T00:00:00+00:00",
       "signal": "short",
       "model_price_usd": 94244.44
     },
     {
-      "timestamp": "2025-11-17T00:00:00",
+      "timestamp": "2025-11-17T00:00:00+00:00",
       "signal": "short",
       "model_price_usd": 92141.25
     },
     {
-      "timestamp": "2025-11-18T00:00:00",
+      "timestamp": "2025-11-18T00:00:00+00:00",
       "signal": "short",
       "model_price_usd": 92946.24
     },
     {
-      "timestamp": "2025-11-19T00:00:00",
+      "timestamp": "2025-11-19T00:00:00+00:00",
       "signal": "short",
       "model_price_usd": 91483.02
     },
     {
-      "timestamp": "2025-11-20T00:00:00",
+      "timestamp": "2025-11-20T00:00:00+00:00",
       "signal": "short",
       "model_price_usd": 86553.58
     },
     {
-      "timestamp": "2025-11-21T00:00:00",
+      "timestamp": "2025-11-21T00:00:00+00:00",
       "signal": "short",
       "model_price_usd": 85087.62
     },
     {
-      "timestamp": "2025-11-22T00:00:00",
+      "timestamp": "2025-11-22T00:00:00+00:00",
       "signal": "short",
       "model_price_usd": 84696.98
     },
     {
-      "timestamp": "2025-11-23T00:00:00",
+      "timestamp": "2025-11-23T00:00:00+00:00",
       "signal": "short",
       "model_price_usd": 86823.45
     },
     {
-      "timestamp": "2025-11-24T00:00:00",
+      "timestamp": "2025-11-24T00:00:00+00:00",
       "signal": "short",
       "model_price_usd": 88288.33
     },
     {
-      "timestamp": "2025-11-25T00:00:00",
+      "timestamp": "2025-11-25T00:00:00+00:00",
       "signal": "short",
       "model_price_usd": 87340.82
     },
     {
-      "timestamp": "2025-11-26T00:00:00",
+      "timestamp": "2025-11-26T00:00:00+00:00",
       "signal": "short",
       "model_price_usd": 90487.28
     },
     {
-      "timestamp": "2025-11-27T00:00:00",
+      "timestamp": "2025-11-27T00:00:00+00:00",
       "signal": "short",
       "model_price_usd": 91327.26
     },
     {
-      "timestamp": "2025-11-28T00:00:00",
+      "timestamp": "2025-11-28T00:00:00+00:00",
       "signal": "short",
       "model_price_usd": 90917.53
     },
     {
-      "timestamp": "2025-11-29T00:00:00",
+      "timestamp": "2025-11-29T00:00:00+00:00",
       "signal": "short",
       "model_price_usd": 90842.76
     },
     {
-      "timestamp": "2025-11-30T00:00:00",
+      "timestamp": "2025-11-30T00:00:00+00:00",
       "signal": "short",
       "model_price_usd": 90381.34
     },
     {
-      "timestamp": "2025-12-01T00:00:00",
+      "timestamp": "2025-12-01T00:00:00+00:00",
       "signal": "short",
       "model_price_usd": 86302.37
     },
     {
-      "timestamp": "2025-12-02T00:00:00",
+      "timestamp": "2025-12-02T00:00:00+00:00",
       "signal": "short",
       "model_price_usd": 91315.07
     },
     {
-      "timestamp": "2025-12-03T00:00:00",
+      "timestamp": "2025-12-03T00:00:00+00:00",
       "signal": "short",
       "model_price_usd": 93464.62
     },
     {
-      "timestamp": "2025-12-04T00:00:00",
+      "timestamp": "2025-12-04T00:00:00+00:00",
       "signal": "short",
       "model_price_usd": 92106.94
     },
     {
-      "timestamp": "2025-12-05T00:00:00",
+      "timestamp": "2025-12-05T00:00:00+00:00",
       "signal": "short",
-      "model_price_usd": 91403.41
+      "model_price_usd": 91553.88
     }
   ],
   "signal_probability": 0.3748290013679891,
@@ -176,5 +176,8 @@
     "label": "Range cu bias pozitiv cu deviație normală față de model",
     "code": "range_bias_up_dev_normal"
   },
-  "generated_at": "2025-12-05T10:27:14.462587+00:00"
+  "production_cost_usd": null,
+  "production_cost_as_of": null,
+  "deviation_from_production": null,
+  "generated_at": "2025-12-05T11:22:40.240754+00:00"
 }
