@@ -7,7 +7,7 @@ from typing import Optional, Tuple, List, Dict
 
 import pandas as pd
 import requests
-
+from btc_production_auto import estimate_production_cost
 # ============================
 #  SETĂRI DE PATH
 # ============================
@@ -516,7 +516,7 @@ def main() -> None:
     production_cost: Optional[float] = None
     production_as_of: Optional[str] = None
     try:
-        production_cost, production_as_of = load_production_cost()
+        production_cost, production_as_of = estimate_production_cost()
     except Exception as e:
         print("Nu am putut încărca costul de producție BTC.", e)
         production_cost, production_as_of = None, None
