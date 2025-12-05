@@ -673,6 +673,57 @@ def main() -> None:
         deviation_from_production=deviation_from_production,
     )
 
+# --- Flow Score (flux de piață) ---
+    try:
+        flow_raw = compute_flow_from_daily_csv()  # folosește data/btc_daily.csv
+        flow_score = float(flow_raw.get("flow_value", 0.0) or 0.0)
+
+        flow_state = {
+            "flow_score": flow_score,
+            "flow_bias": flow_raw.get("bias"),
+            "flow_strength": flow_raw.get("strength"),
+            "flow_components": {
+                "open": flow_raw.get("open"),
+                "close": flow_raw.get("close"),
+                "flow_value": flow_score,
+                "bias": flow_raw.get("bias"),
+                "strength": flow_raw.get("strength"),
+            },
+        }
+    except Exception as e:
+        print("Nu am putut calcula Flow Score:", e)
+        flow_state = {
+            "flow_score": None,
+            "flow_bias": None,
+            "flow_strength": None,
+            "flow_components": {"error": str(e)},
+        }
+
+    # --- Liquidity Score (lichiditate piață) ---
+    try:
+        liq_raw = compute_liquidity_from_daily_csv()
+        liq_score = float(liq_raw.get("liquidity_value", 0.0) or 0.0)
+
+        liq_state = {
+            "liquidity_score": liq_score,
+            "liquidity_regime": liq_raw.get("regime"),
+            "liquidity_strength": liq_raw.get("strength"),
+            "liquidity_components": {
+                "liquidity_value": liq_score,
+                "regime": liq_raw.get("regime"),
+                "strength": liq_raw.get("strength"),
+                "avg7": liq_raw.get("avg7"),
+            },
+        }
+    except Exception as e:
+        print("Nu am putut calcula Liquidity Score:", e)
+        liq_state = {
+            "liquidity_score": None,
+            "liquidity_regime": None,
+            "liquidity_strength": None,
+            "liquidity_components": {"error": str(e)},
+              }
+    
     # 12. construim starea finală
     state: Dict[str, Any] = {
         "timestamp": ts.isoformat() if isinstance(ts, pd.Timestamp) else str(ts),
@@ -706,17 +757,17 @@ def main() -> None:
         "production_cost_as_of": production_as_of,
         "deviation_from_production": deviation_from_production,
 
-        # Flow Score
-        "flow_score": flow.get("flow_score"),
-        "flow_bias": flow.get("flow_bias"),
-        "flow_strength": flow.get("flow_strength"),
-        "flow_components": flow.get("components", {}),
-
-        # Liquidity Score
-        "liquidity_score": liq.get("liquidity_score"),
-        "liquidity_regime": liq.get("liquidity_regime"),
-        "liquidity_strength": liq.get("liquidity_strength"),
-        "liquidity_components": liq.get("components", {}),
+         # Flow Score
+        "flow_score": flow_state["flow_score"],
+        "flow_bias": flow_state["flow_bias"],
+        "flow_strength": flow_state["flow_strength"],
+        "flow_components": flow_state["flow_components"],
+        
+          # Liquidity Score
+        "liquidity_score": liq_state["liquidity_score"],
+        "liquidity_regime": liq_state["liquidity_regime"],
+        "liquidity_strength": liq_state["liquidity_strength"],
+        "liquidity_components": liq_state["liquidity_components"],
     }
 
     # 13. scriem JSON în folderul frontend-ului
