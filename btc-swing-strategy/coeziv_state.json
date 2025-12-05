@@ -1,11 +1,11 @@
 {
   "timestamp": "2025-12-05T00:00:00+00:00",
-  "price_usd": 89420.0,
+  "price_usd": 89344.0,
   "model_price_usd": 89472.83,
   "price_source": "spot",
   "signal": "short",
-  "message": "Bitcoin se tranzacționează acum în jur de ~89,420 USD. Mecanismul vede un context risc de scădere al riscului structural. Prețul este semnificativ sub costul estimat de producție al rețelei, zonă asociată istoric cu stres ridicat asupra minerilor. Istoric, în contexte similare, mișcarea pe următoarele ~24 ore a fost de aproximativ -3.3% în scenariile mai pesimiste, 0.0% în scenariile mediene și până la 3.1% în scenariile mai favorabile. Nu este o recomandare de tranzacționare, ci o interpretare structurată a riscului.",
-  "generated_at": "2025-12-05T21:28:04.319347+00:00",
+  "message": "Bitcoin se tranzacționează acum în jur de ~89,344 USD. Mecanismul vede un context risc de scădere al riscului structural. Prețul este semnificativ sub costul estimat de producție al rețelei, zonă asociată istoric cu stres ridicat asupra minerilor. Istoric, în contexte similare, mișcarea pe următoarele ~24 ore a fost de aproximativ -3.3% în scenariile mai pesimiste, 0.0% în scenariile mediene și până la 3.1% în scenariile mai favorabile. Nu este o recomandare de tranzacționare, ci o interpretare structurată a riscului.",
+  "generated_at": "2025-12-05T21:39:33.628560+00:00",
   "signal_history": [
     {
       "timestamp": "2025-11-06T00:00:00+00:00",
@@ -178,18 +178,25 @@
     "code": "range_bias_up_dev_normal"
   },
   "production_cost_usd": 359096526.2361523,
-  "production_cost_as_of": "2025-12-05T21:28:04.234312+00:00",
-  "deviation_from_production": -0.9997509861737254,
-  "flow_score": null,
-  "flow_bias": null,
-  "flow_strength": null,
+  "production_cost_as_of": "2025-12-05T21:39:33.531954+00:00",
+  "deviation_from_production": -0.9997511978159843,
+  "flow_score": -0.028598387917349123,
+  "flow_bias": "negativ",
+  "flow_strength": "puternic",
   "flow_components": {
-    "error": "name 'compute_flow_from_daily_csv' is not defined"
+    "open": 92106.94,
+    "close": 89472.83,
+    "flow_value": -0.028598387917349123,
+    "bias": "negativ",
+    "strength": "puternic"
   },
-  "liquidity_score": null,
-  "liquidity_regime": null,
-  "liquidity_strength": null,
+  "liquidity_score": 0.05142276152436446,
+  "liquidity_regime": "scăzută",
+  "liquidity_strength": "moderată",
   "liquidity_components": {
-    "error": "name 'compute_liquidity_from_daily_csv' is not defined"
+    "liquidity_value": 0.05142276152436446,
+    "regime": "scăzută",
+    "strength": "moderată",
+    "avg7": 0.041751358023694216
   }
 }
