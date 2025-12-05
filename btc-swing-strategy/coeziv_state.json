@@ -1,10 +1,10 @@
 {
   "timestamp": "2025-12-05T00:00:00+00:00",
-  "price_usd": 91532.0,
-  "model_price_usd": 91553.88,
+  "price_usd": 91223.0,
+  "model_price_usd": 91204.82,
   "price_source": "spot",
   "signal": "short",
-  "message": "La un preț de ~91,532 USD, mecanismul observă riscuri crescute de scădere. Redu expunerea dacă este necesar.",
+  "message": "La un preț de ~91,223 USD, mecanismul observă riscuri crescute de scădere. Redu expunerea dacă este necesar.",
   "signal_history": [
     {
       "timestamp": "2025-11-06T00:00:00+00:00",
@@ -154,7 +154,7 @@
     {
       "timestamp": "2025-12-05T00:00:00+00:00",
       "signal": "short",
-      "model_price_usd": 91553.88
+      "model_price_usd": 91204.82
     }
   ],
   "signal_probability": 0.3748290013679891,
@@ -176,8 +176,8 @@
     "label": "Range cu bias pozitiv cu deviație normală față de model",
     "code": "range_bias_up_dev_normal"
   },
-  "production_cost_usd": null,
-  "production_cost_as_of": null,
-  "deviation_from_production": null,
-  "generated_at": "2025-12-05T11:22:40.240754+00:00"
+  "production_cost_usd": 359096526.2361523,
+  "production_cost_as_of": "2025-12-05T12:50:52.291226+00:00",
+  "deviation_from_production": -0.999745965239608,
+  "generated_at": "2025-12-05T12:50:52.374069+00:00"
 }
