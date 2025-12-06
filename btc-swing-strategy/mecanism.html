@@ -3,1417 +3,751 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Mecanism Coeziv BTC</title>
+  <title>Mecanism Coeziv BTC – Context de piață</title>
 
   <style>
     :root {
       --bg-main: #020617;
       --bg-card: rgba(15, 23, 42, 0.96);
+      --bg-card-soft: rgba(15, 23, 42, 0.88);
       --border-card: #1f2937;
       --text-main: #e5e7eb;
       --text-muted: #9ca3af;
       --text-soft: #6b7280;
-      --accent-bull: #22c55e;
-      --accent-bear: #f97373;
-      --accent-neutral: #64748b;
-      --accent-live: #38bdf8;
-      --accent-bg-chip: rgba(15,23,42,0.9);
+      --accent-soft: #6366f1;
+      --accent-soft-muted: rgba(99, 102, 241, 0.1);
+      --danger-soft: #f97373;
+      --success-soft: #4ade80;
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
-      min-height: 100vh;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background:
-        radial-gradient(circle at 10% -10%, #0f172a 0, transparent 55%),
-        radial-gradient(circle at 90% 110%, #020617 0, #000 60%);
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+        "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #020617 0, #020617 50%, #020617 100%);
       color: var(--text-main);
-      display: flex;
-      justify-content: center;
-      padding: 16px;
     }
 
-    .shell { width: 100%; max-width: 520px; }
+    main {
+      min-height: 100vh;
+    }
 
-    .title-bar {
-      text-align: center;
-      margin-bottom: 10px;
-      letter-spacing: .12em;
-      text-transform: uppercase;
-      font-size: 14px;
-      color: var(--text-soft);
+    .page {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 16px 16px 32px;
     }
 
     .card {
-      background: var(--bg-card);
-      border-radius: 24px;
+      border-radius: 18px;
       border: 1px solid var(--border-card);
-      box-shadow: 0 28px 80px rgba(0, 0, 0, 0.9);
-      padding: 20px;
-      position: relative;
-      overflow: hidden;
-      margin-bottom: 14px;
+      background: var(--bg-card);
+      padding: 16px 18px;
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.65);
     }
 
-    .card::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      opacity: .12;
-      background:
-        radial-gradient(circle at 0 0, rgba(148, 163, 184, .7), transparent 55%);
+    .card-soft {
+      border-radius: 18px;
+      border: 1px solid var(--border-card);
+      background: var(--bg-card-soft);
+      padding: 14px 16px;
     }
 
-    .card-inner { position: relative; z-index: 1; }
-
-    .card-secondary::before {
-      opacity: .06;
-      background:
-        radial-gradient(circle at 100% 0, rgba(37, 99, 235, .35), transparent 55%);
+    .page-title {
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-soft);
+      margin-bottom: 8px;
     }
 
-    .asset-row {
+    .hero-header {
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      align-items: baseline;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .hero-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .hero-timestamp {
+      font-size: 11px;
+      color: var(--text-soft);
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .hero-context {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 6px;
+    }
+
+    .hero-message {
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--text-main);
+    }
+
+    .hero-price {
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .hero-error {
+      margin-top: 6px;
+      font-size: 11px;
+      color: var(--danger-soft);
+    }
+
+    .context-card-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 6px;
+    }
+
+    .context-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-size: 12px;
+      padding: 2px 0;
+    }
+
+    .context-label {
+      color: var(--text-soft);
+    }
+
+    .context-value {
+      font-weight: 500;
+      color: var(--text-main);
+      text-align: right;
+    }
+
+    .details-summary {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-main);
+      cursor: pointer;
+      list-style: none;
+    }
+
+    details > summary::-webkit-details-marker {
+      display: none;
+    }
+
+    details > summary::after {
+      content: "▾";
+      font-size: 10px;
+      color: var(--text-soft);
+      margin-left: 4px;
+    }
+
+    details[open] > summary::after {
+      content: "▴";
+    }
+
+    .details-body {
+      margin-top: 6px;
+    }
+
+    .details-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-size: 12px;
+      padding: 2px 0;
+    }
+
+    .details-label {
+      color: var(--text-soft);
+    }
+
+    .details-value {
+      color: var(--text-main);
+      text-align: right;
+    }
+
+    .legend-text {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      line-height: 1.5;
+    }
+
+    .legend-subtitle {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-top: 4px;
       margin-bottom: 4px;
     }
 
-    .asset-main {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .asset-logo {
-      width: 28px;
-      height: 28px;
-      border-radius: 999px;
-      background: radial-gradient(circle at 30% 0, #facc15, #f97316);
-      color: #0f172a;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 15px;
-    }
-
-    .asset-text h1 {
+    .legend-list {
+      font-size: 11px;
+      color: var(--text-main);
+      padding-left: 16px;
       margin: 0;
-      font-size: 18px;
-      font-weight: 600;
     }
 
-    .asset-text span {
-      display: block;
-      font-size: 11px;
-      color: var(--text-muted);
+    .legend-list li {
+      margin-bottom: 3px;
     }
 
-    .signal-chip {
-      font-size: 11px;
-      padding: 4px 10px;
-      border-radius: 999px;
-      border: 1px solid var(--accent-neutral);
-      color: var(--accent-neutral);
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      white-space: nowrap;
-      background: var(--accent-bg-chip);
-    }
-
-    .signal-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      background: var(--accent-neutral);
-    }
-
-    .signal-chip.bullish { border-color: var(--accent-bull); color: var(--accent-bull); }
-    .signal-chip.bullish .signal-dot { background: var(--accent-bull); }
-
-    .signal-chip.bearish { border-color: var(--accent-bear); color: var(--accent-bear); }
-    .signal-chip.bearish .signal-dot { background: var(--accent-bear); }
-
-    .price-block { text-align: center; margin: 16px 0 8px; }
-
-    .price-value {
-      font-size: 40px;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-    }
-
-    .currency {
-      font-size: 12px;
-      color: var(--text-muted);
-      letter-spacing: 0.16em;
-      margin-top: 2px;
-    }
-
-    .live-row {
-      margin-top: 6px;
-      font-size: 12px;
-      text-align: center;
-    }
-
-    .live-label { color: var(--accent-live); }
-    .live-delta {
-      margin-top: 4px;
-      font-size: 11px;
-      text-align: center;
+    .legend-legal {
+      margin-top: 8px;
+      font-size: 10px;
       color: var(--text-soft);
-    }
-    .live-delta.positive { color: #4ade80; }
-    .live-delta.negative { color: #fb7185; }
-
-    .deviation-status {
-      margin-top: 4px;
-      font-size: 11px;
-      text-align: center;
-      color: var(--text-soft);
-    }
-    .deviation-status.dev-normal { color: #9ca3af; }
-    .deviation-status.dev-mild { color: #22c55e; }
-    .deviation-status.dev-tension { color: #facc15; }
-    .deviation-status.dev-extreme { color: #f97373; }
-
-    .chart-block {
-      margin: 14px 0 10px;
-      border-radius: 14px;
-      border: 1px solid rgba(37, 99, 235, 0.35);
-      overflow: hidden;
-      background: radial-gradient(circle at 20% 0, rgba(37,99,235,0.3), rgba(15,23,42,0.95));
-      height: 230px;
-      position: relative;
-    }
-
-    #btc-chart {
-      width: 100%;
-      height: 100%;
-    }
-
-    .chart-loader {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 11px;
-      color: var(--text-soft);
-      pointer-events: none;
-      text-align: center;
-      padding: 0 16px;
-    }
-
-    .message {
-      font-size: 14px;
-      line-height: 1.5;
-      text-align: center;
-      margin: 10px 0 14px;
-    }
-
-    .meta {
-      font-size: 11px;
-      text-align: center;
-      color: var(--text-soft);
-    }
-
-    .meta span { white-space: nowrap; }
-    .meta-dot { margin: 0 4px; opacity: .6; }
-
-    .error {
-      margin-top: 10px;
-      font-size: 12px;
-      color: #f97373;
-      text-align: center;
-    }
-
-    /* Card istoric */
-
-    .history-header {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      margin-bottom: 10px;
-    }
-
-    .history-title {
-      font-size: 13px;
-      letter-spacing: .18em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-    }
-
-    .history-subtitle {
-      font-size: 12px;
-      color: var(--text-soft);
-    }
-
-    .history-list {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      margin-bottom: 10px;
-      max-height: 220px;
-      overflow-y: auto;
-      padding-right: 4px;
     }
 
     .history-empty {
-      font-size: 12px;
-      color: var(--text-soft);
-      text-align: center;
-      padding: 12px 6px;
-    }
-
-    .history-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 6px 10px;
-      border-radius: 10px;
-      background: rgba(15,23,42,0.9);
-      border: 1px solid rgba(31,41,55,0.9);
       font-size: 11px;
+      color: var(--text-soft);
+      margin-top: 4px;
     }
 
-    .history-left {
+    .history-item {
       display: flex;
-      flex-direction: column;
-      gap: 2px;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 11px;
+      padding: 4px 0;
+      border-bottom: 1px solid #111827;
     }
 
-    .history-date {
-      color: var(--text-main);
+    .history-left-date {
       font-weight: 500;
+      color: var(--text-main);
     }
 
-    .history-signal-chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 2px 8px;
-      border-radius: 999px;
-      border: 1px solid var(--accent-neutral);
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: .08em;
-      background: rgba(15,23,42,0.95);
-    }
-
-    .history-signal-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 999px;
-      background: var(--accent-neutral);
-    }
-
-    .history-signal-long {
-      border-color: var(--accent-bull);
-      color: var(--accent-bull);
-    }
-    .history-signal-long .history-signal-dot {
-      background: var(--accent-bull);
-    }
-    .history-signal-short {
-      border-color: var(--accent-bear);
-      color: var(--accent-bear);
-    }
-    .history-signal-short .history-signal-dot {
-      background: var(--accent-bear);
-    }
-    .history-signal-flat {
-      border-color: var(--accent-neutral);
-      color: var(--accent-neutral);
+    .history-left-context {
+      color: var(--text-soft);
     }
 
     .history-right {
       text-align: right;
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
+      color: var(--text-muted);
     }
 
-    .history-price {
-      font-weight: 600;
-      color: var(--text-main);
-    }
-
-    .history-tag {
+    .history-meta {
+      margin-top: 4px;
       font-size: 10px;
       color: var(--text-soft);
     }
 
-    .history-meta {
-      font-size: 11px;
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 6px;
+      border-radius: 999px;
+      border: 1px solid #1f2937;
+      background: rgba(15, 23, 42, 0.9);
+      font-size: 10px;
       color: var(--text-soft);
-      text-align: center;
     }
 
-    .history-meta span {
-      white-space: nowrap;
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--accent-soft);
     }
 
-    .history-meta-dot {
-      margin: 0 4px;
-      opacity: .6;
-    }
-
-    @media (max-width: 480px) {
-      .card { padding: 18px 16px 16px; border-radius: 20px; }
-      .price-value { font-size: 34px; }
-      .asset-text h1 { font-size: 16px; }
-      .message { font-size: 13px; }
-      .chart-block { height: 210px; }
+    @media (max-width: 640px) {
+      .page {
+        padding: 12px;
+      }
+      .hero-message {
+        font-size: 12px;
+      }
     }
   </style>
-
-  <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
 </head>
 <body>
-  <div class="shell">
-    <div class="title-bar">MECANISM COEZIV BTC</div>
+<main>
+  <div class="page">
 
-    <!-- CARD PRINCIPAL: Semnal curent + grafic -->
-    <div class="card">
-      <div class="card-inner">
-        <div class="asset-row">
-          <div class="asset-main">
-            <div class="asset-logo">₿</div>
-            <div class="asset-text">
-              <h1>Bitcoin (BTC)</h1>
-              <span>Mecanism coeziv, actualizat aproximativ la fiecare oră.</span>
-            </div>
-          </div>
-          <div id="signal-chip" class="signal-chip neutral">
-            <span class="signal-dot"></span>
-            <span id="signal-label">Context: neutru</span>
-          </div>
-          <div id="regime-line" class="live-delta">
-            Regim de piață: n/a (așteptăm date suficiente din mecanism).
-          </div>
-        </div>
-
-        <div class="price-block">
-          <div id="price" class="price-value">–</div>
-          <div class="currency">USD</div>
-
-          <div class="live-row">
-            <span class="live-label">Preț live:</span>
-            <span id="live-price" class="live-value">–</span>
-            <span class="live-currency">USD</span>
-          </div>
-          <div id="live-delta" class="live-delta">
-            Se compară prețul live cu prețul analizat de mecanism.
-          </div>
-          <div id="deviation-status" class="deviation-status">
-            Status deviație: n/a (așteptăm un snapshot al modelului).
-          </div>
-          <div id="signal-prob" class="live-delta">
-            Probabilitate istorică: n/a (așteptăm date suficiente din mecanism).
-          </div>
-          <div id="signal-prob-breakdown" class="live-delta">
-            Distribuție istorică: n/a (mecanismul nu are încă o descompunere robustă a probabilității).
-          </div>
-          <div id="drift-range" class="live-delta">
-            Interval tipic de mișcare: n/a (așteptăm statistici suficiente din mecanism).
-          </div>
-          <div id="flow-line" class="live-delta">
-            Flux de piață: n/a (așteptăm date despre flux).
-          </div>
-          <div id="liquidity-line" class="live-delta">
-            Lichiditate piață: n/a (așteptăm date despre lichiditate).
-          </div>
-        </div>
-
-        <div class="chart-block">
-          <div id="btc-chart"></div>
-          <div id="chart-loader" class="chart-loader">
-            Se încarcă graficul BTC. Dacă nu apare, poate fi o limitare temporară sau o extensie de browser.
-          </div>
-        </div>
-
-        <div id="message" class="message">
-          Se încarcă mesajul coeziv...
-        </div>
-
-        <div class="meta" id="meta">
-          <span>Snapshot: n/a</span>
-          <span class="meta-dot">•</span>
-          <span>Generat: n/a</span>
-        </div>
-
-        <div id="error" class="error"></div>
-      </div>
+    <div class="page-title">
+      MECANISM COEZIV BTC
     </div>
 
-    <!-- CARD SECUNDAR: Istoric semnale + info -->
-    <div class="card card-secondary">
-      <div class="card-inner">
-        <div class="history-header">
-          <div class="history-title">ISTORIC CONTEXTE MECANISM</div>
-          <div class="history-subtitle">
-            Ultimele snapshot-uri ale mecanismului. Nu sunt semnale de intrare automată, ci context.
-          </div>
+    <!-- 1) CARD PRINCIPAL – CONTEXTUL ZILEI -->
+    <section class="card" id="hero-card">
+      <header class="hero-header">
+        <div class="hero-title">
+          Context mecanic de piață
         </div>
-
-        <div id="history-list" class="history-list">
-          <div class="history-empty">
-            Istoricul nu este disponibil încă. Va apărea după următorul update al mecanismului.
-          </div>
+        <div class="hero-timestamp" id="snapshot-timestamp">
+          <!-- ex: Actualizat: 18.02.2025 14:03 -->
         </div>
+      </header>
 
-        <div id="history-meta" class="history-meta"></div>
+      <div class="hero-context" id="context-headline">
+        Se încarcă contextul mecanic...
       </div>
-    
-    <!-- CARD TERȚIAR: Cum citești mecanismul + recomandare coezivă -->
-    <div class="card card-secondary">
-      <div class="card-inner">
-        <div class="history-header">
-          <div class="history-title">CUM CITEȘTI MECANISMUL</div>
-          <div class="history-subtitle">
-            Instrument profesional de context, nu semnal automat de intrare. Informațiile te ajută să înțelegi riscul, nu să îți înlocuiască decizia.
-          </div>
-        </div>
 
-        <div class="history-list">
-          <div class="history-row">
-            <div class="history-left">
-              <div class="history-date">1. Context de risc</div>
-              <div class="history-tag">
-                Rezumatul felului în care mecanismul evaluează riscul structural: presiune de creștere, presiune de scădere sau context neutru.
-              </div>
-            </div>
-          </div>
+      <p class="hero-message" id="context-message">
+        Așteptăm răspunsul de la mecanismul coeziv.
+      </p>
 
-          <div class="history-row">
-            <div class="history-left">
-              <div class="history-date">2. Probabilitate istorică</div>
-              <div class="history-tag">
-                Indică cât de des un context similar a evoluat în direcția semnalului în trecut.
-              </div>
-            </div>
-          </div>
-
-          <div class="history-row">
-            <div class="history-left">
-              <div class="history-date">3. Deviație față de valoarea modelului</div>
-              <div class="history-tag">
-                Măsoară cât de departe este prețul live față de prețul estimat de mecanism.
-              </div>
-            </div>
-          </div>
-
-          <div class="history-row">
-            <div class="history-left">
-              <div class="history-date">4. Mesaj coeziv</div>
-              <div class="history-tag">
-                Traducerea mecanismului în limbaj simplu: context, nu promisiune de rezultat.
-              </div>
-            </div>
-          </div>
-
-          <div class="history-row">
-            <div class="history-left">
-              <div class="history-date">5. Fluxul pieței</div>
-              <div class="history-tag">
-                Indică dacă în prezent cumpărătorii sau vânzătorii domină, sau dacă fluxul este echilibrat. Ajută la înțelegerea motivului pentru care prețul poate continua sau contrazice contextul structural.
-              </div>
-            </div>
-          </div>
-
-          <div class="history-row">
-            <div class="history-left">
-              <div class="history-date">6. Lichiditate</div>
-              <div class="history-tag">
-                Arată cât de „plină” sau „subțire” este piața. Lichiditatea ridicată tinde să facă mișcările mai stabile, iar lichiditatea scăzută poate amplifica mișcările bruște.
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="history-meta" id="mm-recommendation">
-          Recomandarea coezivă va apărea aici după ce mecanismul are suficiente date.
-        </div>
+      <div class="hero-price" id="price-line">
+        <!-- ex: Preț live BTC: 88,420 USD • Preț model: 87,900 USD -->
       </div>
-    </div>
 
-  <script>
-    // Elemente UI
-    const PRICE_EL = document.getElementById("price");
-    const LIVE_PRICE_EL = document.getElementById("live-price");
-    const LIVE_DELTA_EL = document.getElementById("live-delta");
-    const DEV_STATUS_EL = document.getElementById("deviation-status");
-    const SIGNAL_PROB_EL = document.getElementById("signal-prob");
-    const SIGNAL_PROB_BREAKDOWN_EL = document.getElementById("signal-prob-breakdown");
-    const MSG_EL = document.getElementById("message");
-    const META_EL = document.getElementById("meta");
-    const ERROR_EL = document.getElementById("error");
-    const SIGNAL_CHIP_EL = document.getElementById("signal-chip");
-    const SIGNAL_LABEL_EL = document.getElementById("signal-label");
-    const CHART_LOADER_EL = document.getElementById("chart-loader");
-    const REGIME_EL = document.getElementById("regime-line");
-    const DRIFT_EL = document.getElementById("drift-range");
-    const FLOW_LINE_EL = document.getElementById("flow-line");
-    const LIQ_LINE_EL = document.getElementById("liquidity-line");
+      <div class="hero-error" id="hero-error"></div>
+    </section>
 
-    const HISTORY_LIST_EL = document.getElementById("history-list");
-    const HISTORY_META_EL = document.getElementById("history-meta");
-    const MM_RECO_EL = document.getElementById("mm-recommendation");
+    <!-- 2) CARD – INDICATORI DE CONTEXT -->
+    <section class="card-soft" style="margin-top: 12px;">
+      <h2 class="context-card-title">
+        Indicatori de context
+      </h2>
+      <div class="context-row">
+        <div class="context-label">Deviație față de prețul modelului</div>
+        <div class="context-value" id="deviation-label">n/a</div>
+      </div>
+      <div class="context-row">
+        <div class="context-label">Flux de piață</div>
+        <div class="context-value" id="flow-label">n/a</div>
+      </div>
+      <div class="context-row">
+        <div class="context-label">Lichiditate</div>
+        <div class="context-value" id="liquidity-label">n/a</div>
+      </div>
+    </section>
 
-    const STATE_URL = "coeziv_state.json";
+    <!-- 3) CARD – DETALII MECANISM (COLAPSABIL) -->
+    <section class="card-soft" style="margin-top: 12px;">
+      <details>
+        <summary class="details-summary">Detalii mecanism & distribuție istorică</summary>
+        <div class="details-body">
+          <div class="details-row">
+            <div class="details-label">Deviație numerică</div>
+            <div class="details-value" id="deviation-numeric">n/a</div>
+          </div>
+          <div class="details-row">
+            <div class="details-label">Probabilitate istorică a contextului</div>
+            <div class="details-value" id="probability-label">n/a</div>
+          </div>
+          <div class="details-row">
+            <div class="details-label">Drift tipic în orizont</div>
+            <div class="details-value" id="drift-label">n/a</div>
+          </div>
+        </div>
+      </details>
+    </section>
 
-    const USD_FORMATTER = new Intl.NumberFormat("en-US", {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
+    <!-- 4) CARD – ISTORIC CONTEXTE (COLAPSABIL) -->
+    <section class="card-soft" style="margin-top: 12px;">
+      <details>
+        <summary class="details-summary">Contexte anterioare</summary>
+        <div class="details-body">
+          <div id="history-list" class="history-empty">
+            Istoricul nu este disponibil încă. Va apărea după următoarele update-uri ale mecanismului.
+          </div>
+          <div id="history-meta" class="history-meta"></div>
+        </div>
+      </details>
+    </section>
+
+    <!-- 5) CARD STATIC – CUM INTERPRETEZI CONTEXTUL -->
+    <section class="card-soft" style="margin-top: 12px; margin-bottom: 24px;">
+      <h2 class="context-card-title">
+        Cum interpretezi contextul mecanismului
+      </h2>
+
+      <p class="legend-text">
+        Mecanismul descrie contextul de piață, nu oferă recomandări de tranzacționare.
+        Situațiile de mai jos sunt exemple tipice, construite din deviație, flux și lichiditate.
+      </p>
+
+      <div class="legend-subtitle">1. Context de risc</div>
+      <ul class="legend-list">
+        <li><strong>Presiune de creștere:</strong> prețul live este sub prețul modelului, deviația este relevantă, iar în contexte similare istorice au apărut frecvent aprecieri.</li>
+        <li><strong>Risc de scădere:</strong> prețul live este semnificativ peste model, iar istoric piața a corectat adesea în jos.</li>
+        <li><strong>Context neutru:</strong> diferențe mici și istoric echilibrat. De obicei nu favorizează poziționări agresive.</li>
+      </ul>
+
+      <div class="legend-subtitle">2. Flux de piață</div>
+      <ul class="legend-list">
+        <li><strong>Flux orientat spre cumpărare (puternic):</strong> cumpărătorii domină ultima mișcare, mai ales relevant pe lichiditate normală sau ridicată.</li>
+        <li><strong>Flux orientat spre vânzare (puternic):</strong> vânzătorii domină; interpretarea depinde de lichiditate (vezi mai jos).</li>
+        <li><strong>Flux slab / neutru:</strong> mișcări mai degrabă de consolidare sau zgomot.</li>
+      </ul>
+
+      <div class="legend-subtitle">3. Lichiditate</div>
+      <ul class="legend-list">
+        <li><strong>Ridicată:</strong> mișcările au greutate, trendurile tind să fie mai sustenabile.</li>
+        <li><strong>Moderată:</strong> condiții „normale” de piață.</li>
+        <li><strong>Scăzută:</strong> mișcări exagerate, spike-uri, capitulări locale sau raliuri greu de susținut.</li>
+      </ul>
+
+      <div class="legend-subtitle">4. Combinații frecvente</div>
+      <ul class="legend-list">
+        <li><strong>Flux negativ puternic + lichiditate scăzută:</strong> scenariu tipic de extenuare a vânzării, cu potențial de recoil (bounce).</li>
+        <li><strong>Flux negativ puternic + lichiditate moderată/ridicată:</strong> presiune de vânzare susținută, context în care riscul de scădere continuă este mai ridicat.</li>
+        <li><strong>Flux pozitiv puternic + lichiditate moderată/ridicată:</strong> raliu susținut, cu probabilitate crescută de continuare a trendului.</li>
+        <li><strong>Flux slab + lichiditate moderată:</strong> consolidare, fără bias direcțional clar.</li>
+      </ul>
+
+      <p class="legend-legal">
+        Aceste interpretări sunt exemple de context, nu recomandări de investiții. Mecanismul te ajută să înțelegi
+        „în ce film” se află piața; decizia rămâne a ta.
+      </p>
+    </section>
+
+  </div>
+</main>
+
+<script>
+  const STATE_URL = "coeziv_state.json";
+
+  const USD_FORMATTER = new Intl.NumberFormat("en-US", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  });
+
+  const PCT_FORMATTER = new Intl.NumberFormat("en-US", {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1
+  });
+
+  function formatDate(iso) {
+    if (!iso) return "n/a";
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return "n/a";
+    return d.toLocaleString("ro-RO", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+  }
+
+  function formatShortDate(iso) {
+    if (!iso) return "n/a";
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return "n/a";
+    return d.toLocaleString("ro-RO", {
+      day: "2-digit",
+      month: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+  }
+
+  function mapSignalToHeadline(signal) {
+    const s = (signal || "").toLowerCase();
+    if (s === "long") {
+      return "Context: presiune de creștere";
+    }
+    if (s === "short") {
+      return "Context: risc de scădere";
+    }
+    return "Context mecanic neutru";
+  }
+
+  function classifyDeviation(pct) {
+    if (pct == null || !Number.isFinite(pct)) return "n/a";
+    const abs = Math.abs(pct);
+    if (abs < 0.005) return "aproape de prețul modelului";
+    if (abs < 0.015) return (pct > 0 ? "ușor peste prețul modelului" : "ușor sub prețul modelului");
+    if (abs < 0.03) return (pct > 0 ? "moderată, peste model" : "moderată, sub model");
+    return (pct > 0 ? "puternic peste model" : "puternic sub model");
+  }
+
+  function buildDeviationNumeric(priceLive, priceModel) {
+    if (!Number.isFinite(priceLive) || !Number.isFinite(priceModel) || priceModel <= 0) {
+      return "n/a";
+    }
+    const diff = priceLive - priceModel;
+    const pct = diff / priceModel;
+    const sign = diff > 0 ? "+" : diff < 0 ? "−" : "";
+    const absDiff = Math.abs(diff);
+    const absPct = Math.abs(pct) * 100;
+    return `≈ ${sign}${USD_FORMATTER.format(absDiff)} USD față de model (${sign}${PCT_FORMATTER.format(absPct)}%)`;
+  }
+
+  function buildDeviationLabel(priceLive, priceModel) {
+    if (!Number.isFinite(priceLive) || !Number.isFinite(priceModel) || priceModel <= 0) {
+      return "n/a";
+    }
+    const pct = (priceLive - priceModel) / priceModel;
+    return classifyDeviation(pct);
+  }
+
+  function buildProbabilityLabel(prob, samples, horizonHours) {
+    if (typeof prob !== "number" || !Number.isFinite(prob)) {
+      return "n/a";
+    }
+    const p = prob * 100;
+    const horizon = horizonHours || 24;
+    const s = Math.round(p);
+    const sampleText = (samples && samples > 0)
+      ? `, pe baza a ${samples} observații`
+      : "";
+    return `≈ ${s}% din cazuri similare în trecut, pe orizont de ${horizon}h${sampleText}.`;
+  }
+
+  function buildDriftLabel(drift) {
+    if (drift == null || !Number.isFinite(drift)) {
+      return "n/a";
+    }
+    const p = drift * 100;
+    const s = PCT_FORMATTER.format(p);
+    return `mișcare tipică de ~${s}% față de model, pe orizontul analizat.`;
+  }
+
+  function buildFlowLabel(flowBias, flowStrength) {
+    if (!flowBias) return "n/a";
+    let base = "";
+    if (flowBias === "pozitiv") base = "presiune de cumpărare";
+    else if (flowBias === "negativ") base = "presiune de vânzare";
+    else if (flowBias === "neutru") base = "flux relativ echilibrat";
+    else base = flowBias;
+
+    if (flowStrength) {
+      return `${base} (${flowStrength})`;
+    }
+    return base;
+  }
+
+  function buildLiquidityLabel(regime, strength) {
+    if (!regime) return "n/a";
+    let base = "";
+    if (regime === "ridicată") base = "ridicată";
+    else if (regime === "moderată" || regime === "normală") base = "moderată";
+    else if (regime === "scăzută") base = "scăzută";
+    else base = regime;
+
+    if (strength) {
+      return `${base} (${strength})`;
+    }
+    return base;
+  }
+
+  function renderHistory(history, flowBias, liqRegime) {
+    const listEl = document.getElementById("history-list");
+    const metaEl = document.getElementById("history-meta");
+    if (!listEl) return;
+
+    listEl.innerHTML = "";
+    if (!Array.isArray(history) || history.length === 0) {
+      listEl.textContent =
+        "Istoricul nu este disponibil încă. Va apărea după următoarele update-uri ale mecanismului.";
+      if (metaEl) metaEl.textContent = "";
+      return;
+    }
+
+    const maxItems = Math.min(history.length, 8);
+    const items = history.slice(-maxItems).reverse();
+
+    let countLong = 0;
+    let countShort = 0;
+    let countNeutral = 0;
+
+    items.forEach(entry => {
+      if (!entry) return;
+      const sig = String(entry.signal || "").toLowerCase();
+      const ts = entry.timestamp;
+      const price = entry.model_price_usd;
+
+      if (sig === "long") countLong++;
+      else if (sig === "short") countShort++;
+      else countNeutral++;
+
+      const row = document.createElement("div");
+      row.className = "history-item";
+
+      const left = document.createElement("div");
+      const right = document.createElement("div");
+      right.className = "history-right";
+
+      const dateEl = document.createElement("div");
+      dateEl.className = "history-left-date";
+      dateEl.textContent = formatShortDate(ts);
+
+      const ctxEl = document.createElement("div");
+      ctxEl.className = "history-left-context";
+      ctxEl.textContent =
+        sig === "long" ? "Context: presiune de creștere" :
+        sig === "short" ? "Context: risc de scădere" :
+        "Context: neutru";
+
+      left.appendChild(dateEl);
+      left.appendChild(ctxEl);
+
+      const priceEl = document.createElement("div");
+      if (typeof price === "number" && Number.isFinite(price)) {
+        priceEl.textContent = USD_FORMATTER.format(price) + " USD";
+      } else {
+        priceEl.textContent = "–";
+      }
+
+      const tagEl = document.createElement("div");
+      tagEl.textContent = "Preț model la snapshot";
+
+      right.appendChild(priceEl);
+      right.appendChild(tagEl);
+
+      row.appendChild(left);
+      row.appendChild(right);
+      listEl.appendChild(row);
     });
 
-    let SNAPSHOT_PRICE = null;
-    let LIVE_PRICE = null;
-    let LAST_SIGNAL_RAW = null;
-    let LAST_SNAPSHOT_TIME = null;
-    let SIGNAL_HISTORY = [];
+    if (metaEl) {
+      const total = history.length;
+      let flowPart = "";
+      if (flowBias === "pozitiv") flowPart = "Flux actual: orientat spre cumpărare";
+      else if (flowBias === "negativ") flowPart = "Flux actual: orientat spre vânzare";
+      else if (flowBias === "neutru") flowPart = "Flux actual: relativ echilibrat";
 
-    // stare probabilistică și deviație pentru recomandarea coezivă
-    let STATE_PROB = null;
-    let STATE_PROB_SAMPLES = 0;
-    let STATE_PROB_HORIZON = 24;
-    let LAST_DEV_ABS_PCT = null;
-    let LAST_DEV_SIGN = 0;
+      let liqPart = "";
+      if (liqRegime === "ridicată") liqPart = "lichiditate ridicată";
+      else if (liqRegime === "scăzută") liqPart = "lichiditate scăzută";
+      else if (liqRegime === "moderată" || liqRegime === "normală") liqPart = "lichiditate moderată";
 
-    // flow & liquidity (pentru recomandare și istoric meta)
-    let FLOW_BIAS = null;
-    let FLOW_STRENGTH = null;
-    let LIQ_REGIME = null;
-    let LIQ_STRENGTH = null;
+      const parts = [
+        `Total contexte: ${total}`,
+        `Presiune de creștere: ${countLong}`,
+        `Risc de scădere: ${countShort}`,
+        `Context neutru: ${countNeutral}`
+      ];
 
-    // breakdown probabilistic (în direcție / contra / flat)
-    let STATE_PROB_IN_DIR = null;
-    let STATE_PROB_OPPOSITE = null;
-    let STATE_PROB_FLAT = null;
-
-    // OHLC arrays
-    let oTimes = [];
-    let oOpen = [];
-    let oHigh = [];
-    let oLow = [];
-    let oClose = [];
-    let oVolume = [];
-
-    function mapSignal(signal) {
-      const s = (signal || "").toLowerCase();
-      if (s === "long") {
-        return {
-          tone: "bullish",
-          label: "Context: presiune de creștere",
-          shortLabel: "Presiune de creștere"
-        };
-      }
-      if (s === "short") {
-        return {
-          tone: "bearish",
-          label: "Context: risc de scădere",
-          shortLabel: "Risc de scădere"
-        };
-      }
-      return {
-        tone: "neutral",
-        label: "Context: neutru",
-        shortLabel: "Context neutru"
-      };
-    }
-
-    function formatDate(iso) {
-      if (!iso) return "n/a";
-      const d = new Date(iso);
-      if (Number.isNaN(d.getTime())) return "n/a";
-      return d.toLocaleString("ro-RO", {
-        year: "numeric", month: "2-digit", day: "2-digit",
-        hour: "2-digit", minute: "2-digit"
-      });
-    }
-
-    function formatShortDate(iso) {
-      if (!iso) return "n/a";
-      const d = new Date(iso);
-      if (Number.isNaN(d.getTime())) return "n/a";
-      return d.toLocaleString("ro-RO", {
-        day: "2-digit", month: "2-digit",
-        hour: "2-digit", minute: "2-digit"
-      });
-    }
-
-    function resetDeviationStatus(text) {
-      if (!DEV_STATUS_EL) return;
-      DEV_STATUS_EL.classList.remove("dev-normal", "dev-mild", "dev-tension", "dev-extreme");
-      DEV_STATUS_EL.textContent = text || "Status deviație: n/a";
-    }
-
-    function refreshMMRecommendation() {
-      if (!MM_RECO_EL) return;
-
-      const sig = (LAST_SIGNAL_RAW || "").toLowerCase();
-      const p = STATE_PROB;
-      const samples = STATE_PROB_SAMPLES;
-      const devAbs = LAST_DEV_ABS_PCT;
-      const devSign = LAST_DEV_SIGN;
-
-      if (!sig || devAbs === null || typeof devAbs !== "number") {
-        MM_RECO_EL.textContent =
-          "Recomandare coezivă: așteptăm suficiente date pentru o interpretare robustă a contextului.";
-        return;
+      if (flowPart || liqPart) {
+        const extra = [flowPart, liqPart].filter(Boolean).join(", ");
+        parts.push(extra);
       }
 
-      // clasificare probabilitate
-      let probBucket = "necunoscut";
-      if (p === null || !Number.isFinite(p) || samples < 30) {
-        probBucket = "slab";
-      } else if (p < 0.5) {
-        probBucket = "slab";
-      } else if (p < 0.65) {
-        probBucket = "mediu";
-      } else if (p < 0.8) {
-        probBucket = "puternic";
-      } else {
-        probBucket = "premium";
-      }
-
-      // clasificare deviație
-      let devZone = "normală";
-      if (devAbs < 0.25) devZone = "normală";
-      else if (devAbs < 1) devZone = "controlată";
-      else if (devAbs < 3) devZone = "tensionată";
-      else devZone = "extremă";
-
-      let text;
-
-      if (sig === "short") {
-        if (probBucket === "slab") {
-          if (devZone === "normală" || devZone === "controlată") {
-            text =
-              "Context structural ușor negativ, dar cu probabilitate istorică slabă. Pentru utilizatori obișnuiți: prudență cu pozițiile mari, în special cele long, dar nu este un moment de acțiune agresivă.";
-          } else {
-            text =
-              "Mecanismul indică risc de scădere, însă probabilitatea istorică nu este puternică. Deviația este ridicată, ceea ce poate semnala vulnerabilitate la corecții bruște. Pentru utilizatori obișnuiți: evitați supraexpunerea și gestionați atent mărimea pozițiilor.";
-          }
-        } else if (probBucket === "mediu") {
-          text =
-            "Context structural negativ cu probabilitate istorică moderată. Pentru utilizatori obișnuiți: poate fi un moment potrivit pentru reducerea expunerii long și adoptarea unei poziționări mai defensive.";
-        } else {
-          // puternic sau premium
-          if (devZone === "tensionată" || devZone === "extremă") {
-            text =
-              "Structura pieței și istoricul susțin scenariul de scădere, iar prețul este semnificativ peste valoarea estimată de mecanism. Pentru utilizatori obișnuiți: poate fi un moment favorabil pentru reducerea expunerii long sau pentru o poziționare defensivă, în funcție de profilul de risc.";
-          } else {
-            text =
-              "Mecanismul indică un context negativ cu suport istoric solid. Pentru utilizatori obișnuiți: menținerea unei expuneri prudente și evitarea pozițiilor long agresive poate fi o abordare echilibrată.";
-          }
-        }
-      } else if (sig === "long") {
-        if (probBucket === "slab") {
-          if (devZone === "normală" || devZone === "controlată") {
-            text =
-              "Mecanismul vede un context pozitiv, dar cu probabilitate istorică slabă. Pentru utilizatori obișnuiți: acumularea agresivă nu este recomandată; o expunere echilibrată poate fi mai potrivită.";
-          } else {
-            text =
-              "Prețul este semnificativ sub valoarea estimată de mecanism, dar probabilitatea istorică nu este foarte solidă. Pentru utilizatori obișnuiți: acumularea atentă și fracționată poate fi o abordare rezonabilă, cu conștientizarea riscului.";
-          }
-        } else if (probBucket === "mediu") {
-          text =
-            "Context structural favorabil direcției long, cu probabilitate istorică moderată. Pentru utilizatori obișnuiți: acumularea graduală poate fi justificată, cu ajustarea mărimii pozițiilor la profilul de risc.";
-        } else {
-          // puternic sau premium
-          if (devZone === "tensionată" || devZone === "extremă") {
-            text =
-              "Structura pieței indică un context pozitiv, iar prețul este mult sub valoarea estimată de mecanism. Pentru utilizatori obișnuiți: poate fi un moment favorabil pentru acumulare calculată, în pași, cu monitorizare atentă a volatilității.";
-          } else {
-            text =
-              "Mecanismul indică un context long cu suport istoric puternic. Pentru utilizatori obișnuiți: acumularea graduală, adaptată toleranței la risc, poate fi o strategie potrivită.";
-          }
-        }
-      } else {
-        // flat / neutru
-        text =
-          "Mecanismul nu identifică un avantaj clar în nicio direcție. Pentru utilizatori obișnuiți: poate fi util să evitați deciziile impulsive și să așteptați un context mai clar al pieței.";
-      }
-
-      MM_RECO_EL.textContent = text;
+      metaEl.textContent = parts.join(" • ");
     }
+  }
 
-    // ---------------- MECANISM (JSON) ----------------
+  async function loadState() {
+    const heroTsEl = document.getElementById("snapshot-timestamp");
+    const headlineEl = document.getElementById("context-headline");
+    const messageEl = document.getElementById("context-message");
+    const priceLineEl = document.getElementById("price-line");
+    const errorEl = document.getElementById("hero-error");
 
-    async function loadState() {
-      try {
-        ERROR_EL.textContent = "";
-        MSG_EL.textContent = "Se încarcă mesajul coeziv...";
+    const devLabelEl = document.getElementById("deviation-label");
+    const flowLabelEl = document.getElementById("flow-label");
+    const liqLabelEl = document.getElementById("liquidity-label");
 
-        const res = await fetch(STATE_URL + "?t=" + Date.now(), { cache: "no-store" });
-        if (!res.ok) throw new Error("HTTP " + res.status);
-        const state = await res.json();
+    const devNumericEl = document.getElementById("deviation-numeric");
+    const probLabelEl = document.getElementById("probability-label");
+    const driftLabelEl = document.getElementById("drift-label");
 
-        const modelPrice = state.model_price_usd;
-        const fallbackPrice = state.price_usd;
-        const message = state.message;
-        const ts = state.timestamp;
-        const gen = state.generated_at;
-        const signal = state.signal;
-        const history = state.signal_history;
-        const regime = state.market_regime || null;
-        const drift = state.signal_expected_drift || null;
+    try {
+      if (errorEl) errorEl.textContent = "";
 
-        const flowBias = state.flow_bias || null;
-        const flowStrength = state.flow_strength || null;
-        const liqRegime = state.liquidity_regime || null;
-        const liqStrength = state.liquidity_strength || null;
+      const res = await fetch(STATE_URL + "?t=" + Date.now(), { cache: "no-store" });
+      if (!res.ok) throw new Error("HTTP " + res.status);
 
-        FLOW_BIAS = flowBias;
-        FLOW_STRENGTH = flowStrength;
-        LIQ_REGIME = liqRegime;
-        LIQ_STRENGTH = liqStrength;
+      const state = await res.json();
 
-        const prob = state.signal_probability;
-        const probSamples = state.signal_prob_samples || 0;
-        const probHorizon = state.signal_prob_horizon_hours || 24;
-        const probSource = state.signal_prob_source || "unknown";
-        const probBreakdown = state.signal_prob_breakdown || null;
+      const modelPrice = state.model_price_usd;
+      const fallbackPrice = state.price_usd;
+      const ts = state.timestamp || state.generated_at;
+      const signal = state.signal;
+      const message = state.message;
 
-        STATE_PROB = (typeof prob === "number" && Number.isFinite(prob)) ? prob : null;
-        STATE_PROB_SAMPLES = probSamples;
-        STATE_PROB_HORIZON = probHorizon;
+      const flowBias = state.flow_bias || null;
+      const flowStrength = state.flow_strength || null;
+      const liqRegime = state.liquidity_regime || null;
+      const liqStrength = state.liquidity_strength || null;
 
-        STATE_PROB_IN_DIR = null;
-        STATE_PROB_OPPOSITE = null;
-        STATE_PROB_FLAT = null;
+      const prob = state.signal_probability;
+      const probSamples = state.signal_prob_samples || 0;
+      const probHorizon = state.signal_prob_horizon_hours || 24;
+      const drift = state.signal_expected_drift || null;
+      const history = state.signal_history;
 
-        if (probBreakdown && typeof probBreakdown === "object") {
-          const pIn = probBreakdown.in_direction;
-          const pOpp = probBreakdown.opposite;
-          const pFlat = probBreakdown.flat;
-          STATE_PROB_IN_DIR = (typeof pIn === "number" && Number.isFinite(pIn)) ? pIn : null;
-          STATE_PROB_OPPOSITE = (typeof pOpp === "number" && Number.isFinite(pOpp)) ? pOpp : null;
-          STATE_PROB_FLAT = (typeof pFlat === "number" && Number.isFinite(pFlat)) ? pFlat : null;
+      // Timp
+      if (heroTsEl) {
+        heroTsEl.textContent = ts ? ("Actualizat: " + formatDate(ts)) : "";
+      }
+
+      // Headline
+      if (headlineEl) {
+        headlineEl.textContent = mapSignalToHeadline(signal);
+      }
+
+      // Mesaj coeziv
+      if (messageEl) {
+        messageEl.textContent = message || "Nu există mesaj coeziv pentru acest moment.";
+      }
+
+      // Prețuri
+      let displayPrice = null;
+      if (typeof fallbackPrice === "number" && Number.isFinite(fallbackPrice) && fallbackPrice > 0) {
+        displayPrice = fallbackPrice;
+      } else if (typeof modelPrice === "number" && Number.isFinite(modelPrice) && modelPrice > 0) {
+        displayPrice = modelPrice;
+      }
+
+      if (priceLineEl) {
+        const parts = [];
+        if (typeof fallbackPrice === "number" && Number.isFinite(fallbackPrice)) {
+          parts.push("Preț live BTC: " + USD_FORMATTER.format(fallbackPrice) + " USD");
         }
-
-        LAST_SIGNAL_RAW = (signal || "").toLowerCase();
-        LAST_SNAPSHOT_TIME = ts ? new Date(ts) : null;
-        if (LAST_SNAPSHOT_TIME && Number.isNaN(LAST_SNAPSHOT_TIME.getTime())) {
-          LAST_SNAPSHOT_TIME = null;
+        if (typeof modelPrice === "number" && Number.isFinite(modelPrice)) {
+          parts.push("Preț model: " + USD_FORMATTER.format(modelPrice) + " USD");
         }
+        priceLineEl.textContent = parts.join(" • ");
+      }
 
-        SIGNAL_HISTORY = Array.isArray(history) ? history : [];
+      // Indicatori de context
+      if (devLabelEl) {
+        devLabelEl.textContent = buildDeviationLabel(fallbackPrice, modelPrice);
+      }
+      if (flowLabelEl) {
+        flowLabelEl.textContent = buildFlowLabel(flowBias, flowStrength);
+      }
+      if (liqLabelEl) {
+        liqLabelEl.textContent = buildLiquidityLabel(liqRegime, liqStrength);
+      }
 
-        let displayPrice = null;
-        if (typeof modelPrice === "number" && Number.isFinite(modelPrice) && modelPrice > 0) {
-          displayPrice = modelPrice;
-        } else if (typeof fallbackPrice === "number" && Number.isFinite(fallbackPrice) && fallbackPrice > 0) {
-          displayPrice = fallbackPrice;
-        }
+      // Detalii mecanism
+      if (devNumericEl) {
+        devNumericEl.textContent = buildDeviationNumeric(fallbackPrice, modelPrice);
+      }
+      if (probLabelEl) {
+        probLabelEl.textContent = buildProbabilityLabel(prob, probSamples, probHorizon);
+      }
+      if (driftLabelEl) {
+        driftLabelEl.textContent = buildDriftLabel(drift);
+      }
 
-        if (displayPrice !== null) {
-          SNAPSHOT_PRICE = displayPrice;
-          PRICE_EL.textContent = USD_FORMATTER.format(displayPrice);
-        } else {
-          SNAPSHOT_PRICE = null;
-          PRICE_EL.textContent = "–";
-        }
+      // Istoric
+      renderHistory(history, flowBias, liqRegime);
 
-        MSG_EL.textContent = message || "Nu există mesaj coeziv pentru acest moment.";
-
-        const mapped = mapSignal(signal);
-        SIGNAL_LABEL_EL.textContent = mapped.label;
-        SIGNAL_CHIP_EL.classList.remove("bullish", "bearish", "neutral");
-        SIGNAL_CHIP_EL.classList.add(mapped.tone);
-
-        META_EL.innerHTML =
-          `<span>Snapshot: ${formatDate(ts)}</span>` +
-          `<span class="meta-dot">•</span>` +
-          `<span>Generat: ${formatDate(gen)}</span>`;
-
-        // regim de piață
-        if (REGIME_EL) {
-          let regimeText =
-            "Regim de piață: n/a (așteptăm date suficiente din mecanism).";
-          if (regime) {
-            if (typeof regime === "string") {
-              regimeText = `Regim de piață: ${regime}.`;
-            } else if (typeof regime.label === "string") {
-              regimeText = `Regim de piață: ${regime.label}.`;
-            }
-          }
-          REGIME_EL.textContent = regimeText;
-        }
-
-        // interval tipic de mișcare (drift așteptat)
-        if (DRIFT_EL) {
-          let driftText =
-            "Interval tipic de mișcare: n/a (așteptăm statistici suficiente din mecanism).";
-          if (drift && typeof drift === "object") {
-            const horizon = drift.horizon_hours || 24;
-            const p10 = drift.p10;
-            const p50 = drift.p50;
-            const p90 = drift.p90;
-
-            const formatPct = (v) => {
-              if (typeof v !== "number" || !Number.isFinite(v)) return null;
-              const sign = v > 0 ? "+" : v < 0 ? "−" : "";
-              const abs = Math.abs(v * 100).toFixed(1);
-              return `${sign}${abs}%`;
-            };
-
-            const p10s = formatPct(p10);
-            const p50s = formatPct(p50);
-            const p90s = formatPct(p90);
-
-            if (p10s && p90s && p50s) {
-              driftText =
-                `Interval tipic de mișcare (${horizon}h): între ~${p10s} și ~${p90s} ` +
-                `(mediană ~${p50s}), bazat pe contexte similare din istoric.`;
-            } else if (p10s && p90s) {
-              driftText =
-                `Interval tipic de mișcare (${horizon}h): între ~${p10s} și ~${p90s}, ` +
-                `bazat pe contexte similare din istoric.`;
-            }
-          }
-          DRIFT_EL.textContent = driftText;
-        }
-
-        // flux de piață (Flow)
-        if (FLOW_LINE_EL) {
-          let flowText = "Flux de piață: n/a (așteptăm date despre flux).";
-          if (flowBias === "pozitiv") {
-            flowText = "Flux de piață: orientat spre cumpărare";
-          } else if (flowBias === "negativ") {
-            flowText = "Flux de piață: orientat spre vânzare";
-          } else if (flowBias === "neutru") {
-            flowText = "Flux de piață: relativ echilibrat între cumpărători și vânzători";
-          }
-
-          if (flowBias && flowStrength) {
-            flowText += ` (${flowStrength}).`;
-          } else if (flowBias && !flowStrength) {
-            flowText += ".";
-          }
-
-          FLOW_LINE_EL.textContent = flowText;
-        }
-
-        // lichiditate piață
-        if (LIQ_LINE_EL) {
-          let liqText = "Lichiditate piață: n/a (așteptăm date despre lichiditate).";
-          if (liqRegime === "ridicată") {
-            liqText = "Lichiditate piață: ridicată; mișcările tind să fie mai stabile.";
-          } else if (liqRegime === "scăzută") {
-            liqText = "Lichiditate piață: scăzută; mișcările pot fi mai bruște decât de obicei.";
-          } else if (liqRegime === "normală") {
-            liqText = "Lichiditate piață: normală pentru acest regim de piață.";
-          }
-
-          if (liqRegime && liqStrength && liqRegime !== "normală") {
-            liqText += ` (deviație ${liqStrength} față de nivelurile obișnuite).`;
-          }
-
-          LIQ_LINE_EL.textContent = liqText;
-        }
-
-        if (SNAPSHOT_PRICE === null) {
-          LIVE_DELTA_EL.textContent =
-            "Preț live încărcat. Așteptăm un snapshot de preț valid din mecanism.";
-          LIVE_DELTA_EL.classList.remove("positive", "negative");
-          resetDeviationStatus(
-            "Status deviație: n/a (așteptăm un snapshot al modelului)."
-          );
-        }
-
-        // actualizăm textul probabilității istorice
-        if (SIGNAL_PROB_EL) {
-          if (STATE_PROB !== null && Number.isFinite(STATE_PROB) && STATE_PROB >= 0 && STATE_PROB <= 1) {
-            const pct = (STATE_PROB * 100).toFixed(0);
-            let qual;
-            if (STATE_PROB >= 0.8) qual = "foarte puternic";
-            else if (STATE_PROB >= 0.65) qual = "puternic";
-            else if (STATE_PROB >= 0.5) qual = "echilibrat";
-            else qual = "slab";
-
-            SIGNAL_PROB_EL.textContent =
-              `Probabilitate istorică: ~${pct}% ca prețul să se miște în direcția semnalului ` +
-              `în următoarele ${STATE_PROB_HORIZON}h (bazat pe ${STATE_PROB_SAMPLES} situații similare, semnal ${qual}).`;
-          } else if (STATE_PROB_SAMPLES > 0) {
-            SIGNAL_PROB_EL.textContent =
-              `Probabilitate istorică: nu poate fi estimată robust, dar există ${STATE_PROB_SAMPLES} situații similare în istoric.`;
-          } else {
-            SIGNAL_PROB_EL.textContent =
-              "Probabilitate istorică: insuficiente date pentru situații similare. Mecanismul adună memorie.";
-          }
-        }
-
-        // actualizăm descompunerea probabilității (în direcție / contra / flat)
-        if (SIGNAL_PROB_BREAKDOWN_EL) {
-          if (
-            STATE_PROB_IN_DIR !== null &&
-            STATE_PROB_OPPOSITE !== null &&
-            STATE_PROB_FLAT !== null &&
-            Number.isFinite(STATE_PROB_IN_DIR) &&
-            Number.isFinite(STATE_PROB_OPPOSITE) &&
-            Number.isFinite(STATE_PROB_FLAT)
-          ) {
-            const pctIn = (STATE_PROB_IN_DIR * 100).toFixed(0);
-            const pctOpp = (STATE_PROB_OPPOSITE * 100).toFixed(0);
-            const pctFlat = (STATE_PROB_FLAT * 100).toFixed(0);
-
-            SIGNAL_PROB_BREAKDOWN_EL.textContent =
-              `Distribuție istorică (în ${STATE_PROB_HORIZON}h): ~${pctIn}% în direcția semnalului, ` +
-              `~${pctOpp}% contra semnalului și ~${pctFlat}% mișcare neutră / zgomot.`;
-          } else if (STATE_PROB_SAMPLES > 0) {
-            SIGNAL_PROB_BREAKDOWN_EL.textContent =
-              "Distribuție istorică: mecanismul nu are încă o descompunere robustă pe direcție / contra / flat pentru acest context.";
-          } else {
-            SIGNAL_PROB_BREAKDOWN_EL.textContent =
-              "Distribuție istorică: insuficiente date pentru a construi o descompunere relevantă.";
-          }
-        }
-
-        refreshMMRecommendation();
-
-        renderChart();
-        renderHistory();
-      } catch (err) {
-        console.error(err);
-        SNAPSHOT_PRICE = null;
-        PRICE_EL.textContent = "–";
-        LIVE_DELTA_EL.textContent =
-          "Nu am putut încărca snapshotul de preț. Așteptăm ca mecanismul să revină.";
-        LIVE_DELTA_EL.classList.remove("positive", "negative");
-        MSG_EL.textContent = "Nu am reușit să obținem mesajul coeziv.";
-        ERROR_EL.textContent =
-          "Nu am putut încărca coeziv_state.json. Verifică workflow-ul de backend.";
-        resetDeviationStatus(
-          "Status deviație: n/a (nu avem date suficiente de la mecanism)."
-        );
+    } catch (err) {
+      console.error(err);
+      if (errorEl) {
+        errorEl.textContent =
+          "Nu am putut încărca starea mecanismului. Verifică coeziv_state.json sau workflow-ul de backend.";
       }
     }
+  }
 
-    // ---------------- PREȚ LIVE BINANCE ----------------
-
-    async function updateLivePrice() {
-      try {
-        const res = await fetch(
-          "https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT",
-          { cache: "no-store" }
-        );
-        if (!res.ok) throw new Error("HTTP " + res.status);
-        const data = await res.json();
-        const live = parseFloat(data.price);
-
-        if (!Number.isFinite(live)) return;
-
-        LIVE_PRICE = live;
-        LIVE_PRICE_EL.textContent = USD_FORMATTER.format(live);
-
-        if (
-          typeof SNAPSHOT_PRICE === "number" &&
-          Number.isFinite(SNAPSHOT_PRICE) &&
-          SNAPSHOT_PRICE > 0
-        ) {
-          const diff = live - SNAPSHOT_PRICE;
-          const pct = (diff / SNAPSHOT_PRICE) * 100;
-          const absPct = Math.abs(pct);
-
-          LIVE_DELTA_EL.classList.remove("positive", "negative");
-
-          if (diff === 0) {
-            LIVE_DELTA_EL.textContent =
-              "Prețul live este egal cu prețul analizat de mecanism.";
-            LAST_DEV_ABS_PCT = 0;
-            LAST_DEV_SIGN = 0;
-            resetDeviationStatus("Status deviație: Normală (fără abatere față de model).");
-            refreshMMRecommendation();
-            renderChart();
-            return;
-          }
-
-          const directionWord = diff > 0 ? "peste" : "sub";
-          const sign = diff > 0 ? "+" : "−";
-          const pctStr = absPct.toFixed(2);
-          const usdStr = USD_FORMATTER.format(Math.abs(diff));
-
-          let magnitudeHint;
-          let zoneLabel;
-          let zoneClass;
-
-          if (absPct < 0.25) {
-            magnitudeHint = "Diferență foarte mică (zgomot normal de piață).";
-            zoneLabel = "Normală (zgomot de piață)";
-            zoneClass = "dev-normal";
-          } else if (absPct < 1) {
-            magnitudeHint =
-              "Mișcare mică; semnalul mecanismului rămâne reperul principal.";
-            zoneLabel = "Controlată";
-            zoneClass = "dev-mild";
-          } else if (absPct < 3) {
-            magnitudeHint =
-              "Mișcare relevantă; poți ajusta timing-ul intrării sau ieșirii.";
-            zoneLabel = "Tensionată";
-            zoneClass = "dev-tension";
-          } else {
-            magnitudeHint =
-              "Mișcare puternică; verifică contextul și lichiditatea.";
-            zoneLabel = "Extremă";
-            zoneClass = "dev-extreme";
-          }
-
-          LIVE_DELTA_EL.textContent =
-            `Prețul live este ${sign}${pctStr}% (${sign}${usdStr} USD) ` +
-            `${directionWord} prețul mecanismului. ${magnitudeHint}`;
-
-          LIVE_DELTA_EL.classList.add(diff > 0 ? "positive" : "negative");
-
-          LAST_DEV_ABS_PCT = absPct;
-          LAST_DEV_SIGN = diff > 0 ? 1 : -1;
-
-          if (DEV_STATUS_EL) {
-            resetDeviationStatus();
-            DEV_STATUS_EL.classList.add(zoneClass);
-            DEV_STATUS_EL.textContent = `Status deviație: ${zoneLabel}.`;
-          }
-
-          refreshMMRecommendation();
-        } else {
-          LIVE_DELTA_EL.textContent =
-            "Preț live încărcat. Așteptăm un snapshot de preț valid din mecanism.";
-          LIVE_DELTA_EL.classList.remove("positive", "negative");
-          LAST_DEV_ABS_PCT = null;
-          LAST_DEV_SIGN = 0;
-          resetDeviationStatus(
-            "Status deviație: n/a (așteptăm un snapshot al modelului)."
-          );
-          refreshMMRecommendation();
-        }
-
-        renderChart();
-      } catch (err) {
-        console.error("Eroare preț live Binance", err);
-      }
-    }
-
-    // ---------------- OHLC PENTRU GRAFIC ----------------
-
-    async function fetchOHLC() {
-      try {
-        const rLocal = await fetch("/api/ohlc");
-        if (rLocal.ok) {
-          return await rLocal.json();
-        }
-      } catch (_) {}
-
-      const r = await fetch(
-        "https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=5m&limit=288",
-        { cache: "no-store" }
-      );
-      if (!r.ok) throw new Error("HTTP " + r.status);
-      return r.json();
-    }
-
-    async function loadOHLC() {
-      try {
-        CHART_LOADER_EL.style.display = "flex";
-
-        const rows = await fetchOHLC();
-
-        oTimes = [];
-        oOpen = [];
-        oHigh = [];
-        oLow = [];
-        oClose = [];
-        oVolume = [];
-
-        rows.forEach(k => {
-          oTimes.push(new Date(k[0]));
-          oOpen.push(parseFloat(k[1]));
-          oHigh.push(parseFloat(k[2]));
-          oLow.push(parseFloat(k[3]));
-          oClose.push(parseFloat(k[4]));
-          oVolume.push(parseFloat(k[5]));
-        });
-
-        CHART_LOADER_EL.style.display = "none";
-        renderChart();
-      } catch (err) {
-        console.error("Eroare la OHLC", err);
-        CHART_LOADER_EL.textContent =
-          "Nu am putut încărca graficul BTC. Poate fi o limitare temporară sau o extensie de browser.";
-      }
-    }
-
-    // ---------------- RENDER GRAFIC PLOTLY ----------------
-
-    function renderChart() {
-      const el = document.getElementById("btc-chart");
-      if (!el || !window.Plotly) return;
-      if (!oTimes.length) return;
-
-      const candleTrace = {
-        x: oTimes,
-        open: oOpen,
-        high: oHigh,
-        low: oLow,
-        close: oClose,
-        type: "candlestick",
-        name: "BTCUSDT",
-        increasing: { line: { color: "#22c55e" } },
-        decreasing: { line: { color: "#ef4444" } },
-        yaxis: "y"
-      };
-
-      const volColors = oClose.map((c, i) =>
-        c >= oOpen[i] ? "rgba(34,197,94,0.5)" : "rgba(239,68,68,0.5)"
-      );
-
-      const volumeTrace = {
-        x: oTimes,
-        y: oVolume,
-        type: "bar",
-        yaxis: "y2",
-        marker: { color: volColors },
-        name: "Volum"
-      };
-
-      const traces = [candleTrace, volumeTrace];
-
-      if (typeof SNAPSHOT_PRICE === "number" && Number.isFinite(SNAPSHOT_PRICE)) {
-        const lineTrace = {
-          x: [oTimes[0], oTimes[oTimes.length - 1]],
-          y: [SNAPSHOT_PRICE, SNAPSHOT_PRICE],
-          type: "scatter",
-          mode: "lines",
-          line: { color: "#38bdf8", width: 2, dash: "dot" },
-          name: "Preț mecanism",
-          yaxis: "y"
-        };
-        traces.push(lineTrace);
-      }
-
-      if (typeof LIVE_PRICE === "number" && Number.isFinite(LIVE_PRICE)) {
-        const liveTrace = {
-          x: [oTimes[0], oTimes[oTimes.length - 1]],
-          y: [LIVE_PRICE, LIVE_PRICE],
-          type: "scatter",
-          mode: "lines",
-          line: { color: "#facc15", width: 1.5, dash: "dash" },
-          name: "Preț live",
-          yaxis: "y"
-        };
-        traces.push(liveTrace);
-      }
-
-      if (LAST_SIGNAL_RAW === "long" || LAST_SIGNAL_RAW === "short") {
-        const lastIdx = oTimes.length - 1;
-        const price = oClose[lastIdx];
-
-        const markerTrace = {
-          x: [oTimes[lastIdx]],
-          y: [price],
-          type: "scatter",
-          mode: "markers+text",
-          marker: {
-            symbol: "hexagon",
-            size: 18,
-            color: LAST_SIGNAL_RAW === "long" ? "#22c55e" : "#f97373",
-            line: { width: 2, color: "#020617" }
-          },
-          text: [LAST_SIGNAL_RAW.toUpperCase()],
-          textposition: "top center",
-          textfont: { color: "#ffffff", size: 10 },
-          name: "Semnal",
-          yaxis: "y"
-        };
-
-        traces.push(markerTrace);
-      }
-
-      const layout = {
-        margin: { l: 40, r: 8, t: 10, b: 25 },
-        paper_bgcolor: "rgba(15,23,42,0)",
-        plot_bgcolor: "rgba(15,23,42,0)",
-        xaxis: {
-          showgrid: false,
-          zeroline: false,
-          tickfont: { color: "#9ca3af", size: 10 },
-          rangeselector: {
-            buttons: [
-              { count: 6,  label: "6h",  step: "hour", stepmode: "backward" },
-              { count: 24, label: "24h", step: "hour", stepmode: "backward" },
-              { count: 3,  label: "3d", step: "day", stepmode: "backward" },
-              { step: "all", label: "All" }
-            ]
-          },
-          rangeslider: { visible: false }
-        },
-        yaxis: {
-          domain: [0.35, 1],
-          showgrid: true,
-          gridcolor: "#111827",
-          tickfont: { color: "#9ca3af", size: 10 }
-        },
-        yaxis2: {
-          domain: [0, 0.28],
-          showgrid: false,
-          tickfont: { color: "#6b7280", size: 9 }
-        },
-        showlegend: false
-      };
-
-      const config = {
-        displayModeBar: true,
-        displaylogo: false,
-        scrollZoom: true,
-        modeBarButtonsToRemove: ["select2d", "lasso2d"],
-        responsive: true
-      };
-
-      Plotly.newPlot(el, traces, layout, config);
-    }
-
-    // ---------------- ISTORIC SEMNALE (CARD 2) ----------------
-
-    function renderHistory() {
-      if (!HISTORY_LIST_EL) return;
-
-      HISTORY_LIST_EL.innerHTML = "";
-
-      if (!Array.isArray(SIGNAL_HISTORY) || SIGNAL_HISTORY.length === 0) {
-        HISTORY_LIST_EL.innerHTML =
-          '<div class="history-empty">Istoricul nu este disponibil încă. Va apărea după următorul update al mecanismului.</div>';
-        if (HISTORY_META_EL) HISTORY_META_EL.textContent = "";
-        return;
-      }
-
-      const maxItems = Math.min(SIGNAL_HISTORY.length, 8);
-      const items = SIGNAL_HISTORY.slice(-maxItems).reverse();
-
-      let countLong = 0;
-      let countShort = 0;
-      let countFlat = 0;
-
-      items.forEach(entry => {
-        if (!entry) return;
-        const sig = String(entry.signal || "").toLowerCase();
-        const ts = entry.timestamp;
-        const price = entry.model_price_usd;
-        const sigMap = mapSignal(sig);
-
-        if (sig === "long") countLong++;
-        else if (sig === "short") countShort++;
-        else countFlat++;
-
-        const row = document.createElement("div");
-        row.className = "history-row";
-
-        const left = document.createElement("div");
-        left.className = "history-left";
-
-        const dateEl = document.createElement("div");
-        dateEl.className = "history-date";
-        dateEl.textContent = formatShortDate(ts);
-
-        const sigChip = document.createElement("div");
-        sigChip.className = "history-signal-chip";
-        if (sig === "long") sigChip.classList.add("history-signal-long");
-        else if (sig === "short") sigChip.classList.add("history-signal-short");
-        else sigChip.classList.add("history-signal-flat");
-
-        const dot = document.createElement("span");
-        dot.className = "history-signal-dot";
-
-        const label = document.createElement("span");
-        label.textContent = sigMap.shortLabel;
-
-        sigChip.appendChild(dot);
-        sigChip.appendChild(label);
-
-        left.appendChild(dateEl);
-        left.appendChild(sigChip);
-
-        const right = document.createElement("div");
-        right.className = "history-right";
-
-        const priceEl = document.createElement("div");
-        priceEl.className = "history-price";
-        if (typeof price === "number" && Number.isFinite(price)) {
-          priceEl.textContent = USD_FORMATTER.format(price) + " USD";
-        } else {
-          priceEl.textContent = "–";
-        }
-
-        const tagEl = document.createElement("div");
-        tagEl.className = "history-tag";
-        tagEl.textContent = "Preț model la snapshot";
-
-        right.appendChild(priceEl);
-        right.appendChild(tagEl);
-
-        row.appendChild(left);
-        row.appendChild(right);
-
-        HISTORY_LIST_EL.appendChild(row);
-      });
-
-      if (HISTORY_META_EL) {
-        const totalLine =
-          `<span>Total contexte: ${SIGNAL_HISTORY.length}</span>` +
-          `<span class="history-meta-dot">•</span>` +
-          `<span>Presiune de creștere: ${countLong}</span>` +
-          `<span class="history-meta-dot">•</span>` +
-          `<span>Risc de scădere: ${countShort}</span>` +
-          `<span class="history-meta-dot">•</span>` +
-          `<span>Context neutru: ${countFlat}</span>`;
-
-        let flowLiqLine = "";
-        if (FLOW_BIAS || LIQ_REGIME) {
-          let flowPart = "";
-          if (FLOW_BIAS === "pozitiv") flowPart = "Flux actual: orientat spre cumpărare";
-          else if (FLOW_BIAS === "negativ") flowPart = "Flux actual: orientat spre vânzare";
-          else if (FLOW_BIAS === "neutru") flowPart = "Flux actual: relativ echilibrat";
-
-          let liqPart = "";
-          if (LIQ_REGIME === "ridicată") liqPart = "lichiditate ridicată";
-          else if (LIQ_REGIME === "scăzută") liqPart = "lichiditate scăzută";
-          else if (LIQ_REGIME === "normală") liqPart = "lichiditate normală";
-
-          const parts = [];
-          if (flowPart) parts.push(flowPart);
-          if (liqPart) parts.push(liqPart);
-
-          if (parts.length > 0) {
-            flowLiqLine = parts.join(", ") + ".";
-          }
-        }
-
-        if (flowLiqLine) {
-          HISTORY_META_EL.innerHTML =
-            `<div>${totalLine}</div><div>${flowLiqLine}</div>`;
-        } else {
-          HISTORY_META_EL.innerHTML = `<div>${totalLine}</div>`;
-        }
-      }
-    }
-
-    // ---------------- START ----------------
-
-    function start() {
-      loadState();
-      updateLivePrice();
-      loadOHLC();
-
-      setInterval(updateLivePrice, 10 * 1000);
-      setInterval(loadState, 5 * 60 * 1000);
-      setInterval(loadOHLC, 60 * 1000);
-    }
-
-    document.addEventListener("DOMContentLoaded", start);
-  </script>
+  loadState().catch(console.error);
+</script>
 </body>
 </html>
