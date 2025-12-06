@@ -2,7 +2,7 @@ name: coeziv_state – Generate snapshot BTC
 
 on:
   schedule:
-    - cron: "0 * * * *"      # o dată pe oră (UTC)
+    - cron: "30 0 * * *"      # o dată pe oră (UTC)
   workflow_dispatch:          # îl poți porni și manual din Actions
 
 permissions:
