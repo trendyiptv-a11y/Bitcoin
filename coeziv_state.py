@@ -84,49 +84,39 @@ except ImportError:
 # ============================
 
 def load_ic_series(path: Optional[str] = None) -> pd.DataFrame:
-    """
-    Încarcă seria IC BTC din ic_btc_series.json.
+def load_ic_series(path: Optional[str] = None) -> pd.DataFrame:
+    candidates = []
 
-    Caută fișierul în mai multe locații posibile:
-      - ./ic_btc_series.json
-      - ./j-btc-coeziv/ic_btc_series.json
-      - ./data/ic_btc_series.json
-      - ./btc-swing-strategy/ic_btc_series.json
-    """
-
-    candidates: List[str] = []
-
-    if path is not None:
+    if path:
         candidates.append(path)
     else:
-        candidates.extend(
-            [
-                os.path.join(BASE_DIR, "ic_btc_series.json"),
-                os.path.join(BASE_DIR, "j-btc-coeziv", "ic_btc_series.json"),
-                os.path.join(BASE_DIR, "data", "ic_btc_series.json"),
-                os.path.join(STRATEGY_DIR, "ic_btc_series.json"),
-            ]
-        )
+        candidates.extend([
+            os.path.join(BASE_DIR, "ic_btc_series.json"),
+            os.path.join(BASE_DIR, "data", "ic_btc_series.json"),
+            os.path.join(STRATEGY_DIR, "ic_btc_series.json"),
+        ])
 
-    chosen: Optional[str] = None
-    for c in candidates:
-        if os.path.exists(c):
-            chosen = c
-            break
-
-    if chosen is None:
-        raise FileNotFoundError(
-            "Nu am găsit ic_btc_series.json în niciuna din locațiile așteptate:\n"
-            + "\n".join(candidates)
-        )
+    chosen = next((p for p in candidates if os.path.exists(p)), None)
+    if not chosen:
+        raise FileNotFoundError("Nu am găsit ic_btc_series.json")
 
     with open(chosen, "r", encoding="utf-8") as f:
         raw = json.load(f)
 
-    df = pd.DataFrame(raw)
-    if "timestamp" not in df.columns:
-        raise ValueError("ic_btc_series.json nu conține coloana 'timestamp'.")
+    rows = []
 
+    for ts, payload in raw.items():
+        if not isinstance(payload, dict):
+            continue
+
+        row = payload.copy()
+        row["timestamp"] = ts
+        rows.append(row)
+
+    if not rows:
+        raise ValueError("ic_btc_series.json este gol sau invalid")
+
+    df = pd.DataFrame(rows)
     df["timestamp"] = pd.to_datetime(df["timestamp"], utc=True)
     df = df.set_index("timestamp").sort_index()
 
