@@ -696,8 +696,7 @@ def main() -> None:
         "ic_dir": float(last.get("ic_dir", 0.0) or 0.0),
         "ic_flux": float(last.get("ic_flux", 0.0) or 0.0),
         "ic_cycle": float(last.get("ic_cycle", 0.0) or 0.0),
-        "regime_score": float(last.get("regime", 0.0) or 0.0),
-
+        "regime_score": last.get("regime", None),
         # prețuri
         "price_usd": price_for_text,      # ce vede utilizatorul ca preț "acum"
         "model_price_usd": model_price,   # prețul intern al mecanismului
