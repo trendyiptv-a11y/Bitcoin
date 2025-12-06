@@ -83,7 +83,7 @@ except ImportError:
 #  ÎNCĂRCARE IC SERIES (ic_btc_series.json)
 # ============================
 
-def load_ic_series(path: Optional[str] = None) -> pd.DataFrame:
+
 def load_ic_series(path: Optional[str] = None) -> pd.DataFrame:
     candidates = []
 
