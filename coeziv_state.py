@@ -11,6 +11,8 @@ import requests
 from btc_flow_score import compute_flow_from_daily_csv
 from btc_liquidity_score import compute_liquidity_from_daily_csv
 
+from market_regime_classifier import classify_market_regime as canonical_classify_market_regime
+
 # ============================
 #  SETĂRI DE PATH
 # ============================
@@ -361,94 +363,6 @@ def build_signal_history(df_signals: pd.DataFrame, limit: int = 30) -> List[Dict
 
 
 # ============================
-#  CLASIFICATOR DE REGIM DE PIAȚĂ
-# ============================
-
-def classify_market_regime(row: pd.Series, dev_pct: Optional[float] = None) -> Optional[Dict[str, str]]:
-    """
-    Construiește o etichetă textuală de regim de piață pe baza coloanelor
-    din ultimul snapshot (regime, ic_flux, ic_dir) și, opțional, a deviației
-    prețului față de model (dev_pct).
-
-    Întoarce un dict de forma:
-      {
-        "label": "Trend descendent cu deviație moderată față de model",
-        "code": "down_trend_moderate_dev"
-      }
-    sau None, dacă nu avem destule informații.
-    """
-    if row is None or not isinstance(row, pd.Series):
-        return None
-
-    try:
-        regime_val = float(row.get("regime", 0.0))
-    except Exception:
-        regime_val = 0.0
-
-    try:
-        flux_val = float(row.get("ic_flux", 0.0))
-    except Exception:
-        flux_val = 0.0
-
-    # clasificare de bază a trendului dinamic
-    trend_label = "Regim neutru"
-    trend_code = "neutral"
-
-    if regime_val >= 0.4:
-        if flux_val >= 0.2:
-            trend_label = "Trend ascendent susținut"
-            trend_code = "up_trend_strong"
-        else:
-            trend_label = "Trend ascendent moderat"
-            trend_code = "up_trend_moderate"
-    elif regime_val <= -0.4:
-        if flux_val <= -0.2:
-            trend_label = "Trend descendent susținut"
-            trend_code = "down_trend_strong"
-        else:
-            trend_label = "Trend descendent moderat"
-            trend_code = "down_trend_moderate"
-    else:
-        # zonă de range / tranziție
-        if abs(flux_val) < 0.1:
-            trend_label = "Range neutru"
-            trend_code = "range_neutral"
-        elif flux_val > 0:
-            trend_label = "Range cu bias pozitiv"
-            trend_code = "range_bias_up"
-        else:
-            trend_label = "Range cu bias negativ"
-            trend_code = "range_bias_down"
-
-    # clasificare deviație față de model
-    dev_label = "cu deviație nedefinită față de model"
-    dev_code = "dev_unknown"
-
-    if dev_pct is not None and math.isfinite(dev_pct):
-        dev_abs = abs(dev_pct)
-        if dev_abs < 0.005:
-            dev_label = "cu deviație normală față de model"
-            dev_code = "dev_normal"
-        elif dev_abs < 0.02:
-            dev_label = "cu deviație moderată față de model"
-            dev_code = "dev_moderate"
-        elif dev_abs < 0.04:
-            dev_label = "cu deviație tensionată față de model"
-            dev_code = "dev_tension"
-        else:
-            dev_label = "cu deviație extremă față de model"
-            dev_code = "dev_extreme"
-
-    label = f"{trend_label} {dev_label}"
-    code = f"{trend_code}_{dev_code}"
-
-    return {
-        "label": label,
-        "code": code,
-    }
-
-
-# ============================
 #  MESAJUL COEZIV PENTRU UTILIZATOR
 # ============================
 
@@ -482,48 +396,60 @@ def build_message(
     # 1. Context principal + preț de referință
     if isinstance(price, (int, float)) and math.isfinite(price) and price > 0:
         parts.append(
-            f"În acest snapshot, Bitcoin este în jur de ~{price:,.0f} USD, "
-            f"iar mecanismul identifică un {ctx_label}."
+            f"Contextul curent indică un {ctx_label}, "
+            f"cu un preț de referință BTC de aproximativ {price:,.0f} USD."
         )
     else:
         parts.append(
-            f"Mecanismul a identificat un {ctx_label} pentru contextul curent al pieței."
+            f"Contextul curent indică un {ctx_label}, "
+            f"dar prețul de referință nu este disponibil în mod robust."
         )
 
-    # 2. Flow Regime (flux de piață)
-    if flow_bias in ("pozitiv", "negativ", "neutru"):
-        if flow_bias == "pozitiv":
-            txt = "Flow Regime indică o presiune de cumpărare"
-        elif flow_bias == "negativ":
-            txt = "Flow Regime indică o presiune de vânzare"
-        else:
-            txt = "Flow Regime indică un flux relativ echilibrat între cumpărători și vânzători"
+    # 2. Flow Regime
+    if flow_bias or flow_strength:
+        bias_txt = (flow_bias or "").strip()
+        strength_txt = (flow_strength or "").strip()
 
-        if flow_strength in ("slab", "moderat", "puternic"):
-            txt += f" ({flow_strength})."
-        else:
-            txt += "."
-
-        parts.append(txt)
-
-    # 3. Liquidity Regime (lichiditate)
-    if liquidity_regime in ("scăzută", "normală", "ridicată"):
-        if liquidity_regime == "ridicată":
-            txt = (
-                "Liquidity Regime este unul de lichiditate ridicată, "
-                "unde mișcările de preț tind să fie mai bine ancorate în fluxul agregat."
+        if bias_txt and strength_txt:
+            parts.append(
+                f"Structura fluxului de piață este caracterizată printr-un bias {bias_txt.lower()}, "
+                f"cu intensitate {strength_txt.lower()}."
             )
-        elif liquidity_regime == "scăzută":
-            txt = (
-                "Liquidity Regime este unul de lichiditate scăzută, "
-                "iar mișcările de preț pot fi mai bruște și mai sensibile la ordine punctuale."
+        elif bias_txt:
+            parts.append(
+                f"Structura fluxului de piață arată un bias {bias_txt.lower()}, "
+                f"fără o intensitate clar definită."
             )
-        else:
-            txt = (
-                "Liquidity Regime este unul de lichiditate moderată, "
+        elif strength_txt:
+            parts.append(
+                f"Intensitatea fluxului de piață este {strength_txt.lower()}, "
+                f"în absența unui bias directional clar."
+            )
+
+    # 3. Liquidity Regime
+    if liquidity_regime:
+        liq_txt = liquidity_regime.lower().strip()
+
+        if liq_txt in ("low", "scăzută", "scazuta", "scăzut"):
+            parts.append(
+                "Lichiditatea de piață este redusă, ceea ce poate amplifica "
+                "mișcările de preț la apariția unor ordine mari."
+            )
+        elif liq_txt in ("high", "ridicată", "ridicata", "ridicat"):
+            parts.append(
+                "Lichiditatea de piață este confortabilă, permițând absorbția "
+                "ordinelor fără mișcări bruște ale prețului."
+            )
+        elif liq_txt in ("mid", "moderată", "moderata", "medie", "normală", "normala"):
+            parts.append(
+                "Lichiditatea de piață este moderată, în linie cu condițiile "
                 "specific condițiilor obișnuite de tranzacționare."
             )
-        parts.append(txt)
+        else:
+            parts.append(
+                "Regimul de lichiditate este definit, dar într-o categorie "
+                "care nu se încadrează clar în tiparele clasice low/mid/high."
+            )
 
     # 4. Statistică istorică – frecvența contextelor similare
     if stats:
@@ -535,45 +461,43 @@ def build_message(
             if isinstance(prob, (int, float)) and math.isfinite(prob) and samples > 0:
                 pct = prob * 100.0
                 parts.append(
-                    f"Istoric, pentru contexte similare, aproximativ {pct:.1f}% dintre episoade "
-                    f"au evoluat în direcția acestui context pe un orizont de circa {horizon} ore "
-                    f"(pe baza a {samples} observații)."
+                    f"Istoric, pentru contexte similare, în orizontul de aproximativ {horizon}h, "
+                    f"mişcarea în direcția semnalului actual a apărut în circa {pct:.1f}% "
+                    f"din cazuri, pe baza a {samples} observații."
                 )
         except Exception:
             pass
 
-        # 5. Statistică istorică – expected drift
+    # 5. Expected drift – interval probabil de mișcare
+    if stats:
         try:
             drift = stats.get("expected_drift") or {}
-            p10 = drift.get("p10")
-            p50 = drift.get("p50")
-            p90 = drift.get("p90")
-            horizon = drift.get("horizon_hours", 24)
+            p10 = drift.get("p10", None)
+            p50 = drift.get("p50", None)
+            p90 = drift.get("p90", None)
+            horizon = drift.get("horizon_hours", None)
 
-            if all(
-                isinstance(v, (int, float)) and math.isfinite(v)
-                for v in (p10, p50, p90)
-            ):
+            if all(isinstance(x, (int, float)) and math.isfinite(x) for x in [p10, p50, p90]) and horizon:
                 parts.append(
-                    f"În aceleași tipuri de contexte, pe un orizont de ~{horizon} ore, "
-                    f"randamentele relative au avut de regulă un interval aproximativ "
-                    f"între {p10 * 100:.1f}% și {p90 * 100:.1f}%, "
-                    f"cu o valoare mediană în jur de {p50 * 100:.1f}%."
+                    f"Pe baza istoricului, într-un orizont de {horizon}h, "
+                    f"randamentele au avut, în contexte similare, un interval tipic "
+                    f"între aproximativ {p10*100:.1f}% și {p90*100:.1f}%, "
+                    f"cu o valoare mediană în jur de {p50*100:.1f}%."
                 )
         except Exception:
             pass
 
-    # 6. Clarificare finală – context, nu semnal
+    # 6. Închidere instituțională (fără recomandare)
     parts.append(
-        "Acest mesaj descrie contextul structural al pieței pe baza datelor istorice și a modelului intern "
-        "și nu reprezintă o recomandare de tranzacționare."
+        "Acest mesaj descrie exclusiv contextul de piață identificat de mecanismul de analiză "
+        "și nu reprezintă o recomandare de tranzacționare sau de investiție."
     )
 
     return " ".join(parts)
 
 
 # ============================
-#  MAIN – GENERAREA STĂRII COEZIVE
+#  FUNCȚIA PRINCIPALĂ
 # ============================
 
 def main() -> None:
@@ -594,9 +518,11 @@ def main() -> None:
     if signal not in ("long", "short", "flat", "neutral"):
         signal = "neutral"
 
-    # prețul din snapshot-ul modelului
+    # prețul modelului (din seria IC)
     try:
-        model_price = float(last["close"])
+        model_price = float(last.get("close", float("nan")))
+        if not (math.isfinite(model_price) and model_price > 0):
+            raise ValueError
     except Exception:
         raise RuntimeError("Coloana 'close' lipsește sau nu poate fi convertită la float.")
 
@@ -642,8 +568,6 @@ def main() -> None:
     except Exception:
         dev_pct_model = None
 
-    # 7. clasificarea regimului de piață
-    market_regime = classify_market_regime(last, dev_pct_model)
 
     # 8. Flow Score și Liquidity Score
     try:
@@ -668,18 +592,38 @@ def main() -> None:
             "components": {},
         }
 
+    # 8. Regim de piață – clasificator CANONIC
+    try:
+        regime_input = {
+            "model_price_usd": model_price,
+            "price_usd": price_for_text,
+            "flow_bias": flow.get("flow_bias"),
+            "flow_strength": flow.get("flow_strength"),
+            "liquidity_regime": liq.get("liquidity_regime"),
+            "liquidity_strength": liq.get("liquidity_strength"),
+        }
+
+        regime_obj = canonical_classify_market_regime(regime_input)
+        if regime_obj is not None:
+            market_regime = {
+                "id": regime_obj.id,
+                "key": regime_obj.key,
+                "label": regime_obj.label,
+                "description": regime_obj.description,
+            }
+        else:
+            market_regime = None
+    except Exception as e:
+        print("Nu am putut clasifica regimul de piață (canonic):", e)
+        market_regime = None
+
     # 9. istoric de contexte (ultimele N puncte)
     signal_history = build_signal_history(df, limit=30)
 
     # 10. statistică istorică pentru semnalul curent
-    stats = compute_signal_stats(
-        df,
-        horizon_hours=24,
-        move_threshold=0.005,
-        min_samples=100,
-    )
+    stats = compute_signal_stats(df)
 
-    # 11. generăm mesajul coeziv pentru utilizator (ce se întâmplă + ce se poate întâmpla)
+    # 11. construim mesajul coeziv
     message = build_message(
         signal=signal,
         price=price_for_text,
@@ -690,7 +634,7 @@ def main() -> None:
         deviation_from_production=deviation_from_production,
     )
 
-# --- Flow Score (flux de piață) ---
+    # --- Flow Score (flux de piață) ---
     try:
         flow_raw = compute_flow_from_daily_csv()  # folosește data/btc_daily.csv
         flow_score = float(flow_raw.get("flow_value", 0.0) or 0.0)
@@ -726,24 +670,33 @@ def main() -> None:
             "liquidity_regime": liq_raw.get("regime"),
             "liquidity_strength": liq_raw.get("strength"),
             "liquidity_components": {
+                "open": liq_raw.get("open"),
+                "close": liq_raw.get("close"),
                 "liquidity_value": liq_score,
                 "regime": liq_raw.get("regime"),
                 "strength": liq_raw.get("strength"),
-                "avg7": liq_raw.get("avg7"),
             },
         }
     except Exception as e:
-        print("Nu am putut calcula Liquidity Score:", e)
+        print("Nu am putut calcula Liquidity Score zilnic:", e)
         liq_state = {
             "liquidity_score": None,
             "liquidity_regime": None,
             "liquidity_strength": None,
             "liquidity_components": {"error": str(e)},
-              }
-    
-    # 12. construim starea finală
+        }
+
+    # construim obiectul 'state' care va fi serializat în JSON
+
     state: Dict[str, Any] = {
-        "timestamp": ts.isoformat() if isinstance(ts, pd.Timestamp) else str(ts),
+        # timestamp & context intern
+        "timestamp": ts.isoformat(),
+        "signal_raw": signal,
+        "ic_struct": float(last.get("ic_struct", 0.0) or 0.0),
+        "ic_dir": float(last.get("ic_dir", 0.0) or 0.0),
+        "ic_flux": float(last.get("ic_flux", 0.0) or 0.0),
+        "ic_cycle": float(last.get("ic_cycle", 0.0) or 0.0),
+        "regime_score": float(last.get("regime", 0.0) or 0.0),
 
         # prețuri
         "price_usd": price_for_text,      # ce vede utilizatorul ca preț "acum"
@@ -775,36 +728,31 @@ def main() -> None:
         "deviation_from_production": deviation_from_production,
 
          # Flow Score
-        "flow_score": flow_state["flow_score"],
-        "flow_bias": flow_state["flow_bias"],
-        "flow_strength": flow_state["flow_strength"],
-        "flow_components": flow_state["flow_components"],
-        
-          # Liquidity Score
-        "liquidity_score": liq_state["liquidity_score"],
-        "liquidity_regime": liq_state["liquidity_regime"],
-        "liquidity_strength": liq_state["liquidity_strength"],
-        "liquidity_components": liq_state["liquidity_components"],
+        "flow_state": flow_state,
+
+        # Liquidity Score
+        "liquidity_state": liq_state,
     }
 
-    # 13. scriem JSON în folderul frontend-ului
-    os.makedirs(STRATEGY_DIR, exist_ok=True)
-    output_path = os.path.join(STRATEGY_DIR, "coeziv_state.json")
-
-    with open(output_path, "w", encoding="utf-8") as f:
+    # scriem în fișier JSON
+    out_path = os.path.join(BASE_DIR, "coeziv_state.json")
+    with open(out_path, "w", encoding="utf-8") as f:
         json.dump(state, f, ensure_ascii=False, indent=2)
 
-    # 14. log simplu în consolă
-    print("Stare coezivă generată:", output_path)
-    print(
-        "Semnal:", signal,
-        "| Sursă preț:", price_source,
-        "| Preț mesaj:", f"{price_for_text:,.2f} USD",
-        "| Preț model:", f"{model_price:,.2f} USD",
-    )
+    # mic log în consolă
+    print(f"Snapshot coeziv generat la {state['generated_at']}")
+    print(f"Preț BTC (source={price_source}): {price_for_text:,.0f} USD")
+    print(f"Preț model: {model_price:,.0f} USD")
+    if production_cost is not None:
+        print(f"Cost de producție BTC (approx): {production_cost:,.0f} USD")
+        if deviation_from_production is not None:
+            try:
+                print(f"Deviație față de costul de producție: {deviation_from_production*100:.1f}%")
+            except Exception:
+                pass
 
     prob = state.get("signal_probability")
-    samples = state.get("signal_prob_samples")
+    samples = state.get("signal_prob_samples") or 0
     drift = state.get("signal_expected_drift") or {}
     regime_label = (market_regime or {}).get("label", "n/a")
 
@@ -823,46 +771,17 @@ def main() -> None:
             p10 = drift.get("p10")
             p50 = drift.get("p50")
             p90 = drift.get("p90")
-            if all(isinstance(v, (int, float)) and math.isfinite(v) for v in (p10, p50, p90)):
+            if all(isinstance(x, (int, float)) and math.isfinite(x) for x in [p10, p50, p90]):
                 print(
-                    "Expected drift (24h) aproximativ: "
-                    f"{p10 * 100:.1f}% ... {p50 * 100:.1f}% ... {p90 * 100:.1f}%"
+                    f"Drift istoric (context actual): "
+                    f"interval aproximativ [{p10*100:.1f}%, {p90*100:.1f}%], "
+                    f"mediană ~{p50*100:.1f}%."
                 )
         except Exception:
             pass
 
-    if production_cost is not None and math.isfinite(production_cost):
-        print(
-            "Cost de producție BTC (fundamental):",
-            f"{production_cost:,.2f} USD",
-            "| Deviație față de cost:",
-            "n/a"
-            if deviation_from_production is None
-            else f"{deviation_from_production * 100:.1f}%",
-        )
+    print("Regim de piață (canonic):", regime_label)
 
-    print("Regim de piață:", regime_label)
-    print(
-        "Flow Score:",
-        flow.get("flow_score"),
-        "| Flow bias:",
-        flow.get("flow_bias"),
-        "| Flow strength:",
-        flow.get("flow_strength"),
-    )
-    print(
-        "Liquidity Score:",
-        liq.get("liquidity_score"),
-        "| Regim lichiditate:",
-        liq.get("liquidity_regime"),
-        "| Forță lichiditate:",
-        liq.get("liquidity_strength"),
-    )
-
-
-# ============================
-#  ENTRY POINT
-# ============================
 
 if __name__ == "__main__":
     main()
