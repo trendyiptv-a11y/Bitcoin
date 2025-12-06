@@ -1,11 +1,11 @@
 {
   "timestamp": "2025-12-06T00:00:00+00:00",
-  "price_usd": 89453.0,
-  "model_price_usd": 89608.59,
+  "price_usd": 89436.0,
+  "model_price_usd": 89450.45,
   "price_source": "spot",
   "signal": "short",
-  "message": "În acest snapshot, Bitcoin este în jur de ~89,453 USD, iar mecanismul identifică un bias negativ al contextului de piață. Istoric, pentru contexte similare, aproximativ 37.4% dintre episoade au evoluat în direcția acestui context pe un orizont de circa 24 ore (pe baza a 1462 observații). În aceleași tipuri de contexte, pe un orizont de ~24 ore, randamentele relative au avut de regulă un interval aproximativ între -3.3% și 3.1%, cu o valoare mediană în jur de 0.0%. Acest mesaj descrie contextul structural al pieței pe baza datelor istorice și a modelului intern și nu reprezintă o recomandare de tranzacționare.",
-  "generated_at": "2025-12-06T19:53:10.873662+00:00",
+  "message": "În acest snapshot, Bitcoin este în jur de ~89,436 USD, iar mecanismul identifică un bias negativ al contextului de piață. Istoric, pentru contexte similare, aproximativ 37.4% dintre episoade au evoluat în direcția acestui context pe un orizont de circa 24 ore (pe baza a 1462 observații). În aceleași tipuri de contexte, pe un orizont de ~24 ore, randamentele relative au avut de regulă un interval aproximativ între -3.3% și 3.1%, cu o valoare mediană în jur de 0.0%. Acest mesaj descrie contextul structural al pieței pe baza datelor istorice și a modelului intern și nu reprezintă o recomandare de tranzacționare.",
+  "generated_at": "2025-12-06T22:30:51.755494+00:00",
   "signal_history": [
     {
       "timestamp": "2025-11-07T00:00:00+00:00",
@@ -155,7 +155,7 @@
     {
       "timestamp": "2025-12-06T00:00:00+00:00",
       "signal": "short",
-      "model_price_usd": 89608.59
+      "model_price_usd": 89450.45
     }
   ],
   "signal_probability": 0.3741450068399453,
@@ -178,25 +178,25 @@
     "code": "range_bias_up_dev_normal"
   },
   "production_cost_usd": 359096526.2361523,
-  "production_cost_as_of": "2025-12-06T19:53:10.776886+00:00",
-  "deviation_from_production": -0.9997508942764287,
-  "flow_score": 0.0028713393528943627,
+  "production_cost_as_of": "2025-12-06T22:30:51.658209+00:00",
+  "deviation_from_production": -0.9997509416174603,
+  "flow_score": 0.0011014858867783783,
   "flow_bias": "neutru",
   "flow_strength": "slab",
   "flow_components": {
     "open": 89352.03,
-    "close": 89608.59,
-    "flow_value": 0.0028713393528943627,
+    "close": 89450.45,
+    "flow_value": 0.0011014858867783783,
     "bias": "neutru",
     "strength": "slab"
   },
-  "liquidity_score": 0.008281237323341512,
+  "liquidity_score": 0.013702670025695862,
   "liquidity_regime": "ridicată",
   "liquidity_strength": "puternică",
   "liquidity_components": {
-    "liquidity_value": 0.008281237323341512,
+    "liquidity_value": 0.013702670025695862,
     "regime": "ridicată",
     "strength": "puternică",
-    "avg7": 0.04138667130214246
+    "avg7": 0.042161161688193075
   }
 }
