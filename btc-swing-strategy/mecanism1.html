@@ -715,6 +715,68 @@
     return { main, sub };
   }
 
+  // extrage id-ul 1–8 din market_regime (id/key/label)
+  function getRegimeIdFromMarketRegime(marketRegime) {
+    if (!marketRegime) return null;
+
+    // 1) dacă avem direct un număr (id)
+    if (typeof marketRegime === "number") {
+      if (marketRegime >= 1 && marketRegime <= 8) return marketRegime;
+    }
+
+    // 2) dacă e obiect cu .id
+    if (typeof marketRegime === "object" && marketRegime !== null) {
+      if (typeof marketRegime.id === "number" &&
+          marketRegime.id >= 1 && marketRegime.id <= 8) {
+        return marketRegime.id;
+      }
+    }
+
+    // 3) dacă avem .key
+    let key = null;
+    if (typeof marketRegime === "object" && marketRegime !== null && typeof marketRegime.key === "string") {
+      key = marketRegime.key.toLowerCase();
+    }
+
+    if (!key) {
+      // 4) încercăm să deducem din label (string sau obiect.label)
+      let label = null;
+      if (typeof marketRegime === "string") {
+        label = marketRegime;
+      } else if (typeof marketRegime === "object" && typeof marketRegime.label === "string") {
+        label = marketRegime.label;
+      }
+
+      if (label) {
+        const norm = label.toLowerCase();
+        if (norm.includes("fragilitate maxim")) key = "fragility_max";
+        else if (norm.includes("bearish structural")) key = "bearish_structural";
+        else if (norm.includes("piață inert") || norm.includes("piata inert")) key = "inert_below";
+        else if (norm.includes("echilibru sănătos") || norm.includes("echilibru sanatos")) key = "equilibrium";
+        else if (norm.includes("acumulare ordonat")) key = "accumulation";
+        else if (norm.includes("expansiune sănătoas") || norm.includes("expansiune sanatoas")) key = "expansion";
+        else if (norm.includes("fragilitate bullish")) key = "fragility_bullish";
+        else if (norm.includes("tranziție de regim") || norm.includes("tranzitie de regim")) key = "regime_transition";
+      }
+    }
+
+    if (!key) return null;
+
+    // mapping key → id
+    switch (key) {
+      case "fragility_max":        return 1;
+      case "bearish_struct":      // în caz că e altă variantă
+      case "bearish_structural":   return 2;
+      case "inert_below":          return 3;
+      case "equilibrium":          return 4;
+      case "accumulation":         return 5;
+      case "expansion":            return 6;
+      case "fragility_bullish":    return 7;
+      case "regime_transition":    return 8;
+      default: return null;
+    }
+  }
+
   // determină unul dintre cele 8 regimuri canonice, sau null dacă nu se potrivește clar
   function determineRegime(diffPct, flowBias, liqRegime) {
     // poziționare față de model
@@ -798,19 +860,21 @@
       if (!res.ok) throw new Error("HTTP " + res.status);
       const state = await res.json();
 
-      const modelPrice  = state.model_price_usd;
-      const btcPrice    = typeof state.price_usd === "number" ? state.price_usd : state.spot;
-      const priceSource = state.price_source;
-      const signal      = state.signal;
-      const message     = state.message;
+      const modelPrice   = state.model_price_usd;
+      const btcPrice     = typeof state.price_usd === "number" ? state.price_usd : state.spot;
+      const priceSource  = state.price_source;
+      const signal       = state.signal;
+      const message      = state.message;
 
-      const flowBias    = state.flow_bias;
-      const flowStrength= state.flow_strength;
-      const liqRegime   = state.liquidity_regime;
-      const liqStrength = state.liquidity_strength;
+      const flowBias     = state.flow_bias;
+      const flowStrength = state.flow_strength;
+      const liqRegime    = state.liquidity_regime;
+      const liqStrength  = state.liquidity_strength;
 
-      const prob        = state.signal_probability;
-      const horizonHours= state.signal_prob_horizon_hours || 24;
+      const prob         = state.signal_probability;
+      const horizonHours = state.signal_prob_horizon_hours || 24;
+
+      const marketRegime = state.market_regime; // obiectul canonic {id, key, label, description} sau string
 
       // Prețuri (snapshot)
       if (priceBtcEl) {
@@ -895,8 +959,12 @@
       if (liqMainEl) liqMainEl.textContent = liqInfo.main;
       if (liqSubEl) liqSubEl.textContent = liqInfo.sub;
 
-      // Regim de piață canonic – evidențiere automată
-      const regimeId = determineRegime(diffInfo.pct, flowBias, liqRegime);
+      // Regim de piață canonic – întâi încercăm direct din state.market_regime;
+      // dacă nu avem ceva clar, cădem pe determinarea locală din triada (diff/flow/liq).
+      let regimeId = getRegimeIdFromMarketRegime(marketRegime);
+      if (!regimeId) {
+        regimeId = determineRegime(diffInfo.pct, flowBias, liqRegime);
+      }
       highlightRegime(regimeId);
 
     } catch (err) {
