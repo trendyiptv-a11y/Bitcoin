@@ -319,6 +319,69 @@
       margin-top: 1px;
     }
 
+    /* CARD REGIMURI DE PIAȚĂ */
+    .market-regimes-card {
+      margin-top: 28px;
+      padding: 18px;
+      border-radius: 22px;
+      border: 1px solid var(--border-soft);
+      background: rgba(15, 23, 42, 0.96);
+    }
+
+    .market-regimes-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 14px;
+      color: var(--text-main);
+    }
+
+    .market-regimes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+    }
+
+    .regime-item {
+      border-radius: 16px;
+      padding: 10px 12px;
+      border: 1px solid var(--border-soft);
+      background: rgba(2, 6, 23, 0.9);
+      transition: border-color 0.18s ease-out, box-shadow 0.18s ease-out, transform 0.18s ease-out;
+    }
+
+    .regime-title {
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .regime-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .regime-note {
+      font-size: 11px;
+      margin-top: 4px;
+      color: #d1d5db;
+    }
+
+    /* accente vizuale pe marginea stângă */
+    .fragile { border-left: 3px solid #f97373; }
+    .bearish { border-left: 3px solid #fb7185; }
+    .inert { border-left: 3px solid #64748b; }
+    .balanced { border-left: 3px solid #94a3b8; }
+    .accumulation { border-left: 3px solid #38bdf8; }
+    .expansion { border-left: 3px solid #22c55e; }
+    .reversal { border-left: 3px solid #eab308; }
+
+    /* highlight automat pentru regimul curent */
+    .regime-active {
+      border-color: #e5e7eb;
+      box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.4), 0 12px 30px rgba(15, 23, 42, 0.9);
+      transform: translateY(-1px);
+    }
+
     .disclaimer {
       margin-top: 10px;
       font-size: 10px;
@@ -420,6 +483,97 @@
           </div>
         </div>
       </section>
+    </div>
+
+    <!-- CARD REGIMURI DE PIAȚĂ -->
+    <div class="market-regimes-card">
+      <div class="market-regimes-title">
+        Situații de piață recurente (ghid de interpretare)
+      </div>
+
+      <div class="market-regimes-grid">
+
+        <div class="regime-item fragile" id="regime-1">
+          <div class="regime-title">1️⃣ Fragilitate maximă</div>
+          <div class="regime-desc">
+            Sub model · Vânzare · Lichiditate scăzută
+          </div>
+          <div class="regime-note">
+            Mișcările sunt amplificate de absența market makerilor. Piața este dezechilibrată temporar.
+          </div>
+        </div>
+
+        <div class="regime-item bearish" id="regime-2">
+          <div class="regime-title">2️⃣ Bearish structural</div>
+          <div class="regime-desc">
+            Sub model · Vânzare · Lichiditate moderată
+          </div>
+          <div class="regime-note">
+            Vânzarea este absorbită ordonat. Piața acceptă niveluri mai joase.
+          </div>
+        </div>
+
+        <div class="regime-item inert" id="regime-3">
+          <div class="regime-title">3️⃣ Piață inertă</div>
+          <div class="regime-desc">
+            Sub model · Echilibru · Lichiditate scăzută
+          </div>
+          <div class="regime-note">
+            Nici cumpărători, nici vânzători convingători. Stare de tranziție.
+          </div>
+        </div>
+
+        <div class="regime-item balanced" id="regime-4">
+          <div class="regime-title">4️⃣ Echilibru sănătos</div>
+          <div class="regime-desc">
+            La model · Echilibru · Lichiditate moderată
+          </div>
+          <div class="regime-note">
+            Piață stabilă, market makerii confortabili, volatilitate redusă.
+          </div>
+        </div>
+
+        <div class="regime-item accumulation" id="regime-5">
+          <div class="regime-title">5️⃣ Accumulare ordonată</div>
+          <div class="regime-desc">
+            La model · Cumpărare · Lichiditate ridicată
+          </div>
+          <div class="regime-note">
+            Interes real, dar fără grabă. Prețul rămâne ancorat.
+          </div>
+        </div>
+
+        <div class="regime-item expansion" id="regime-6">
+          <div class="regime-title">6️⃣ Expansiune sănătoasă</div>
+          <div class="regime-desc">
+            Peste model · Cumpărare · Lichiditate ridicată
+          </div>
+          <div class="regime-note">
+            Momentum susținut într-o piață elastică. Mișcare validă.
+          </div>
+        </div>
+
+        <div class="regime-item fragile" id="regime-7">
+          <div class="regime-title">7️⃣ Fragilitate bullish</div>
+          <div class="regime-desc">
+            Peste model · Cumpărare · Lichiditate scăzută
+          </div>
+          <div class="regime-note">
+            Raliu rapid într-o piață subțire. Risc de retragere bruscă.
+          </div>
+        </div>
+
+        <div class="regime-item reversal" id="regime-8">
+          <div class="regime-title">8️⃣ Tranziție de regim</div>
+          <div class="regime-desc">
+            Peste model · Vânzare · Lichiditate scăzută
+          </div>
+          <div class="regime-note">
+            Semn de distribuție sau schimbare de comportament al pieței.
+          </div>
+        </div>
+
+      </div>
     </div>
 
     <div class="disclaimer">
@@ -560,6 +714,56 @@
     return { main, sub };
   }
 
+  // determină unul dintre cele 8 regimuri canonice, sau null dacă nu se potrivește clar
+  function determineRegime(diffPct, flowBias, liqRegime) {
+    let pos;
+    if (!Number.isFinite(diffPct)) {
+      pos = null;
+    } else if (diffPct < -0.005) {
+      pos = "below"; // sub model
+    } else if (diffPct > 0.005) {
+      pos = "above"; // peste model
+    } else {
+      pos = "around"; // la model
+    }
+
+    let flow;
+    if (flowBias === "pozitiv") flow = "buy";
+    else if (flowBias === "negativ") flow = "sell";
+    else if (flowBias === "neutru") flow = "neutral";
+    else flow = null;
+
+    let liq;
+    if (liqRegime === "scăzută") liq = "low";
+    else if (liqRegime === "ridicată") liq = "high";
+    else if (liqRegime === "moderată" || liqRegime === "normală") liq = "mid";
+    else liq = null;
+
+    if (!pos || !flow || !liq) return null;
+
+    // mapping exact pe cele 8 situații definite
+    if (pos === "below" && flow === "sell" && liq === "low") return 1;
+    if (pos === "below" && flow === "sell" && liq === "mid") return 2;
+    if (pos === "below" && flow === "neutral" && liq === "low") return 3;
+    if (pos === "around" && flow === "neutral" && liq === "mid") return 4;
+    if (pos === "around" && flow === "buy" && liq === "high") return 5;
+    if (pos === "above" && flow === "buy" && liq === "high") return 6;
+    if (pos === "above" && flow === "buy" && liq === "low") return 7;
+    if (pos === "above" && flow === "sell" && liq === "low") return 8;
+
+    return null;
+  }
+
+  function highlightRegime(regimeId) {
+    const items = document.querySelectorAll(".regime-item");
+    items.forEach(el => el.classList.remove("regime-active"));
+    if (!regimeId) return;
+    const target = document.getElementById("regime-" + regimeId);
+    if (target) {
+      target.classList.add("regime-active");
+    }
+  }
+
   async function loadState() {
     const priceBtcEl     = document.getElementById("price-btc");
     const priceModelEl   = document.getElementById("price-model");
@@ -687,12 +891,18 @@
       if (liqMainEl) liqMainEl.textContent = liqInfo.main;
       if (liqSubEl) liqSubEl.textContent = liqInfo.sub;
 
+      // Regim de piață canonic – evidențiere automată
+      const regimeId = determineRegime(diffInfo.pct, flowBias, liqRegime);
+      highlightRegime(regimeId);
+
     } catch (err) {
       console.error(err);
       if (errorEl) {
         errorEl.textContent =
           "Nu am putut încărca contextul mecanismului. Verifică coeziv_state.json sau workflow-ul de backend.";
       }
+      // în caz de eroare, nu evidențiem niciun regim
+      highlightRegime(null);
     }
   }
 
