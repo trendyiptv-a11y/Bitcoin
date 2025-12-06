@@ -2,7 +2,7 @@
 <html lang="ro">
 <head>
   <meta charset="UTF-8" />
-  <title>Mecanism Coeziv BTC – Context de piață</title>
+  <title>Coeziv BTC Market Context — Daily Snapshot</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
@@ -52,7 +52,7 @@
       border-radius: 24px;
       border: 1px solid var(--border-soft);
       background: var(--bg-card);
-      padding: 18px 20px 18px;
+      padding: 18px 20px 14px;
       box-shadow: 0 26px 60px rgba(15, 23, 42, 0.9);
     }
 
@@ -312,14 +312,21 @@
       color: var(--text-muted);
       margin-top: 1px;
     }
+
+    .disclaimer {
+      margin-top: 10px;
+      font-size: 10px;
+      color: var(--text-soft);
+      text-align: left;
+    }
   </style>
 </head>
 <body>
 <div class="shell">
   <div class="card">
     <div class="card-header">
-      <div class="label-main">BTC · MECANISM COEZIV</div>
-      <div class="chip-small">Snapshot de context, nu semnal de intrare</div>
+      <div class="label-main">COEZIV BTC MARKET CONTEXT — DAILY SNAPSHOT</div>
+      <div class="chip-small">Snapshot zilnic de context, nu semnal de intrare</div>
     </div>
 
     <div class="layout">
@@ -328,36 +335,36 @@
         <div class="prices-block">
           <div class="prices-row">
             <div class="price-box btc">
-              <div class="price-label">BTC în acest snapshot</div>
+              <div class="price-label">Preț de referință BTC (snapshot)</div>
               <div class="price-value-btc" id="price-btc">–</div>
               <div class="price-sub">
-                Valoarea BTC exact în momentul în care a fost generat snapshotul.
+                Prețul BTC utilizat de mecanism la momentul generării snapshotului.
               </div>
             </div>
             <div class="price-box model">
-              <div class="price-label">Preț mecanism (același snapshot)</div>
+              <div class="price-label">Nivel de referință al mecanismului</div>
               <div class="price-value-model" id="price-model">–</div>
               <div class="price-sub">
-                Nivelul estimat de mecanism pentru BTC în acest context.
+                Nivelul estimat de model pentru BTC în contextul acestui snapshot.
               </div>
             </div>
           </div>
         </div>
 
         <div class="band-block">
-          <div class="band-label">Unde stă BTC față de mecanism</div>
+          <div class="band-label">Poziționarea BTC față de nivelul modelului</div>
           <div class="band-track" id="band-track">
             <div class="band-center-line"></div>
             <div class="band-marker" id="band-marker" style="left:50%;"></div>
           </div>
           <div class="band-legend">
-            <span>sub model</span>
+            <span>sub nivelul modelului</span>
             <span>în zona modelului</span>
-            <span>peste model</span>
+            <span>peste nivelul modelului</span>
           </div>
 
           <div class="diff-text-main" id="diff-main">
-            Nu putem evalua diferența față de mecanism.
+            Nu putem evalua poziționarea față de nivelul modelului.
           </div>
           <div class="diff-text-sub" id="diff-sub"></div>
         </div>
@@ -367,12 +374,12 @@
       <section>
         <div class="status-row">
           <div class="headline" id="headline">
-            Se încarcă contextul mecanic...
+            Se încarcă Market Context...
           </div>
           <div>
             <span id="signal-chip" class="signal-chip">
               <span class="signal-dot"></span>
-              <span id="signal-label">Context neutru</span>
+              <span id="signal-label">Market Context: neutru</span>
             </span>
           </div>
         </div>
@@ -382,28 +389,32 @@
         </p>
 
         <div class="meta-text" id="context-meta">
-          Context construit pe baza poziționării BTC în jurul prețului mecanismului, a fluxului și a lichidității.
+          Context construit pe baza poziționării BTC față de nivelul modelului, a Flow Regime și a Liquidity Regime, raportate la distribuția istorică a contextelor similare.
         </div>
 
         <div class="error-text" id="context-error"></div>
 
         <div class="tags-grid">
           <div class="tag-box">
-            <div class="tag-label">Flux de piață</div>
+            <div class="tag-label">Flow Regime</div>
             <div class="tag-main" id="flow-main">n/a</div>
             <div class="tag-sub" id="flow-sub">
-              Direcția și intensitatea ultimei mișcări de preț.
+              Regimul fluxului de piață în acest snapshot (direcție și intensitate).
             </div>
           </div>
           <div class="tag-box">
-            <div class="tag-label">Lichiditate</div>
+            <div class="tag-label">Liquidity Regime</div>
             <div class="tag-main" id="liquidity-main">n/a</div>
             <div class="tag-sub" id="liquidity-sub">
-              Cât de „densă” sau „subțire” este piața în acest context.
+              Regimul de lichiditate — cât de „densă” sau „subțire” este piața în acest context.
             </div>
           </div>
         </div>
       </section>
+    </div>
+
+    <div class="disclaimer">
+      <strong>Disclaimer</strong> · Acest dashboard oferă un snapshot zilnic de context de piață, bazat pe modele cantitative și date istorice. Informațiile descriu regimul de piață observat la momentul snapshotului și nu constituie recomandări de investiții sau semnale de tranzacționare.
     </div>
   </div>
 </div>
@@ -424,21 +435,21 @@
     const s = (signal || "").toLowerCase();
     if (s === "long") {
       return {
-        label: "Presiune de creștere",
-        headline: "Context: presiune de creștere",
+        label: "Market Context: bias pozitiv",
+        headline: "Market Context: bias pozitiv",
         className: "long"
       };
     }
     if (s === "short") {
       return {
-        label: "Risc de scădere",
-        headline: "Context: risc de scădere",
+        label: "Market Context: bias negativ",
+        headline: "Market Context: bias negativ",
         className: "short"
       };
     }
     return {
-      label: "Context neutru",
-      headline: "Context: neutru",
+      label: "Market Context: neutru",
+      headline: "Market Context: neutru",
       className: ""
     };
   }
@@ -446,7 +457,7 @@
   function buildDiff(modelPrice, btcPrice) {
     if (!Number.isFinite(modelPrice) || !Number.isFinite(btcPrice) || modelPrice <= 0) {
       return {
-        main: "Nu putem evalua diferența față de mecanism.",
+        main: "Nu putem evalua poziționarea față de nivelul modelului.",
         sub: "",
         pct: null,
         className: ""
@@ -462,22 +473,22 @@
 
     if (Math.abs(pct) < 0.005) {
       return {
-        main: "BTC este foarte aproape de nivelul estimat de mecanism.",
+        main: "BTC este foarte aproape de nivelul estimat de model.",
         sub: `Abatere ≈ ${usdStr} (${pctStr}).`,
         pct,
         className: ""
       };
     } else if (pct > 0) {
       return {
-        main: "BTC este peste nivelul estimat de mecanism.",
-        sub: `Aproximativ +${usdStr} (+${pctStr}) peste model.`,
+        main: "BTC este poziționat peste nivelul estimat de model.",
+        sub: `Aproximativ +${usdStr} (+${pctStr}) peste nivelul modelului.`,
         pct,
         className: "positive"
       };
     } else {
       return {
-        main: "BTC este sub nivelul estimat de mecanism.",
-        sub: `Aproximativ -${usdStr} (-${pctStr}) sub model.`,
+        main: "BTC este poziționat sub nivelul estimat de model.",
+        sub: `Aproximativ -${usdStr} (-${pctStr}) sub nivelul modelului.`,
         pct,
         className: "negative"
       };
@@ -486,12 +497,10 @@
 
   function positionMarker(pct, trackEl, markerEl) {
     if (!trackEl || !markerEl) return;
-    // pct este diferența relativă (ex: 0.02 = +2%)
     if (pct == null || !Number.isFinite(pct)) {
       markerEl.style.left = "50%";
       return;
     }
-    // clamp ±4% în bandă (ce e peste 4% rămâne la margine)
     const maxPct = 0.04;
     const r = Math.max(-maxPct, Math.min(maxPct, pct));
     const offset = (r / maxPct) * 40; // ±40% din lățime
@@ -500,7 +509,7 @@
   }
 
   function buildFlowText(bias, strength) {
-    if (!bias) return { main: "n/a", sub: "Nu există suficiente date pentru a evalua fluxul de piață." };
+    if (!bias) return { main: "n/a", sub: "Nu există suficiente date pentru a evalua Flow Regime." };
     let dir;
     if (bias === "pozitiv") dir = "presiune de cumpărare";
     else if (bias === "negativ") dir = "presiune de vânzare";
@@ -510,33 +519,33 @@
     let main = dir;
     if (strength) main += ` (${strength})`;
 
-    let sub = "Direcția și intensitatea ultimei mișcări de preț.";
+    let sub = "Regimul fluxului de piață în acest snapshot (direcție și intensitate).";
     if (bias === "negativ" && strength === "puternic") {
-      sub = "Vânzare puternică recentă; contextul poate fi de extenuare sau de continuare, în funcție de lichiditate.";
+      sub = "Vânzare dominantă recent; într-un singur snapshot nu implică neapărat un trend, ci descrie regimul curent al fluxului.";
     } else if (bias === "pozitiv" && strength === "puternic") {
-      sub = "Cumpărare puternică recentă; poate susține continuarea unui raliu sau o corecție pe termen scurt.";
+      sub = "Cumpărare dominantă recent; contextul poate susține fie continuarea mișcării, fie o normalizare în jurul nivelului modelului.";
     }
 
     return { main, sub };
   }
 
   function buildLiquidityText(regime, strength) {
-    if (!regime) return { main: "n/a", sub: "Nu există suficiente date pentru a evalua lichiditatea." };
+    if (!regime) return { main: "n/a", sub: "Nu există suficiente date pentru a evalua Liquidity Regime." };
 
     let reg;
-    if (regime === "ridicată") reg = "ridicată";
-    else if (regime === "moderată" || regime === "normală") reg = "moderată";
-    else if (regime === "scăzută") reg = "scăzută";
+    if (regime === "ridicată") reg = "regim de lichiditate ridicată";
+    else if (regime === "moderată" || regime === "normală") reg = "regim de lichiditate moderată";
+    else if (regime === "scăzută") reg = "regim de lichiditate scăzută";
     else reg = regime;
 
     let main = reg;
     if (strength) main += ` (${strength})`;
 
-    let sub = "Nivel general al ordelor și al volumului în piață.";
+    let sub = "Nivel general al ordelor și al volumului în acest context.";
     if (regime === "scăzută") {
-      sub = "Piața este mai „subțire”; mișcările pot fi mai bruște și mai sensibile la flux.";
+      sub = "În regimuri de lichiditate scăzută, mișcările pot fi mai bruște și mai sensibile la fluxuri punctuale.";
     } else if (regime === "ridicată") {
-      sub = "Piața este mai densă; mișcările tind să fie mai greu de deplasat de ordine izolate.";
+      sub = "În regimuri de lichiditate ridicată, mișcările tind să fie mai greu de deplasat de ordine izolate.";
     }
 
     return { main, sub };
@@ -583,7 +592,6 @@
 
       const prob = state.signal_probability;
       const horizonHours = state.signal_prob_horizon_hours || 24;
-      const drift = state.signal_expected_drift;
 
       // Prețuri (snapshot)
       if (priceBtcEl) {
@@ -630,20 +638,20 @@
           "Nu există un mesaj coeziv explicit pentru acest moment. Mecanismul este în modul de observație.";
       }
 
-      // Meta (fără preț de producție, fără istoric explicit)
+      // Meta (fără „live”, fără istoric agresiv)
       if (metaEl) {
         if (typeof prob === "number" && Number.isFinite(prob)) {
           const p = PCT_FMT.format(prob * 100);
           metaEl.innerHTML =
-            `Context construit pe baza poziționării BTC față de mecanism, a fluxului și a lichidității, ` +
-            `ținând cont de distribuția istorică a contextelor similare (≈ ${p}% frecvență pentru acest tip de scenariu pe ~${horizonHours}h).`;
+            `Context construit pe baza poziționării BTC față de nivelul modelului, a Flow Regime și a Liquidity Regime, ` +
+            `ținând cont de frecvența istorică a contextelor similare (≈ ${p}% din cazuri pe ~${horizonHours}h).`;
         } else {
           metaEl.textContent =
-            "Context construit pe baza poziționării BTC față de mecanism, a fluxului și a lichidității, raportate la distribuția istorică a contextelor similare.";
+            "Context construit pe baza poziționării BTC față de nivelul modelului, a Flow Regime și a Liquidity Regime, raportate la distribuția istorică a contextelor similare.";
         }
       }
 
-      // Flux
+      // Flow
       const flowInfo = buildFlowText(flowBias, flowStrength);
       if (flowMainEl) flowMainEl.textContent = flowInfo.main;
       if (flowSubEl) flowSubEl.textContent = flowInfo.sub;
@@ -662,11 +670,8 @@
     }
   }
 
-  // încărcare inițială + refresh periodic (snapshots noi de la backend)
+  // încărcare inițială (snapshot-ul zilei)
   loadState().catch(console.error);
-  setInterval(() => {
-    loadState().catch(console.error);
-  }, 60000);
 </script>
 </body>
 </html>
