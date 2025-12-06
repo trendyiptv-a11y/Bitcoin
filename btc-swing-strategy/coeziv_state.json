@@ -1,11 +1,11 @@
 {
   "timestamp": "2025-12-06T00:00:00+00:00",
-  "price_usd": 89753.0,
+  "price_usd": 89453.0,
   "model_price_usd": 89608.59,
   "price_source": "spot",
   "signal": "short",
-  "message": "În acest snapshot, Bitcoin este în jur de ~89,753 USD, iar mecanismul identifică un bias negativ al contextului de piață. Flow Regime indică un flux relativ echilibrat între cumpărători și vânzători (slab). Liquidity Regime este unul de lichiditate ridicată, unde mișcările de preț tind să fie mai bine ancorate în fluxul agregat. Istoric, pentru contexte similare, aproximativ 37.4% dintre episoade au evoluat în direcția acestui context pe un orizont de circa 24 ore (pe baza a 1462 observații). În aceleași tipuri de contexte, pe un orizont de ~24 ore, randamentele relative au avut de regulă un interval aproximativ între -3.3% și 3.1%, cu o valoare mediană în jur de 0.0%. Acest mesaj descrie contextul structural al pieței pe baza datelor istorice și a modelului intern și nu reprezintă o recomandare de tranzacționare.",
-  "generated_at": "2025-12-06T17:28:45.351518+00:00",
+  "message": "În acest snapshot, Bitcoin este în jur de ~89,453 USD, iar mecanismul identifică un bias negativ al contextului de piață. Istoric, pentru contexte similare, aproximativ 37.4% dintre episoade au evoluat în direcția acestui context pe un orizont de circa 24 ore (pe baza a 1462 observații). În aceleași tipuri de contexte, pe un orizont de ~24 ore, randamentele relative au avut de regulă un interval aproximativ între -3.3% și 3.1%, cu o valoare mediană în jur de 0.0%. Acest mesaj descrie contextul structural al pieței pe baza datelor istorice și a modelului intern și nu reprezintă o recomandare de tranzacționare.",
+  "generated_at": "2025-12-06T19:53:10.873662+00:00",
   "signal_history": [
     {
       "timestamp": "2025-11-07T00:00:00+00:00",
@@ -178,8 +178,8 @@
     "code": "range_bias_up_dev_normal"
   },
   "production_cost_usd": 359096526.2361523,
-  "production_cost_as_of": "2025-12-06T17:28:45.255098+00:00",
-  "deviation_from_production": -0.9997500588464591,
+  "production_cost_as_of": "2025-12-06T19:53:10.776886+00:00",
+  "deviation_from_production": -0.9997508942764287,
   "flow_score": 0.0028713393528943627,
   "flow_bias": "neutru",
   "flow_strength": "slab",
