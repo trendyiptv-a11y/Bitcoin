@@ -16,8 +16,11 @@
       --accent-long: #22c55e;
       --accent-short: #f97373;
       --accent-neutral: #6366f1;
-      --bg-model: rgba(15, 23, 42, 0.9);
+      --band-bg: linear-gradient(90deg, #22c55e 0%, #e5e7eb 50%, #f97373 100%);
+      --band-track: rgba(15, 23, 42, 0.9);
+      --band-border: #1f2937;
       --bg-btc: rgba(17, 24, 39, 0.95);
+      --bg-model: rgba(15, 23, 42, 0.9);
     }
 
     * {
@@ -41,88 +44,221 @@
 
     .shell {
       width: 100%;
-      max-width: 880px;
+      max-width: 960px;
       padding: 16px;
+    }
+
+    .card {
+      border-radius: 24px;
+      border: 1px solid var(--border-soft);
+      background: var(--bg-card);
+      padding: 18px 20px 18px;
+      box-shadow: 0 26px 60px rgba(15, 23, 42, 0.9);
     }
 
     .layout {
       display: grid;
-      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.3fr);
-      gap: 16px;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.2fr);
+      gap: 20px;
+      align-items: stretch;
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 820px) {
       .layout {
         grid-template-columns: minmax(0, 1fr);
       }
     }
 
-    .panel {
-      border-radius: 20px;
-      border: 1px solid var(--border-soft);
-      background: var(--bg-card);
-      padding: 18px 18px 16px;
-      box-shadow: 0 22px 50px rgba(15, 23, 42, 0.75);
-    }
-
-    .panel-header {
+    .card-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 10px;
     }
 
-    .label {
+    .label-main {
       font-size: 11px;
       text-transform: uppercase;
-      letter-spacing: 0.14em;
+      letter-spacing: 0.16em;
       color: var(--text-soft);
     }
 
-    .status-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 10px;
+    .chip-small {
+      font-size: 10px;
+      color: var(--text-soft);
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--border-soft);
+      background: var(--bg-chip);
     }
 
-    .status-chip {
+    /* STÂNGA – PREȚURI + BARĂ */
+    .prices-block {
+      margin-top: 6px;
+      margin-bottom: 14px;
+    }
+
+    .prices-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+      gap: 10px;
+    }
+
+    .price-box {
+      border-radius: 16px;
+      border: 1px solid var(--border-soft);
+      padding: 10px 12px;
+    }
+
+    .price-box.btc {
+      background: var(--bg-btc);
+    }
+
+    .price-box.model {
+      background: var(--bg-model);
+    }
+
+    .price-label {
+      font-size: 11px;
+      color: var(--text-soft);
+      margin-bottom: 2px;
+    }
+
+    .price-value-btc {
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .price-value-model {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    .price-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .band-block {
+      margin-top: 10px;
+    }
+
+    .band-label {
+      font-size: 11px;
+      color: var(--text-soft);
+      margin-bottom: 4px;
+    }
+
+    .band-track {
+      position: relative;
+      width: 100%;
+      height: 12px;
+      border-radius: 999px;
+      border: 1px solid var(--band-border);
+      background: var(--band-bg);
+      overflow: hidden;
+    }
+
+    .band-center-line {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background: rgba(15, 23, 42, 0.7);
+      opacity: 0.7;
+    }
+
+    .band-marker {
+      position: absolute;
+      top: -4px;
+      width: 0;
+      height: 0;
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-bottom: 8px solid #e5e7eb;
+      filter: drop-shadow(0 0 4px rgba(0,0,0,0.7));
+      transition: left 0.3s ease-out;
+    }
+
+    .band-legend {
+      margin-top: 4px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      color: var(--text-soft);
+    }
+
+    .diff-text-main {
+      margin-top: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-main);
+    }
+
+    .diff-text-main.positive {
+      color: var(--accent-short);
+    }
+
+    .diff-text-main.negative {
+      color: var(--accent-long);
+    }
+
+    .diff-text-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* DREAPTA – CONTEXT */
+    .status-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .signal-chip {
       display: inline-flex;
       align-items: center;
       gap: 6px;
       padding: 4px 10px;
       border-radius: 999px;
-      background: var(--bg-chip);
       border: 1px solid var(--border-soft);
+      background: var(--bg-chip);
       font-size: 11px;
       color: var(--text-muted);
     }
 
-    .status-dot {
+    .signal-dot {
       width: 8px;
       height: 8px;
       border-radius: 999px;
       background: var(--accent-neutral);
     }
 
-    .status-chip.long .status-dot {
+    .signal-chip.long .signal-dot {
       background: var(--accent-long);
     }
-    .status-chip.short .status-dot {
+
+    .signal-chip.short .signal-dot {
       background: var(--accent-short);
     }
 
     .headline {
-      font-size: 15px;
+      font-size: 16px;
       font-weight: 600;
-      margin-bottom: 6px;
       color: var(--text-main);
+      margin-bottom: 6px;
     }
 
     .headline.long {
       color: var(--accent-long);
     }
+
     .headline.short {
       color: var(--accent-short);
     }
@@ -145,136 +281,33 @@
       margin-top: 4px;
     }
 
-    /* Panou prețuri */
-    .prices-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
-      gap: 10px;
-      margin-top: 6px;
-      margin-bottom: 12px;
-    }
-
-    .price-block {
-      padding: 8px 10px;
-      border-radius: 14px;
-      border: 1px solid var(--border-soft);
-    }
-
-    .price-block.btc {
-      background: var(--bg-btc);
-    }
-
-    .price-block.model {
-      background: var(--bg-model);
-    }
-
-    .price-label {
-      font-size: 11px;
-      color: var(--text-soft);
-      margin-bottom: 2px;
-    }
-
-    .price-value {
-      font-size: 18px;
-      font-weight: 600;
-      color: var(--text-main);
-    }
-
-    .price-value.model {
-      font-size: 15px;
-      color: var(--text-muted);
-    }
-
-    .price-sub {
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-top: 2px;
-    }
-
-    .diff-block {
-      padding: 8px 10px;
-      border-radius: 14px;
-      border: 1px dashed var(--border-soft);
-      background: rgba(15, 23, 42, 0.9);
-      margin-bottom: 4px;
-    }
-
-    .diff-label {
-      font-size: 11px;
-      color: var(--text-soft);
-      margin-bottom: 2px;
-    }
-
-    .diff-main {
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--text-main);
-    }
-
-    .diff-main.positive {
-      color: var(--accent-short);
-    }
-
-    .diff-main.negative {
-      color: var(--accent-long);
-    }
-
-    .diff-detail {
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-top: 1px;
-    }
-
-    .small-note {
-      font-size: 11px;
-      color: var(--text-soft);
-      margin-top: 4px;
-    }
-
-    .horizon-block {
-      margin-top: 8px;
-      padding: 8px 10px;
-      border-radius: 14px;
-      border: 1px solid var(--border-soft);
-      background: rgba(15, 23, 42, 0.9);
-      font-size: 11px;
-      color: var(--text-muted);
-      line-height: 1.4;
-    }
-
-    .horizon-highlight {
-      color: var(--text-main);
-      font-weight: 500;
-    }
-
-    /* Flux & lichiditate */
-    .context-tags {
+    .tags-grid {
+      margin-top: 12px;
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 10px;
-      margin-top: 12px;
     }
 
-    .context-tag {
+    .tag-box {
       border-radius: 14px;
       border: 1px solid var(--border-soft);
       background: rgba(15, 23, 42, 0.92);
       padding: 8px 10px;
     }
 
-    .context-tag-label {
+    .tag-label {
       font-size: 11px;
       color: var(--text-soft);
-      margin-bottom: 3px;
+      margin-bottom: 2px;
     }
 
-    .context-tag-main {
+    .tag-main {
       font-size: 12px;
       font-weight: 500;
       color: var(--text-main);
     }
 
-    .context-tag-sub {
+    .tag-sub {
       font-size: 11px;
       color: var(--text-muted);
       margin-top: 1px;
@@ -283,94 +316,95 @@
 </head>
 <body>
 <div class="shell">
-  <div class="layout">
+  <div class="card">
+    <div class="card-header">
+      <div class="label-main">BTC · MECANISM COEZIV</div>
+      <div class="chip-small">Snapshot de context, nu semnal de intrare</div>
+    </div>
 
-    <!-- PANEL STÂNGA: PREȚ BTC (SNAPSHOT) vs PREȚ MECANISM -->
-    <section class="panel">
-      <div class="panel-header">
-        <div class="label">Mecanism BTC</div>
-        <!-- nu mai afișăm niciun timestamp -->
-      </div>
-
-      <div class="prices-grid">
-        <div class="price-block btc">
-          <div class="price-label">Preț BTC în snapshot</div>
-          <div class="price-value" id="price-btc">–</div>
-          <div class="price-sub">
-            Valoarea BTC în momentul generării snapshotului.
+    <div class="layout">
+      <!-- STÂNGA: PREȚURI + BARĂ -->
+      <section>
+        <div class="prices-block">
+          <div class="prices-row">
+            <div class="price-box btc">
+              <div class="price-label">BTC în acest snapshot</div>
+              <div class="price-value-btc" id="price-btc">–</div>
+              <div class="price-sub">
+                Valoarea BTC exact în momentul în care a fost generat snapshotul.
+              </div>
+            </div>
+            <div class="price-box model">
+              <div class="price-label">Preț mecanism (același snapshot)</div>
+              <div class="price-value-model" id="price-model">–</div>
+              <div class="price-sub">
+                Nivelul estimat de mecanism pentru BTC în acest context.
+              </div>
+            </div>
           </div>
         </div>
-        <div class="price-block model">
-          <div class="price-label">Preț mecanism (snapshot)</div>
-          <div class="price-value model" id="price-model">–</div>
-          <div class="price-sub">
-            Valoare estimată de mecanism pentru același snapshot.
+
+        <div class="band-block">
+          <div class="band-label">Unde stă BTC față de mecanism</div>
+          <div class="band-track" id="band-track">
+            <div class="band-center-line"></div>
+            <div class="band-marker" id="band-marker" style="left:50%;"></div>
+          </div>
+          <div class="band-legend">
+            <span>sub model</span>
+            <span>în zona modelului</span>
+            <span>peste model</span>
+          </div>
+
+          <div class="diff-text-main" id="diff-main">
+            Nu putem evalua diferența față de mecanism.
+          </div>
+          <div class="diff-text-sub" id="diff-sub"></div>
+        </div>
+      </section>
+
+      <!-- DREAPTA: CONTEXT + FLUX / LICHIDITATE -->
+      <section>
+        <div class="status-row">
+          <div class="headline" id="headline">
+            Se încarcă contextul mecanic...
+          </div>
+          <div>
+            <span id="signal-chip" class="signal-chip">
+              <span class="signal-dot"></span>
+              <span id="signal-label">Context neutru</span>
+            </span>
           </div>
         </div>
-      </div>
 
-      <div class="diff-block">
-        <div class="diff-label">Poziționarea prețului BTC față de mecanism</div>
-        <div class="diff-main" id="diff-main">–</div>
-        <div class="diff-detail" id="diff-detail"></div>
-      </div>
+        <p class="context-text" id="context-message">
+          Așteptăm mesajul coeziv generat de mecanism.
+        </p>
 
-      <div class="horizon-block" id="horizon-block">
-        Orizontul de analiză și distribuția istorică sunt folosite intern de mecanism. Mai jos este un sumar atunci
-        când există suficiente observații.
-      </div>
-
-      <div class="small-note">
-        Valorile afișate sunt fotografii de moment (snapshot). Mecanismul descrie contextul, nu oferă recomandări de tranzacționare.
-      </div>
-    </section>
-
-    <!-- PANEL DREAPTA: CONTEXT + FLUX / LIQUIDITATE -->
-    <section class="panel">
-      <div class="panel-header">
-        <div class="label">Context de piață</div>
-        <div>
-          <span id="signal-chip" class="status-chip">
-            <span class="status-dot"></span>
-            <span id="signal-label">Context neutru</span>
-          </span>
+        <div class="meta-text" id="context-meta">
+          Context construit pe baza poziționării BTC în jurul prețului mecanismului, a fluxului și a lichidității.
         </div>
-      </div>
 
-      <div class="status-row">
-        <div class="headline" id="headline">
-          Se încarcă contextul mecanic...
-        </div>
-      </div>
+        <div class="error-text" id="context-error"></div>
 
-      <p class="context-text" id="context-message">
-        Așteptăm mesajul coeziv generat de backend.
-      </p>
-
-      <div class="meta-text" id="context-meta">
-        <!-- descriere generică, fără „preț de producție” -->
-      </div>
-
-      <div class="error-text" id="context-error"></div>
-
-      <div class="context-tags">
-        <div class="context-tag">
-          <div class="context-tag-label">Flux de piață</div>
-          <div class="context-tag-main" id="flow-main">n/a</div>
-          <div class="context-tag-sub" id="flow-sub">
-            Direcția și intensitatea ultimei mișcări de preț.
+        <div class="tags-grid">
+          <div class="tag-box">
+            <div class="tag-label">Flux de piață</div>
+            <div class="tag-main" id="flow-main">n/a</div>
+            <div class="tag-sub" id="flow-sub">
+              Direcția și intensitatea ultimei mișcări de preț.
+            </div>
+          </div>
+          <div class="tag-box">
+            <div class="tag-label">Lichiditate</div>
+            <div class="tag-main" id="liquidity-main">n/a</div>
+            <div class="tag-sub" id="liquidity-sub">
+              Cât de „densă” sau „subțire” este piața în acest context.
+            </div>
           </div>
         </div>
-        <div class="context-tag">
-          <div class="context-tag-label">Lichiditate</div>
-          <div class="context-tag-main" id="liquidity-main">n/a</div>
-          <div class="context-tag-sub" id="liquidity-sub">
-            Cât de „densă” sau „subțire” este piața în acest context.
-          </div>
-        </div>
-      </div>
-    </section>
-
+      </section>
+    </div>
   </div>
 </div>
 
@@ -381,7 +415,6 @@
     minimumFractionDigits: 0,
     maximumFractionDigits: 0
   });
-
   const PCT_FMT = new Intl.NumberFormat("en-US", {
     minimumFractionDigits: 1,
     maximumFractionDigits: 1
@@ -413,8 +446,9 @@
   function buildDiff(modelPrice, btcPrice) {
     if (!Number.isFinite(modelPrice) || !Number.isFinite(btcPrice) || modelPrice <= 0) {
       return {
-        line: "Nu putem evalua poziționarea BTC față de mecanism.",
-        detail: "",
+        main: "Nu putem evalua diferența față de mecanism.",
+        sub: "",
+        pct: null,
         className: ""
       };
     }
@@ -428,23 +462,41 @@
 
     if (Math.abs(pct) < 0.005) {
       return {
-        line: "BTC este foarte aproape de prețul estimat de mecanism.",
-        detail: `Abatere ≈ ${usdStr} (${pctStr}).`,
+        main: "BTC este foarte aproape de nivelul estimat de mecanism.",
+        sub: `Abatere ≈ ${usdStr} (${pctStr}).`,
+        pct,
         className: ""
       };
     } else if (pct > 0) {
       return {
-        line: "BTC este peste nivelul estimat de mecanism.",
-        detail: `Aproximativ +${usdStr} (+${pctStr}) peste model.`,
+        main: "BTC este peste nivelul estimat de mecanism.",
+        sub: `Aproximativ +${usdStr} (+${pctStr}) peste model.`,
+        pct,
         className: "positive"
       };
     } else {
       return {
-        line: "BTC este sub nivelul estimat de mecanism.",
-        detail: `Aproximativ -${usdStr} (-${pctStr}) sub model.`,
+        main: "BTC este sub nivelul estimat de mecanism.",
+        sub: `Aproximativ -${usdStr} (-${pctStr}) sub model.`,
+        pct,
         className: "negative"
       };
     }
+  }
+
+  function positionMarker(pct, trackEl, markerEl) {
+    if (!trackEl || !markerEl) return;
+    // pct este diferența relativă (ex: 0.02 = +2%)
+    if (pct == null || !Number.isFinite(pct)) {
+      markerEl.style.left = "50%";
+      return;
+    }
+    // clamp ±4% în bandă (ce e peste 4% rămâne la margine)
+    const maxPct = 0.04;
+    const r = Math.max(-maxPct, Math.min(maxPct, pct));
+    const offset = (r / maxPct) * 40; // ±40% din lățime
+    const pos = 50 + offset;
+    markerEl.style.left = pos + "%";
   }
 
   function buildFlowText(bias, strength) {
@@ -490,32 +542,13 @@
     return { main, sub };
   }
 
-  function buildHorizonText(prob, horizonHours, drift) {
-    if (typeof prob !== "number" || !Number.isFinite(prob)) {
-      return "Mecanismul folosește distribuția istorică a contextelor similare, dar nu există suficiente date pentru un sumar robust.";
-    }
-    const horizon = horizonHours || 24;
-    const p = prob * 100;
-    const pStr = PCT_FMT.format(p) + "%";
-
-    let text = `Pe un orizont de aproximativ ${horizon}h, mecanismul a observat ca scenariul curent s-a materializat în jur de ` +
-      `<span class="horizon-highlight">${pStr}</span> din cazurile istorice similare.`;
-
-    if (typeof drift === "number" && Number.isFinite(drift)) {
-      const driftPct = PCT_FMT.format(drift * 100);
-      text += `<br/>În acest context, mecanismul estimează un drift tipic de ` +
-        `<span class="horizon-highlight">${driftPct}%</span> față de prețul mecanismului pe acest orizont.`;
-    }
-
-    return text;
-  }
-
   async function loadState() {
     const priceBtcEl = document.getElementById("price-btc");
     const priceModelEl = document.getElementById("price-model");
     const diffMainEl = document.getElementById("diff-main");
-    const diffDetailEl = document.getElementById("diff-detail");
-    const horizonEl = document.getElementById("horizon-block");
+    const diffSubEl = document.getElementById("diff-sub");
+    const bandTrackEl = document.getElementById("band-track");
+    const bandMarkerEl = document.getElementById("band-marker");
 
     const signalChip = document.getElementById("signal-chip");
     const signalLabelEl = document.getElementById("signal-label");
@@ -568,20 +601,16 @@
         }
       }
 
-      // Diferență
+      // Diferență + marker pe bandă
       const diffInfo = buildDiff(modelPrice, btcPrice);
       if (diffMainEl) {
-        diffMainEl.textContent = diffInfo.line;
-        diffMainEl.className = "diff-main " + diffInfo.className;
+        diffMainEl.textContent = diffInfo.main;
+        diffMainEl.className = "diff-text-main " + diffInfo.className;
       }
-      if (diffDetailEl) {
-        diffDetailEl.textContent = diffInfo.detail;
+      if (diffSubEl) {
+        diffSubEl.textContent = diffInfo.sub;
       }
-
-      // Orizont / probabilitate
-      if (horizonEl) {
-        horizonEl.innerHTML = buildHorizonText(prob, horizonHours, drift);
-      }
+      positionMarker(diffInfo.pct, bandTrackEl, bandMarkerEl);
 
       // Signal -> headline + chip
       const sigInfo = mapSignal(signal);
@@ -591,7 +620,7 @@
         headlineEl.className = "headline " + sigInfo.className;
       }
       if (signalChip) {
-        signalChip.className = "status-chip " + sigInfo.className;
+        signalChip.className = "signal-chip " + sigInfo.className;
       }
 
       // Mesaj coeziv
@@ -601,13 +630,20 @@
           "Nu există un mesaj coeziv explicit pentru acest moment. Mecanismul este în modul de observație.";
       }
 
-      // Meta context – fără preț de producție
+      // Meta (fără preț de producție, fără istoric explicit)
       if (metaEl) {
-        metaEl.textContent =
-          "Context construit pe baza prețului mecanismului și a prețului BTC în momentul snapshotului, raportate la distribuția istorică a contextelor similare.";
+        if (typeof prob === "number" && Number.isFinite(prob)) {
+          const p = PCT_FMT.format(prob * 100);
+          metaEl.innerHTML =
+            `Context construit pe baza poziționării BTC față de mecanism, a fluxului și a lichidității, ` +
+            `ținând cont de distribuția istorică a contextelor similare (≈ ${p}% frecvență pentru acest tip de scenariu pe ~${horizonHours}h).`;
+        } else {
+          metaEl.textContent =
+            "Context construit pe baza poziționării BTC față de mecanism, a fluxului și a lichidității, raportate la distribuția istorică a contextelor similare.";
+        }
       }
 
-      // Flux de piață
+      // Flux
       const flowInfo = buildFlowText(flowBias, flowStrength);
       if (flowMainEl) flowMainEl.textContent = flowInfo.main;
       if (flowSubEl) flowSubEl.textContent = flowInfo.sub;
@@ -626,9 +662,8 @@
     }
   }
 
-  // Încărcare inițială + auto-refresh periodic (fără să ceri refresh manual)
+  // încărcare inițială + refresh periodic (snapshots noi de la backend)
   loadState().catch(console.error);
-  // reîncarcă starea la fiecare 60 de secunde
   setInterval(() => {
     loadState().catch(console.error);
   }, 60000);
