@@ -459,101 +459,115 @@ def build_message(
     flow_strength: Optional[str] = None,
     liquidity_regime: Optional[str] = None,
     stats: Optional[Dict[str, Any]] = None,
-    deviation_from_production: Optional[float] = None,
+    deviation_from_production: Optional[float] = None,  # păstrat în semnătură, nu îl mai folosim în text
 ) -> str:
     """
-    Construiește un mesaj text simplu, dar profesionist, care explică:
-      - ce vede mecanismul acum (context)
-      - ce spun fluxul și lichiditatea
-      - ce s-a întâmplat în contexte similare (expected drift)
-    """
-    signal = (signal or "").lower()
-    ctx = "neutru"
+    Construiește un mesaj text instituțional care explică:
+      - contextul de piață identificat de mecanism (Market Context)
+      - Flow Regime și Liquidity Regime pentru snapshotul curent
+      - câteva repere istorice (frecvență, drift) pentru contexte similare
 
-    if signal == "long":
-        ctx = "presiune de creștere"
-    elif signal == "short":
-        ctx = "risc de scădere"
+    Mesajul descrie contextul, nu dă recomandări de tranzacționare.
+    """
+    signal_norm = (signal or "").lower()
+    if signal_norm == "long":
+        ctx_label = "bias pozitiv al contextului de piață"
+    elif signal_norm == "short":
+        ctx_label = "bias negativ al contextului de piață"
     else:
-        ctx = "neutru"
+        ctx_label = "context de piață neutru"
 
     parts: List[str] = []
 
-    # 1. context principal
-    parts.append(
-        f"Bitcoin se tranzacționează acum în jur de ~{price:,.0f} USD. "
-        f"Mecanismul vede un context {ctx} al riscului structural."
-    )
+    # 1. Context principal + preț de referință
+    if isinstance(price, (int, float)) and math.isfinite(price) and price > 0:
+        parts.append(
+            f"În acest snapshot, Bitcoin este în jur de ~{price:,.0f} USD, "
+            f"iar mecanismul identifică un {ctx_label}."
+        )
+    else:
+        parts.append(
+            f"Mecanismul a identificat un {ctx_label} pentru contextul curent al pieței."
+        )
 
-    # 2. flow (flux de piață)
+    # 2. Flow Regime (flux de piață)
     if flow_bias in ("pozitiv", "negativ", "neutru"):
         if flow_bias == "pozitiv":
-            txt = "Fluxul actual de piață este orientat spre cumpărare"
+            txt = "Flow Regime indică o presiune de cumpărare"
         elif flow_bias == "negativ":
-            txt = "Fluxul actual de piață este orientat spre vânzare"
+            txt = "Flow Regime indică o presiune de vânzare"
         else:
-            txt = "Fluxul actual de piață este relativ echilibrat"
+            txt = "Flow Regime indică un flux relativ echilibrat între cumpărători și vânzători"
 
         if flow_strength in ("slab", "moderat", "puternic"):
             txt += f" ({flow_strength})."
+        else:
+            txt += "."
 
         parts.append(txt)
 
-    # 3. lichiditate
+    # 3. Liquidity Regime (lichiditate)
     if liquidity_regime in ("scăzută", "normală", "ridicată"):
         if liquidity_regime == "ridicată":
-            txt = "Lichiditatea este ridicată, iar mișcările de preț tind să fie mai stabile."
+            txt = (
+                "Liquidity Regime este unul de lichiditate ridicată, "
+                "unde mișcările de preț tind să fie mai bine ancorate în fluxul agregat."
+            )
         elif liquidity_regime == "scăzută":
-            txt = "Lichiditatea este scăzută, iar mișcările de preț pot fi mai bruște decât de obicei."
+            txt = (
+                "Liquidity Regime este unul de lichiditate scăzută, "
+                "iar mișcările de preț pot fi mai bruște și mai sensibile la ordine punctuale."
+            )
         else:
-            txt = "Lichiditatea este într-o zonă normală pentru acest regim de piață."
+            txt = (
+                "Liquidity Regime este unul de lichiditate moderată, "
+                "specific condițiilor obișnuite de tranzacționare."
+            )
         parts.append(txt)
 
-    # 4. cost de producție (dacă avem deviație)
-    if deviation_from_production is not None and math.isfinite(deviation_from_production):
-        pct = deviation_from_production * 100.0
-        if pct < -20:
-            parts.append(
-                "Prețul este semnificativ sub costul estimat de producție al rețelei, "
-                "zonă asociată istoric cu stres ridicat asupra minerilor."
-            )
-        elif pct < -5:
-            parts.append(
-                "Prețul este ușor sub costul estimat de producție, ceea ce indică "
-                "presiune ridicată pe minerii mai puțin eficienți."
-            )
-        elif pct <= 20:
-            parts.append(
-                "Prețul este într-o zonă de echilibru față de costul estimat de producție al rețelei."
-            )
-        elif pct <= 50:
-            parts.append(
-                "Prețul este semnificativ peste costul estimat de producție, "
-                "zonă specifică fazelor speculative moderate."
-            )
-        else:
-            parts.append(
-                "Prețul este mult peste costul estimat de producție, "
-                "ceea ce sugerează o fază speculativă ridicată."
-            )
-
-    # 5. așteptări bazate pe istoric (expected drift)
+    # 4. Statistică istorică – frecvența contextelor similare
     if stats:
-        drift = stats.get("expected_drift") or {}
-        p10 = drift.get("p10")
-        p50 = drift.get("p50")
-        p90 = drift.get("p90")
-        horizon = drift.get("horizon_hours", 24)
+        try:
+            prob = stats.get("probability")
+            samples = stats.get("samples") or 0
+            horizon = stats.get("horizon_hours", 24)
 
-        if all(isinstance(v, (int, float)) and math.isfinite(v) for v in (p10, p50, p90)):
-            parts.append(
-                f"Istoric, în contexte similare, mișcarea pe următoarele ~{horizon} ore "
-                f"a fost de aproximativ {p10 * 100:.1f}% în scenariile mai pesimiste, "
-                f"{p50 * 100:.1f}% în scenariile mediene și până la {p90 * 100:.1f}% "
-                f"în scenariile mai favorabile."
-            )
+            if isinstance(prob, (int, float)) and math.isfinite(prob) and samples > 0:
+                pct = prob * 100.0
+                parts.append(
+                    f"Istoric, pentru contexte similare, aproximativ {pct:.1f}% dintre episoade "
+                    f"au evoluat în direcția acestui context pe un orizont de circa {horizon} ore "
+                    f"(pe baza a {samples} observații)."
+                )
+        except Exception:
+            pass
 
-    parts.append("Nu este o recomandare de tranzacționare, ci o interpretare structurată a riscului.")
+        # 5. Statistică istorică – expected drift
+        try:
+            drift = stats.get("expected_drift") or {}
+            p10 = drift.get("p10")
+            p50 = drift.get("p50")
+            p90 = drift.get("p90")
+            horizon = drift.get("horizon_hours", 24)
+
+            if all(
+                isinstance(v, (int, float)) and math.isfinite(v)
+                for v in (p10, p50, p90)
+            ):
+                parts.append(
+                    f"În aceleași tipuri de contexte, pe un orizont de ~{horizon} ore, "
+                    f"randamentele relative au avut de regulă un interval aproximativ "
+                    f"între {p10 * 100:.1f}% și {p90 * 100:.1f}%, "
+                    f"cu o valoare mediană în jur de {p50 * 100:.1f}%."
+                )
+        except Exception:
+            pass
+
+    # 6. Clarificare finală – context, nu semnal
+    parts.append(
+        "Acest mesaj descrie contextul structural al pieței pe baza datelor istorice și a modelului intern "
+        "și nu reprezintă o recomandare de tranzacționare."
+    )
 
     return " ".join(parts)
 
