@@ -142,6 +142,12 @@
       margin-top: 2px;
     }
 
+    .price-source {
+      font-size: 10px;
+      color: var(--text-soft);
+      margin-top: 2px;
+    }
+
     .band-block {
       margin-top: 10px;
     }
@@ -339,6 +345,9 @@
               <div class="price-value-btc" id="price-btc">–</div>
               <div class="price-sub">
                 Prețul BTC utilizat de mecanism la momentul generării snapshotului.
+              </div>
+              <div class="price-source" id="price-source">
+                Sursă preț: –
               </div>
             </div>
             <div class="price-box model">
@@ -552,24 +561,25 @@
   }
 
   async function loadState() {
-    const priceBtcEl = document.getElementById("price-btc");
-    const priceModelEl = document.getElementById("price-model");
-    const diffMainEl = document.getElementById("diff-main");
-    const diffSubEl = document.getElementById("diff-sub");
-    const bandTrackEl = document.getElementById("band-track");
-    const bandMarkerEl = document.getElementById("band-marker");
+    const priceBtcEl     = document.getElementById("price-btc");
+    const priceModelEl   = document.getElementById("price-model");
+    const priceSourceEl  = document.getElementById("price-source");
+    const diffMainEl     = document.getElementById("diff-main");
+    const diffSubEl      = document.getElementById("diff-sub");
+    const bandTrackEl    = document.getElementById("band-track");
+    const bandMarkerEl   = document.getElementById("band-marker");
 
-    const signalChip = document.getElementById("signal-chip");
-    const signalLabelEl = document.getElementById("signal-label");
-    const headlineEl = document.getElementById("headline");
-    const messageEl = document.getElementById("context-message");
-    const metaEl = document.getElementById("context-meta");
-    const errorEl = document.getElementById("context-error");
+    const signalChip     = document.getElementById("signal-chip");
+    const signalLabelEl  = document.getElementById("signal-label");
+    const headlineEl     = document.getElementById("headline");
+    const messageEl      = document.getElementById("context-message");
+    const metaEl         = document.getElementById("context-meta");
+    const errorEl        = document.getElementById("context-error");
 
-    const flowMainEl = document.getElementById("flow-main");
-    const flowSubEl = document.getElementById("flow-sub");
-    const liqMainEl = document.getElementById("liquidity-main");
-    const liqSubEl = document.getElementById("liquidity-sub");
+    const flowMainEl     = document.getElementById("flow-main");
+    const flowSubEl      = document.getElementById("flow-sub");
+    const liqMainEl      = document.getElementById("liquidity-main");
+    const liqSubEl       = document.getElementById("liquidity-sub");
 
     try {
       if (errorEl) errorEl.textContent = "";
@@ -580,18 +590,19 @@
       if (!res.ok) throw new Error("HTTP " + res.status);
       const state = await res.json();
 
-      const modelPrice = state.model_price_usd;
-      const btcPrice = typeof state.price_usd === "number" ? state.price_usd : state.spot;
-      const signal = state.signal;
-      const message = state.message;
+      const modelPrice  = state.model_price_usd;
+      const btcPrice    = typeof state.price_usd === "number" ? state.price_usd : state.spot;
+      const priceSource = state.price_source;
+      const signal      = state.signal;
+      const message     = state.message;
 
-      const flowBias = state.flow_bias;
-      const flowStrength = state.flow_strength;
-      const liqRegime = state.liquidity_regime;
+      const flowBias    = state.flow_bias;
+      const flowStrength= state.flow_strength;
+      const liqRegime   = state.liquidity_regime;
       const liqStrength = state.liquidity_strength;
 
-      const prob = state.signal_probability;
-      const horizonHours = state.signal_prob_horizon_hours || 24;
+      const prob        = state.signal_probability;
+      const horizonHours= state.signal_prob_horizon_hours || 24;
 
       // Prețuri (snapshot)
       if (priceBtcEl) {
@@ -607,6 +618,21 @@
         } else {
           priceModelEl.textContent = "–";
         }
+      }
+
+      // Sursa prețului BTC
+      if (priceSourceEl) {
+        let srcText = "Sursă preț: necunoscută";
+
+        if (priceSource === "spot") {
+          srcText = "Sursă preț: spot (piață cash BTC)";
+        } else if (priceSource === "model") {
+          srcText = "Sursă preț: derivat din modelul intern";
+        } else if (typeof priceSource === "string" && priceSource.trim() !== "") {
+          srcText = "Sursă preț: " + priceSource;
+        }
+
+        priceSourceEl.textContent = srcText;
       }
 
       // Diferență + marker pe bandă
@@ -638,7 +664,7 @@
           "Nu există un mesaj coeziv explicit pentru acest moment. Mecanismul este în modul de observație.";
       }
 
-      // Meta (fără „live”, fără istoric agresiv)
+      // Meta (frecvență istorică)
       if (metaEl) {
         if (typeof prob === "number" && Number.isFinite(prob)) {
           const p = PCT_FMT.format(prob * 100);
