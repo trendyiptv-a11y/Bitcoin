@@ -346,7 +346,7 @@
       padding: 10px 12px;
       border: 1px solid var(--border-soft);
       background: rgba(2, 6, 23, 0.9);
-      transition: border-color 0.18s ease-out, box-shadow 0.18s ease-out, transform 0.18s ease-out;
+      transition: border-color 0.18s ease-out, box-shadow 0.18s ease-out, transform 0.18s ease-out, background 0.18s ease-out;
     }
 
     .regime-title {
@@ -375,11 +375,12 @@
     .expansion { border-left: 3px solid #22c55e; }
     .reversal { border-left: 3px solid #eab308; }
 
-    /* highlight automat pentru regimul curent */
+    /* highlight automat pentru regimul curent – mult mai vizibil */
     .regime-active {
-      border-color: #e5e7eb;
-      box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.4), 0 12px 30px rgba(15, 23, 42, 0.9);
-      transform: translateY(-1px);
+      border-color: #ffffff;
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.14), rgba(15, 23, 42, 0.98));
+      box-shadow: 0 0 0 1px rgba(248, 250, 252, 0.5), 0 14px 32px rgba(15, 23, 42, 0.95);
+      transform: translateY(-2px);
     }
 
     .disclaimer {
@@ -716,40 +717,43 @@
 
   // determină unul dintre cele 8 regimuri canonice, sau null dacă nu se potrivește clar
   function determineRegime(diffPct, flowBias, liqRegime) {
+    // poziționare față de model
     let pos;
     if (!Number.isFinite(diffPct)) {
       pos = null;
     } else if (diffPct < -0.005) {
-      pos = "below"; // sub model
+      pos = "below";  // sub model
     } else if (diffPct > 0.005) {
-      pos = "above"; // peste model
+      pos = "above";  // peste model
     } else {
       pos = "around"; // la model
     }
 
-    let flow;
-    if (flowBias === "pozitiv") flow = "buy";
-    else if (flowBias === "negativ") flow = "sell";
-    else if (flowBias === "neutru") flow = "neutral";
-    else flow = null;
+    // normalizare flowBias
+    const fb = (flowBias || "").toString().toLowerCase();
+    let flow = null;
+    if (fb.startsWith("pozit")) flow = "buy";
+    else if (fb.startsWith("negat")) flow = "sell";
+    else if (fb.startsWith("neutr")) flow = "neutral";
 
-    let liq;
-    if (liqRegime === "scăzută") liq = "low";
-    else if (liqRegime === "ridicată") liq = "high";
-    else if (liqRegime === "moderată" || liqRegime === "normală") liq = "mid";
-    else liq = null;
+    // normalizare liquidity_regime
+    const lr = (liqRegime || "").toString().toLowerCase();
+    let liq = null;
+    if (lr.includes("scaz") || lr.includes("scăz")) liq = "low";
+    else if (lr.includes("ridic")) liq = "high";
+    else if (lr.includes("moder") || lr.includes("normal")) liq = "mid";
 
     if (!pos || !flow || !liq) return null;
 
     // mapping exact pe cele 8 situații definite
-    if (pos === "below" && flow === "sell" && liq === "low") return 1;
-    if (pos === "below" && flow === "sell" && liq === "mid") return 2;
-    if (pos === "below" && flow === "neutral" && liq === "low") return 3;
-    if (pos === "around" && flow === "neutral" && liq === "mid") return 4;
-    if (pos === "around" && flow === "buy" && liq === "high") return 5;
-    if (pos === "above" && flow === "buy" && liq === "high") return 6;
-    if (pos === "above" && flow === "buy" && liq === "low") return 7;
-    if (pos === "above" && flow === "sell" && liq === "low") return 8;
+    if (pos === "below" && flow === "sell" && liq === "low") return 1; // fragilitate maximă
+    if (pos === "below" && flow === "sell" && liq === "mid") return 2; // bearish structural
+    if (pos === "below" && flow === "neutral" && liq === "low") return 3; // piață inertă
+    if (pos === "around" && flow === "neutral" && liq === "mid") return 4; // echilibru sănătos
+    if (pos === "around" && flow === "buy" && liq === "high") return 5; // acumulare ordonată
+    if (pos === "above" && flow === "buy" && liq === "high") return 6; // expansiune sănătoasă
+    if (pos === "above" && flow === "buy" && liq === "low") return 7; // fragilitate bullish
+    if (pos === "above" && flow === "sell" && liq === "low") return 8; // tranziție de regim
 
     return null;
   }
@@ -901,7 +905,6 @@
         errorEl.textContent =
           "Nu am putut încărca contextul mecanismului. Verifică coeziv_state.json sau workflow-ul de backend.";
       }
-      // în caz de eroare, nu evidențiem niciun regim
       highlightRegime(null);
     }
   }
