@@ -833,54 +833,7 @@
   async function loadState() {
     const priceBtcEl     = document.getElementById("price-btc");
     const priceModelEl   = document.getElementById("price-model");
-    const priceSourceEl  = document.getElementById("price-source");
-    const diffMainEl     = document.getElementById("diff-main");
-    const diffSubEl      = document.getElementById("diff-sub");
-    const bandTrackEl    = document.getElementById("band-track");
-    const bandMarkerEl   = document.getElementById("band-marker");
 
-    const signalChip     = document.getElementById("signal-chip");
-    const signalLabelEl  = document.getElementById("signal-label");
-    const headlineEl     = document.getElementById("headline");
-    const messageEl      = document.getElementById("context-message");
-    const metaEl         = document.getElementById("context-meta");
-    const errorEl        = document.getElementById("context-error");
-
-    const flowMainEl     = document.getElementById("flow-main");
-    const flowSubEl      = document.getElementById("flow-sub");
-    const liqMainEl      = document.getElementById("liquidity-main");
-    const liqSubEl       = document.getElementById("liquidity-sub");
-
-    try {
-      if (errorEl) errorEl.textContent = "";
-
-      const res = await fetch(STATE_URL + "?t=" + Date.now(), {
-        cache: "no-store"
-      });
-      if (!res.ok) throw new Error("HTTP " + res.status);
-      const state = await res.json();
-
-      const modelPrice   = state.model_price_usd;
-      const btcPrice     = typeof state.price_usd === "number" ? state.price_usd : state.spot;
-      const priceSource  = state.price_source;
-      const signal       = state.signal;
-      const message      = state.message;
-
-      const flowBias     = state.flow_bias;
-      const flowStrength = state.flow_strength;
-      const liqRegime    = state.liquidity_regime;
-      const liqStrength  = state.liquidity_strength;
-
-      const prob         = state.signal_probability;
-      const horizonHours = state.signal_prob_horizon_hours || 24;
-
-      const marketRegime = state.market_regime; // obiectul canonic {id, key, label, description} sau string
-
-      // Prețuri (snapshot)
-      if (priceBtcEl) {
-        if (Number.isFinite(btcPrice)) {
-          priceBtcEl.textContent = USD_FMT.format(btcPrice) + " USD";
-        } else {
           priceBtcEl.textContent = "–";
         }
       }
@@ -934,9 +887,353 @@
         messageEl.textContent =
           message ||
           "Nu există un mesaj coeziv explicit pentru acest moment. Mecanismul este în modul de observație.";
+<script>
+  const STATE_URL = "coeziv_state.json";
+
+  const USD_FMT = new Intl.NumberFormat("en-US", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  });
+  const PCT_FMT = new Intl.NumberFormat("en-US", {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1
+  });
+
+  function mapSignal(signal) {
+    const s = (signal || "").toLowerCase();
+    if (s === "long") {
+      return {
+        label: "Market Context: bias pozitiv",
+        headline: "Market Context: bias pozitiv",
+        className: "long"
+      };
+    }
+    if (s === "short") {
+      return {
+        label: "Market Context: bias negativ",
+        headline: "Market Context: bias negativ",
+        className: "short"
+      };
+    }
+    return {
+      label: "Market Context: neutru",
+      headline: "Market Context: neutru",
+      className: ""
+    };
+  }
+
+  function buildDiff(modelPrice, btcPrice) {
+    if (!Number.isFinite(modelPrice) || !Number.isFinite(btcPrice) || modelPrice <= 0) {
+      return {
+        main: "Nu putem evalua poziționarea față de nivelul modelului.",
+        sub: "",
+        pct: null,
+        className: ""
+      };
+    }
+    const diff = btcPrice - modelPrice;
+    const pct = diff / modelPrice;
+    const absDiff = Math.abs(diff);
+    const absPct = Math.abs(pct) * 100;
+
+    const pctStr = PCT_FMT.format(absPct) + "%";
+    const usdStr = USD_FMT.format(absDiff) + " USD";
+
+    if (Math.abs(pct) < 0.005) {
+      return {
+        main: "BTC este foarte aproape de nivelul estimat de model.",
+        sub: `Abatere ≈ ${usdStr} (${pctStr}).`,
+        pct,
+        className: ""
+      };
+    } else if (pct > 0) {
+      return {
+        main: "BTC este poziționat peste nivelul estimat de model.",
+        sub: `Aproximativ +${usdStr} (+${pctStr}) peste nivelul modelului.`,
+        pct,
+        className: "positive"
+      };
+    } else {
+      return {
+        main: "BTC este poziționat sub nivelul estimat de model.",
+        sub: `Aproximativ -${usdStr} (-${pctStr}) sub nivelul modelului.`,
+        pct,
+        className: "negative"
+      };
+    }
+  }
+
+  function positionMarker(pct, trackEl, markerEl) {
+    if (!trackEl || !markerEl) return;
+    if (pct == null || !Number.isFinite(pct)) {
+      markerEl.style.left = "50%";
+      return;
+    }
+    const maxPct = 0.04;
+    const r = Math.max(-maxPct, Math.min(maxPct, pct));
+    const offset = (r / maxPct) * 40; // ±40% din lățime
+    const pos = 50 + offset;
+    markerEl.style.left = pos + "%";
+  }
+
+  function buildFlowText(bias, strength) {
+    if (!bias) return { main: "n/a", sub: "Nu există suficiente date pentru a evalua Flow Regime." };
+    let dir;
+    if (bias === "pozitiv") dir = "presiune de cumpărare";
+    else if (bias === "negativ") dir = "presiune de vânzare";
+    else if (bias === "neutru") dir = "flux relativ echilibrat";
+    else dir = bias;
+
+    let main = dir;
+    if (strength) main += ` (${strength})`;
+
+    let sub = "Regimul fluxului de piață în acest snapshot (direcție și intensitate).";
+    if (bias === "negativ" && strength === "puternic") {
+      sub = "Vânzare dominantă recent; într-un singur snapshot nu implică neapărat un trend, ci descrie regimul curent al fluxului.";
+    } else if (bias === "pozitiv" && strength === "puternic") {
+      sub = "Cumpărare dominantă recent; contextul poate susține fie continuarea mișcării, fie o normalizare în jurul nivelului modelului.";
+    }
+
+    return { main, sub };
+  }
+
+  function buildLiquidityText(regime, strength) {
+    if (!regime) return { main: "n/a", sub: "Nu există suficiente date pentru a evalua Liquidity Regime." };
+
+    let reg;
+    if (regime === "ridicată") reg = "regim de lichiditate ridicată";
+    else if (regime === "moderată" || regime === "normală") reg = "regim de lichiditate moderată";
+    else if (regime === "scăzută") reg = "regim de lichiditate scăzută";
+    else reg = regime;
+
+    let main = reg;
+    if (strength) main += ` (${strength})`;
+
+    let sub = "Nivel general al ordelor și al volumului în acest context.";
+    if (regime === "scăzută") {
+      sub = "În regimuri de lichiditate scăzută, mișcările pot fi mai bruște și mai sensibile la fluxuri punctuale.";
+    } else if (regime === "ridicată") {
+      sub = "În regimuri de lichiditate ridicată, mișcările tind să fie mai greu de deplasat de ordine izolate.";
+    }
+
+    return { main, sub };
+  }
+
+  // ✅ citim regimul canonic din coeziv_state.market_regime
+  function getRegimeIdFromMarketRegime(marketRegime) {
+    if (!marketRegime) return null;
+
+    // 1) direct număr
+    if (typeof marketRegime === "number") {
+      if (marketRegime >= 1 && marketRegime <= 8) return marketRegime;
+    }
+
+    // 2) obiect cu .id
+    if (typeof marketRegime === "object" && marketRegime !== null) {
+      if (typeof marketRegime.id === "number" &&
+          marketRegime.id >= 1 && marketRegime.id <= 8) {
+        return marketRegime.id;
+      }
+    }
+
+    // 3) cheie internă
+    let key = null;
+    if (typeof marketRegime === "object" && marketRegime !== null && typeof marketRegime.key === "string") {
+      key = marketRegime.key.toLowerCase();
+    }
+
+    // 4) dacă nu avem key, încercăm din label/text
+    if (!key) {
+      let label = null;
+      if (typeof marketRegime === "string") {
+        label = marketRegime;
+      } else if (typeof marketRegime === "object" && typeof marketRegime.label === "string") {
+        label = marketRegime.label;
       }
 
-      // Meta (frecvență istorică)
+      if (label) {
+        const norm = label.toLowerCase();
+        if (norm.includes("fragilitate maxim")) key = "fragility_max";
+        else if (norm.includes("bearish structural")) key = "bearish_structural";
+        else if (norm.includes("piață inert") || norm.includes("piata inert")) key = "inert_below";
+        else if (norm.includes("echilibru sănătos") || norm.includes("echilibru sanatos")) key = "equilibrium";
+        else if (norm.includes("acumulare ordonat")) key = "accumulation";
+        else if (norm.includes("expansiune sănătoas") || norm.includes("expansiune sanatoas")) key = "expansion";
+        else if (norm.includes("fragilitate bullish")) key = "fragility_bullish";
+        else if (norm.includes("tranziție de regim") || norm.includes("tranzitie de regim")) key = "regime_transition";
+      }
+    }
+
+    if (!key) return null;
+
+    switch (key) {
+      case "fragility_max":      return 1;
+      case "bearish_struct":
+      case "bearish_structural": return 2;
+      case "inert_below":        return 3;
+      case "equilibrium":        return 4;
+      case "accumulation":       return 5;
+      case "expansion":          return 6;
+      case "fragility_bullish":  return 7;
+      case "regime_transition":  return 8;
+      default:                   return null;
+    }
+  }
+
+  // fallback: determină unul dintre cele 8 regimuri, sau null
+  function determineRegime(diffPct, flowBias, liqRegime) {
+    let pos;
+    if (!Number.isFinite(diffPct)) {
+      pos = null;
+    } else if (diffPct < -0.005) {
+      pos = "below";
+    } else if (diffPct > 0.005) {
+      pos = "above";
+    } else {
+      pos = "around";
+    }
+
+    const fb = (flowBias || "").toString().toLowerCase();
+    let flow = null;
+    if (fb.startsWith("pozit")) flow = "buy";
+    else if (fb.startsWith("negat")) flow = "sell";
+    else if (fb.startsWith("neutr")) flow = "neutral";
+
+    const lr = (liqRegime || "").toString().toLowerCase();
+    let liq = null;
+    if (lr.includes("scaz") || lr.includes("scăz")) liq = "low";
+    else if (lr.includes("ridic")) liq = "high";
+    else if (lr.includes("moder") || lr.includes("normal")) liq = "mid";
+
+    if (!pos || !flow || !liq) return null;
+
+    if (pos === "below" && flow === "sell" && liq === "low") return 1;
+    if (pos === "below" && flow === "sell" && liq === "mid") return 2;
+    if (pos === "below" && flow === "neutral" && liq === "low") return 3;
+    if (pos === "around" && flow === "neutral" && liq === "mid") return 4;
+    if (pos === "around" && flow === "buy" && liq === "high") return 5;
+    if (pos === "above" && flow === "buy" && liq === "high") return 6;
+    if (pos === "above" && flow === "buy" && liq === "low") return 7;
+    if (pos === "above" && flow === "sell" && liq === "low") return 8;
+
+    return null;
+  }
+
+  function highlightRegime(regimeId) {
+    const items = document.querySelectorAll(".regime-item");
+    items.forEach(el => el.classList.remove("regime-active"));
+    if (!regimeId) return;
+    const target = document.getElementById("regime-" + regimeId);
+    if (target) {
+      target.classList.add("regime-active");
+    }
+  }
+
+  async function loadState() {
+    const priceBtcEl     = document.getElementById("price-btc");
+    const priceModelEl   = document.getElementById("price-model");
+    const priceSourceEl  = document.getElementById("price-source");
+    const diffMainEl     = document.getElementById("diff-main");
+    const diffSubEl      = document.getElementById("diff-sub");
+    const bandTrackEl    = document.getElementById("band-track");
+    const bandMarkerEl   = document.getElementById("band-marker");
+
+    const signalChip     = document.getElementById("signal-chip");
+    const signalLabelEl  = document.getElementById("signal-label");
+    const headlineEl     = document.getElementById("headline");
+    const messageEl      = document.getElementById("context-message");
+    const metaEl         = document.getElementById("context-meta");
+    const errorEl        = document.getElementById("context-error");
+
+    const flowMainEl     = document.getElementById("flow-main");
+    const flowSubEl      = document.getElementById("flow-sub");
+    const liqMainEl      = document.getElementById("liquidity-main");
+    const liqSubEl       = document.getElementById("liquidity-sub");
+
+    try {
+      if (errorEl) errorEl.textContent = "";
+
+      const res = await fetch(STATE_URL + "?t=" + Date.now(), {
+        cache: "no-store"
+      });
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      const state = await res.json();
+
+      const modelPrice   = state.model_price_usd;
+      const btcPrice     = typeof state.price_usd === "number" ? state.price_usd : state.spot;
+      const priceSource  = state.price_source;
+      const signal       = state.signal;
+      const message      = state.message;
+
+      const flowBias     = state.flow_bias;
+      const flowStrength = state.flow_strength;
+      const liqRegime    = state.liquidity_regime;
+      const liqStrength  = state.liquidity_strength;
+
+      const prob         = state.signal_probability;
+      const horizonHours = state.signal_prob_horizon_hours || 24;
+
+      const marketRegime = state.market_regime; // 🔴 regimul canonic deja calculat
+
+      // Prețuri (snapshot)
+      if (priceBtcEl) {
+        if (Number.isFinite(btcPrice)) {
+          priceBtcEl.textContent = USD_FMT.format(btcPrice) + " USD";
+        } else {
+          priceBtcEl.textContent = "–";
+        }
+      }
+      if (priceModelEl) {
+        if (Number.isFinite(modelPrice)) {
+          priceModelEl.textContent = USD_FMT.format(modelPrice) + " USD";
+        } else {
+          priceModelEl.textContent = "–";
+        }
+      }
+
+      // Sursa prețului BTC
+      if (priceSourceEl) {
+        let srcText = "Sursă preț: necunoscută";
+
+        if (priceSource === "spot") {
+          srcText = "Sursă preț: spot (piață cash BTC)";
+        } else if (priceSource === "model") {
+          srcText = "Sursă preț: derivat din modelul intern";
+        } else if (typeof priceSource === "string" && priceSource.trim() !== "") {
+          srcText = "Sursă preț: " + priceSource;
+        }
+
+        priceSourceEl.textContent = srcText;
+      }
+
+      // Diferență + marker
+      const diffInfo = buildDiff(modelPrice, btcPrice);
+      if (diffMainEl) {
+        diffMainEl.textContent = diffInfo.main;
+        diffMainEl.className = "diff-text-main " + diffInfo.className;
+      }
+      if (diffSubEl) diffSubEl.textContent = diffInfo.sub;
+      positionMarker(diffInfo.pct, bandTrackEl, bandMarkerEl);
+
+      // Signal → headline + chip
+      const sigInfo = mapSignal(signal);
+      if (signalLabelEl) signalLabelEl.textContent = sigInfo.label;
+      if (headlineEl) {
+        headlineEl.textContent = sigInfo.headline;
+        headlineEl.className = "headline " + sigInfo.className;
+      }
+      if (signalChip) {
+        signalChip.className = "signal-chip " + sigInfo.className;
+      }
+
+      // Mesaj
+      if (messageEl) {
+        messageEl.textContent =
+          message ||
+          "Nu există un mesaj coeziv explicit pentru acest moment. Mecanismul este în modul de observație.";
+      }
+
+      // Meta
       if (metaEl) {
         if (typeof prob === "number" && Number.isFinite(prob)) {
           const p = PCT_FMT.format(prob * 100);
@@ -952,15 +1249,14 @@
       // Flow
       const flowInfo = buildFlowText(flowBias, flowStrength);
       if (flowMainEl) flowMainEl.textContent = flowInfo.main;
-      if (flowSubEl) flowSubEl.textContent = flowInfo.sub;
+      if (flowSubEl)  flowSubEl.textContent = flowInfo.sub;
 
       // Lichiditate
       const liqInfo = buildLiquidityText(liqRegime, liqStrength);
       if (liqMainEl) liqMainEl.textContent = liqInfo.main;
-      if (liqSubEl) liqSubEl.textContent = liqInfo.sub;
+      if (liqSubEl)  liqSubEl.textContent = liqInfo.sub;
 
-      // Regim de piață canonic – întâi încercăm direct din state.market_regime;
-      // dacă nu avem ceva clar, cădem pe determinarea locală din triada (diff/flow/liq).
+      // 🔴 Regim de piață – întâi canonic, apoi fallback
       let regimeId = getRegimeIdFromMarketRegime(marketRegime);
       if (!regimeId) {
         regimeId = determineRegime(diffInfo.pct, flowBias, liqRegime);
@@ -969,6 +1265,7 @@
 
     } catch (err) {
       console.error(err);
+      const errorEl = document.getElementById("context-error");
       if (errorEl) {
         errorEl.textContent =
           "Nu am putut încărca contextul mecanismului. Verifică coeziv_state.json sau workflow-ul de backend.";
