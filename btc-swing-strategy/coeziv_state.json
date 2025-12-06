@@ -1,11 +1,11 @@
 {
   "timestamp": "2025-12-06T00:00:00+00:00",
-  "price_usd": 89629.0,
+  "price_usd": 89619.0,
   "model_price_usd": 89608.59,
   "price_source": "spot",
   "signal": "short",
-  "message": "Bitcoin se tranzacționează acum în jur de ~89,629 USD. Mecanismul vede un context risc de scădere al riscului structural. Prețul este semnificativ sub costul estimat de producție al rețelei, zonă asociată istoric cu stres ridicat asupra minerilor. Istoric, în contexte similare, mișcarea pe următoarele ~24 ore a fost de aproximativ -3.3% în scenariile mai pesimiste, 0.0% în scenariile mediene și până la 3.1% în scenariile mai favorabile. Nu este o recomandare de tranzacționare, ci o interpretare structurată a riscului.",
-  "generated_at": "2025-12-06T12:31:29.637476+00:00",
+  "message": "În acest snapshot, Bitcoin este în jur de ~89,619 USD, iar mecanismul identifică un bias negativ al contextului de piață. Istoric, pentru contexte similare, aproximativ 37.4% dintre episoade au evoluat în direcția acestui context pe un orizont de circa 24 ore (pe baza a 1462 observații). În aceleași tipuri de contexte, pe un orizont de ~24 ore, randamentele relative au avut de regulă un interval aproximativ între -3.3% și 3.1%, cu o valoare mediană în jur de 0.0%. Acest mesaj descrie contextul structural al pieței pe baza datelor istorice și a modelului intern și nu reprezintă o recomandare de tranzacționare.",
+  "generated_at": "2025-12-06T12:39:18.000236+00:00",
   "signal_history": [
     {
       "timestamp": "2025-11-07T00:00:00+00:00",
@@ -178,8 +178,8 @@
     "code": "range_bias_up_dev_normal"
   },
   "production_cost_usd": 359096526.2361523,
-  "production_cost_as_of": "2025-12-06T12:31:29.539657+00:00",
-  "deviation_from_production": -0.9997504041575132,
+  "production_cost_as_of": "2025-12-06T12:39:17.901777+00:00",
+  "deviation_from_production": -0.9997504320051789,
   "flow_score": 0.0028713393528943627,
   "flow_bias": "neutru",
   "flow_strength": "slab",
