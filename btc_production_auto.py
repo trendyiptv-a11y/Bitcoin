@@ -3,6 +3,21 @@ import requests
 from datetime import datetime, timezone
 from typing import Optional, Tuple
 
+PROFILE_PRESETS = {
+    "cheap": {      # miner eficient, curent ieftin
+        "electricity_price_usd_per_kwh": 0.03,
+        "hw_efficiency_j_per_th": 20.0,
+    },
+    "average": {    # profil mediu
+        "electricity_price_usd_per_kwh": 0.05,
+        "hw_efficiency_j_per_th": 22.0,
+    },
+    "expensive": {  # profil scump (similar cu ce aveai)
+        "electricity_price_usd_per_kwh": 0.07,
+        "hw_efficiency_j_per_th": 25.0,
+    },
+}
+
 # ============================
 #  CALCUL AUTOMAT COST PRODUCȚIE BTC
 # ============================
@@ -30,6 +45,7 @@ def get_reward() -> Optional[float]:
 def estimate_production_cost(
     electricity_price_usd_per_kwh: float = 0.07,
     hw_efficiency_j_per_th: float = 25.0,
+    profile: Optional[str] = None,
 ) -> Tuple[Optional[float], Optional[str]]:
     """
     Calculează costul de producție BTC:
@@ -38,6 +54,12 @@ def estimate_production_cost(
     difficulty = get_difficulty()
     reward = get_reward()
 
+    # Dacă s-a specificat un profil, suprascriem parametrii cu preseturile lui
+    if profile is not None:
+        preset = PROFILE_PRESETS.get(profile.lower())
+        if preset is not None:
+            electricity_price_usd_per_kwh = preset["electricity_price_usd_per_kwh"]
+            hw_efficiency_j_per_th = preset["hw_efficiency_j_per_th"]
     if difficulty is None or reward is None:
         return None, None
 
