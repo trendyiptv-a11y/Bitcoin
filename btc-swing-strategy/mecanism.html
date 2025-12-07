@@ -1279,14 +1279,14 @@ if (PROD_COST_LINE_EL) {
           x: [oTimes[lastIdx]],
           y: [price],
           type: "scatter",
-          mode: "markers+text",
+          mode: "none",
           marker: {
             symbol: "arrow",
             size: 3,
             color: LAST_SIGNAL_RAW === "long" ? "#22c55e" : "#f97373",
             line: { width: 2, color: "#020617" }
           },
-          text: [LAST_SIGNAL_RAW.toUpperCase()],
+          text: "none",
           textposition: "top center",
           textfont: { color: "#ffffff", size: 10 },
           name: "Semnal",
