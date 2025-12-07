@@ -851,14 +851,26 @@ def main() -> None:
         except Exception:
             pass
 
-    if production_cost is not None and math.isfinite(production_cost):
+    # log cost de producție – folosim profilul 'average' ca referință
+    ref_cost = production_costs.get("average")
+    if ref_cost is not None and math.isfinite(ref_cost):
         print(
-            "Cost de producție BTC (fundamental):",
-            f"{production_cost:,.2f} USD",
+            "Cost de producție BTC (fundamental, profil average):",
+            f"{ref_cost:,.2f} USD",
             "| Deviație față de cost:",
             "n/a"
             if deviation_from_production is None
             else f"{deviation_from_production * 100:.1f}%",
+        )
+
+        # dacă vrei, poți loga și celelalte profile
+        cheap_cost = production_costs.get("cheap")
+        exp_cost = production_costs.get("expensive")
+        print(
+            "Costuri producție (cheap / average / expensive):",
+            "cheap=" + (f"{cheap_cost:,.2f} USD" if cheap_cost is not None else "n/a"),
+            "| average=" + f"{ref_cost:,.2f} USD",
+            "| expensive=" + (f"{exp_cost:,.2f} USD" if exp_cost is not None else "n/a"),
         )
 
     print("Regim de piață:", regime_label)
