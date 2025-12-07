@@ -23,28 +23,93 @@ if STRATEGY_DIR not in sys.path:
 
 from btc_swing_strategy import generate_signals
 
-# Flow & Liquidity – pot fi opționale, tratăm robust
+from btc_swing_strategy import generate_signals
+
+# Flow & Liquidity – pot fi opționale, tratăm robust și normalizăm structura
 try:
-    from btc_flow_score import compute_flow_from_file
+    from btc_flow_score import compute_flow_from_daily_csv
 except ImportError:
-    def compute_flow_from_file(path: Optional[str] = None) -> Dict[str, Any]:
-        return {
-            "flow_score": None,
-            "flow_bias": None,
-            "flow_strength": None,
-            "components": {},
-        }
+    compute_flow_from_daily_csv = None  # type: ignore[assignment]
 
 try:
-    from btc_liquidity_score import compute_liquidity_from_file
+    from btc_liquidity_score import compute_liquidity_from_daily_csv
 except ImportError:
-    def compute_liquidity_from_file(path: Optional[str] = None) -> Dict[str, Any]:
-        return {
-            "liquidity_score": None,
-            "liquidity_regime": None,
-            "liquidity_strength": None,
-            "components": {},
-        }
+    compute_liquidity_from_daily_csv = None  # type: ignore[assignment]
+
+
+def _empty_flow() -> Dict[str, Any]:
+    return {
+        "flow_score": None,
+        "flow_bias": None,
+        "flow_strength": None,
+        "components": {},
+    }
+
+
+def _empty_liquidity() -> Dict[str, Any]:
+    return {
+        "liquidity_score": None,
+        "liquidity_regime": None,
+        "liquidity_strength": None,
+        "components": {},
+    }
+
+
+def compute_flow_from_file(path: Optional[str] = None) -> Dict[str, Any]:
+    """
+    Wrapper peste btc_flow_score.compute_flow_from_daily_csv.
+    Convertește structura (bias/strength/flow_value) în (flow_score/flow_bias/flow_strength)
+    pe care o așteaptă restul mecanismului.
+    """
+    if compute_flow_from_daily_csv is None:
+        return _empty_flow()
+
+    default_path = os.path.join(BASE_DIR, "data", "btc_daily.csv")
+    use_path = path or default_path
+
+    try:
+        raw = compute_flow_from_daily_csv(use_path)
+    except Exception as e:
+        print("Nu am putut calcula Flow Score din btc_flow_score:", e)
+        return _empty_flow()
+
+    if not isinstance(raw, dict):
+        return _empty_flow()
+
+    return {
+        "flow_score": raw.get("flow_value"),
+        "flow_bias": raw.get("bias"),
+        "flow_strength": raw.get("strength"),
+        "components": {},
+    }
+
+
+def compute_liquidity_from_file(path: Optional[str] = None) -> Dict[str, Any]:
+    """
+    Wrapper peste btc_liquidity_score.compute_liquidity_from_daily_csv.
+    Convertește (regime/strength/liquidity_value) în câmpurile așteptate de coeziv_state.
+    """
+    if compute_liquidity_from_daily_csv is None:
+        return _empty_liquidity()
+
+    default_path = os.path.join(BASE_DIR, "data", "btc_daily.csv")
+    use_path = path or default_path
+
+    try:
+        raw = compute_liquidity_from_daily_csv(use_path)
+    except Exception as e:
+        print("Nu am putut calcula Liquidity Score din btc_liquidity_score:", e)
+        return _empty_liquidity()
+
+    if not isinstance(raw, dict):
+        return _empty_liquidity()
+
+    return {
+        "liquidity_score": raw.get("liquidity_value"),
+        "liquidity_regime": raw.get("regime"),
+        "liquidity_strength": raw.get("strength"),
+        "components": {},
+    }
 
 # cost de producție – versiunea automată; fallback la None dacă nu există modulul
 try:
@@ -631,91 +696,30 @@ def main() -> None:
     # 7. clasificarea regimului de piață
     market_regime = classify_market_regime(last, dev_pct_model)
 
-    # 8. Flow & Liquidity – pot fi opționale, tratăm robust și normalizăm structura
-try:
-    from btc_flow_score import compute_flow_from_daily_csv
-except ImportError:
-    compute_flow_from_daily_csv = None  # type: ignore[assignment]
-
-try:
-    from btc_liquidity_score import compute_liquidity_from_daily_csv
-except ImportError:
-    compute_liquidity_from_daily_csv = None  # type: ignore[assignment]
-
-
-def _empty_flow() -> Dict[str, Any]:
-    return {
-        "flow_score": None,
-        "flow_bias": None,
-        "flow_strength": None,
-        "components": {},
-    }
-
-
-def _empty_liquidity() -> Dict[str, Any]:
-    return {
-        "liquidity_score": None,
-        "liquidity_regime": None,
-        "liquidity_strength": None,
-        "components": {},
-    }
-
-
-def compute_flow_from_file(path: Optional[str] = None) -> Dict[str, Any]:
-    """
-    Wrapper peste btc_flow_score.compute_flow_from_daily_csv.
-    Convertește structura (bias/strength/flow_value) în (flow_score/flow_bias/flow_strength)
-    pe care o așteaptă restul mecanismului.
-    """
-    if compute_flow_from_daily_csv is None:
-        return _empty_flow()
-
-    default_path = os.path.join(BASE_DIR, "data", "btc_daily.csv")
-    use_path = path or default_path
+    # 8. Flow Score și Liquidity Score
+    try:
+        flow = compute_flow_from_file()
+    except Exception as e:
+        print("Nu am putut calcula Flow Score:", e)
+        flow = {
+            "flow_score": None,
+            "flow_bias": None,
+            "flow_strength": None,
+            "components": {},
+        }
 
     try:
-        raw = compute_flow_from_daily_csv(use_path)
+        liq = compute_liquidity_from_file()
     except Exception as e:
-        print("Nu am putut calcula Flow Score din btc_flow_score:", e)
-        return _empty_flow()
+        print("Nu am putut calcula Liquidity Score:", e)
+        liq = {
+            "liquidity_score": None,
+            "liquidity_regime": None,
+            "liquidity_strength": None,
+            "components": {},
+        }
 
-    if not isinstance(raw, dict):
-        return _empty_flow()
-
-    return {
-        "flow_score": raw.get("flow_value"),
-        "flow_bias": raw.get("bias"),
-        "flow_strength": raw.get("strength"),
-        "components": {},
-    }
-
-
-def compute_liquidity_from_file(path: Optional[str] = None) -> Dict[str, Any]:
-    """
-    Wrapper peste btc_liquidity_score.compute_liquidity_from_daily_csv.
-    Convertește (regime/strength/liquidity_value) în câmpurile așteptate de coeziv_state.
-    """
-    if compute_liquidity_from_daily_csv is None:
-        return _empty_liquidity()
-
-    default_path = os.path.join(BASE_DIR, "data", "btc_daily.csv")
-    use_path = path or default_path
-
-    try:
-        raw = compute_liquidity_from_daily_csv(use_path)
-    except Exception as e:
-        print("Nu am putut calcula Liquidity Score din btc_liquidity_score:", e)
-        return _empty_liquidity()
-
-    if not isinstance(raw, dict):
-        return _empty_liquidity()
-
-    return {
-        "liquidity_score": raw.get("liquidity_value"),
-        "liquidity_regime": raw.get("regime"),
-        "liquidity_strength": raw.get("strength"),
-        "components": {},
-    }
+    
 
     # 9. istoric de contexte (ultimele N puncte)
     signal_history = build_signal_history(df, limit=30)
