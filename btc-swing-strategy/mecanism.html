@@ -428,6 +428,9 @@
           <div id="liquidity-line" class="live-delta">
             Lichiditate piață: n/a (așteptăm date despre lichiditate).
           </div>
+          <div id="prod-cost-line" class="live-delta">
+            Cost de producție: n/a (așteptăm date despre cost).
+          </div>
         </div>
 
         <div class="chart-block">
@@ -560,6 +563,7 @@
     const DRIFT_EL = document.getElementById("drift-range");
     const FLOW_LINE_EL = document.getElementById("flow-line");
     const LIQ_LINE_EL = document.getElementById("liquidity-line");
+    const PROD_COST_LINE_EL = document.getElementById("prod-cost-line");
 
     const HISTORY_LIST_EL = document.getElementById("history-list");
     const HISTORY_META_EL = document.getElementById("history-meta");
@@ -769,6 +773,8 @@
         const flowStrength = state.flow_strength || null;
         const liqRegime = state.liquidity_regime || null;
         const liqStrength = state.liquidity_strength || null;
+        const productionCosts = state.production_costs_usd || null;
+        const productionRef = state.production_cost_reference || "average";
 
         FLOW_BIAS = flowBias;
         FLOW_STRENGTH = flowStrength;
@@ -918,6 +924,35 @@
 
           LIQ_LINE_EL.textContent = liqText;
         }
+
+        // cost de producție – mic / mediu / mare
+if (PROD_COST_LINE_EL) {
+  let costText = "Cost de producție: n/a (așteptăm date despre cost).";
+
+  if (productionCosts && typeof productionCosts === "object") {
+    const cheap = productionCosts.cheap;
+    const avg = productionCosts.average;
+    const exp = productionCosts.expensive;
+
+    const parts = [];
+
+    if (typeof cheap === "number" && Number.isFinite(cheap)) {
+      parts.push("mic ~" + USD_FORMATTER.format(cheap) + " USD");
+    }
+    if (typeof avg === "number" && Number.isFinite(avg)) {
+      parts.push("mediu ~" + USD_FORMATTER.format(avg) + " USD");
+    }
+    if (typeof exp === "number" && Number.isFinite(exp)) {
+      parts.push("mare ~" + USD_FORMATTER.format(exp) + " USD");
+    }
+
+    if (parts.length > 0) {
+      costText = "Cost de producție (profil miner): " + parts.join(" · ");
+    }
+  }
+
+  PROD_COST_LINE_EL.textContent = costText;
+}
 
         if (SNAPSHOT_PRICE === null) {
           LIVE_DELTA_EL.textContent =
