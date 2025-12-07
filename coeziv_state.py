@@ -699,6 +699,17 @@ def main() -> None:
     except Exception:
         deviation_from_production = None
 
+# deviația față de prețul modelului (pentru market regime)
+    dev_pct_model: Optional[float] = None
+    try:
+        if (
+            model_price is not None and math.isfinite(model_price) and model_price > 0
+            and price_for_text is not None and math.isfinite(price_for_text)
+        ):
+            dev_pct_model = (price_for_text - model_price) / model_price
+    except Exception:
+        dev_pct_model = None
+    
     # 7. clasificarea regimului de piață
     market_regime = classify_market_regime(last, dev_pct_model)
 
