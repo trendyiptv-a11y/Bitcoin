@@ -50,8 +50,8 @@ def estimate_production_cost(
     # Power (W)
     power_watts = network_hashrate_hps * energy_per_hash_j
 
-    # Energie pe zi (kWh)
-    energy_kwh_day = power_watts * 86400 / 1000
+    # Energie pe zi (kWh) – putere [W] * 24 ore / 1000 (W -> kW)
+    energy_kwh_day = power_watts * 24 / 1000
 
     # Cost energetic pe zi
     daily_cost_usd = energy_kwh_day * electricity_price_usd_per_kwh
