@@ -667,7 +667,7 @@ def main() -> None:
     production_cost: Optional[float] = None
     production_as_of: Optional[str] = None
     try:
-        production_cost, production_as_of = estimate_production_cost()
+        production_cost, production_as_of = estimate_production_cost(profile="average")
     except Exception as e:
         print("Nu am putut estima costul de producție BTC.", e)
         production_cost, production_as_of = None, None
