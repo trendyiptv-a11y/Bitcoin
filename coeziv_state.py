@@ -15,6 +15,9 @@ import requests
 BASE_DIR = os.path.dirname(__file__)
 STRATEGY_DIR = os.path.join(BASE_DIR, "btc-swing-strategy")
 
+if BASE_DIR not in sys.path:
+    sys.path.insert(0, BASE_DIR)
+
 if STRATEGY_DIR not in sys.path:
     sys.path.append(STRATEGY_DIR)
 
