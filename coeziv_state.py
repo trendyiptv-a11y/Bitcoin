@@ -118,6 +118,7 @@ except ImportError:
     def estimate_production_cost(
         electricity_price_usd_per_kwh: float = 0.07,
         hw_efficiency_j_per_th: float = 25.0,
+        profile: Optional[str] = None,
     ) -> Tuple[Optional[float], Optional[str]]:
         return None, None
 
@@ -663,35 +664,40 @@ def main() -> None:
     except Exception as e:  # log, dar nu cădem
         print("Nu am putut obține prețul live BTC. Folosesc prețul din model.", e)
 
-    # 5. cost de producție BTC (ancoră fundamentală, opțională)
-    production_cost: Optional[float] = None
+    # 5. cost de producție BTC – multiple profile (cheap / average / expensive)
+    production_costs: Dict[str, Optional[float]] = {}
     production_as_of: Optional[str] = None
-    try:
-        production_cost, production_as_of = estimate_production_cost(profile="average")
-    except Exception as e:
-        print("Nu am putut estima costul de producție BTC.", e)
-        production_cost, production_as_of = None, None
 
+    try:
+        cheap_cost, as_of = estimate_production_cost(profile="cheap")
+        avg_cost, as_of = estimate_production_cost(profile="average")
+        exp_cost, as_of = estimate_production_cost(profile="expensive")
+
+        production_costs = {
+            "cheap": cheap_cost,
+            "average": avg_cost,
+            "expensive": exp_cost,
+        }
+        production_as_of = as_of
+    except Exception as e:
+        print("Nu am putut estima costurile de producție BTC.", e)
+        production_costs = {}
+        production_as_of = None
+
+    # deviația pentru mesajul principal o calculăm față de profilul 'average'
     deviation_from_production: Optional[float] = None
     try:
-        if production_cost is not None and math.isfinite(production_cost) and production_cost > 0:
+        ref_cost = production_costs.get("average")
+        if ref_cost is not None and math.isfinite(ref_cost) and ref_cost > 0:
             ref_price = (
                 price_for_text
                 if (math.isfinite(price_for_text) and price_for_text > 0)
                 else model_price
             )
             if math.isfinite(ref_price) and ref_price > 0:
-                deviation_from_production = (ref_price - production_cost) / production_cost
+                deviation_from_production = (ref_price - ref_cost) / ref_cost
     except Exception:
         deviation_from_production = None
-
-    # 6. deviația curentă față de prețul modelului (pentru regim de piață)
-    dev_pct_model: Optional[float] = None
-    try:
-        if math.isfinite(model_price) and model_price > 0 and math.isfinite(price_for_text):
-            dev_pct_model = (price_for_text - model_price) / model_price
-    except Exception:
-        dev_pct_model = None
 
     # 7. clasificarea regimului de piață
     market_regime = classify_market_regime(last, dev_pct_model)
@@ -771,11 +777,12 @@ def main() -> None:
         # regim de piață
         "market_regime": market_regime,
 
-        # cost de producție
-        "production_cost_usd": production_cost,
+        # cost de producție (multiple profile)
+        "production_costs_usd": production_costs,
+        "production_cost_reference": "average",  # profilul folosit pentru deviație și mesaje
         "production_cost_as_of": production_as_of,
         "deviation_from_production": deviation_from_production,
-
+        
         # Flow Score
         "flow_score": flow.get("flow_score"),
         "flow_bias": flow.get("flow_bias"),
