@@ -548,7 +548,7 @@ def build_message(
     # 1. context principal
     parts.append(
         f"Prețul de tranzacționare la actualizarea sistemului: în jur de ~{price:,.0f} USD. "
-        f"Mecanismul vede un context {ctx} al riscului structural."
+        f"Mecanismul vede un {ctx}."
     )
 
     # 2. flow (flux de piață)
