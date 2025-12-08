@@ -547,7 +547,7 @@ def build_message(
 
     # 1. context principal
     parts.append(
-        f"Bitcoin se tranzacționează acum în jur de ~{price:,.0f} USD. "
+        f"Prețul de tranzacționare la actualizarea sistemului: în jur de ~{price:,.0f} USD. "
         f"Mecanismul vede un context {ctx} al riscului structural."
     )
 
