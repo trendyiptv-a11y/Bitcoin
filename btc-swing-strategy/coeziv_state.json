@@ -1,11 +1,11 @@
 {
   "timestamp": "2025-12-08T00:00:00+00:00",
-  "price_usd": 91033.0,
+  "price_usd": 91652.0,
   "model_price_usd": 91026.02,
   "price_source": "spot",
   "signal": "short",
-  "message": "Bitcoin se tranzacționează acum în jur de ~91,033 USD. Mecanismul vede un context risc de scădere al riscului structural. Fluxul actual de piață este relativ echilibrat (slab). Prețul este semnificativ peste costul estimat de producție, zonă specifică fazelor speculative moderate. Istoric, în contexte similare, mișcarea pe următoarele ~24 ore a fost de aproximativ -3.3% în scenariile mai pesimiste, 0.0% în scenariile mediene și până la 3.1% în scenariile mai favorabile. Nu este o recomandare de tranzacționare, ci o interpretare structurată a riscului.",
-  "generated_at": "2025-12-08T02:24:16.643420+00:00",
+  "message": "Bitcoin se tranzacționează acum în jur de ~91,652 USD. Mecanismul vede un context risc de scădere al riscului structural. Fluxul actual de piață este relativ echilibrat (slab). Prețul este semnificativ peste costul estimat de producție, zonă specifică fazelor speculative moderate. Istoric, în contexte similare, mișcarea pe următoarele ~24 ore a fost de aproximativ -3.3% în scenariile mai pesimiste, 0.0% în scenariile mediene și până la 3.1% în scenariile mai favorabile. Nu este o recomandare de tranzacționare, ci o interpretare structurată a riscului.",
+  "generated_at": "2025-12-08T08:21:12.459703+00:00",
   "signal_history": [
     {
       "timestamp": "2025-11-09T00:00:00+00:00",
@@ -174,8 +174,8 @@
     "p90": 0.03086972263217432
   },
   "market_regime": {
-    "label": "Range cu bias pozitiv cu deviație normală față de model",
-    "code": "range_bias_up_dev_normal"
+    "label": "Range cu bias pozitiv cu deviație moderată față de model",
+    "code": "range_bias_up_dev_moderate"
   },
   "production_costs_usd": {
     "cheap": 34199.66916534783,
@@ -183,8 +183,8 @@
     "expensive": 99749.03506559783
   },
   "production_cost_reference": "average",
-  "production_cost_as_of": "2025-12-08T02:24:16.544136+00:00",
-  "deviation_from_production": 0.45189602262804873,
+  "production_cost_as_of": "2025-12-08T08:21:12.361853+00:00",
+  "deviation_from_production": 0.46176852642344995,
   "flow_score": 0.006769195784855848,
   "flow_bias": "neutru",
   "flow_strength": "slab",
