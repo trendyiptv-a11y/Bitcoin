@@ -936,21 +936,24 @@
 
         // lichiditate piață
         if (LIQ_LINE_EL) {
-          let liqText = "Lichiditate piață: n/a (așteptăm date despre lichiditate).";
-          if (liqRegime === "ridicată") {
-            liqText = "Lichiditate piață: ridicată; mișcările tind să fie mai stabile.";
-          } else if (liqRegime === "scăzută") {
-            liqText = "Lichiditate piață: scăzută; mișcările pot fi mai bruște decât de obicei.";
-          } else if (liqRegime === "normală") {
-            liqText = "Lichiditate piață: normală pentru acest regim de piață.";
-          }
+  let liqText = "Lichiditate piață: n/a (așteptăm date suplimentare)";
 
-          if (liqRegime && liqStrength && liqRegime !== "normală") {
-            liqText += ` (deviație ${liqStrength} față de nivelurile obișnuite).`;
-          }
+  const normLiqRegime = (liqRegime || "").trim().toLowerCase();
 
-          LIQ_LINE_EL.textContent = liqText;
-        }
+  if (normLiqRegime === "ridicată") {
+    liqText = "Lichiditate piață: ridicată; mișcări peste nivelurile obișnuite.";
+  } else if (normLiqRegime === "scăzută") {
+    liqText = "Lichiditate piață: scăzută; mișcări sub nivelurile obișnuite.";
+  } else if (normLiqRegime === "normală" || normLiqRegime === "moderată") {
+    liqText = "Lichiditate piață: moderată pentru acest context.";
+  }
+
+  if (liqRegime && liqStrength && normLiqRegime !== "normală" && normLiqRegime !== "moderată") {
+    liqText += ` (deviație ${liqStrength} față de nivelurile obișnuite.)`;
+  }
+
+  LIQ_LINE_EL.textContent = liqText;
+}
 
         // cost de producție – mic / mediu / mare
 if (PROD_COST_LINE_EL) {
