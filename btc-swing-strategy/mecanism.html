@@ -1441,9 +1441,10 @@ if (PROD_COST_LINE_EL) {
           else if (FLOW_BIAS === "neutru") flowPart = "Flux actual: relativ echilibrat";
 
           let liqPart = "";
-if (LIQ_REGIME && LIQ_STRENGTH) {
-  liqPart = `Lichiditate ${LIQ_REGIME} (${LIQ_STRENGTH})`;
-}
+if (LIQ_REGIME === "ridicată") liqPart = "Lichiditate ridicată";
+else if (LIQ_REGIME === "scăzută") liqPart = "Lichiditate scăzută";
+else if (LIQ_REGIME === "normală" || LIQ_REGIME === "moderată")
+  liqPart = "Lichiditate moderată";
           const parts = [];
           if (flowPart) parts.push(flowPart);
           if (liqPart) parts.push(liqPart);
