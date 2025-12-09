@@ -370,6 +370,126 @@
       .message { font-size: 13px; }
       .chart-block { height: 210px; }
     }
+    /* CARD FEAR & GREED COEZIV */
+
+    .fg-card-header {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 12px;
+    }
+
+    .fg-title {
+      font-size: 13px;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .fg-subtitle {
+      font-size: 12px;
+      color: var(--text-soft);
+    }
+
+    .fg-main-row {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .fg-score-block {
+      min-width: 120px;
+    }
+
+    .fg-score-value {
+      font-size: 26px;
+      font-weight: 700;
+    }
+
+    .fg-score-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .fg-zone-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      margin-top: 6px;
+      background: rgba(15,23,42,0.9);
+      border: 1px solid var(--accent-neutral);
+      color: var(--text-main);
+    }
+
+    .fg-zone-extreme_fear { border-color: #f97373; color: #fecaca; }
+    .fg-zone-fear         { border-color: #fb923c; color: #fed7aa; }
+    .fg-zone-neutral      { border-color: #64748b; color: #cbd5f5; }
+    .fg-zone-greed        { border-color: #22c55e; color: #bbf7d0; }
+    .fg-zone-extreme_greed{ border-color: #22c55e; color: #ecfccb; }
+
+    .fg-bar-wrapper {
+      flex: 1;
+      min-width: 160px;
+    }
+
+    .fg-bar-track {
+      width: 100%;
+      height: 10px;
+      border-radius: 999px;
+      background: linear-gradient(90deg,#ef4444,#f59e0b,#e5e7eb,#22c55e,#16a34a);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .fg-bar-fill {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 0%;
+      background: rgba(15,23,42,0.8);
+      box-shadow: inset 0 0 0 1px rgba(15,23,42,0.8);
+    }
+
+    .fg-bar-scale {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      color: var(--text-soft);
+      margin-top: 4px;
+    }
+
+    .fg-detail-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+
+    .fg-detail-item {
+      flex: 1;
+      min-width: 90px;
+    }
+
+    .fg-detail-label {
+      font-size: 11px;
+      color: var(--text-soft);
+    }
+
+    .fg-detail-value {
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .fg-description {
+      font-size: 12px;
+      color: var(--text-soft);
+    }
   </style>
 
   <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
@@ -451,6 +571,55 @@
         </div>
 
         <div id="error" class="error"></div>
+      </div>
+    </div>
+
+    <!-- CARD FEAR & GREED COEZIV -->
+    <div class="card card-secondary">
+      <div class="card-inner">
+        <div class="fg-card-header">
+          <div class="fg-title">INDICE FEAR &amp; GREED COEZIV</div>
+          <div class="fg-subtitle">
+            Sentiment de piață derivat din mecanismul coeziv (structură + semnal + volatilitate),
+            fără date sociale sau externe.
+          </div>
+        </div>
+
+        <div class="fg-main-row">
+          <div class="fg-score-block">
+            <div id="fg-score-value" class="fg-score-value">–</div>
+            <div id="fg-score-label" class="fg-score-label">Indicator indisponibil momentan.</div>
+            <div id="fg-score-zone" class="fg-zone-pill">n/a</div>
+          </div>
+
+          <div class="fg-bar-wrapper">
+            <div class="fg-bar-track">
+              <div id="fg-bar-fill" class="fg-bar-fill"></div>
+            </div>
+            <div class="fg-bar-scale">
+              <span>0</span><span>25</span><span>50</span><span>75</span><span>100</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="fg-detail-row">
+          <div class="fg-detail-item">
+            <div class="fg-detail-label">Structural</div>
+            <div id="fg-struct-value" class="fg-detail-value">–</div>
+          </div>
+          <div class="fg-detail-item">
+            <div class="fg-detail-label">Tactic (24h)</div>
+            <div id="fg-tact-value" class="fg-detail-value">–</div>
+          </div>
+          <div class="fg-detail-item">
+            <div class="fg-detail-label">Tensiune</div>
+            <div id="fg-tension-value" class="fg-detail-value">–</div>
+          </div>
+        </div>
+
+        <div id="fg-description" class="fg-description">
+          Indicatorul va fi populat automat după următorul update al mecanismului.
+        </div>
       </div>
     </div>
 
@@ -591,6 +760,15 @@
     const FLOW_LINE_EL = document.getElementById("flow-line");
     const LIQ_LINE_EL = document.getElementById("liquidity-line");
     const PROD_COST_LINE_EL = document.getElementById("prod-cost-line");
+    // Fear & Greed Coeziv (card separat)
+    const FG_SCORE_EL = document.getElementById("fg-score-value");
+    const FG_LABEL_EL = document.getElementById("fg-score-label");
+    const FG_ZONE_EL = document.getElementById("fg-score-zone");
+    const FG_BAR_FILL_EL = document.getElementById("fg-bar-fill");
+    const FG_STRUCT_EL = document.getElementById("fg-struct-value");
+    const FG_TACT_EL = document.getElementById("fg-tact-value");
+    const FG_TENSION_EL = document.getElementById("fg-tension-value");
+    const FG_DESC_EL = document.getElementById("fg-description");
 
     const HISTORY_LIST_EL = document.getElementById("history-list");
     const HISTORY_META_EL = document.getElementById("history-meta");
@@ -775,6 +953,88 @@
       MM_RECO_EL.textContent = text;
     }
 
+   function mapFgZoneTitle(zone) {
+      switch ((zone || "").toLowerCase()) {
+        case "extreme_fear": return "Extreme Fear";
+        case "fear": return "Fear";
+        case "greed": return "Greed";
+        case "extreme_greed": return "Extreme Greed";
+        default: return "Neutral";
+      }
+    }
+
+    function buildFgDescription(fg) {
+      if (!fg) return "Indicatorul va fi populat automat după următorul update al mecanismului.";
+      const zone = (fg.combined_zone || "neutral").toLowerCase();
+      const tension = typeof fg.tension === "number" ? fg.tension : null;
+
+      let base;
+      if (zone === "extreme_fear") base = "Panică sau capitulare structurală; risc ridicat de mișcări rapide și dezordonate.";
+      else if (zone === "fear") base = "Aversiune la risc și poziționare defensivă; context util pentru prudență și management al dimensiunii pozițiilor.";
+      else if (zone === "greed") base = "Încredere ridicată și asumare mai mare de risc; context favorabil continuării trendului, dar cu atenție la epuizare.";
+      else if (zone === "extreme_greed") base = "Euforie și potențial de supra-extindere; istoric, astfel de zone preced frecvent faze de răcire sau corecție.";
+      else base = "Echilibru relativ între risc și oportunitate; mecanismul nu vede un avantaj emoțional decisiv.";
+
+      if (tension === null) return base;
+
+      let tensiuneText = "";
+      if (tension < 15) {
+        tensiuneText = " Aliniere bună între structură și emoție.";
+      } else if (tension < 30) {
+        tensiuneText = " Există o tensiune moderată între structură și emoția de piață.";
+      } else {
+        tensiuneText = " Dezalinere puternică între structură și emoție; context sensibil la schimbări de regim.";
+      }
+
+      return base + tensiuneText;
+    }
+
+    function updateFGCard(fg) {
+      if (!FG_SCORE_EL || !FG_BAR_FILL_EL || !FG_ZONE_EL) return;
+
+      if (!fg || typeof fg.combined !== "number" || !Number.isFinite(fg.combined)) {
+        FG_SCORE_EL.textContent = "–";
+        FG_LABEL_EL.textContent = "Indicator indisponibil momentan.";
+        FG_ZONE_EL.textContent = "n/a";
+        FG_ZONE_EL.className = "fg-zone-pill";
+        FG_BAR_FILL_EL.style.width = "0%";
+        if (FG_STRUCT_EL) FG_STRUCT_EL.textContent = "–";
+        if (FG_TACT_EL) FG_TACT_EL.textContent = "–";
+        if (FG_TENSION_EL) FG_TENSION_EL.textContent = "–";
+        if (FG_DESC_EL) FG_DESC_EL.textContent =
+          "Indicatorul va fi populat automat după următorul update al mecanismului.";
+        return;
+      }
+
+      const combined = fg.combined;
+      const structural = typeof fg.structural === "number" ? fg.structural : null;
+      const tactical = typeof fg.tactical_24h === "number" ? fg.tactical_24h : null;
+      const tension = typeof fg.tension === "number" ? fg.tension : null;
+      const zone = (fg.combined_zone || "neutral").toLowerCase();
+
+      FG_SCORE_EL.textContent = combined.toFixed(1);
+      FG_LABEL_EL.textContent = "Indice combinat (structură + tactică)";
+
+      FG_BAR_FILL_EL.style.width = Math.max(0, Math.min(100, combined)) + "%";
+
+      FG_ZONE_EL.textContent = mapFgZoneTitle(zone);
+      FG_ZONE_EL.className = "fg-zone-pill fg-zone-" + zone;
+
+      if (FG_STRUCT_EL) FG_STRUCT_EL.textContent =
+        structural !== null ? structural.toFixed(1) + " / 100" : "–";
+      if (FG_TACT_EL) FG_TACT_EL.textContent =
+        tactical !== null ? tactical.toFixed(1) + " / 100" : "–";
+      if (FG_TENSION_EL) {
+        if (tension !== null) {
+          FG_TENSION_EL.textContent = tension.toFixed(1);
+        } else {
+          FG_TENSION_EL.textContent = "–";
+        }
+      }
+
+      if (FG_DESC_EL) FG_DESC_EL.textContent = buildFgDescription(fg);
+    }
+    
     // ---------------- MECANISM (JSON) ----------------
 
     async function loadState() {
@@ -802,6 +1062,7 @@
         const liqStrength = state.liquidity_strength || null;
         const productionCosts = state.production_costs_usd || null;
         const productionRef = state.production_cost_reference || "average";
+        const fgBlock = state.fg || null;
 
         FLOW_BIAS = flowBias;
         FLOW_STRENGTH = flowStrength;
@@ -1041,6 +1302,8 @@ if (PROD_COST_LINE_EL) {
           }
         }
 
+        updateFGCard(fgBlock);
+        
         refreshMMRecommendation();
 
         renderChart();
