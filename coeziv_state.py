@@ -513,6 +513,148 @@ def classify_market_regime(row: pd.Series, dev_pct: Optional[float] = None) -> O
         "code": code,
     }
 
+def _clamp(x: float, lo: float, hi: float) -> float:
+    return max(lo, min(x, hi))
+
+
+def _fg_zone(score: float) -> str:
+    score = _clamp(score, 0.0, 100.0)
+    if score < 20.0:
+        return "extreme_fear"
+    if score < 40.0:
+        return "fear"
+    if score < 60.0:
+        return "neutral"
+    if score < 80.0:
+        return "greed"
+    return "extreme_greed"
+
+
+def _compute_fg_structural(state: Dict[str, Any]) -> float:
+    """
+    FG structural (0–100) derivat din:
+      - market_regime.code
+      - deviation_from_production
+    """
+    regime = state.get("market_regime") or {}
+    code = str(regime.get("code", ""))
+
+    # bază după trend (doar prefixul contează)
+    if code.startswith("up_trend_strong"):
+        regime_base = 80.0
+    elif code.startswith("up_trend_moderate"):
+        regime_base = 70.0
+    elif code.startswith("down_trend_strong"):
+        regime_base = 20.0
+    elif code.startswith("down_trend_moderate"):
+        regime_base = 30.0
+    elif code.startswith("range_bias_up"):
+        regime_base = 60.0
+    elif code.startswith("range_bias_down"):
+        regime_base = 40.0
+    elif code.startswith("range_neutral"):
+        regime_base = 50.0
+    else:
+        regime_base = 50.0  # fallback neutru
+
+    dev = state.get("deviation_from_production")
+    try:
+        dev = float(dev) if dev is not None else 0.0
+    except Exception:
+        dev = 0.0
+
+    dev_clamped = _clamp(dev, -0.5, 1.0)       # [-50%, +100%]
+    dev_score = 50.0 + dev_clamped * 50.0      # -0.5 -> 25, 0 -> 50, +1 -> 100
+
+    fg_struct = 0.5 * regime_base + 0.5 * dev_score
+    return _clamp(fg_struct, 0.0, 100.0)
+
+
+def _compute_fg_tactical(state: Dict[str, Any]) -> float:
+    """
+    FG tactic (24h) derivat din:
+      - signal
+      - signal_prob_breakdown.{in_direction, opposite}
+      - signal_expected_drift.{p10, p90}
+    """
+    signal = str(state.get("signal", "neutral")).lower()
+
+    breakdown = state.get("signal_prob_breakdown") or {}
+    p_in = float(breakdown.get("in_direction") or 0.0)
+    p_opp = float(breakdown.get("opposite") or 0.0)
+
+    drift = state.get("signal_expected_drift") or {}
+    p10 = float(drift.get("p10") or 0.0)
+    p90 = float(drift.get("p90") or 0.0)
+
+    # intensitatea semnalului (edge)
+    edge_mag = abs(p_in - p_opp)
+    intensity = _clamp(edge_mag / 0.25, 0.0, 1.0)  # 0.25 edge ~ full strength
+
+    if signal == "short":
+        fear_side = 1.0
+    elif signal == "long":
+        fear_side = -1.0
+    else:
+        fear_side = 0.0
+
+    fg_dir = 50.0 - fear_side * intensity * 40.0  # short puternic -> ~10, long puternic -> ~90
+
+    # volatilitatea intervalului așteptat
+    vol_range = p90 - p10            # ex. 0.06 ~ 6%
+    vol_mag = _clamp(vol_range / 0.08, 0.0, 1.0)  # 8% range ~ 1.0
+
+    stress_adjust = (vol_mag - 0.5) * 20.0        # -10 .. +10
+
+    fg_tactical = fg_dir - fear_side * stress_adjust
+    return _clamp(fg_tactical, 0.0, 100.0)
+
+
+def _combine_fg(fg_struct: float, fg_tactical: float) -> float:
+    """
+    Structura ancorează, tacticul deviază în interiorul spațiului rămas până la extreme.
+    """
+    fg_struct = _clamp(fg_struct, 0.0, 100.0)
+    fg_tactical = _clamp(fg_tactical, 0.0, 100.0)
+
+    max_dev = min(fg_struct, 100.0 - fg_struct)
+    emotion_delta = (fg_tactical - 50.0) / 50.0   # -1..+1
+
+    fg_combined = fg_struct + emotion_delta * max_dev
+    return _clamp(fg_combined, 0.0, 100.0)
+
+
+def _enrich_state_with_fg(state: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Adaugă blocul `fg` în state:
+      "fg": {
+        "structural": ...,
+        "tactical_24h": ...,
+        "combined": ...,
+        "tension": ...,
+        "structural_zone": "...",
+        "tactical_zone": "...",
+        "combined_zone": "..."
+      }
+    """
+    fg_struct = _compute_fg_structural(state)
+    fg_tact = _compute_fg_tactical(state)
+    fg_comb = _combine_fg(fg_struct, fg_tact)
+    tension = abs(fg_struct - fg_tact)
+
+    fg_block = {
+        "structural": round(fg_struct, 2),
+        "tactical_24h": round(fg_tact, 2),
+        "combined": round(fg_comb, 2),
+        "tension": round(tension, 2),
+        "structural_zone": _fg_zone(fg_struct),
+        "tactical_zone": _fg_zone(fg_tact),
+        "combined_zone": _fg_zone(fg_comb),
+    }
+
+    new_state = dict(state)
+    new_state["fg"] = fg_block
+    return new_state
 
 # ============================
 #  MESAJUL COEZIV PENTRU UTILIZATOR
@@ -806,7 +948,8 @@ def main() -> None:
         "liquidity_strength": liq.get("liquidity_strength"),
         "liquidity_components": liq.get("components", {}),
     }
-
+    # 12b. === Fear & Greed Coeziv ===
+    state = _enrich_state_with_fg(state)
     # 13. scriem JSON în folderul frontend-ului
     os.makedirs(STRATEGY_DIR, exist_ok=True)
     output_path = os.path.join(STRATEGY_DIR, "coeziv_state.json")
