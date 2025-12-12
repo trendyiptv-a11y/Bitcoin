@@ -1,17 +1,12 @@
 {
-  "timestamp": "2025-12-11T00:00:00+00:00",
-  "price_usd": 90256.0,
-  "model_price_usd": 90211.88,
+  "timestamp": "2025-12-12T00:00:00+00:00",
+  "price_usd": 92386.0,
+  "model_price_usd": 92335.31,
   "price_source": "spot",
-  "signal": "flat",
-  "message": "Prețul de tranzacționare la actualizarea sistemului: în jur de ~90,256 USD. Mecanismul vede un neutru. Fluxul actual de piață este orientat spre vânzare (moderat). Prețul este semnificativ peste costul estimat de producție, zonă specifică fazelor speculative moderate. Istoric, în contexte similare, mișcarea pe următoarele ~24 ore a fost de aproximativ -3.6% în scenariile mai pesimiste, 0.2% în scenariile mediene și până la 4.4% în scenariile mai favorabile. Nu este o recomandare de tranzacționare, ci o interpretare structurată a riscului.",
-  "generated_at": "2025-12-11T02:27:39.589445+00:00",
+  "signal": "short",
+  "message": "Prețul de tranzacționare la actualizarea sistemului: în jur de ~92,386 USD. Mecanismul vede un risc de scădere. Fluxul actual de piață este relativ echilibrat (slab). Lichiditatea este ridicată, iar mișcările de preț tind să fie mai stabile. Prețul este semnificativ peste costul estimat de producție, zonă specifică fazelor speculative moderate. Istoric, în contexte similare, mișcarea pe următoarele ~24 ore a fost de aproximativ -3.3% în scenariile mai pesimiste, 0.0% în scenariile mediene și până la 3.1% în scenariile mai favorabile. Nu este o recomandare de tranzacționare, ci o interpretare structurată a riscului.",
+  "generated_at": "2025-12-12T02:27:05.140025+00:00",
   "signal_history": [
-    {
-      "timestamp": "2025-11-12T00:00:00+00:00",
-      "signal": "short",
-      "model_price_usd": 101660.22
-    },
     {
       "timestamp": "2025-11-13T00:00:00+00:00",
       "signal": "short",
@@ -154,50 +149,55 @@
     },
     {
       "timestamp": "2025-12-11T00:00:00+00:00",
-      "signal": "flat",
-      "model_price_usd": 90211.88
+      "signal": "short",
+      "model_price_usd": 92546.9
+    },
+    {
+      "timestamp": "2025-12-12T00:00:00+00:00",
+      "signal": "short",
+      "model_price_usd": 92335.31
     }
   ],
-  "signal_probability": 0.20589936379410065,
-  "signal_prob_samples": 3458,
+  "signal_probability": 0.37363387978142076,
+  "signal_prob_samples": 1464,
   "signal_prob_horizon_hours": 24,
   "signal_prob_source": "ohlc",
   "signal_prob_breakdown": {
-    "in_direction": 0.20589936379410065,
-    "opposite": 0.4334875650665124,
-    "flat": 0.36061307113938695
+    "in_direction": 0.37363387978142076,
+    "opposite": 0.3866120218579235,
+    "flat": 0.23975409836065573
   },
   "signal_expected_drift": {
     "horizon_hours": 24,
-    "p10": -0.036285971905658326,
-    "p50": 0.001657021562286234,
-    "p90": 0.044286548628725435
+    "p10": -0.033004678910504584,
+    "p50": 0.00014396827324943983,
+    "p90": 0.030610331796300308
   },
   "market_regime": {
     "label": "Range cu bias pozitiv cu deviație normală față de model",
     "code": "range_bias_up_dev_normal"
   },
   "production_costs_usd": {
-    "cheap": 34199.66916534783,
-    "average": 62699.39346980436,
-    "expensive": 99749.03506559783
+    "cheap": 33946.34642348651,
+    "average": 62234.96844305861,
+    "expensive": 99010.17706850234
   },
   "production_cost_reference": "average",
-  "production_cost_as_of": "2025-12-11T02:27:39.489107+00:00",
-  "deviation_from_production": 0.4395035582515919,
-  "flow_score": -0.01984455608391016,
-  "flow_bias": "negativ",
-  "flow_strength": "moderat",
+  "production_cost_as_of": "2025-12-12T02:27:05.038901+00:00",
+  "deviation_from_production": 0.4844709061679341,
+  "flow_score": -0.002286300243444097,
+  "flow_bias": "neutru",
+  "flow_strength": "slab",
   "flow_components": {},
-  "liquidity_score": 0.023210690210646364,
-  "liquidity_regime": "moderată",
+  "liquidity_score": 0.012866367156833113,
+  "liquidity_regime": "ridicată",
   "liquidity_strength": "puternică",
   "liquidity_components": {},
   "fg": {
-    "structural": 65.99,
-    "tactical_24h": 50.0,
-    "combined": 65.99,
-    "tension": 15.99,
+    "structural": 67.11,
+    "tactical_24h": 42.02,
+    "combined": 61.86,
+    "tension": 25.09,
     "structural_zone": "greed",
     "tactical_zone": "neutral",
     "combined_zone": "greed"
