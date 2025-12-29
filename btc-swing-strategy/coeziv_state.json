@@ -1,17 +1,12 @@
 {
-  "timestamp": "2025-12-28T00:00:00+00:00",
-  "price_usd": 87787.0,
-  "model_price_usd": 87792.58,
+  "timestamp": "2025-12-29T00:00:00+00:00",
+  "price_usd": 89005.0,
+  "model_price_usd": 89096.77,
   "price_source": "spot",
   "signal": "flat",
-  "message": "Prețul de tranzacționare la actualizarea sistemului: în jur de ~87,787 USD. Mecanismul vede un neutru. Fluxul actual de piață este relativ echilibrat (slab). Lichiditatea este ridicată, iar mișcările de preț tind să fie mai stabile. Prețul este semnificativ peste costul estimat de producție, zonă specifică fazelor speculative moderate. Istoric, în contexte similare, mișcarea pe următoarele ~24 ore a fost de aproximativ -3.6% în scenariile mai pesimiste, 0.2% în scenariile mediene și până la 4.4% în scenariile mai favorabile. Nu este o recomandare de tranzacționare, ci o interpretare structurată a riscului.",
-  "generated_at": "2025-12-28T02:40:38.325808+00:00",
+  "message": "Prețul de tranzacționare la actualizarea sistemului: în jur de ~89,005 USD. Mecanismul vede un neutru. Fluxul actual de piață este orientat spre cumpărare (moderat). Lichiditatea este ridicată, iar mișcările de preț tind să fie mai stabile. Prețul este semnificativ peste costul estimat de producție, zonă specifică fazelor speculative moderate. Istoric, în contexte similare, mișcarea pe următoarele ~24 ore a fost de aproximativ -3.6% în scenariile mai pesimiste, 0.2% în scenariile mediene și până la 4.4% în scenariile mai favorabile. Nu este o recomandare de tranzacționare, ci o interpretare structurată a riscului.",
+  "generated_at": "2025-12-29T02:38:49.446003+00:00",
   "signal_history": [
-    {
-      "timestamp": "2025-11-29T00:00:00+00:00",
-      "signal": "short",
-      "model_price_usd": 90842.76
-    },
     {
       "timestamp": "2025-11-30T00:00:00+00:00",
       "signal": "short",
@@ -155,23 +150,28 @@
     {
       "timestamp": "2025-12-28T00:00:00+00:00",
       "signal": "flat",
-      "model_price_usd": 87792.58
+      "model_price_usd": 87886.81
+    },
+    {
+      "timestamp": "2025-12-29T00:00:00+00:00",
+      "signal": "flat",
+      "model_price_usd": 89096.77
     }
   ],
-  "signal_probability": 0.20794930875576037,
-  "signal_prob_samples": 3472,
+  "signal_probability": 0.20788943276706018,
+  "signal_prob_samples": 3473,
   "signal_prob_horizon_hours": 24,
   "signal_prob_source": "ohlc",
   "signal_prob_breakdown": {
-    "in_direction": 0.20794930875576037,
-    "opposite": 0.4314516129032258,
-    "flat": 0.36059907834101385
+    "in_direction": 0.20788943276706018,
+    "opposite": 0.4316153181687302,
+    "flat": 0.3604952490642096
   },
   "signal_expected_drift": {
     "horizon_hours": 24,
-    "p10": -0.03621232581567009,
-    "p50": 0.00162217908001171,
-    "p90": 0.04411762793021566
+    "p10": -0.03620267891860498,
+    "p50": 0.0016245391986132087,
+    "p90": 0.04411760880160793
   },
   "market_regime": {
     "label": "Range cu bias pozitiv cu deviație normală față de model",
@@ -183,21 +183,21 @@
     "expensive": 99052.35274129538
   },
   "production_cost_reference": "average",
-  "production_cost_as_of": "2025-12-28T02:40:38.224975+00:00",
-  "deviation_from_production": 0.40997293348904984,
-  "flow_score": -0.0003499071032507876,
-  "flow_bias": "neutru",
-  "flow_strength": "slab",
+  "production_cost_as_of": "2025-12-29T02:38:49.346943+00:00",
+  "deviation_from_production": 0.4295355912059061,
+  "flow_score": 0.01376725358446855,
+  "flow_bias": "pozitiv",
+  "flow_strength": "moderat",
   "flow_components": {},
-  "liquidity_score": 0.0027987558857480483,
+  "liquidity_score": 0.017370887855979542,
   "liquidity_regime": "ridicată",
-  "liquidity_strength": "puternică",
+  "liquidity_strength": "slabă",
   "liquidity_components": {},
   "fg": {
-    "structural": 65.25,
+    "structural": 65.74,
     "tactical_24h": 50.0,
-    "combined": 65.25,
-    "tension": 15.25,
+    "combined": 65.74,
+    "tension": 15.74,
     "structural_zone": "greed",
     "tactical_zone": "neutral",
     "combined_zone": "greed"
