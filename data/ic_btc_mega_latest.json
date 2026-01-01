@@ -1,9 +1,9 @@
 {
-  "date": "2025-12-31",
+  "date": "2026-01-01",
   "icc": 50.0,
-  "ic_struct": 52.36784140969163,
-  "ic_flux": 87.19957272565426,
-  "mega_score": 56.6,
+  "ic_struct": 52.24811892090292,
+  "ic_flux": 93.30722677109291,
+  "mega_score": 57.9,
   "mega_phase_code": "late_bull",
   "mega_phase_label": "Bull târziu / top structural posibil",
   "structure_label": "Structură neutră",
