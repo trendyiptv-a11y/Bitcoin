@@ -1,17 +1,12 @@
 {
-  "timestamp": "2026-01-11T00:00:00+00:00",
-  "price_usd": 90560.0,
-  "model_price_usd": 90564.94,
+  "timestamp": "2026-01-12T00:00:00+00:00",
+  "price_usd": 91637.0,
+  "model_price_usd": 91628.75,
   "price_source": "spot",
   "signal": "short",
-  "message": "Prețul de tranzacționare la actualizarea sistemului: în jur de ~90,560 USD. Mecanismul vede un risc de scădere. Fluxul actual de piață este relativ echilibrat (slab). Lichiditatea este ridicată, iar mișcările de preț tind să fie mai stabile. Prețul este semnificativ peste costul estimat de producție, zonă specifică fazelor speculative moderate. Istoric, în contexte similare, mișcarea pe următoarele ~24 ore a fost de aproximativ -3.3% în scenariile mai pesimiste, 0.0% în scenariile mediene și până la 3.1% în scenariile mai favorabile. Nu este o recomandare de tranzacționare, ci o interpretare structurată a riscului.",
-  "generated_at": "2026-01-11T02:42:14.373132+00:00",
+  "message": "Prețul de tranzacționare la actualizarea sistemului: în jur de ~91,637 USD. Mecanismul vede un risc de scădere. Fluxul actual de piață este relativ echilibrat (slab). Lichiditatea este ridicată, iar mișcările de preț tind să fie mai stabile. Prețul este semnificativ peste costul estimat de producție, zonă specifică fazelor speculative moderate. Istoric, în contexte similare, mișcarea pe următoarele ~24 ore a fost de aproximativ -3.3% în scenariile mai pesimiste, 0.0% în scenariile mediene și până la 3.1% în scenariile mai favorabile. Nu este o recomandare de tranzacționare, ci o interpretare structurată a riscului.",
+  "generated_at": "2026-01-12T02:38:07.672495+00:00",
   "signal_history": [
-    {
-      "timestamp": "2025-12-13T00:00:00+00:00",
-      "signal": "flat",
-      "model_price_usd": 90262.18
-    },
     {
       "timestamp": "2025-12-14T00:00:00+00:00",
       "signal": "flat",
@@ -155,23 +150,28 @@
     {
       "timestamp": "2026-01-11T00:00:00+00:00",
       "signal": "short",
-      "model_price_usd": 90564.94
+      "model_price_usd": 90885.04
+    },
+    {
+      "timestamp": "2026-01-12T00:00:00+00:00",
+      "signal": "short",
+      "model_price_usd": 91628.75
     }
   ],
-  "signal_probability": 0.37423312883435583,
-  "signal_prob_samples": 1467,
+  "signal_probability": 0.3739782016348774,
+  "signal_prob_samples": 1468,
   "signal_prob_horizon_hours": 24,
   "signal_prob_source": "ohlc",
   "signal_prob_breakdown": {
-    "in_direction": 0.37423312883435583,
-    "opposite": 0.38650306748466257,
-    "flat": 0.2392638036809816
+    "in_direction": 0.3739782016348774,
+    "opposite": 0.38760217983651224,
+    "flat": 0.23841961852861035
   },
   "signal_expected_drift": {
     "horizon_hours": 24,
-    "p10": -0.033024462736840655,
-    "p50": 8.464005031756946e-05,
-    "p90": 0.03100169011177745
+    "p10": -0.03301956590293415,
+    "p50": 8.636832682626093e-05,
+    "p90": 0.0309807146196385
   },
   "market_regime": {
     "label": "Range cu bias pozitiv cu deviație normală față de model",
@@ -183,21 +183,21 @@
     "expensive": 97859.20675590176
   },
   "production_cost_reference": "average",
-  "production_cost_as_of": "2026-01-11T02:42:14.276298+00:00",
-  "deviation_from_production": 0.472244994097486,
-  "flow_score": 0.0019158825981484106,
+  "production_cost_as_of": "2026-01-12T02:38:07.574990+00:00",
+  "deviation_from_production": 0.48975391479804903,
+  "flow_score": 0.008182974887836397,
   "flow_bias": "neutru",
   "flow_strength": "slab",
   "flow_components": {},
-  "liquidity_score": 0.002744881186914175,
+  "liquidity_score": 0.013724076777212437,
   "liquidity_regime": "ridicată",
   "liquidity_strength": "puternică",
   "liquidity_components": {},
   "fg": {
-    "structural": 66.81,
-    "tactical_24h": 42.03,
-    "combined": 61.52,
-    "tension": 24.78,
+    "structural": 67.24,
+    "tactical_24h": 41.82,
+    "combined": 61.89,
+    "tension": 25.42,
     "structural_zone": "greed",
     "tactical_zone": "neutral",
     "combined_zone": "greed"
