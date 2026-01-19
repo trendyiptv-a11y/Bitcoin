@@ -1,17 +1,12 @@
 {
-  "timestamp": "2026-01-18T00:00:00+00:00",
-  "price_usd": 94854.0,
-  "model_price_usd": 94855.75,
+  "timestamp": "2026-01-19T00:00:00+00:00",
+  "price_usd": 92468.0,
+  "model_price_usd": 92468.26,
   "price_source": "spot",
-  "signal": "short",
-  "message": "Prețul de tranzacționare la actualizarea sistemului: în jur de ~94,854 USD. Mecanismul vede un risc de scădere. Fluxul actual de piață este relativ echilibrat (slab). Lichiditatea este ridicată, iar mișcările de preț tind să fie mai stabile. Prețul este mult peste costul estimat de producție, ceea ce sugerează o fază speculativă ridicată. Istoric, în contexte similare, mișcarea pe următoarele ~24 ore a fost de aproximativ -3.3% în scenariile mai pesimiste, 0.0% în scenariile mediene și până la 3.1% în scenariile mai favorabile. Nu este o recomandare de tranzacționare, ci o interpretare structurată a riscului.",
-  "generated_at": "2026-01-18T02:41:10.207074+00:00",
+  "signal": "flat",
+  "message": "Prețul de tranzacționare la actualizarea sistemului: în jur de ~92,468 USD. Mecanismul vede un neutru. Fluxul actual de piață este orientat spre vânzare (moderat). Lichiditatea este ridicată, iar mișcările de preț tind să fie mai stabile. Prețul este mult peste costul estimat de producție, ceea ce sugerează o fază speculativă ridicată. Istoric, în contexte similare, mișcarea pe următoarele ~24 ore a fost de aproximativ -3.6% în scenariile mai pesimiste, 0.2% în scenariile mediene și până la 4.4% în scenariile mai favorabile. Nu este o recomandare de tranzacționare, ci o interpretare structurată a riscului.",
+  "generated_at": "2026-01-19T02:38:25.188141+00:00",
   "signal_history": [
-    {
-      "timestamp": "2025-12-20T00:00:00+00:00",
-      "signal": "flat",
-      "model_price_usd": 88340.83
-    },
     {
       "timestamp": "2025-12-21T00:00:00+00:00",
       "signal": "flat",
@@ -155,23 +150,28 @@
     {
       "timestamp": "2026-01-18T00:00:00+00:00",
       "signal": "short",
-      "model_price_usd": 94855.75
+      "model_price_usd": 93642.09
+    },
+    {
+      "timestamp": "2026-01-19T00:00:00+00:00",
+      "signal": "flat",
+      "model_price_usd": 92468.26
     }
   ],
-  "signal_probability": 0.373469387755102,
-  "signal_prob_samples": 1470,
+  "signal_probability": 0.20844099913867356,
+  "signal_prob_samples": 3483,
   "signal_prob_horizon_hours": 24,
   "signal_prob_source": "ohlc",
   "signal_prob_breakdown": {
-    "in_direction": 0.373469387755102,
-    "opposite": 0.3870748299319728,
-    "flat": 0.23945578231292516
+    "in_direction": 0.20844099913867356,
+    "opposite": 0.4315245478036176,
+    "flat": 0.36003445305770887
   },
   "signal_expected_drift": {
     "horizon_hours": 24,
-    "p10": -0.033004285929084505,
-    "p50": 8.636832682626093e-05,
-    "p90": 0.030938763635360692
+    "p10": -0.03610859198842416,
+    "p50": 0.0016245391986132087,
+    "p90": 0.04411539753034014
   },
   "market_regime": {
     "label": "Range cu bias pozitiv cu deviație normală față de model",
@@ -183,21 +183,21 @@
     "expensive": 97859.20675590176
   },
   "production_cost_reference": "average",
-  "production_cost_as_of": "2026-01-18T02:41:10.115867+00:00",
-  "deviation_from_production": 0.5420530771877533,
-  "flow_score": -0.002753851570617435,
-  "flow_bias": "neutru",
-  "flow_strength": "slab",
+  "production_cost_as_of": "2026-01-19T02:38:25.088350+00:00",
+  "deviation_from_production": 0.5032635834165894,
+  "flow_score": -0.012535281944262476,
+  "flow_bias": "negativ",
+  "flow_strength": "moderat",
   "flow_components": {},
-  "liquidity_score": 0.003906036270864015,
+  "liquidity_score": 0.016471814220360537,
   "liquidity_regime": "ridicată",
-  "liquidity_strength": "puternică",
+  "liquidity_strength": "moderată",
   "liquidity_components": {},
   "fg": {
-    "structural": 68.55,
-    "tactical_24h": 41.84,
-    "combined": 63.42,
-    "tension": 26.71,
+    "structural": 67.58,
+    "tactical_24h": 50.0,
+    "combined": 67.58,
+    "tension": 17.58,
     "structural_zone": "greed",
     "tactical_zone": "neutral",
     "combined_zone": "greed"
