@@ -4,3 +4,6 @@ requests>=2.31.0
 pandas
 numpy
 yfinance
+yfinance>=0.2.33
+pandas<2.2
+numpy<2.0
