@@ -1,11 +1,11 @@
 {
   "timestamp": "2026-01-21T00:00:00+00:00",
-  "price_usd": 88960.0,
+  "price_usd": 89994.0,
   "model_price_usd": 88971.28,
   "price_source": "spot",
   "signal": "short",
-  "message": "Prețul de tranzacționare la actualizarea sistemului: în jur de ~88,960 USD. Mecanismul vede un risc de scădere. Fluxul actual de piață este relativ echilibrat (slab). Lichiditatea este ridicată, iar mișcările de preț tind să fie mai stabile. Prețul este semnificativ peste costul estimat de producție, zonă specifică fazelor speculative moderate. Istoric, în contexte similare, mișcarea pe următoarele ~24 ore a fost de aproximativ -3.3% în scenariile mai pesimiste, 0.0% în scenariile mediene și până la 3.1% în scenariile mai favorabile. Nu este o recomandare de tranzacționare, ci o interpretare structurată a riscului.",
-  "generated_at": "2026-01-21T02:34:42.476734+00:00",
+  "message": "Prețul de tranzacționare la actualizarea sistemului: în jur de ~89,994 USD. Mecanismul vede un risc de scădere. Fluxul actual de piață este relativ echilibrat (slab). Lichiditatea este ridicată, iar mișcările de preț tind să fie mai stabile. Prețul este semnificativ peste costul estimat de producție, zonă specifică fazelor speculative moderate. Istoric, în contexte similare, mișcarea pe următoarele ~24 ore a fost de aproximativ -3.3% în scenariile mai pesimiste, 0.0% în scenariile mediene și până la 3.1% în scenariile mai favorabile. Nu este o recomandare de tranzacționare, ci o interpretare structurată a riscului.",
+  "generated_at": "2026-01-22T02:37:31.670707+00:00",
   "signal_history": [
     {
       "timestamp": "2025-12-23T00:00:00+00:00",
@@ -174,8 +174,8 @@
     "p90": 0.03089375538769806
   },
   "market_regime": {
-    "label": "Range cu bias pozitiv cu deviație normală față de model",
-    "code": "range_bias_up_dev_normal"
+    "label": "Range cu bias pozitiv cu deviație moderată față de model",
+    "code": "range_bias_up_dev_moderate"
   },
   "production_costs_usd": {
     "cheap": 33551.72803059488,
@@ -183,8 +183,8 @@
     "expensive": 97859.20675590176
   },
   "production_cost_reference": "average",
-  "production_cost_as_of": "2026-01-21T02:34:42.374498+00:00",
-  "deviation_from_production": 0.44623359844205335,
+  "production_cost_as_of": "2026-01-22T02:37:31.554471+00:00",
+  "deviation_from_production": 0.4630434628843767,
   "flow_score": 0.007261986126317656,
   "flow_bias": "neutru",
   "flow_strength": "slab",
@@ -194,10 +194,10 @@
   "liquidity_strength": "puternică",
   "liquidity_components": {},
   "fg": {
-    "structural": 66.16,
+    "structural": 66.58,
     "tactical_24h": 41.96,
-    "combined": 60.71,
-    "tension": 24.19,
+    "combined": 61.2,
+    "tension": 24.61,
     "structural_zone": "greed",
     "tactical_zone": "neutral",
     "combined_zone": "greed"
