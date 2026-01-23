@@ -8,39 +8,60 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: update-coezivx-btc-state
+  cancel-in-progress: false
+
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-      - name: Run Cohesiv Pipeline
+      # IMPORTANT: aducem ultimul main înainte să generăm fișiere
+      - name: Pull latest main
+        run: git pull --rebase origin main
+
+      - name: Run Cohesiv Pipeline (best effort)
         run: |
           python fetch_btc_daily.py
-          python run_cohesiv_pipeline.py
+          # dacă Yahoo pică în partea macro, nu dărâmăm jobul BTC
+          python run_cohesiv_pipeline.py || echo "Pipeline failed (likely Yahoo macro). Continuing to commit any produced outputs."
 
-      - name: Commit updated JSON
+      - name: Debug outputs
         run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "actions@github.com"
+          echo "=== git status ==="
+          git status --porcelain || true
+          echo "=== data/ ==="
+          ls -lah data || true
+          echo "=== data_global/ ==="
+          ls -lah data_global || true
 
-          # aduce ultimele schimbări de pe remote
-          git pull --rebase origin main || true
+      - name: Commit updated data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          # adaugă doar datele generate
+          # adaugă datele generate (BTC + macro dacă există)
           git add data/*.json data/*.csv || true
+          git add data_global/*.csv || true
 
           # dacă nu sunt schimbări, nu e problemă
           git commit -m "Auto-update data" || echo "Nothing to commit"
 
-          # dacă push-ul e blocat (de ex. alt run în paralel), nu dărâmă jobul
+          # dacă push-ul e blocat, nu dărâmă jobul
           git push origin main || echo "Push failed (will retry on next run)"
