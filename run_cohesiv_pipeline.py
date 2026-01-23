@@ -2,13 +2,12 @@
 # run_cohesiv_pipeline.py
 
 """
-Rulează întreg pipeline-ul Coeziv pentru BTC + macro:
+Pipeline Coeziv BTC-only (fără Yahoo / macro global).
 
-1. update_global_coeziv_state.py    → data_global/*.csv
-2. build_global_coeziv_state.py     → data/global_coeziv_state.json
-3. update_btc_state_latest_from_daily.py → data/btc_state_latest.json
-4. export_ic_btc_series.py          → data/ic_btc_series.json
-5. build_ic_btc_mega_state.py       → data/ic_btc_mega_latest.json
+Generează:
+1. data/btc_state_latest.json
+2. data/ic_btc_series.json
+3. data/ic_btc_mega_latest.json
 """
 
 import subprocess
@@ -27,16 +26,12 @@ def run(cmd: list[str]) -> None:
 
 
 def main() -> None:
-    # 1. macro global
-    run([sys.executable, "update_global_coeziv_state.py"])
-    run([sys.executable, "build_global_coeziv_state.py"])
-
-    # 2. BTC state + serie + mega
+    # BTC state + serie + mega (fără macro/yahoo)
     run([sys.executable, "update_btc_state_latest_from_daily.py"])
     run([sys.executable, "export_ic_btc_series.py"])
     run([sys.executable, "build_ic_btc_mega_state.py"])
 
-    print("\n[PIPELINE] ✅ Pipeline Coeziv BTC + Global complet.")
+    print("\n[PIPELINE] ✅ Pipeline Coeziv BTC complet (fără Yahoo).")
 
 
 if __name__ == "__main__":
