@@ -1,17 +1,12 @@
 {
-  "timestamp": "2026-02-01T00:00:00+00:00",
-  "price_usd": 78663.0,
-  "model_price_usd": 78692.08,
+  "timestamp": "2026-02-02T00:00:00+00:00",
+  "price_usd": 75293.0,
+  "model_price_usd": 75557.55,
   "price_source": "spot",
   "signal": "short",
-  "message": "Prețul de tranzacționare la actualizarea sistemului: în jur de ~78,663 USD. Mecanismul vede un risc de scădere. Fluxul actual de piață este relativ echilibrat (slab). Lichiditatea este ridicată, iar mișcările de preț tind să fie mai stabile. Prețul este semnificativ peste costul estimat de producție, zonă specifică fazelor speculative moderate. Istoric, în contexte similare, mișcarea pe următoarele ~24 ore a fost de aproximativ -3.3% în scenariile mai pesimiste, 0.0% în scenariile mediene și până la 3.0% în scenariile mai favorabile. Nu este o recomandare de tranzacționare, ci o interpretare structurată a riscului.",
-  "generated_at": "2026-02-01T03:36:31.204741+00:00",
+  "message": "Prețul de tranzacționare la actualizarea sistemului: în jur de ~75,293 USD. Mecanismul vede un risc de scădere. Fluxul actual de piață este orientat spre vânzare (moderat). Prețul este semnificativ peste costul estimat de producție, zonă specifică fazelor speculative moderate. Istoric, în contexte similare, mișcarea pe următoarele ~24 ore a fost de aproximativ -3.3% în scenariile mai pesimiste, 0.0% în scenariile mediene și până la 3.0% în scenariile mai favorabile. Nu este o recomandare de tranzacționare, ci o interpretare structurată a riscului.",
+  "generated_at": "2026-02-02T03:23:32.599759+00:00",
   "signal_history": [
-    {
-      "timestamp": "2026-01-03T00:00:00+00:00",
-      "signal": "flat",
-      "model_price_usd": 90598.87
-    },
     {
       "timestamp": "2026-01-04T00:00:00+00:00",
       "signal": "flat",
@@ -155,23 +150,28 @@
     {
       "timestamp": "2026-02-01T00:00:00+00:00",
       "signal": "short",
-      "model_price_usd": 78692.08
+      "model_price_usd": 76910.99
+    },
+    {
+      "timestamp": "2026-02-02T00:00:00+00:00",
+      "signal": "short",
+      "model_price_usd": 75557.55
     }
   ],
-  "signal_probability": 0.3742372881355932,
-  "signal_prob_samples": 1475,
+  "signal_probability": 0.37533875338753386,
+  "signal_prob_samples": 1476,
   "signal_prob_horizon_hours": 24,
   "signal_prob_source": "ohlc",
   "signal_prob_breakdown": {
-    "in_direction": 0.3742372881355932,
-    "opposite": 0.38508474576271184,
-    "flat": 0.24067796610169492
+    "in_direction": 0.37533875338753386,
+    "opposite": 0.38482384823848237,
+    "flat": 0.23983739837398374
   },
   "signal_expected_drift": {
     "horizon_hours": 24,
-    "p10": -0.03300461341360124,
-    "p50": 8.464005031756946e-05,
-    "p90": 0.03040114452339738
+    "p10": -0.03300454791669789,
+    "p50": 4.4253092469948085e-05,
+    "p90": 0.030388006166987523
   },
   "market_regime": {
     "label": "Range cu bias pozitiv cu deviație normală față de model",
@@ -183,21 +183,21 @@
     "expensive": 94649.31594916417
   },
   "production_cost_reference": "average",
-  "production_cost_as_of": "2026-02-01T03:36:31.098965+00:00",
-  "deviation_from_production": 0.3222037641074677,
-  "flow_score": 0.0003567069163258841,
-  "flow_bias": "neutru",
-  "flow_strength": "slab",
+  "production_cost_as_of": "2026-02-02T03:23:32.491965+00:00",
+  "deviation_from_production": 0.26555925925712937,
+  "flow_score": -0.017597485092832665,
+  "flow_bias": "negativ",
+  "flow_strength": "moderat",
   "flow_components": {},
-  "liquidity_score": 0.014391918475150402,
-  "liquidity_regime": "ridicată",
-  "liquidity_strength": "puternică",
+  "liquidity_score": 0.03591672837459676,
+  "liquidity_regime": "moderată",
+  "liquidity_strength": "moderată",
   "liquidity_components": {},
   "fg": {
-    "structural": 63.06,
-    "tactical_24h": 42.41,
-    "combined": 57.45,
-    "tension": 20.64,
+    "structural": 61.64,
+    "tactical_24h": 42.63,
+    "combined": 55.99,
+    "tension": 19.0,
     "structural_zone": "greed",
     "tactical_zone": "neutral",
     "combined_zone": "neutral"
