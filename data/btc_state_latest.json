@@ -1,27 +1,27 @@
 {
-  "as_of": "2026-02-06",
-  "close": 64456.37,
-  "ic_struct": 49.26,
-  "ic_dir": 8.94,
-  "vol30_ann_pct": 68.4,
-  "vol30_index": 59.36,
+  "as_of": "2026-02-07",
+  "close": 70394.8,
+  "ic_struct": 50.16,
+  "ic_dir": 13.55,
+  "vol30_ann_pct": 80.73,
+  "vol30_index": 69.97,
   "regime_code": "bear_struct",
   "regime_label": "Bear structural",
   "regime_short": "Trend descendent în formare / structură în răcire.",
   "regime_color": "red",
-  "prob_up": 0.2438,
-  "prob_down": 0.7562,
+  "prob_up": 0.284,
+  "prob_down": 0.716,
   "bias_label": "bias bear pronunțat",
   "confidence_label": "mediu",
-  "confidence_score": 62.4,
+  "confidence_score": 59.3,
   "context_short": {
     "trend": {
-      "text": "Trend: zonă de tranziție (IC 49), bias direcțional bear (ICD 9).",
+      "text": "Trend: zonă de tranziție (IC 50), bias direcțional bear (ICD 14).",
       "color": "orange"
     },
     "volatility": {
-      "text": "Volatilitate relativă: moderată (vol30 ~ 68.4%).",
-      "color": "orange"
+      "text": "Volatilitate relativă: ridicată (vol30 ~ 80.7%).",
+      "color": "red"
     },
     "macro": {
       "text": "Macro (scurt): –.",
