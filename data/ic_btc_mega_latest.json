@@ -1,13 +1,13 @@
 {
-  "date": "2026-04-21",
+  "date": "2026-04-22",
   "icc": 50.0,
-  "ic_struct": 43.38909875876956,
-  "ic_flux": 77.25209497206704,
-  "mega_score": 57.8,
+  "ic_struct": 42.75179856115108,
+  "ic_flux": 80.3979752138244,
+  "mega_score": 58.6,
   "mega_phase_code": "late_bull",
   "mega_phase_label": "Bull târziu / top structural posibil",
   "structure_label": "Structură neutră",
-  "direction_label": "Trend direcțional stabil",
+  "direction_label": "Extensie direcțională",
   "subcycles_label": "Structură policentrică activă",
   "show_base_card": false
 }
