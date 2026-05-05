@@ -1,26 +1,26 @@
 {
-  "as_of": "2026-05-04",
-  "close": 80422.42,
-  "ic_struct": 35.68,
-  "ic_dir": 59.22,
-  "vol30_ann_pct": 36.82,
-  "vol30_index": 15.97,
+  "as_of": "2026-05-05",
+  "close": 80853.66,
+  "ic_struct": 34.49,
+  "ic_dir": 60.91,
+  "vol30_ann_pct": 35.89,
+  "vol30_index": 14.89,
   "regime_code": "bull_struct",
   "regime_label": "Bull structural",
   "regime_short": "Trend ascendent în formare / consolidare structurală.",
   "regime_color": "green",
-  "prob_up": 0.5265,
-  "prob_down": 0.4735,
+  "prob_up": 0.5321,
+  "prob_down": 0.4679,
   "bias_label": "bias moderat bull",
   "confidence_label": "inconfident",
-  "confidence_score": 28.8,
+  "confidence_score": 29.4,
   "context_short": {
     "trend": {
-      "text": "Trend: zonă de tranziție (IC 36), bias direcțional bull (ICD 59).",
+      "text": "Trend: zonă de tranziție (IC 34), bias direcțional bull (ICD 61).",
       "color": "orange"
     },
     "volatility": {
-      "text": "Volatilitate relativă: scăzută (vol30 ~ 36.8%).",
+      "text": "Volatilitate relativă: scăzută (vol30 ~ 35.9%).",
       "color": "green"
     },
     "macro": {
