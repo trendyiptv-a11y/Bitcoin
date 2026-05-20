@@ -1,26 +1,26 @@
 {
-  "as_of": "2026-05-19",
-  "close": 76761.01,
-  "ic_struct": 27.62,
-  "ic_dir": 52.53,
-  "vol30_ann_pct": 27.25,
-  "vol30_index": 6.15,
+  "as_of": "2026-05-20",
+  "close": 76693.23,
+  "ic_struct": 27.81,
+  "ic_dir": 54.79,
+  "vol30_ann_pct": 25.59,
+  "vol30_index": 4.34,
   "regime_code": "mixed",
   "regime_label": "Regim mixt / de tranziție",
   "regime_short": "Configurație neclară: structură și direcționalitate amestecate.",
   "regime_color": "grey",
-  "prob_up": 0.5047,
-  "prob_down": 0.4953,
+  "prob_up": 0.5098,
+  "prob_down": 0.4902,
   "bias_label": "echilibrat",
   "confidence_label": "inconfident",
-  "confidence_score": 18.6,
+  "confidence_score": 20.5,
   "context_short": {
     "trend": {
-      "text": "Trend: zonă de tranziție (IC 28), bias direcțional bull (ICD 53).",
+      "text": "Trend: zonă de tranziție (IC 28), bias direcțional bull (ICD 55).",
       "color": "orange"
     },
     "volatility": {
-      "text": "Volatilitate relativă: scăzută (vol30 ~ 27.3%).",
+      "text": "Volatilitate relativă: scăzută (vol30 ~ 25.6%).",
       "color": "green"
     },
     "macro": {
