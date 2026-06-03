@@ -1,17 +1,12 @@
 {
-  "timestamp": "2026-06-02T00:00:00+00:00",
-  "price_usd": 70511.0,
-  "model_price_usd": 70724.92,
+  "timestamp": "2026-06-03T00:00:00+00:00",
+  "price_usd": 67019.0,
+  "model_price_usd": 67133.04,
   "price_source": "spot",
-  "signal": "flat",
-  "message": "Prețul de tranzacționare la actualizarea sistemului: în jur de ~70,511 USD. Mecanismul vede un neutru. Fluxul actual de piață este relativ echilibrat (slab). Lichiditatea este ridicată, iar mișcările de preț tind să fie mai stabile. Prețul este semnificativ peste costul estimat de producție, zonă specifică fazelor speculative moderate. Istoric, în contexte similare, mișcarea pe următoarele ~24 ore a fost de aproximativ -3.6% în scenariile mai pesimiste, 0.2% în scenariile mediene și până la 4.4% în scenariile mai favorabile. Nu este o recomandare de tranzacționare, ci o interpretare structurată a riscului.",
-  "generated_at": "2026-06-02T05:08:04.207926+00:00",
+  "signal": "short",
+  "message": "Prețul de tranzacționare la actualizarea sistemului: în jur de ~67,019 USD. Mecanismul vede un risc de scădere. Fluxul actual de piață este relativ echilibrat (slab). Prețul este într-o zonă de echilibru față de costul estimat de producție al rețelei. Istoric, în contexte similare, mișcarea pe următoarele ~24 ore a fost de aproximativ -3.3% în scenariile mai pesimiste, 0.0% în scenariile mediene și până la 3.0% în scenariile mai favorabile. Nu este o recomandare de tranzacționare, ci o interpretare structurată a riscului.",
+  "generated_at": "2026-06-03T05:23:39.846069+00:00",
   "signal_history": [
-    {
-      "timestamp": "2026-05-04T00:00:00+00:00",
-      "signal": "flat",
-      "model_price_usd": 79847.88
-    },
     {
       "timestamp": "2026-05-05T00:00:00+00:00",
       "signal": "flat",
@@ -154,24 +149,29 @@
     },
     {
       "timestamp": "2026-06-02T00:00:00+00:00",
-      "signal": "flat",
-      "model_price_usd": 70724.92
+      "signal": "short",
+      "model_price_usd": 66674.34
+    },
+    {
+      "timestamp": "2026-06-03T00:00:00+00:00",
+      "signal": "short",
+      "model_price_usd": 67133.04
     }
   ],
-  "signal_probability": 0.20792902689215415,
-  "signal_prob_samples": 3607,
+  "signal_probability": 0.37440435670524164,
+  "signal_prob_samples": 1469,
   "signal_prob_horizon_hours": 24,
   "signal_prob_source": "ohlc",
   "signal_prob_breakdown": {
-    "in_direction": 0.20792902689215415,
-    "opposite": 0.42944275020792905,
-    "flat": 0.3626282228999168
+    "in_direction": 0.37440435670524164,
+    "opposite": 0.38529611980939416,
+    "flat": 0.24029952348536418
   },
   "signal_expected_drift": {
     "horizon_hours": 24,
-    "p10": -0.03562688161200549,
-    "p50": 0.0015439020783487225,
-    "p90": 0.04353337699599752
+    "p10": -0.033351102784669226,
+    "p50": 8.464005031756946e-05,
+    "p90": 0.030498450476826325
   },
   "market_regime": {
     "label": "Range cu bias pozitiv cu deviație normală față de model",
@@ -183,23 +183,23 @@
     "expensive": 92836.91106224971
   },
   "production_cost_reference": "average",
-  "production_cost_as_of": "2026-06-02T05:08:04.105808+00:00",
-  "deviation_from_production": 0.20831886396859342,
-  "flow_score": -0.008474624982878804,
+  "production_cost_as_of": "2026-06-03T05:23:39.738346+00:00",
+  "deviation_from_production": 0.14847785372936367,
+  "flow_score": 0.006879708145592399,
   "flow_bias": "neutru",
   "flow_strength": "slab",
   "flow_components": {},
-  "liquidity_score": 0.018454315678264572,
-  "liquidity_regime": "ridicată",
+  "liquidity_score": 0.02696362327700342,
+  "liquidity_regime": "moderată",
   "liquidity_strength": "moderată",
   "liquidity_components": {},
   "fg": {
-    "structural": 60.21,
-    "tactical_24h": 50.0,
-    "combined": 60.21,
-    "tension": 10.21,
-    "structural_zone": "greed",
+    "structural": 58.71,
+    "tactical_24h": 42.29,
+    "combined": 52.35,
+    "tension": 16.42,
+    "structural_zone": "neutral",
     "tactical_zone": "neutral",
-    "combined_zone": "greed"
+    "combined_zone": "neutral"
   }
 }
