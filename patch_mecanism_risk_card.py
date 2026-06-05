@@ -144,6 +144,23 @@ JS = r'''
       return `~${Number(value).toFixed(0)} zile`;
     }
 
+    function riskRegimeLabel(regime) {
+      const r = (regime || "").toLowerCase();
+      const map = {
+        bear_struct: "Degradare structurală",
+        bear_late: "Degradare avansată",
+        accum_bear: "Acumulare fragilă",
+        bull_struct: "Structură pozitivă",
+        bull_late: "Expansiune matură",
+        accum_bull: "Acumulare pozitivă",
+        range_pos: "Range cu bias pozitiv",
+        range_neg: "Range cu bias negativ",
+        range_neutral: "Range neutru",
+        neutral: "Tranziție neutră"
+      };
+      return map[r] || (regime || "n/a");
+    }
+
     function riskLevelLabel(level, active) {
       if (!active) return "Fereastră normală";
       if (level === "high") return "Risc structural ridicat";
@@ -171,7 +188,7 @@ JS = r'''
       }
       if (RISK_RATE_EL) RISK_RATE_EL.textContent = riskPct(rate);
       if (RISK_DAYS_EL) RISK_DAYS_EL.textContent = riskDays(days);
-      if (RISK_REGIME_EL) RISK_REGIME_EL.textContent = regime;
+      if (RISK_REGIME_EL) RISK_REGIME_EL.textContent = riskRegimeLabel(regime);
       if (RISK_STREAK_EL) RISK_STREAK_EL.textContent = `${streak} zile`;
       if (RISK_FOOTER_EL && data.footer) RISK_FOOTER_EL.textContent = data.footer;
     }
@@ -201,6 +218,21 @@ def replace_block(text, start, end, block):
     return None
 
 
+def replace_js_block(text):
+    marker = '    const RISK_WINDOW_URL = "risk_window.json";'
+    end_marker = '    async function loadRiskWindow() {'
+    if marker not in text:
+        return text
+    a = text.index(marker)
+    b = text.index(end_marker, a)
+    # include async function block until before next known section; safest marker is function formatDate
+    next_marker = '    function formatDate(iso) {'
+    c = text.find(next_marker, b)
+    if c == -1:
+        return text
+    return text[:a] + JS.strip("\n") + "\n\n" + text[c:]
+
+
 def main():
     text = HTML.read_text(encoding='utf-8')
 
@@ -217,6 +249,8 @@ def main():
 
     if 'const RISK_WINDOW_URL = "risk_window.json";' not in text:
         text = text.replace('    const STATE_URL = "coeziv_state.json";', '    const STATE_URL = "coeziv_state.json";' + JS)
+    elif 'function riskRegimeLabel(regime)' not in text:
+        text = replace_js_block(text)
 
     if 'loadRiskWindow();' not in text:
         text = text.replace('    loadState();', '    loadState();\n    loadRiskWindow();')
