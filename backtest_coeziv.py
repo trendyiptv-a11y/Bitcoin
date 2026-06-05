@@ -9,6 +9,7 @@ Scop:
 - citește data/ic_btc_series.json;
 - aplică generate_signals() din btc-swing-strategy/btc_swing_strategy.py;
 - verifică ce s-a întâmplat după fiecare semnal pe mai multe orizonturi;
+- testează evenimentele de degradare structurală (bear_struct) versus drawdown-uri ulterioare;
 - salvează rezultate fără să modifice mecanismul live.
 
 Output:
@@ -41,6 +42,12 @@ OUT_SUMMARY = DATA_DIR / "coeziv_backtest_summary.json"
 HORIZONS_DAYS = [1, 7, 30, 90]
 MOVE_THRESHOLD = 0.005  # 0.5% prag pentru direcție relevantă
 FEE = 0.001             # cost ipotetic per schimbare poziție, 0.1%
+
+# Test special pentru ipoteza: degradarea structurală apare înaintea scăderii majore.
+DEGRADATION_REGIMES = {"bear_struct", "bear_late", "accum_bear"}
+MAJOR_DRAWDOWN_THRESHOLD = -0.20
+DEGRADATION_WINDOWS_DAYS = [30, 60, 90, 180]
+COOLDOWN_DAYS = 30  # evită numărarea aceleiași faze bear ca evenimente zilnice multiple
 
 
 if str(STRATEGY_DIR) not in sys.path:
@@ -247,6 +254,149 @@ def add_equity_summary(summary: Dict[str, Any], df: pd.DataFrame) -> Dict[str, A
     return summary
 
 
+def _is_degradation_regime(regime: Any) -> bool:
+    return str(regime or "").lower() in DEGRADATION_REGIMES
+
+
+def find_structural_degradation_events(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Identifică primele intrări în regim de degradare structurală.
+
+    Un eveniment este păstrat doar dacă:
+    - ziua curentă este în DEGRADATION_REGIMES;
+    - ziua precedentă nu era în DEGRADATION_REGIMES;
+    - au trecut cel puțin COOLDOWN_DAYS de la ultimul eveniment păstrat.
+
+    Astfel evităm să numărăm aceeași fază bear de zeci/sute de ori.
+    """
+    if df.empty:
+        return df.copy()
+
+    out = df.copy()
+    out["is_degradation_regime"] = out["regime"].apply(_is_degradation_regime)
+    out["was_degradation_regime"] = out["is_degradation_regime"].shift(1).fillna(False)
+    candidates = out[out["is_degradation_regime"] & (~out["was_degradation_regime"])].copy()
+
+    kept_rows = []
+    last_event_date = None
+    for ts, row in candidates.iterrows():
+        if last_event_date is not None:
+            delta_days = (ts - last_event_date).days
+            if delta_days < COOLDOWN_DAYS:
+                continue
+        kept_rows.append((ts, row))
+        last_event_date = ts
+
+    if not kept_rows:
+        return out.iloc[0:0].copy()
+
+    events = pd.DataFrame([row for _, row in kept_rows], index=[ts for ts, _ in kept_rows])
+    return events
+
+
+def analyze_structural_degradation(df: pd.DataFrame) -> Dict[str, Any]:
+    """
+    Testează ipoteza:
+    Prima apariție a degradării structurale este urmată de drawdown major?
+
+    Pentru fiecare eveniment, calculează drawdown-ul minim față de prețul de intrare
+    în ferestrele 30/60/90/180 zile și timpul până la atingerea pragului -20%.
+    """
+    events = find_structural_degradation_events(df)
+
+    result: Dict[str, Any] = {
+        "definition": {
+            "degradation_regimes": sorted(DEGRADATION_REGIMES),
+            "major_drawdown_threshold": MAJOR_DRAWDOWN_THRESHOLD,
+            "windows_days": DEGRADATION_WINDOWS_DAYS,
+            "cooldown_days": COOLDOWN_DAYS,
+            "interpretation": "Confirmat dacă minimul din fereastră scade cu cel puțin 20% față de prețul din ziua evenimentului.",
+        },
+        "event_count": int(len(events)),
+        "windows": {},
+        "events": [],
+    }
+
+    if events.empty:
+        return result
+
+    close = df["close"].astype(float)
+
+    for ts, event in events.iterrows():
+        entry_price = float(event["close"])
+        event_record: Dict[str, Any] = {
+            "date": ts.isoformat(),
+            "regime": str(event.get("regime")),
+            "signal": str(event.get("signal")),
+            "entry_price": entry_price,
+            "ic_struct": _safe_float(event.get("ic_struct")),
+            "ic_dir": _safe_float(event.get("ic_dir")),
+            "ic_flux": _safe_float(event.get("ic_flux")),
+            "windows": {},
+        }
+
+        for window in DEGRADATION_WINDOWS_DAYS:
+            end_ts = ts + pd.Timedelta(days=window)
+            future = close[(close.index > ts) & (close.index <= end_ts)]
+
+            if future.empty or entry_price <= 0:
+                event_record["windows"][f"{window}d"] = {
+                    "available": False,
+                    "confirmed": None,
+                    "min_drawdown": None,
+                    "days_to_threshold": None,
+                    "min_price": None,
+                }
+                continue
+
+            drawdowns = future / entry_price - 1.0
+            min_drawdown = float(drawdowns.min())
+            min_ts = drawdowns.idxmin()
+            min_price = float(future.loc[min_ts])
+
+            threshold_hits = drawdowns[drawdowns <= MAJOR_DRAWDOWN_THRESHOLD]
+            if threshold_hits.empty:
+                confirmed = False
+                days_to_threshold = None
+            else:
+                confirmed = True
+                first_hit_ts = threshold_hits.index[0]
+                days_to_threshold = int((first_hit_ts - ts).days)
+
+            event_record["windows"][f"{window}d"] = {
+                "available": True,
+                "confirmed": confirmed,
+                "min_drawdown": min_drawdown,
+                "days_to_threshold": days_to_threshold,
+                "min_price": min_price,
+            }
+
+        result["events"].append(event_record)
+
+    for window in DEGRADATION_WINDOWS_DAYS:
+        key = f"{window}d"
+        available = [e for e in result["events"] if e["windows"][key]["available"]]
+        confirmed = [e for e in available if e["windows"][key]["confirmed"] is True]
+        min_drawdowns = [e["windows"][key]["min_drawdown"] for e in available]
+        days_to_threshold = [
+            e["windows"][key]["days_to_threshold"]
+            for e in confirmed
+            if e["windows"][key]["days_to_threshold"] is not None
+        ]
+
+        result["windows"][key] = {
+            "available_events": len(available),
+            "confirmed_events": len(confirmed),
+            "confirmation_rate": (len(confirmed) / len(available)) if available else None,
+            "avg_min_drawdown": float(pd.Series(min_drawdowns).mean()) if min_drawdowns else None,
+            "median_min_drawdown": float(pd.Series(min_drawdowns).median()) if min_drawdowns else None,
+            "avg_days_to_threshold": float(pd.Series(days_to_threshold).mean()) if days_to_threshold else None,
+            "median_days_to_threshold": float(pd.Series(days_to_threshold).median()) if days_to_threshold else None,
+        }
+
+    return result
+
+
 def main() -> None:
     df = load_ic_series()
     df = generate_signals(df)
@@ -258,6 +408,7 @@ def main() -> None:
     df_bt = simulate_position_equity(df_bt)
     summary = summarize_by_signal(df_bt)
     summary = add_equity_summary(summary, df_bt)
+    summary["structural_degradation_events"] = analyze_structural_degradation(df_bt)
 
     DATA_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -277,6 +428,7 @@ def main() -> None:
     print(f"[OK] Backtest coeziv salvat în: {OUT_RESULTS}")
     print(f"[OK] Sumar backtest salvat în: {OUT_SUMMARY}")
     print(json.dumps(summary.get("equity_simulation", {}), ensure_ascii=False, indent=2))
+    print(json.dumps(summary.get("structural_degradation_events", {}).get("windows", {}), ensure_ascii=False, indent=2))
 
 
 if __name__ == "__main__":
