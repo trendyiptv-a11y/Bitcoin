@@ -37,19 +37,23 @@ jobs:
         run: |
           python backtest_coeziv.py
 
+      - name: Patch mecanism HTML with risk window card
+        run: |
+          python patch_mecanism_risk_card.py
+
       - name: Show risk window
         run: |
           cat btc-swing-strategy/risk_window.json
 
-      - name: Commit risk window if changed
+      - name: Commit risk window and HTML card if changed
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add btc-swing-strategy/risk_window.json
+          git add btc-swing-strategy/risk_window.json btc-swing-strategy/mecanism.html
           if git diff --cached --quiet; then
-            echo "No risk_window.json changes to commit."
+            echo "No risk_window.json or mecanism.html changes to commit."
           else
-            git commit -m "Update coeziv risk window"
+            git commit -m "Update coeziv risk window card"
             git push
           fi
 
@@ -61,4 +65,5 @@ jobs:
             data/coeziv_backtest_results.csv
             data/coeziv_backtest_summary.json
             btc-swing-strategy/risk_window.json
+            btc-swing-strategy/mecanism.html
           if-no-files-found: error
