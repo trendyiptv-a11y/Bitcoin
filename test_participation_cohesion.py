@@ -16,6 +16,7 @@ IC_SERIES_PATH = ROOT / "data" / "ic_btc_series.json"
 OUT_PATH = ROOT / "data" / "participation_cohesion_test.json"
 OUT_SERIES = ROOT / "data" / "participation_cohesion_series.csv"
 OUT_SUMMARY = ROOT / "data" / "participation_cohesion_history_summary.json"
+OUT_CARD = ROOT / "btc-swing-strategy" / "participation_cohesion.json"
 
 
 def clamp(x: float, lo: float = 0.0, hi: float = 100.0) -> float:
@@ -44,6 +45,16 @@ def label_from_score(score: float) -> str:
     return "participare degradată"
 
 
+def level_from_score(score: float) -> str:
+    if score >= 70:
+        return "cohesive"
+    if score >= 50:
+        return "tense"
+    if score >= 30:
+        return "fragile"
+    return "degraded"
+
+
 def load_state() -> Dict[str, Any]:
     with STATE_PATH.open("r", encoding="utf-8") as f:
         return json.load(f)
@@ -63,14 +74,7 @@ def load_ic_series() -> pd.DataFrame:
     return df
 
 
-def score_core(
-    flow: float,
-    liquidity: float,
-    deviation: float,
-    prob: float,
-    short_ratio: float,
-    long_ratio: float,
-) -> Dict[str, Any]:
+def score_core(flow: float, liquidity: float, deviation: float, prob: float, short_ratio: float, long_ratio: float) -> Dict[str, Any]:
     liquidity_component = clamp(50.0 + liquidity * 900.0)
     flow_component = clamp(50.0 + flow * 1200.0)
     production_component = norm_abs_small(deviation, 0.35)
@@ -89,6 +93,7 @@ def score_core(
     return {
         "score": score,
         "label": label_from_score(score),
+        "level": level_from_score(score),
         "components": {
             "liquidity_component": round(liquidity_component, 2),
             "flow_component": round(flow_component, 2),
@@ -113,14 +118,7 @@ def score_from_state(state: Dict[str, Any]) -> Dict[str, Any]:
     long_days = sum(1 for r in recent if str(r.get("signal", "")).lower() == "long")
     flat_days = sum(1 for r in recent if str(r.get("signal", "")).lower() == "flat")
 
-    out = score_core(
-        flow=flow,
-        liquidity=liquidity,
-        deviation=deviation,
-        prob=prob,
-        short_ratio=short_days / total_days,
-        long_ratio=long_days / total_days,
-    )
+    out = score_core(flow, liquidity, deviation, prob, short_days / total_days, long_days / total_days)
     out.update({
         "signal": signal,
         "inputs": {
@@ -152,8 +150,6 @@ def infer_signal(row: pd.Series) -> str:
 def build_history(df: pd.DataFrame) -> pd.DataFrame:
     out = df.copy()
     out["signal_proxy"] = out.apply(infer_signal, axis=1)
-
-    # Proxy-uri istorice, pentru a putea testa pe toată seria fără coeziv_state zilnic.
     out["flow_proxy"] = out.get("ic_flux", 0).fillna(0).clip(-0.08, 0.08)
     out["liquidity_proxy"] = (out.get("ic_struct", 0).fillna(0).abs() * 0.04 + out.get("ic_flux", 0).fillna(0).abs() * 0.25).clip(0, 0.08)
 
@@ -189,6 +185,7 @@ def build_history(df: pd.DataFrame) -> pd.DataFrame:
             "signal_proxy": row.get("signal_proxy"),
             "participation_score": sc["score"],
             "participation_label": sc["label"],
+            "participation_level": sc["level"],
             "liquidity_component": comps["liquidity_component"],
             "flow_component": comps["flow_component"],
             "production_component": comps["production_component"],
@@ -220,6 +217,48 @@ def summarize_history(hist: pd.DataFrame) -> Dict[str, Any]:
     }
 
 
+def build_card(snapshot: Dict[str, Any], summary: Dict[str, Any]) -> Dict[str, Any]:
+    test = snapshot["participation_cohesion_test"]
+    score = num(test.get("score"))
+    label = str(test.get("label", "participare necunoscută"))
+    level = str(test.get("level", level_from_score(score)))
+    comps = test.get("components") or {}
+    inputs = test.get("inputs") or {}
+
+    if score >= 70:
+        main_text = "Participanții par activi și relativ coezivi. Interesul pentru ecosistem persistă, iar comportamentul observabil nu indică abandon."
+    elif score >= 50:
+        main_text = "Participanții rămân activi, dar comportamentul este tensionat. Interesul persistă, însă fluxul dominant poate fi defensiv sau orientat spre ieșire."
+    elif score >= 30:
+        main_text = "Participarea pare fragilă. Activitatea există, dar coeziunea comportamentală este slăbită."
+    else:
+        main_text = "Participarea pare degradată. Modelul observă semne de retragere puternică a interesului participanților."
+
+    return {
+        "title": "COEZIUNE_PARTICIPATIVA",
+        "score": score,
+        "label": label,
+        "level": level,
+        "signal": test.get("signal"),
+        "main_text": main_text,
+        "components": comps,
+        "inputs": inputs,
+        "history": {
+            "rows": summary.get("rows"),
+            "from": summary.get("from"),
+            "to": summary.get("to"),
+            "mean_score": summary.get("mean_score"),
+            "median_score": summary.get("median_score"),
+            "min_score": summary.get("min_score"),
+            "max_score": summary.get("max_score"),
+            "label_counts": summary.get("label_counts"),
+        },
+        "footer": "Indicator experimental derivat din flux, lichiditate, persistență și tensiune față de model. Nu măsoară încă direct utilizarea peer-to-peer on-chain.",
+        "generated_at": snapshot.get("generated_at"),
+        "source_timestamp": snapshot.get("source_timestamp"),
+    }
+
+
 def main() -> None:
     state = load_state()
     snapshot_result = {
@@ -232,19 +271,24 @@ def main() -> None:
     df = load_ic_series()
     hist = build_history(df)
     hist_summary = summarize_history(hist)
+    card = build_card(snapshot_result, hist_summary)
 
     OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
+    OUT_CARD.parent.mkdir(parents=True, exist_ok=True)
     OUT_PATH.write_text(json.dumps(snapshot_result, ensure_ascii=False, indent=2), encoding="utf-8")
     hist.to_csv(OUT_SERIES, index=False)
     OUT_SUMMARY.write_text(json.dumps(hist_summary, ensure_ascii=False, indent=2), encoding="utf-8")
+    OUT_CARD.write_text(json.dumps(card, ensure_ascii=False, indent=2), encoding="utf-8")
 
     print(json.dumps({
         "snapshot": snapshot_result,
         "history_summary": hist_summary,
+        "card": card,
         "outputs": {
             "snapshot_json": str(OUT_PATH),
             "history_csv": str(OUT_SERIES),
             "history_summary_json": str(OUT_SUMMARY),
+            "card_json": str(OUT_CARD),
         }
     }, ensure_ascii=False, indent=2))
 
