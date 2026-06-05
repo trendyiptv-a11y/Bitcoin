@@ -41,6 +41,10 @@ jobs:
         run: |
           python patch_mecanism_risk_card.py
 
+      - name: Restore mecanism core JS
+        run: |
+          python patch_mecanism_core_js.py
+
       - name: Patch mecanism HTML state fallback
         run: |
           python - <<'PY'
