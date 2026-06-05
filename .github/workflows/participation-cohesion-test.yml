@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 defaults:
   run:
@@ -18,6 +18,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          persist-credentials: true
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -37,9 +39,25 @@ jobs:
         run: |
           cat data/participation_cohesion_test.json
 
+      - name: Show participation cohesion card
+        run: |
+          cat btc-swing-strategy/participation_cohesion.json
+
       - name: Show participation cohesion history summary
         run: |
           cat data/participation_cohesion_history_summary.json
+
+      - name: Commit participation cohesion card if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add btc-swing-strategy/participation_cohesion.json
+          if git diff --cached --quiet; then
+            echo "No participation_cohesion.json changes to commit."
+          else
+            git commit -m "Update participation cohesion card data"
+            git push
+          fi
 
       - name: Upload participation cohesion artifacts
         uses: actions/upload-artifact@v4
@@ -49,4 +67,5 @@ jobs:
             data/participation_cohesion_test.json
             data/participation_cohesion_series.csv
             data/participation_cohesion_history_summary.json
+            btc-swing-strategy/participation_cohesion.json
           if-no-files-found: error
