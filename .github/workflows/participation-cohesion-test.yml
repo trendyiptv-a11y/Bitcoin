@@ -33,13 +33,20 @@ jobs:
         run: |
           python test_participation_cohesion.py
 
-      - name: Show participation cohesion result
+      - name: Show participation cohesion snapshot
         run: |
           cat data/participation_cohesion_test.json
 
-      - name: Upload participation cohesion artifact
+      - name: Show participation cohesion history summary
+        run: |
+          cat data/participation_cohesion_history_summary.json
+
+      - name: Upload participation cohesion artifacts
         uses: actions/upload-artifact@v4
         with:
           name: participation-cohesion-test
-          path: data/participation_cohesion_test.json
+          path: |
+            data/participation_cohesion_test.json
+            data/participation_cohesion_series.csv
+            data/participation_cohesion_history_summary.json
           if-no-files-found: error
