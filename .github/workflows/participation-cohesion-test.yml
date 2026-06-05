@@ -1,0 +1,45 @@
+name: Participation Cohesion Test
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  test:
+    name: Run participation cohesion test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas
+
+      - name: Run participation cohesion test
+        run: |
+          python test_participation_cohesion.py
+
+      - name: Show participation cohesion result
+        run: |
+          cat data/participation_cohesion_test.json
+
+      - name: Upload participation cohesion artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: participation-cohesion-test
+          path: data/participation_cohesion_test.json
+          if-no-files-found: error
