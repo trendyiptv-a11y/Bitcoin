@@ -649,7 +649,7 @@
 
 
 
-        <!-- RISK_WINDOW_CARD_START -->
+            <!-- RISK_WINDOW_CARD_START -->
     <div class="card card-secondary" id="risk-window-card">
       <div class="card-inner">
         <div class="risk-card-header">
@@ -889,6 +889,20 @@
     const MM_RECO_EL = document.getElementById("mm-recommendation");
 
     const STATE_URL = "coeziv_state.json";
+
+    const STATE_URLS = ["coeziv_state.json", "./coeziv_state.json", "/btc-swing-strategy/coeziv_state.json", "/coeziv_state.json"];
+    async function fetchJsonFallback(urls) {
+      let lastError = null;
+      for (const url of urls) {
+        try {
+          const res = await fetch(url + "?t=" + Date.now(), { cache: "no-store" });
+          if (!res.ok) { lastError = new Error("HTTP " + res.status + " " + url); continue; }
+          return await res.json();
+        } catch (e) { lastError = e; }
+      }
+      throw lastError || new Error("state routes failed");
+    }
+
 
     const RISK_WINDOW_URL = "risk_window.json";
     const RISK_CARD_EL = document.getElementById("risk-window-card");
@@ -1180,9 +1194,7 @@
         ERROR_EL.textContent = "";
         MSG_EL.textContent = "Se încarcă mesajul coeziv...";
 
-        const res = await fetch(STATE_URL + "?t=" + Date.now(), { cache: "no-store" });
-        if (!res.ok) throw new Error("HTTP " + res.status);
-        const state = await res.json();
+        const state = await fetchJsonFallback(STATE_URLS);
 
         const modelPrice = state.model_price_usd;
         const fallbackPrice = state.price_usd;
