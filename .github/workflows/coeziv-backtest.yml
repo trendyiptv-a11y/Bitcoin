@@ -41,6 +41,42 @@ jobs:
         run: |
           python patch_mecanism_risk_card.py
 
+      - name: Patch mecanism HTML state fallback
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('btc-swing-strategy/mecanism.html')
+          s = p.read_text(encoding='utf-8')
+          helper = '''
+              const STATE_URLS = ["coeziv_state.json", "./coeziv_state.json", "/btc-swing-strategy/coeziv_state.json", "/coeziv_state.json"];
+              async function fetchJsonFallback(urls) {
+                let lastError = null;
+                for (const url of urls) {
+                  try {
+                    const res = await fetch(url + "?t=" + Date.now(), { cache: "no-store" });
+                    if (!res.ok) { lastError = new Error("HTTP " + res.status + " " + url); continue; }
+                    return await res.json();
+                  } catch (e) { lastError = e; }
+                }
+                throw lastError || new Error("state routes failed");
+              }
+          '''
+          if 'const STATE_URLS = [' not in s:
+              s = s.replace('    const STATE_URL = "coeziv_state.json";', '    const STATE_URL = "coeziv_state.json";\n' + helper)
+          old = '''        const res = await fetch(STATE_URL + "?t=" + Date.now(), { cache: "no-store" });
+                  if (!res.ok) throw new Error("HTTP " + res.status);
+                  const state = await res.json();'''
+          old2 = '''        const res = await fetch(STATE_URL + "?t=" + Date.now(), { cache: "no-store" });
+          if (!res.ok) throw new Error("HTTP " + res.status);
+          const state = await res.json();'''
+          new = '''        const state = await fetchJsonFallback(STATE_URLS);'''
+          if old in s:
+              s = s.replace(old, new)
+          if old2 in s:
+              s = s.replace(old2, new)
+          p.write_text(s, encoding='utf-8')
+          PY
+
       - name: Show risk window
         run: |
           cat btc-swing-strategy/risk_window.json
