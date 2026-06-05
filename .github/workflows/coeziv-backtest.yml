@@ -1,0 +1,47 @@
+name: Coeziv BTC Backtest
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  backtest:
+    name: Run isolated coeziv backtest
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas
+
+      - name: Run coeziv backtest
+        run: |
+          python backtest_coeziv.py
+
+      - name: Show summary
+        run: |
+          cat data/coeziv_backtest_summary.json
+
+      - name: Upload backtest artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: coeziv-backtest-results
+          path: |
+            data/coeziv_backtest_results.csv
+            data/coeziv_backtest_summary.json
+          if-no-files-found: error
