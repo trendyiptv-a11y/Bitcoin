@@ -35,6 +35,14 @@ jobs:
         run: |
           python test_participation_cohesion.py
 
+      - name: Patch mecanism HTML with participation cohesion card
+        run: |
+          python patch_mecanism_participation_card.py
+
+      - name: Restore mecanism core JS
+        run: |
+          python patch_mecanism_core_js.py
+
       - name: Show participation cohesion snapshot
         run: |
           cat data/participation_cohesion_test.json
@@ -51,11 +59,11 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add btc-swing-strategy/participation_cohesion.json
+          git add btc-swing-strategy/participation_cohesion.json btc-swing-strategy/mecanism.html
           if git diff --cached --quiet; then
-            echo "No participation_cohesion.json changes to commit."
+            echo "No participation_cohesion.json or mecanism.html changes to commit."
           else
-            git commit -m "Update participation cohesion card data"
+            git commit -m "Update participation cohesion card"
             git push
           fi
 
@@ -68,4 +76,5 @@ jobs:
             data/participation_cohesion_series.csv
             data/participation_cohesion_history_summary.json
             btc-swing-strategy/participation_cohesion.json
+            btc-swing-strategy/mecanism.html
           if-no-files-found: error
