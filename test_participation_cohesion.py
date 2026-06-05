@@ -6,13 +6,16 @@ from __future__ import annotations
 import json
 import math
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parent
 STATE_PATH = ROOT / "btc-swing-strategy" / "coeziv_state.json"
+IC_SERIES_PATH = ROOT / "data" / "ic_btc_series.json"
 OUT_PATH = ROOT / "data" / "participation_cohesion_test.json"
+OUT_SERIES = ROOT / "data" / "participation_cohesion_series.csv"
+OUT_SUMMARY = ROOT / "data" / "participation_cohesion_history_summary.json"
 
 
 def clamp(x: float, lo: float = 0.0, hi: float = 100.0) -> float:
@@ -28,8 +31,17 @@ def num(x: Any, default: float = 0.0) -> float:
 
 
 def norm_abs_small(x: float, scale: float) -> float:
-    # 100 = abatere mică, 0 = abatere mare
     return clamp(100.0 * (1.0 - min(abs(x) / scale, 1.0)))
+
+
+def label_from_score(score: float) -> str:
+    if score >= 70:
+        return "participare coezivă"
+    if score >= 50:
+        return "participare tensionată"
+    if score >= 30:
+        return "participare fragilă"
+    return "participare degradată"
 
 
 def load_state() -> Dict[str, Any]:
@@ -37,29 +49,32 @@ def load_state() -> Dict[str, Any]:
         return json.load(f)
 
 
-def score_from_state(state: Dict[str, Any]) -> Dict[str, Any]:
-    flow = num(state.get("flow_score"))
-    liquidity = num(state.get("liquidity_score"))
-    deviation = num(state.get("deviation_from_production"))
-    prob = num(state.get("signal_probability"), 0.5)
-    signal = str(state.get("signal", "flat")).lower()
-    history = state.get("signal_history") or []
+def load_ic_series() -> pd.DataFrame:
+    with IC_SERIES_PATH.open("r", encoding="utf-8") as f:
+        raw = json.load(f)
+    df = pd.DataFrame(raw.get("series", []))
+    if df.empty:
+        raise RuntimeError("ic_btc_series.json nu conține date")
+    df["date"] = pd.to_datetime(df["t"], unit="ms", utc=True)
+    df = df.set_index("date").sort_index()
+    for col in ["close", "ic_struct", "ic_dir", "ic_flux", "ic_cycle"]:
+        if col in df.columns:
+            df[col] = pd.to_numeric(df[col], errors="coerce")
+    return df
 
-    recent = history[-14:] if isinstance(history, list) else []
-    short_days = sum(1 for r in recent if str(r.get("signal", "")).lower() == "short")
-    long_days = sum(1 for r in recent if str(r.get("signal", "")).lower() == "long")
-    flat_days = sum(1 for r in recent if str(r.get("signal", "")).lower() == "flat")
-    total_days = max(len(recent), 1)
 
-    # Interpretare experimentală:
-    # lichiditate bună = participare prezentă
-    # flux negativ persistent = interes orientat spre ieșire/speculație defensivă
-    # deviație mare față de cost = tensiune economică
-    # semnal short persistent = coeziune participativă mai slabă
+def score_core(
+    flow: float,
+    liquidity: float,
+    deviation: float,
+    prob: float,
+    short_ratio: float,
+    long_ratio: float,
+) -> Dict[str, Any]:
     liquidity_component = clamp(50.0 + liquidity * 900.0)
     flow_component = clamp(50.0 + flow * 1200.0)
     production_component = norm_abs_small(deviation, 0.35)
-    persistence_component = clamp(100.0 - (short_days / total_days) * 70.0 + (long_days / total_days) * 20.0)
+    persistence_component = clamp(100.0 - short_ratio * 70.0 + long_ratio * 20.0)
     probability_component = clamp(100.0 - abs(prob - 0.5) * 120.0)
 
     score = (
@@ -71,19 +86,9 @@ def score_from_state(state: Dict[str, Any]) -> Dict[str, Any]:
     )
     score = round(clamp(score), 2)
 
-    if score >= 70:
-        label = "participare coezivă"
-    elif score >= 50:
-        label = "participare tensionată"
-    elif score >= 30:
-        label = "participare fragilă"
-    else:
-        label = "participare degradată"
-
     return {
         "score": score,
-        "label": label,
-        "signal": signal,
+        "label": label_from_score(score),
         "components": {
             "liquidity_component": round(liquidity_component, 2),
             "flow_component": round(flow_component, 2),
@@ -91,6 +96,33 @@ def score_from_state(state: Dict[str, Any]) -> Dict[str, Any]:
             "persistence_component": round(persistence_component, 2),
             "probability_component": round(probability_component, 2),
         },
+    }
+
+
+def score_from_state(state: Dict[str, Any]) -> Dict[str, Any]:
+    flow = num(state.get("flow_score"))
+    liquidity = num(state.get("liquidity_score"))
+    deviation = num(state.get("deviation_from_production"))
+    prob = num(state.get("signal_probability"), 0.5)
+    signal = str(state.get("signal", "flat")).lower()
+    history = state.get("signal_history") or []
+
+    recent = history[-14:] if isinstance(history, list) else []
+    total_days = max(len(recent), 1)
+    short_days = sum(1 for r in recent if str(r.get("signal", "")).lower() == "short")
+    long_days = sum(1 for r in recent if str(r.get("signal", "")).lower() == "long")
+    flat_days = sum(1 for r in recent if str(r.get("signal", "")).lower() == "flat")
+
+    out = score_core(
+        flow=flow,
+        liquidity=liquidity,
+        deviation=deviation,
+        prob=prob,
+        short_ratio=short_days / total_days,
+        long_ratio=long_days / total_days,
+    )
+    out.update({
+        "signal": signal,
         "inputs": {
             "flow_score": flow,
             "liquidity_score": liquidity,
@@ -101,21 +133,120 @@ def score_from_state(state: Dict[str, Any]) -> Dict[str, Any]:
             "recent_long_days": long_days,
             "recent_flat_days": flat_days,
         },
-        "interpretation": "Test experimental: estimează dacă interesul participanților pare coeziv, tensionat, fragil sau degradat folosind doar datele deja existente în coeziv_state.json.",
+        "interpretation": "Test experimental: estimează coeziunea participativă folosind datele deja existente în coeziv_state.json.",
+    })
+    return out
+
+
+def infer_signal(row: pd.Series) -> str:
+    regime = str(row.get("regime", "")).lower()
+    ic_dir = num(row.get("ic_dir"))
+    ic_flux = num(row.get("ic_flux"))
+    if "bear" in regime or (ic_dir < -0.04 and ic_flux < 0):
+        return "short"
+    if "bull" in regime or (ic_dir > 0.04 and ic_flux > 0):
+        return "long"
+    return "flat"
+
+
+def build_history(df: pd.DataFrame) -> pd.DataFrame:
+    out = df.copy()
+    out["signal_proxy"] = out.apply(infer_signal, axis=1)
+
+    # Proxy-uri istorice, pentru a putea testa pe toată seria fără coeziv_state zilnic.
+    out["flow_proxy"] = out.get("ic_flux", 0).fillna(0).clip(-0.08, 0.08)
+    out["liquidity_proxy"] = (out.get("ic_struct", 0).fillna(0).abs() * 0.04 + out.get("ic_flux", 0).fillna(0).abs() * 0.25).clip(0, 0.08)
+
+    if "ic_cycle" in out.columns:
+        cycle = out["ic_cycle"].replace(0, pd.NA)
+        out["deviation_proxy"] = ((out["close"] / cycle) - 1.0).replace([math.inf, -math.inf], pd.NA).fillna(0).clip(-0.8, 0.8)
+    else:
+        ma = out["close"].rolling(200, min_periods=30).mean()
+        out["deviation_proxy"] = ((out["close"] / ma) - 1.0).replace([math.inf, -math.inf], pd.NA).fillna(0).clip(-0.8, 0.8)
+
+    out["prob_proxy"] = 0.5
+    out.loc[out["signal_proxy"] == "short", "prob_proxy"] = 0.42
+    out.loc[out["signal_proxy"] == "long", "prob_proxy"] = 0.58
+
+    short_roll = (out["signal_proxy"] == "short").rolling(14, min_periods=1).mean()
+    long_roll = (out["signal_proxy"] == "long").rolling(14, min_periods=1).mean()
+
+    records: List[Dict[str, Any]] = []
+    for ts, row in out.iterrows():
+        sc = score_core(
+            flow=num(row.get("flow_proxy")),
+            liquidity=num(row.get("liquidity_proxy")),
+            deviation=num(row.get("deviation_proxy")),
+            prob=num(row.get("prob_proxy"), 0.5),
+            short_ratio=num(short_roll.loc[ts]),
+            long_ratio=num(long_roll.loc[ts]),
+        )
+        comps = sc["components"]
+        records.append({
+            "date": ts.isoformat(),
+            "close": num(row.get("close")),
+            "regime": str(row.get("regime", "")),
+            "signal_proxy": row.get("signal_proxy"),
+            "participation_score": sc["score"],
+            "participation_label": sc["label"],
+            "liquidity_component": comps["liquidity_component"],
+            "flow_component": comps["flow_component"],
+            "production_component": comps["production_component"],
+            "persistence_component": comps["persistence_component"],
+            "probability_component": comps["probability_component"],
+            "flow_proxy": num(row.get("flow_proxy")),
+            "liquidity_proxy": num(row.get("liquidity_proxy")),
+            "deviation_proxy": num(row.get("deviation_proxy")),
+        })
+    return pd.DataFrame(records)
+
+
+def summarize_history(hist: pd.DataFrame) -> Dict[str, Any]:
+    labels = hist["participation_label"].value_counts().to_dict()
+    worst = hist.nsmallest(10, "participation_score")[["date", "close", "regime", "signal_proxy", "participation_score", "participation_label"]].to_dict("records")
+    best = hist.nlargest(10, "participation_score")[["date", "close", "regime", "signal_proxy", "participation_score", "participation_label"]].to_dict("records")
+    return {
+        "rows": int(len(hist)),
+        "from": hist["date"].iloc[0] if len(hist) else None,
+        "to": hist["date"].iloc[-1] if len(hist) else None,
+        "mean_score": float(hist["participation_score"].mean()) if len(hist) else None,
+        "median_score": float(hist["participation_score"].median()) if len(hist) else None,
+        "min_score": float(hist["participation_score"].min()) if len(hist) else None,
+        "max_score": float(hist["participation_score"].max()) if len(hist) else None,
+        "label_counts": labels,
+        "worst_10": worst,
+        "best_10": best,
+        "note": "Serie istorică experimentală. Folosește proxy-uri din ic_btc_series.json, nu încă date on-chain directe despre utilizarea peer-to-peer.",
     }
 
 
 def main() -> None:
     state = load_state()
-    result = {
+    snapshot_result = {
         "generated_at": pd.Timestamp.utcnow().isoformat(),
         "source_timestamp": state.get("timestamp"),
         "source_generated_at": state.get("generated_at"),
         "participation_cohesion_test": score_from_state(state),
     }
+
+    df = load_ic_series()
+    hist = build_history(df)
+    hist_summary = summarize_history(hist)
+
     OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    OUT_PATH.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
-    print(json.dumps(result, ensure_ascii=False, indent=2))
+    OUT_PATH.write_text(json.dumps(snapshot_result, ensure_ascii=False, indent=2), encoding="utf-8")
+    hist.to_csv(OUT_SERIES, index=False)
+    OUT_SUMMARY.write_text(json.dumps(hist_summary, ensure_ascii=False, indent=2), encoding="utf-8")
+
+    print(json.dumps({
+        "snapshot": snapshot_result,
+        "history_summary": hist_summary,
+        "outputs": {
+            "snapshot_json": str(OUT_PATH),
+            "history_csv": str(OUT_SERIES),
+            "history_summary_json": str(OUT_SUMMARY),
+        }
+    }, ensure_ascii=False, indent=2))
 
 
 if __name__ == "__main__":
