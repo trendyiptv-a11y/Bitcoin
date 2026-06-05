@@ -2,9 +2,11 @@ name: Coeziv BTC Backtest
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '30 6 * * *'
 
 permissions:
-  contents: read
+  contents: write
 
 defaults:
   run:
@@ -18,6 +20,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          persist-credentials: true
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -29,13 +33,25 @@ jobs:
           python -m pip install --upgrade pip
           pip install pandas
 
-      - name: Run coeziv backtest
+      - name: Run coeziv backtest and build risk window
         run: |
           python backtest_coeziv.py
 
-      - name: Show summary
+      - name: Show risk window
         run: |
-          cat data/coeziv_backtest_summary.json
+          cat btc-swing-strategy/risk_window.json
+
+      - name: Commit risk window if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add btc-swing-strategy/risk_window.json
+          if git diff --cached --quiet; then
+            echo "No risk_window.json changes to commit."
+          else
+            git commit -m "Update coeziv risk window"
+            git push
+          fi
 
       - name: Upload backtest artifacts
         uses: actions/upload-artifact@v4
@@ -44,4 +60,5 @@ jobs:
           path: |
             data/coeziv_backtest_results.csv
             data/coeziv_backtest_summary.json
+            btc-swing-strategy/risk_window.json
           if-no-files-found: error
