@@ -9,6 +9,7 @@ import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.os.Bundle;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowInsets;
@@ -23,14 +24,18 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends Activity {
     private static final String START_URL = "https://coezivx.vercel.app/btc-swing-strategy/mecanism.html";
+    private static final int PULL_REFRESH_DISTANCE_PX = 180;
 
     private WebView webView;
     private ProgressBar progressBar;
     private TextView offlineMessage;
     private View splashOverlay;
+    private float pullStartY = 0f;
+    private boolean pullRefreshArmed = false;
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
@@ -55,6 +60,24 @@ public class MainActivity extends Activity {
         settings.setDisplayZoomControls(false);
         settings.setMediaPlaybackRequiresUserGesture(false);
         settings.setCacheMode(WebSettings.LOAD_DEFAULT);
+
+        webView.setOnTouchListener((view, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                pullStartY = event.getY();
+                pullRefreshArmed = webView.getScrollY() == 0;
+            } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                float distance = event.getY() - pullStartY;
+                if (pullRefreshArmed && distance > PULL_REFRESH_DISTANCE_PX && webView.getScrollY() == 0) {
+                    Toast.makeText(this, "Actualizare mecanism...", Toast.LENGTH_SHORT).show();
+                    progressBar.setVisibility(View.VISIBLE);
+                    webView.reload();
+                }
+                pullRefreshArmed = false;
+            } else if (event.getAction() == MotionEvent.ACTION_CANCEL) {
+                pullRefreshArmed = false;
+            }
+            return false;
+        });
 
         webView.setWebChromeClient(new WebChromeClient() {
             @Override
