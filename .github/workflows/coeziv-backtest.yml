@@ -4,6 +4,11 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '10 7 * * *'
+  workflow_run:
+    workflows:
+      - coeziv_state – Generate snapshot BTC
+    types:
+      - completed
 
 permissions:
   contents: write
@@ -16,6 +21,7 @@ jobs:
   backtest:
     name: Run isolated coeziv backtest
     runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
 
     steps:
       - name: Checkout repository
