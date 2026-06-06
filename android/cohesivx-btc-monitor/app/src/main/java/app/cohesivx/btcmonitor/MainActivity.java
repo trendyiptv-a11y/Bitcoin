@@ -8,6 +8,7 @@ import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowInsets;
@@ -17,6 +18,9 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -26,6 +30,7 @@ public class MainActivity extends Activity {
     private WebView webView;
     private ProgressBar progressBar;
     private TextView offlineMessage;
+    private View splashOverlay;
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
@@ -38,6 +43,7 @@ public class MainActivity extends Activity {
         webView = findViewById(R.id.webView);
         progressBar = findViewById(R.id.progressBar);
         offlineMessage = findViewById(R.id.offlineMessage);
+        createSplashOverlay();
 
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
@@ -78,12 +84,80 @@ public class MainActivity extends Activity {
             @Override
             public void onPageFinished(WebView view, String url) {
                 progressBar.setVisibility(View.GONE);
+                hideSplashOverlay();
                 super.onPageFinished(view, url);
             }
         });
 
         showDisclaimerOnce();
         loadApp();
+    }
+
+    private void createSplashOverlay() {
+        FrameLayout root = findViewById(R.id.appRoot);
+        if (root == null) return;
+
+        LinearLayout box = new LinearLayout(this);
+        box.setOrientation(LinearLayout.VERTICAL);
+        box.setGravity(Gravity.CENTER);
+        box.setPadding(48, 48, 48, 48);
+        box.setBackgroundColor(getColor(R.color.app_background));
+
+        ImageView logo = new ImageView(this);
+        logo.setImageResource(R.drawable.ic_launcher_foreground);
+        LinearLayout.LayoutParams logoParams = new LinearLayout.LayoutParams(220, 220);
+        box.addView(logo, logoParams);
+
+        TextView title = new TextView(this);
+        title.setText("COHESIVX");
+        title.setTextColor(getColor(R.color.text_primary));
+        title.setTextSize(26);
+        title.setGravity(Gravity.CENTER);
+        title.setLetterSpacing(0.18f);
+        title.setTypeface(null, android.graphics.Typeface.BOLD);
+        LinearLayout.LayoutParams titleParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+        titleParams.topMargin = 28;
+        box.addView(title, titleParams);
+
+        TextView subtitle = new TextView(this);
+        subtitle.setText("BTC MONITOR");
+        subtitle.setTextColor(getColor(R.color.accent_primary));
+        subtitle.setTextSize(15);
+        subtitle.setGravity(Gravity.CENTER);
+        subtitle.setLetterSpacing(0.12f);
+        LinearLayout.LayoutParams subParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+        subParams.topMargin = 10;
+        box.addView(subtitle, subParams);
+
+        ProgressBar spinner = new ProgressBar(this);
+        LinearLayout.LayoutParams spinParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+        spinParams.topMargin = 36;
+        box.addView(spinner, spinParams);
+
+        FrameLayout.LayoutParams overlayParams = new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT
+        );
+        root.addView(box, overlayParams);
+        splashOverlay = box;
+    }
+
+    private void hideSplashOverlay() {
+        if (splashOverlay == null) return;
+        splashOverlay.animate()
+                .alpha(0f)
+                .setDuration(250)
+                .withEndAction(() -> splashOverlay.setVisibility(View.GONE))
+                .start();
     }
 
     private void configureSystemBars() {
@@ -122,6 +196,7 @@ public class MainActivity extends Activity {
         } else {
             webView.setVisibility(View.GONE);
             offlineMessage.setVisibility(View.VISIBLE);
+            hideSplashOverlay();
         }
     }
 
