@@ -9,6 +9,8 @@ import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -28,7 +30,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.ByteArrayInputStream;
+import org.json.JSONArray;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -43,6 +46,7 @@ public class MainActivity extends Activity {
     private static final String BASE_URL = "https://coezivx.vercel.app/btc-swing-strategy/";
     private static final int PULL_REFRESH_DISTANCE_PX = 180;
     private static final String PREF_LAST_SUCCESSFUL_LOAD = "last_successful_load";
+    private static final String OFFLINE_HTML_FILE = "offline_snapshot.html";
     private static final String[] SNAPSHOT_FILES = new String[]{
             "coeziv_state.json",
             "risk_window.json",
@@ -145,6 +149,7 @@ public class MainActivity extends Activity {
                             .putLong(PREF_LAST_SUCCESSFUL_LOAD, System.currentTimeMillis())
                             .apply();
                     cacheSnapshotFilesInBackground();
+                    saveRenderedSnapshotDelayed();
                 }
                 super.onPageFinished(view, url);
             }
@@ -152,6 +157,46 @@ public class MainActivity extends Activity {
 
         showDisclaimerOnce();
         loadApp();
+    }
+
+    private void saveRenderedSnapshotDelayed() {
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            String js = "(function(){" +
+                    "var c=document.documentElement.cloneNode(true);" +
+                    "var s=c.querySelectorAll('script');" +
+                    "for(var i=0;i<s.length;i++){s[i].parentNode.removeChild(s[i]);}" +
+                    "var b=c.querySelector('body');" +
+                    "if(b){var n=document.createElement('div');n.style.cssText='position:fixed;left:0;right:0;bottom:0;z-index:999999;background:#020617;color:#94A3B8;text-align:center;font:12px sans-serif;padding:8px;';n.textContent='Snapshot offline salvat local de CohesivX BTC Monitor';b.appendChild(n);}" +
+                    "return '<!DOCTYPE html>'+c.outerHTML;" +
+                    "})()";
+            webView.evaluateJavascript(js, value -> {
+                try {
+                    String html = new JSONArray("[" + value + "]").getString(0);
+                    if (html.contains("MECANISM COEZIV BTC") || html.contains("Bitcoin")) {
+                        File out = new File(getFilesDir(), OFFLINE_HTML_FILE);
+                        try (FileOutputStream fos = new FileOutputStream(out, false)) {
+                            fos.write(html.getBytes(StandardCharsets.UTF_8));
+                        }
+                    }
+                } catch (Exception ignored) {
+                }
+            });
+        }, 3500);
+    }
+
+    private void loadOfflineRenderedSnapshot() {
+        File f = new File(getFilesDir(), OFFLINE_HTML_FILE);
+        if (!f.exists() || f.length() <= 0) return;
+        try {
+            byte[] bytes = readAllBytes(new FileInputStream(f));
+            String html = new String(bytes, StandardCharsets.UTF_8);
+            offlineMessage.setVisibility(View.GONE);
+            webView.setVisibility(View.VISIBLE);
+            webView.loadDataWithBaseURL(START_URL, html, "text/html", "UTF-8", START_URL);
+            hideSplashOverlay();
+            Toast.makeText(this, "Mod offline: snapshot local complet.", Toast.LENGTH_LONG).show();
+        } catch (Exception ignored) {
+        }
     }
 
     private WebResourceResponse cachedJsonResponse(Uri uri) {
@@ -240,7 +285,7 @@ public class MainActivity extends Activity {
     }
 
     private void showAboutDialog() {
-        String message = "Versiune aplicație: 0.2.1\n\n" +
+        String message = "Versiune aplicație: 0.2.2\n\n" +
                 "CohesivX BTC Monitor este un instrument experimental de observare structurală a ecosistemului Bitcoin.\n\n" +
                 "Module active:\n" +
                 "• Mecanism Coeziv BTC\n" +
@@ -252,7 +297,8 @@ public class MainActivity extends Activity {
                 "• snapshot automat\n" +
                 "• date BTC live\n" +
                 "• refresh manual prin tragere în jos\n" +
-                "• cache local pentru JSON-urile mecanismului\n\n" +
+                "• cache local pentru JSON-uri\n" +
+                "• snapshot HTML local complet pentru modul offline\n\n" +
                 "Autor model: Sergiu Bulboacă, proiectul Coeziv 3.14.\n\n" +
                 "Nu este recomandare financiară. Nu execută tranzacții și nu administrează fonduri.";
         new AlertDialog.Builder(this)
@@ -364,6 +410,11 @@ public class MainActivity extends Activity {
             webView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
             webView.loadUrl(START_URL);
         } else {
+            File offlineHtml = new File(getFilesDir(), OFFLINE_HTML_FILE);
+            if (offlineHtml.exists() && offlineHtml.length() > 0) {
+                loadOfflineRenderedSnapshot();
+                return;
+            }
             long lastLoad = getPreferences(MODE_PRIVATE).getLong(PREF_LAST_SUCCESSFUL_LOAD, 0L);
             if (lastLoad > 0L) {
                 offlineMessage.setVisibility(View.GONE);
