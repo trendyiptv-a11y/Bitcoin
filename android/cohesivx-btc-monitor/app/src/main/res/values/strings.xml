@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">CohesivX BTC Monitor</string>
+    <string name="offline_message">Nu există conexiune la internet. Mecanismul CoezivX BTC are nevoie de conexiune pentru a încărca datele actualizate.</string>
+    <string name="disclaimer_title">Observare structurală, nu recomandare financiară</string>
+    <string name="disclaimer_text">CohesivX BTC Monitor este un instrument experimental de observare structurală a ecosistemului Bitcoin. Nu oferă recomandări financiare, nu execută tranzacții, nu administrează fonduri și nu garantează rezultate. Folosește informația ca material educațional și statistic.</string>
+    <string name="disclaimer_accept">Înțeleg</string>
+</resources>
