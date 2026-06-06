@@ -29,6 +29,7 @@ import android.widget.Toast;
 public class MainActivity extends Activity {
     private static final String START_URL = "https://coezivx.vercel.app/btc-swing-strategy/mecanism.html";
     private static final int PULL_REFRESH_DISTANCE_PX = 180;
+    private static final String PREF_LAST_SUCCESSFUL_LOAD = "last_successful_load";
 
     private WebView webView;
     private ProgressBar progressBar;
@@ -71,6 +72,7 @@ public class MainActivity extends Activity {
                 if (pullRefreshArmed && distance > PULL_REFRESH_DISTANCE_PX && webView.getScrollY() == 0) {
                     Toast.makeText(this, "Actualizare mecanism...", Toast.LENGTH_SHORT).show();
                     progressBar.setVisibility(View.VISIBLE);
+                    webView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
                     webView.reload();
                 }
                 pullRefreshArmed = false;
@@ -109,6 +111,11 @@ public class MainActivity extends Activity {
             public void onPageFinished(WebView view, String url) {
                 progressBar.setVisibility(View.GONE);
                 hideSplashOverlay();
+                if (url != null && url.startsWith("https://coezivx.vercel.app")) {
+                    getPreferences(MODE_PRIVATE).edit()
+                            .putLong(PREF_LAST_SUCCESSFUL_LOAD, System.currentTimeMillis())
+                            .apply();
+                }
                 super.onPageFinished(view, url);
             }
         });
@@ -147,7 +154,8 @@ public class MainActivity extends Activity {
                 "Actualizare:\n" +
                 "• snapshot automat\n" +
                 "• date BTC live\n" +
-                "• refresh manual prin tragere în jos\n\n" +
+                "• refresh manual prin tragere în jos\n" +
+                "• mod cache pentru ultima versiune încărcată\n\n" +
                 "Autor model: Sergiu Bulboacă, proiectul Coeziv 3.14.\n\n" +
                 "Nu este recomandare financiară. Nu execută tranzacții și nu administrează fonduri.";
         new AlertDialog.Builder(this)
@@ -256,11 +264,21 @@ public class MainActivity extends Activity {
         if (hasNetwork()) {
             offlineMessage.setVisibility(View.GONE);
             webView.setVisibility(View.VISIBLE);
+            webView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
             webView.loadUrl(START_URL);
         } else {
-            webView.setVisibility(View.GONE);
-            offlineMessage.setVisibility(View.VISIBLE);
-            hideSplashOverlay();
+            long lastLoad = getPreferences(MODE_PRIVATE).getLong(PREF_LAST_SUCCESSFUL_LOAD, 0L);
+            if (lastLoad > 0L) {
+                offlineMessage.setVisibility(View.GONE);
+                webView.setVisibility(View.VISIBLE);
+                webView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+                Toast.makeText(this, "Mod offline: se încarcă ultima versiune salvată.", Toast.LENGTH_LONG).show();
+                webView.loadUrl(START_URL);
+            } else {
+                webView.setVisibility(View.GONE);
+                offlineMessage.setVisibility(View.VISIBLE);
+                hideSplashOverlay();
+            }
         }
     }
 
