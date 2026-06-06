@@ -224,9 +224,64 @@ public class MainActivity extends Activity {
     }
 
     private int countSnapshotHistory() {
+        File[] files = getSnapshotHistoryFiles();
+        return files == null ? 0 : files.length;
+    }
+
+    private File[] getSnapshotHistoryFiles() {
         File[] files = getFilesDir().listFiles((dir, name) ->
                 name.startsWith(HISTORY_PREFIX) && name.endsWith(HISTORY_SUFFIX));
-        return files == null ? 0 : files.length;
+        if (files == null) return new File[0];
+        Arrays.sort(files, (a, b) -> Long.compare(b.lastModified(), a.lastModified()));
+        return files;
+    }
+
+    private String labelForSnapshot(File file) {
+        String name = file.getName();
+        try {
+            String raw = name.replace(HISTORY_PREFIX, "").replace(HISTORY_SUFFIX, "");
+            if (raw.length() >= 15) {
+                return raw.substring(6, 8) + "." + raw.substring(4, 6) + "." + raw.substring(0, 4)
+                        + " " + raw.substring(9, 11) + ":" + raw.substring(11, 13) + ":" + raw.substring(13, 15);
+            }
+        } catch (Exception ignored) {
+        }
+        return name;
+    }
+
+    private void showSnapshotHistoryDialog() {
+        File[] files = getSnapshotHistoryFiles();
+        if (files.length == 0) {
+            Toast.makeText(this, "Nu există încă snapshoturi locale.", Toast.LENGTH_LONG).show();
+            return;
+        }
+        String[] labels = new String[files.length];
+        for (int i = 0; i < files.length; i++) {
+            labels[i] = labelForSnapshot(files[i]);
+        }
+        new AlertDialog.Builder(this)
+                .setTitle("Istoric local")
+                .setItems(labels, (dialog, which) -> loadHistorySnapshot(files[which]))
+                .setNegativeButton("Închide", null)
+                .show();
+    }
+
+    private void loadHistorySnapshot(File file) {
+        if (file == null || !file.exists() || file.length() <= 0) {
+            Toast.makeText(this, "Snapshot indisponibil.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        try {
+            byte[] bytes = readAllBytes(new FileInputStream(file));
+            String html = new String(bytes, StandardCharsets.UTF_8);
+            offlineMessage.setVisibility(View.GONE);
+            webView.setVisibility(View.VISIBLE);
+            webView.loadDataWithBaseURL(START_URL, html, "text/html", "UTF-8", START_URL);
+            hideSplashOverlay();
+            Toast.makeText(this, "Snapshot încărcat: " + labelForSnapshot(file), Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+            Toast.makeText(this, "Nu am putut încărca snapshotul.", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void loadOfflineRenderedSnapshot() {
@@ -330,7 +385,7 @@ public class MainActivity extends Activity {
     }
 
     private void showAboutDialog() {
-        String message = "Versiune aplicație: 0.2.3\n\n" +
+        String message = "Versiune aplicație: 0.2.4\n\n" +
                 "CohesivX BTC Monitor este un instrument experimental de observare structurală a ecosistemului Bitcoin.\n\n" +
                 "Module active:\n" +
                 "• Mecanism Coeziv BTC\n" +
@@ -350,6 +405,7 @@ public class MainActivity extends Activity {
         new AlertDialog.Builder(this)
                 .setTitle("Despre CohesivX")
                 .setMessage(message)
+                .setNeutralButton("Istoric local", (dialog, which) -> showSnapshotHistoryDialog())
                 .setPositiveButton("Închide", null)
                 .show();
     }
