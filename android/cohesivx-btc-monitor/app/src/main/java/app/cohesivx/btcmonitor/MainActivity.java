@@ -82,6 +82,7 @@ public class MainActivity extends Activity {
         offlineMessage = findViewById(R.id.offlineMessage);
         createSplashOverlay();
         createAboutButton();
+        NotificationHelper.ensureReady(this);
 
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
@@ -330,6 +331,7 @@ public class MainActivity extends Activity {
             }
             cacheOneJson("https://coezivx.vercel.app/data/participation_cohesion_test.json", "participation_cohesion_test.json");
             cacheOneJson("https://coezivx.vercel.app/data/participation_cohesion_history_summary.json", "participation_cohesion_history_summary.json");
+            NotificationHelper.checkStructuralChangeFromCache(this);
         }).start();
     }
 
@@ -385,14 +387,15 @@ public class MainActivity extends Activity {
     }
 
     private void showAboutDialog() {
-        String message = "Versiune aplicație: 0.2.4\n\n" +
+        String message = "Versiune aplicație: 0.2.5\n\n" +
                 "CohesivX BTC Monitor este un instrument experimental de observare structurală a ecosistemului Bitcoin.\n\n" +
                 "Module active:\n" +
                 "• Mecanism Coeziv BTC\n" +
                 "• Coeziune Participativă\n" +
                 "• Fereastră de Risc\n" +
                 "• Fear & Greed Coeziv\n" +
-                "• Backtest contextual\n\n" +
+                "• Backtest contextual\n" +
+                "• Notificări structurale\n\n" +
                 "Actualizare:\n" +
                 "• snapshot automat\n" +
                 "• date BTC live\n" +
