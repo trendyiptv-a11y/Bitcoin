@@ -18,7 +18,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 public class MainActivity extends Activity {
-    private static final String START_URL = "https://coezivx.vercel.app/bt";
+    private static final String START_URL = "https://coezivx.vercel.app/btc-swing-strategy/mecanism.html";
 
     private WebView webView;
     private ProgressBar progressBar;
