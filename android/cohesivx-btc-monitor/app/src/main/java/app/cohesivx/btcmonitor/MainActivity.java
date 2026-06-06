@@ -49,6 +49,7 @@ public class MainActivity extends Activity {
         progressBar = findViewById(R.id.progressBar);
         offlineMessage = findViewById(R.id.offlineMessage);
         createSplashOverlay();
+        createAboutButton();
 
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
@@ -114,6 +115,46 @@ public class MainActivity extends Activity {
 
         showDisclaimerOnce();
         loadApp();
+    }
+
+    private void createAboutButton() {
+        FrameLayout root = findViewById(R.id.appRoot);
+        if (root == null) return;
+        TextView button = new TextView(this);
+        button.setText("ⓘ");
+        button.setTextColor(getColor(R.color.accent_primary));
+        button.setTextSize(22);
+        button.setGravity(Gravity.CENTER);
+        button.setBackgroundColor(getColor(R.color.surface_dark));
+        button.setAlpha(0.88f);
+        button.setOnClickListener(v -> showAboutDialog());
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(82, 82);
+        params.gravity = Gravity.TOP | Gravity.END;
+        params.topMargin = 16;
+        params.rightMargin = 16;
+        root.addView(button, params);
+    }
+
+    private void showAboutDialog() {
+        String message = "Versiune aplicație: 0.2.0\n\n" +
+                "CohesivX BTC Monitor este un instrument experimental de observare structurală a ecosistemului Bitcoin.\n\n" +
+                "Module active:\n" +
+                "• Mecanism Coeziv BTC\n" +
+                "• Coeziune Participativă\n" +
+                "• Fereastră de Risc\n" +
+                "• Fear & Greed Coeziv\n" +
+                "• Backtest contextual\n\n" +
+                "Actualizare:\n" +
+                "• snapshot automat\n" +
+                "• date BTC live\n" +
+                "• refresh manual prin tragere în jos\n\n" +
+                "Autor model: Sergiu Bulboacă, proiectul Coeziv 3.14.\n\n" +
+                "Nu este recomandare financiară. Nu execută tranzacții și nu administrează fonduri.";
+        new AlertDialog.Builder(this)
+                .setTitle("Despre CohesivX")
+                .setMessage(message)
+                .setPositiveButton("Închide", null)
+                .show();
     }
 
     private void createSplashOverlay() {
