@@ -40,6 +40,11 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.Locale;
 
 public class MainActivity extends Activity {
     private static final String START_URL = "https://coezivx.vercel.app/btc-swing-strategy/mecanism.html";
@@ -47,6 +52,9 @@ public class MainActivity extends Activity {
     private static final int PULL_REFRESH_DISTANCE_PX = 180;
     private static final String PREF_LAST_SUCCESSFUL_LOAD = "last_successful_load";
     private static final String OFFLINE_HTML_FILE = "offline_snapshot.html";
+    private static final String HISTORY_PREFIX = "snapshot_";
+    private static final String HISTORY_SUFFIX = ".html";
+    private static final int MAX_HISTORY_SNAPSHOTS = 30;
     private static final String[] SNAPSHOT_FILES = new String[]{
             "coeziv_state.json",
             "risk_window.json",
@@ -173,15 +181,52 @@ public class MainActivity extends Activity {
                 try {
                     String html = new JSONArray("[" + value + "]").getString(0);
                     if (html.contains("MECANISM COEZIV BTC") || html.contains("Bitcoin")) {
-                        File out = new File(getFilesDir(), OFFLINE_HTML_FILE);
-                        try (FileOutputStream fos = new FileOutputStream(out, false)) {
-                            fos.write(html.getBytes(StandardCharsets.UTF_8));
-                        }
+                        saveOfflineHtml(html);
                     }
                 } catch (Exception ignored) {
                 }
             });
         }, 3500);
+    }
+
+    private void saveOfflineHtml(String html) {
+        try {
+            byte[] bytes = html.getBytes(StandardCharsets.UTF_8);
+
+            File latest = new File(getFilesDir(), OFFLINE_HTML_FILE);
+            try (FileOutputStream fos = new FileOutputStream(latest, false)) {
+                fos.write(bytes);
+            }
+
+            String stamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date());
+            File history = new File(getFilesDir(), HISTORY_PREFIX + stamp + HISTORY_SUFFIX);
+            try (FileOutputStream fos = new FileOutputStream(history, false)) {
+                fos.write(bytes);
+            }
+
+            pruneSnapshotHistory();
+        } catch (Exception ignored) {
+        }
+    }
+
+    private void pruneSnapshotHistory() {
+        File[] files = getFilesDir().listFiles((dir, name) ->
+                name.startsWith(HISTORY_PREFIX) && name.endsWith(HISTORY_SUFFIX));
+        if (files == null || files.length <= MAX_HISTORY_SNAPSHOTS) return;
+        Arrays.sort(files, Comparator.comparingLong(File::lastModified));
+        int toDelete = files.length - MAX_HISTORY_SNAPSHOTS;
+        for (int i = 0; i < toDelete; i++) {
+            try {
+                files[i].delete();
+            } catch (Exception ignored) {
+            }
+        }
+    }
+
+    private int countSnapshotHistory() {
+        File[] files = getFilesDir().listFiles((dir, name) ->
+                name.startsWith(HISTORY_PREFIX) && name.endsWith(HISTORY_SUFFIX));
+        return files == null ? 0 : files.length;
     }
 
     private void loadOfflineRenderedSnapshot() {
@@ -285,7 +330,7 @@ public class MainActivity extends Activity {
     }
 
     private void showAboutDialog() {
-        String message = "Versiune aplicație: 0.2.2\n\n" +
+        String message = "Versiune aplicație: 0.2.3\n\n" +
                 "CohesivX BTC Monitor este un instrument experimental de observare structurală a ecosistemului Bitcoin.\n\n" +
                 "Module active:\n" +
                 "• Mecanism Coeziv BTC\n" +
@@ -298,7 +343,8 @@ public class MainActivity extends Activity {
                 "• date BTC live\n" +
                 "• refresh manual prin tragere în jos\n" +
                 "• cache local pentru JSON-uri\n" +
-                "• snapshot HTML local complet pentru modul offline\n\n" +
+                "• snapshot HTML local complet pentru modul offline\n" +
+                "• istoric local: " + countSnapshotHistory() + " / " + MAX_HISTORY_SNAPSHOTS + " snapshoturi\n\n" +
                 "Autor model: Sergiu Bulboacă, proiectul Coeziv 3.14.\n\n" +
                 "Nu este recomandare financiară. Nu execută tranzacții și nu administrează fonduri.";
         new AlertDialog.Builder(this)
