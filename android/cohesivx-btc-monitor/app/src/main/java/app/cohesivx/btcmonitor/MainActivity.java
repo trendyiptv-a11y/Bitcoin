@@ -9,6 +9,9 @@ import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowInsets;
+import android.view.WindowManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
@@ -28,7 +31,9 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        configureSystemBars();
         setContentView(R.layout.activity_main);
+        applySystemBarPadding();
 
         webView = findViewById(R.id.webView);
         progressBar = findViewById(R.id.progressBar);
@@ -79,6 +84,25 @@ public class MainActivity extends Activity {
 
         showDisclaimerOnce();
         loadApp();
+    }
+
+    private void configureSystemBars() {
+        Window window = getWindow();
+        window.setStatusBarColor(getColor(R.color.app_background));
+        window.setNavigationBarColor(getColor(R.color.app_background));
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+    }
+
+    private void applySystemBarPadding() {
+        final View root = findViewById(R.id.appRoot);
+        if (root == null) return;
+        root.setOnApplyWindowInsetsListener((view, insets) -> {
+            android.graphics.Insets bars = insets.getInsets(WindowInsets.Type.systemBars());
+            view.setPadding(bars.left, bars.top, bars.right, bars.bottom);
+            return insets;
+        });
+        root.requestApplyInsets();
     }
 
     @Override
