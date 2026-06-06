@@ -4,6 +4,11 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '20 7 * * *'
+  workflow_run:
+    workflows:
+      - Coeziv BTC Backtest
+    types:
+      - completed
 
 permissions:
   contents: write
@@ -16,6 +21,7 @@ jobs:
   test:
     name: Run participation cohesion test
     runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
 
     steps:
       - name: Checkout repository
