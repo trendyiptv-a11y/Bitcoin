@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -16,6 +17,7 @@ import android.view.WindowInsets;
 import android.view.WindowManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -26,10 +28,27 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+
 public class MainActivity extends Activity {
     private static final String START_URL = "https://coezivx.vercel.app/btc-swing-strategy/mecanism.html";
+    private static final String BASE_URL = "https://coezivx.vercel.app/btc-swing-strategy/";
     private static final int PULL_REFRESH_DISTANCE_PX = 180;
     private static final String PREF_LAST_SUCCESSFUL_LOAD = "last_successful_load";
+    private static final String[] SNAPSHOT_FILES = new String[]{
+            "coeziv_state.json",
+            "risk_window.json",
+            "participation_cohesion_test.json",
+            "participation_cohesion_history_summary.json"
+    };
 
     private WebView webView;
     private ProgressBar progressBar;
@@ -74,6 +93,7 @@ public class MainActivity extends Activity {
                     progressBar.setVisibility(View.VISIBLE);
                     webView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
                     webView.reload();
+                    cacheSnapshotFilesInBackground();
                 }
                 pullRefreshArmed = false;
             } else if (event.getAction() == MotionEvent.ACTION_CANCEL) {
@@ -98,6 +118,15 @@ public class MainActivity extends Activity {
             }
 
             @Override
+            public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
+                if (!hasNetwork()) {
+                    WebResourceResponse cached = cachedJsonResponse(request.getUrl());
+                    if (cached != null) return cached;
+                }
+                return super.shouldInterceptRequest(view, request);
+            }
+
+            @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 String url = request.getUrl().toString();
                 if (url.startsWith("https://coezivx.vercel.app")) {
@@ -111,10 +140,11 @@ public class MainActivity extends Activity {
             public void onPageFinished(WebView view, String url) {
                 progressBar.setVisibility(View.GONE);
                 hideSplashOverlay();
-                if (url != null && url.startsWith("https://coezivx.vercel.app")) {
+                if (url != null && url.startsWith("https://coezivx.vercel.app") && hasNetwork()) {
                     getPreferences(MODE_PRIVATE).edit()
                             .putLong(PREF_LAST_SUCCESSFUL_LOAD, System.currentTimeMillis())
                             .apply();
+                    cacheSnapshotFilesInBackground();
                 }
                 super.onPageFinished(view, url);
             }
@@ -122,6 +152,73 @@ public class MainActivity extends Activity {
 
         showDisclaimerOnce();
         loadApp();
+    }
+
+    private WebResourceResponse cachedJsonResponse(Uri uri) {
+        if (uri == null) return null;
+        String name = fileNameFromUrl(uri.toString());
+        if (name == null) return null;
+        File f = new File(getFilesDir(), name);
+        if (!f.exists() || f.length() <= 0) return null;
+        try {
+            return new WebResourceResponse("application/json", "UTF-8", new FileInputStream(f));
+        } catch (Exception ignored) {
+            return null;
+        }
+    }
+
+    private String fileNameFromUrl(String url) {
+        if (url == null) return null;
+        for (String name : SNAPSHOT_FILES) {
+            if (url.endsWith("/" + name) || url.endsWith(name) || url.contains(name + "?")) {
+                return name;
+            }
+        }
+        return null;
+    }
+
+    private void cacheSnapshotFilesInBackground() {
+        if (!hasNetwork()) return;
+        new Thread(() -> {
+            for (String file : SNAPSHOT_FILES) {
+                cacheOneJson(BASE_URL + file, file);
+            }
+            cacheOneJson("https://coezivx.vercel.app/data/participation_cohesion_test.json", "participation_cohesion_test.json");
+            cacheOneJson("https://coezivx.vercel.app/data/participation_cohesion_history_summary.json", "participation_cohesion_history_summary.json");
+        }).start();
+    }
+
+    private void cacheOneJson(String urlText, String fileName) {
+        HttpURLConnection conn = null;
+        try {
+            URL url = new URL(urlText + (urlText.contains("?") ? "&" : "?") + "t=" + System.currentTimeMillis());
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setConnectTimeout(6000);
+            conn.setReadTimeout(6000);
+            conn.setUseCaches(false);
+            if (conn.getResponseCode() != 200) return;
+            byte[] bytes = readAllBytes(conn.getInputStream());
+            if (bytes == null || bytes.length == 0) return;
+            String probe = new String(bytes, StandardCharsets.UTF_8).trim();
+            if (!(probe.startsWith("{") || probe.startsWith("["))) return;
+            File out = new File(getFilesDir(), fileName);
+            try (FileOutputStream fos = new FileOutputStream(out, false)) {
+                fos.write(bytes);
+            }
+        } catch (Exception ignored) {
+        } finally {
+            if (conn != null) conn.disconnect();
+        }
+    }
+
+    private byte[] readAllBytes(InputStream input) throws Exception {
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        byte[] data = new byte[4096];
+        int n;
+        while ((n = input.read(data)) != -1) {
+            buffer.write(data, 0, n);
+        }
+        return buffer.toByteArray();
     }
 
     private void createAboutButton() {
@@ -143,7 +240,7 @@ public class MainActivity extends Activity {
     }
 
     private void showAboutDialog() {
-        String message = "Versiune aplicație: 0.2.0\n\n" +
+        String message = "Versiune aplicație: 0.2.1\n\n" +
                 "CohesivX BTC Monitor este un instrument experimental de observare structurală a ecosistemului Bitcoin.\n\n" +
                 "Module active:\n" +
                 "• Mecanism Coeziv BTC\n" +
@@ -155,7 +252,7 @@ public class MainActivity extends Activity {
                 "• snapshot automat\n" +
                 "• date BTC live\n" +
                 "• refresh manual prin tragere în jos\n" +
-                "• mod cache pentru ultima versiune încărcată\n\n" +
+                "• cache local pentru JSON-urile mecanismului\n\n" +
                 "Autor model: Sergiu Bulboacă, proiectul Coeziv 3.14.\n\n" +
                 "Nu este recomandare financiară. Nu execută tranzacții și nu administrează fonduri.";
         new AlertDialog.Builder(this)
@@ -272,7 +369,7 @@ public class MainActivity extends Activity {
                 offlineMessage.setVisibility(View.GONE);
                 webView.setVisibility(View.VISIBLE);
                 webView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
-                Toast.makeText(this, "Mod offline: se încarcă ultima versiune salvată.", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Mod offline: se încarcă ultimul snapshot salvat.", Toast.LENGTH_LONG).show();
                 webView.loadUrl(START_URL);
             } else {
                 webView.setVisibility(View.GONE);
