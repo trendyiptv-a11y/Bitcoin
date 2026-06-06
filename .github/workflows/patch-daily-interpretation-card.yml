@@ -1,0 +1,45 @@
+name: Patch Daily Cohesiv Interpretation Card
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '50 6 * * *'
+
+permissions:
+  contents: write
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  patch-card:
+    name: Patch mecanism with daily interpretation card
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run daily interpretation card patcher
+        run: |
+          python patch_daily_interpretation_card.py
+
+      - name: Commit patched mecanism if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add btc-swing-strategy/mecanism.html
+          if git diff --cached --quiet; then
+            echo "No mecanism.html changes to commit."
+          else
+            git commit -m "Add daily cohesiv interpretation card"
+            git push
+          fi
