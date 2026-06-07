@@ -32,6 +32,57 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Generate Expo icon assets
+        run: |
+          python3 -m pip install --user pillow
+          python3 - <<'PY'
+          from PIL import Image, ImageDraw, ImageFont
+          from pathlib import Path
+
+          out = Path('assets/images')
+          out.mkdir(parents=True, exist_ok=True)
+
+          def get_font(size, bold=False):
+              paths = [
+                  '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf' if bold else '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
+                  '/usr/share/fonts/truetype/liberation2/LiberationSans-Bold.ttf' if bold else '/usr/share/fonts/truetype/liberation2/LiberationSans-Regular.ttf',
+              ]
+              for p in paths:
+                  if Path(p).exists():
+                      return ImageFont.truetype(p, size)
+              return ImageFont.load_default()
+
+          def make_icon(path, size=1024, transparent=False):
+              mode = 'RGBA' if transparent else 'RGB'
+              bg = (0, 0, 0, 0) if transparent else '#020617'
+              img = Image.new(mode, (size, size), bg)
+              d = ImageDraw.Draw(img)
+              cx = cy = size // 2
+              for r, color, width in [
+                  (int(size*0.39), (56,189,248,90), int(size*0.025)),
+                  (int(size*0.31), (20,184,166,120), int(size*0.014)),
+                  (int(size*0.23), (56,189,248,160), int(size*0.010)),
+              ]:
+                  d.ellipse((cx-r, cy-r, cx+r, cy+r), outline=color, width=width)
+              d.text((cx, int(size*0.43)), 'Cx', anchor='mm', fill='#e5e7eb', font=get_font(int(size*0.18), True))
+              d.text((cx, int(size*0.58)), 'BTC', anchor='mm', fill='#38bdf8', font=get_font(int(size*0.08), True))
+              img.save(path)
+
+          make_icon(out / 'icon.png', 1024, False)
+          make_icon(out / 'adaptive-icon.png', 1024, True)
+          make_icon(out / 'splash-icon.png', 1024, True)
+          print('Generated icon assets')
+          PY
+
+      - name: Verify Expo image assets
+        run: |
+          test -f assets/images/icon.png
+          test -f assets/images/adaptive-icon.png
+          test -f assets/images/splash-icon.png
+          file assets/images/icon.png
+          file assets/images/adaptive-icon.png
+          file assets/images/splash-icon.png
+
       - name: Link or create EAS project
         run: eas project:init --non-interactive --force
 
