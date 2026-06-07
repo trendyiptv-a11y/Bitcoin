@@ -1,0 +1,39 @@
+name: EAS CohesivX Android Production AAB
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-android-production:
+    name: Build CohesivX Android production AAB
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: cohesivx-btc-monitor-expo
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: cohesivx-btc-monitor-expo/package.json
+
+      - name: Setup EAS CLI
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Link or create EAS project
+        run: eas project:init --non-interactive --force
+
+      - name: Build Android AAB with EAS
+        run: eas build --platform android --profile production --non-interactive
