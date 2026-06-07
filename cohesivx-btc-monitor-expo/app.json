@@ -1,0 +1,32 @@
+{
+  "expo": {
+    "name": "CohesivX BTC Monitor",
+    "slug": "cohesivx-btc-monitor",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "scheme": "cohesivxbtc",
+    "description": "Experimental Bitcoin structural monitoring tool.",
+    "privacy": "public",
+    "platforms": [
+      "android"
+    ],
+    "android": {
+      "package": "app.cohesivx.btcmonitor",
+      "versionCode": 1,
+      "permissions": [
+        "INTERNET"
+      ],
+      "adaptiveIcon": {
+        "backgroundColor": "#020617"
+      }
+    },
+    "extra": {
+      "cohesivxUrl": "https://coezivx.vercel.app/btc-swing-strategy/mecanism.html",
+      "privacyPolicyUrl": "https://coezivx.vercel.app/btc-swing-strategy/privacy/",
+      "eas": {
+        "projectId": "00000000-0000-0000-0000-000000000000"
+      }
+    }
+  }
+}
