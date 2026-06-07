@@ -1,0 +1,103 @@
+name: Apply friendly CohesivX controls
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch-controls:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Patch top controls
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('btc-swing-strategy/mecanism.html')
+          text = path.read_text(encoding='utf-8')
+          original = text
+
+          css = """
+
+    /* COHESIVX_FRIENDLY_CONTROLS_CSS */
+    .top-controls {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 8px;
+      margin: -2px 0 12px;
+    }
+    .control-btn,
+    .theme-toggle-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 30px;
+      border-radius: 999px;
+      padding: 7px 12px;
+      border: 1px solid rgba(56,189,248,0.48);
+      background: rgba(15,23,42,0.82);
+      color: #dbeafe;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .04em;
+      text-transform: none;
+      text-decoration: none;
+      cursor: pointer;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.22);
+    }
+    .control-btn:hover,
+    .theme-toggle-btn:hover {
+      border-color: rgba(56,189,248,0.85);
+      color: #f8fafc;
+    }
+    body.light-mode .control-btn,
+    body.light-mode .theme-toggle-btn {
+      background: rgba(255,255,255,0.92);
+      color: #0f172a;
+      border-color: rgba(14,165,233,0.38);
+      box-shadow: 0 8px 18px rgba(15,23,42,0.10);
+    }
+"""
+
+          if '/* COHESIVX_FRIENDLY_CONTROLS_CSS */' not in text:
+              text = text.replace('\n  </style>', css + '\n  </style>')
+
+          old = '''    <!-- COHESIVX_THEME_TOGGLE_BUTTON -->
+    <div class="top-controls">
+      <button id="theme-toggle" class="theme-toggle-btn" type="button" aria-label="Schimba tema aplicatiei">Dark</button>
+    </div>'''
+          new = '''    <!-- COHESIVX_THEME_TOGGLE_BUTTON -->
+    <div class="top-controls" aria-label="Controale aplicatie">
+      <a class="control-btn" href="#daily-ai-card" aria-label="Info CohesivX">Info</a>
+      <button id="theme-toggle" class="theme-toggle-btn" type="button" aria-label="Schimba tema aplicatiei">Dark</button>
+    </div>'''
+
+          if old in text:
+              text = text.replace(old, new)
+          elif 'href="#daily-ai-card"' not in text:
+              text = text.replace('      <button id="theme-toggle" class="theme-toggle-btn" type="button" aria-label="Schimba tema aplicatiei">Dark</button>', '      <a class="control-btn" href="#daily-ai-card" aria-label="Info CohesivX">Info</a>\n      <button id="theme-toggle" class="theme-toggle-btn" type="button" aria-label="Schimba tema aplicatiei">Dark</button>')
+
+          if text != original:
+              path.write_text(text, encoding='utf-8')
+              print('friendly controls patched')
+          else:
+              print('friendly controls already patched')
+          PY
+
+      - name: Commit patch if changed
+        run: |
+          if git diff --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add btc-swing-strategy/mecanism.html
+          git commit -m "Refine CohesivX top controls"
+          git push
