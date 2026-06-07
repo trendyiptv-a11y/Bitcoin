@@ -1,0 +1,54 @@
+name: Build CohesivX Native Signed AAB
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-signed-aab:
+    name: Build signed native CohesivX AAB
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: android/cohesivx-btc-monitor
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: 8.10.2
+
+      - name: Restore upload keystore
+        env:
+          COHESIVX_UPLOAD_KEYSTORE_BASE64: ${{ secrets.COHESIVX_UPLOAD_KEYSTORE_BASE64 }}
+        run: |
+          mkdir -p signing
+          echo "$COHESIVX_UPLOAD_KEYSTORE_BASE64" | base64 --decode > signing/upload-keystore.jks
+          test -s signing/upload-keystore.jks
+
+      - name: Build signed release AAB
+        env:
+          COHESIVX_UPLOAD_KEYSTORE_PATH: signing/upload-keystore.jks
+          COHESIVX_UPLOAD_KEYSTORE_PASSWORD: ${{ secrets.COHESIVX_UPLOAD_KEYSTORE_PASSWORD }}
+          COHESIVX_UPLOAD_KEY_ALIAS: ${{ secrets.COHESIVX_UPLOAD_KEY_ALIAS }}
+          COHESIVX_UPLOAD_KEY_PASSWORD: ${{ secrets.COHESIVX_UPLOAD_KEY_PASSWORD }}
+        run: gradle clean bundleRelease --stacktrace
+
+      - name: Upload signed release AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: cohesivx-native-release-aab-signed-v0.2.5-code2
+          path: android/cohesivx-btc-monitor/app/build/outputs/bundle/release/*.aab
+          if-no-files-found: error
