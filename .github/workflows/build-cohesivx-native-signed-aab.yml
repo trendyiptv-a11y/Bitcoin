@@ -34,17 +34,33 @@ jobs:
         env:
           COHESIVX_UPLOAD_KEYSTORE_BASE64: ${{ secrets.COHESIVX_UPLOAD_KEYSTORE_BASE64 }}
         run: |
+          set -euo pipefail
           mkdir -p signing
-          echo "$COHESIVX_UPLOAD_KEYSTORE_BASE64" | base64 --decode > signing/upload-keystore.jks
+          printf '%s' "$COHESIVX_UPLOAD_KEYSTORE_BASE64" | tr -d '\n\r ' | base64 --decode > signing/upload-keystore.jks
           test -s signing/upload-keystore.jks
+          echo "Keystore restored: $(wc -c < signing/upload-keystore.jks) bytes"
+
+      - name: Verify upload keystore and alias
+        env:
+          COHESIVX_UPLOAD_KEYSTORE_PASSWORD: ${{ secrets.COHESIVX_UPLOAD_KEYSTORE_PASSWORD }}
+          COHESIVX_UPLOAD_KEY_ALIAS: ${{ secrets.COHESIVX_UPLOAD_KEY_ALIAS }}
+        run: |
+          set -euo pipefail
+          keytool -list \
+            -keystore signing/upload-keystore.jks \
+            -storepass "$COHESIVX_UPLOAD_KEYSTORE_PASSWORD" \
+            -alias "$COHESIVX_UPLOAD_KEY_ALIAS" \
+            -v | grep -E "Alias name:|SHA256:|Creation date:"
 
       - name: Build signed release AAB
         env:
-          COHESIVX_UPLOAD_KEYSTORE_PATH: signing/upload-keystore.jks
           COHESIVX_UPLOAD_KEYSTORE_PASSWORD: ${{ secrets.COHESIVX_UPLOAD_KEYSTORE_PASSWORD }}
           COHESIVX_UPLOAD_KEY_ALIAS: ${{ secrets.COHESIVX_UPLOAD_KEY_ALIAS }}
           COHESIVX_UPLOAD_KEY_PASSWORD: ${{ secrets.COHESIVX_UPLOAD_KEY_PASSWORD }}
-        run: gradle clean bundleRelease --stacktrace
+        run: |
+          set -euo pipefail
+          export COHESIVX_UPLOAD_KEYSTORE_PATH="$PWD/signing/upload-keystore.jks"
+          gradle clean bundleRelease --stacktrace
 
       - name: Upload signed release AAB
         uses: actions/upload-artifact@v4
