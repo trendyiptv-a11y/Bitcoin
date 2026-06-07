@@ -2,6 +2,12 @@ plugins {
     id 'com.android.application'
 }
 
+def cohesivxKeystorePath = System.getenv('COHESIVX_UPLOAD_KEYSTORE_PATH')
+def cohesivxKeystorePassword = System.getenv('COHESIVX_UPLOAD_KEYSTORE_PASSWORD')
+def cohesivxUploadKeyAlias = System.getenv('COHESIVX_UPLOAD_KEY_ALIAS')
+def cohesivxUploadKeyPassword = System.getenv('COHESIVX_UPLOAD_KEY_PASSWORD')
+def hasCohesivxReleaseSigning = cohesivxKeystorePath && cohesivxKeystorePassword && cohesivxUploadKeyAlias && cohesivxUploadKeyPassword
+
 android {
     namespace 'app.cohesivx.btcmonitor'
     compileSdk 35
@@ -14,25 +20,22 @@ android {
         versionName '0.2.5'
     }
 
-    signingConfigs {
-        release {
-            def keystorePath = System.getenv('COHESIVX_UPLOAD_KEYSTORE_PATH')
-            def keystorePassword = System.getenv('COHESIVX_UPLOAD_KEYSTORE_PASSWORD')
-            def uploadKeyAlias = System.getenv('COHESIVX_UPLOAD_KEY_ALIAS')
-            def uploadKeyPassword = System.getenv('COHESIVX_UPLOAD_KEY_PASSWORD')
-
-            if (keystorePath && keystorePassword && uploadKeyAlias && uploadKeyPassword) {
-                storeFile file(keystorePath)
-                storePassword keystorePassword
-                keyAlias uploadKeyAlias
-                keyPassword uploadKeyPassword
+    if (hasCohesivxReleaseSigning) {
+        signingConfigs {
+            release {
+                storeFile file(cohesivxKeystorePath)
+                storePassword cohesivxKeystorePassword
+                keyAlias cohesivxUploadKeyAlias
+                keyPassword cohesivxUploadKeyPassword
             }
         }
     }
 
     buildTypes {
         release {
-            signingConfig signingConfigs.release
+            if (hasCohesivxReleaseSigning) {
+                signingConfig signingConfigs.release
+            }
         }
     }
 }
