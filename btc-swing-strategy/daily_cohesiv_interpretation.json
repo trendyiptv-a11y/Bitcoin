@@ -1,6 +1,10 @@
 {
   "date": "2026-06-07",
   "generated_at": "2026-06-07T00:00:00+00:00",
+  "last_analysis_at": "2026-06-07T05:04:34+00:00",
+  "next_analysis_expected_at": "2026-06-08T05:05:00+00:00",
+  "analysis_status": "updated",
+  "analysis_status_message": "Analiza zilei este actualizată. Ultima analiză: 07.06.2026, 05:04 UTC. Următoarea analiză estimată: 08.06.2026, ~05:05 UTC.",
   "source": "manual_ai_review",
   "status": "approved",
   "general_state": "degradare structurală activă, fără abandon de participare",
@@ -12,5 +16,5 @@
   "watch_next": "Urmărim dacă semnalul short continuă, dacă degradarea depășește 6 zile și dacă participarea începe să scadă. Confirmarea riscului ar deveni mai puternică dacă prețul rupe zona de echilibru și coeziunea participativă se deteriorează.",
   "plain_language": "Structura Bitcoin arată obosită: mecanismul vede risc de scădere și o degradare care durează deja de câteva zile. Totuși, piața nu pare abandonată. Participanții sunt încă activi, lichiditatea este bună, iar frica nu este extremă. Concluzia coezivă este: risc real de scădere, dar încă într-o structură vie, nu într-un colaps.",
   "confidence": "moderată",
-  "disclaimer": "Interpretare structurală experimentală, nu recomandare financiară."
+  "disclaimer": "Analiza zilei este actualizată. Ultima analiză: 07.06.2026, 05:04 UTC. Următoarea analiză estimată: 08.06.2026, ~05:05 UTC. Interpretare structurală experimentală, nu recomandare financiară."
 }
