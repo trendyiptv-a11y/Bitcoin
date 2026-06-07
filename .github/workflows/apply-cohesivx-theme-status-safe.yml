@@ -17,23 +17,121 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
-          import base64
 
           path = Path('btc-swing-strategy/mecanism.html')
           text = path.read_text(encoding='utf-8')
           original = text
 
-          css_b64 = 'CiAgICAvKiBDT0hFU0lWWF9USEVNRV9UT0dHTEVfQ1NTICovCiAgICBib2R5LmxpZ2h0LW1vZGUgewogICAgICAtLWJnLW1haW46ICNmOGZhZmM7CiAgICAgIC0tYmctY2FyZDogcmdiYSgyNTUsMjU1LDI1NSwwLjk2KTsKICAgICAgLS1ib3JkZXItY2FyZDogI2NiZDVlMTsKICAgICAgLS10ZXh0LW1haW46ICMwZjE3MmE7CiAgICAgIC0tdGV4dC1tdXRlZDogIzQ3NTU2OTsKICAgICAgLS10ZXh0LXNvZnQ6ICM2NDc0OGI7CiAgICAgIC0tYWNjZW50LWJnLWNoaXA6IHJnYmEoMjU1LDI1NSwyNTUsMC45KTsKICAgICAgYmFja2dyb3VuZDoKICAgICAgICByYWRpYWwtZ3JhZGllbnQoY2lyY2xlIGF0IDEwJSAtMTAlLCAjZTBmMmZlIDAsIHRyYW5zcGFyZW50IDU1JSksCiAgICAgICAgcmFkaWFsLWdyYWRpZW50KGNpcmNsZSBhdCA5MCUgMTEwJSwgI2ZmZmZmZiAwLCAjZTJlOGYwIDYwJSk7CiAgICB9CiAgICBib2R5LmxpZ2h0LW1vZGUgLmNhcmQgeyBib3gtc2hhZG93OiAwIDE4cHggNTBweCByZ2JhKDE1LDIzLDQyLDAuMTYpOyB9CiAgICBib2R5LmxpZ2h0LW1vZGUgLmNhcmQ6OmJlZm9yZSB7IG9wYWNpdHk6IC4wODsgfQogICAgYm9keS5saWdodC1tb2RlIC5oaXN0b3J5LXJvdywKICAgIGJvZHkubGlnaHQtbW9kZSAuZGFpbHktYWktaXRlbSwKICAgIGJvZHkubGlnaHQtbW9kZSAucmlzay1tZXRyaWMsCiAgICBib2R5LmxpZ2h0LW1vZGUgLnBhcnRpY2lwYXRpb24tbWV0cmljIHsKICAgICAgYmFja2dyb3VuZDogcmdiYSgyNDgsMjUwLDI1MiwwLjkyKTsKICAgICAgYm9yZGVyLWNvbG9yOiByZ2JhKDE0OCwxNjMsMTg0LDAuNTUpOwogICAgfQogICAgYm9keS5saWdodC1tb2RlIC5kYWlseS1haS1zdGF0ZSwKICAgIGJvZHkubGlnaHQtbW9kZSAucmlzay1waWxsLAogICAgYm9keS5saWdodC1tb2RlIC5wYXJ0aWNpcGF0aW9uLXBpbGwsCiAgICBib2R5LmxpZ2h0LW1vZGUgLmZnLXpvbmUtcGlsbCwKICAgIGJvZHkubGlnaHQtbW9kZSAuc2lnbmFsLWNoaXAsCiAgICBib2R5LmxpZ2h0LW1vZGUgLmhpc3Rvcnktc2lnbmFsLWNoaXAgewogICAgICBiYWNrZ3JvdW5kOiByZ2JhKDI1NSwyNTUsMjU1LDAuOTIpOwogICAgfQogICAgLnRvcC1jb250cm9scyB7CiAgICAgIGRpc3BsYXk6IGZsZXg7CiAgICAgIGp1c3RpZnktY29udGVudDogZmxleC1lbmQ7CiAgICAgIGFsaWduLWl0ZW1zOiBjZW50ZXI7CiAgICAgIG1hcmdpbjogLTJweCAwIDEwcHg7CiAgICAgIGdhcDogOHB4OwogICAgfQogICAgLnRoZW1lLXRvZ2dsZS1idG4gewogICAgICBib3JkZXI6IDFweCBzb2xpZCByZ2JhKDU2LDE4OSwyNDgsMC42NSk7CiAgICAgIGJhY2tncm91bmQ6IHJnYmEoMTUsMjMsNDIsMC45KTsKICAgICAgY29sb3I6ICNiYWU2ZmQ7CiAgICAgIGJvcmRlci1yYWRpdXM6IDk5OXB4OwogICAgICBwYWRkaW5nOiA2cHggMTFweDsKICAgICAgZm9udC1zaXplOiAxMXB4OwogICAgICBsZXR0ZXItc3BhY2luZzogLjA2ZW07CiAgICAgIHRleHQtdHJhbnNmb3JtOiB1cHBlcmNhc2U7CiAgICAgIGN1cnNvcjogcG9pbnRlcjsKICAgICAgYm94LXNoYWRvdzogMCAxMHB4IDI0cHggcmdiYSgwLDAsMCwwLjI4KTsKICAgIH0KICAgIGJvZHkubGlnaHQtbW9kZSAudGhlbWUtdG9nZ2xlLWJ0biB7CiAgICAgIGJhY2tncm91bmQ6IHJnYmEoMjU1LDI1NSwyNTUsMC45NSk7CiAgICAgIGNvbG9yOiAjMDc1OTg1OwogICAgICBib3gtc2hhZG93OiAwIDhweCAxOHB4IHJnYmEoMTUsMjMsNDIsMC4xMik7CiAgICB9CiAgICAuZGFpbHktYWktdGltZWJveCB7CiAgICAgIGJvcmRlci1yYWRpdXM6IDE0cHg7CiAgICAgIGJvcmRlcjogMXB4IHNvbGlkIHJnYmEoNTYsMTg5LDI0OCwwLjMyKTsKICAgICAgYmFja2dyb3VuZDogcmdiYSgxNSwyMyw0MiwwLjcyKTsKICAgICAgcGFkZGluZzogOHB4IDEwcHg7CiAgICAgIG1hcmdpbjogMCAwIDEwcHg7CiAgICAgIGZvbnQtc2l6ZTogMTFweDsKICAgICAgY29sb3I6IHZhcigtLXRleHQtbXV0ZWQpOwogICAgICBsaW5lLWhlaWdodDogMS40NTsKICAgIH0KICAgIGJvZHkubGlnaHQtbW9kZSAuZGFpbHktYWktdGltZWJveCB7CiAgICAgIGJhY2tncm91bmQ6IHJnYmEoMjQ4LDI1MCwyNTIsMC45Mik7CiAgICAgIGJvcmRlci1jb2xvcjogcmdiYSgxNCwxNjUsMjMzLDAuMzUpOwogICAgfQogICAgLmRhaWx5LWFpLXRpbWVib3ggc3Ryb25nIHsKICAgICAgY29sb3I6IHZhcigtLXRleHQtbWFpbik7CiAgICAgIGZvbnQtd2VpZ2h0OiA2NTA7CiAgICB9Cg=='
-          js_b64 = 'CiAgICAvLyBDT0hFU0lWWF9USEVNRV9UT0dHTEVfSlMKICAgIGNvbnN0IFRIRU1FX1NUT1JBR0VfS0VZID0gImNvaGVzaXZ4VGhlbWUiOwogICAgY29uc3QgVEhFTUVfVE9HR0xFX0VMID0gZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoInRoZW1lLXRvZ2dsZSIpOwoKICAgIGZ1bmN0aW9uIGFwcGx5VGhlbWUodGhlbWUpIHsKICAgICAgY29uc3Qgc2VsZWN0ZWQgPSB0aGVtZSA9PT0gImxpZ2h0IiA/ICJsaWdodCIgOiAiZGFyayI7CiAgICAgIGRvY3VtZW50LmJvZHkuY2xhc3NMaXN0LnRvZ2dsZSgibGlnaHQtbW9kZSIsIHNlbGVjdGVkID09PSAibGlnaHQiKTsKICAgICAgaWYgKFRIRU1FX1RPR0dMRV9FTCkgewogICAgICAgIFRIRU1FX1RPR0dMRV9FTC50ZXh0Q29udGVudCA9IHNlbGVjdGVkID09PSAibGlnaHQiID8gIuKYgO+4jyBMaWdodCIgOiAi8J+MjSBEYXJrIjsKICAgICAgICBUSEVNRV9UT0dHTEVfRUwuc2V0QXR0cmlidXRlKCJhcmlhLXByZXNzZWQiLCBzZWxlY3RlZCA9PT0gImxpZ2h0IiA/ICJ0cnVlIiA6ICJmYWxzZSIpOwogICAgICB9CiAgICAgIHRyeSB7IGxvY2FsU3RvcmFnZS5zZXRJdGVtKFRIRU1FX1NUT1JBR0VfS0VZLCBzZWxlY3RlZCk7IH0gY2F0Y2ggKF8pIHt9CiAgICB9CgogICAgZnVuY3Rpb24gaW5pdFRoZW1lVG9nZ2xlKCkgewogICAgICBsZXQgc2F2ZWQgPSAiZGFyayI7CiAgICAgIHRyeSB7IHNhdmVkID0gbG9jYWxTdG9yYWdlLmdldEl0ZW0oVEhFTUVfU1RPUkFHRV9LRVkpIHx8ICJkYXJrIjsgfSBjYXRjaCAoXykge30KICAgICAgYXBwbHlUaGVtZShzYXZlZCk7CiAgICAgIGlmIChUSEVNRV9UT0dHTEVfRUwpIHsKICAgICAgICBUSEVNRV9UT0dHTEVfRUwuYWRkRXZlbnRMaXN0ZW5lcigiY2xpY2siLCAoKSA9PiB7CiAgICAgICAgICBjb25zdCBuZXh0ID0gZG9jdW1lbnQuYm9keS5jbGFzc0xpc3QuY29udGFpbnMoImxpZ2h0LW1vZGUiKSA/ICJkYXJrIiA6ICJsaWdodCI7CiAgICAgICAgICBhcHBseVRoZW1lKG5leHQpOwogICAgICAgICAgc2V0VGltZW91dCgoKSA9PiB7IGlmICh0eXBlb2YgcmVuZGVyQ2hhcnQgPT09ICJmdW5jdGlvbiIpIHJlbmRlckNoYXJ0KCk7IH0sIDgwKTsKICAgICAgICB9KTsKICAgICAgfQogICAgfQoKICAgIGZ1bmN0aW9uIGZvcm1hdEFuYWx5c2lzVGltZShpc28pIHsKICAgICAgaWYgKCFpc28pIHJldHVybiAibi9hIjsKICAgICAgY29uc3QgZCA9IG5ldyBEYXRlKGlzbyk7CiAgICAgIGlmIChOdW1iZXIuaXNOYU4oZC5nZXRUaW1lKCkpKSByZXR1cm4gIm4vYSI7CiAgICAgIHJldHVybiBkLnRvTG9jYWxlU3RyaW5nKCJyby1STyIsIHsKICAgICAgICBkYXk6ICIyLWRpZ2l0IiwgbW9udGg6ICIyLWRpZ2l0IiwgeWVhcjogIm51bWVyaWMiLAogICAgICAgIGhvdXI6ICIyLWRpZ2l0IiwgbWludXRlOiAiMi1kaWdpdCIsIHRpbWVab25lTmFtZTogInNob3J0IgogICAgICB9KTsKICAgIH0KCiAgICBmdW5jdGlvbiB1cGRhdGVEYWlseVRpbWVib3goZGF0YSkgewogICAgICBjb25zdCBlbCA9IGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCJkYWlseS1haS10aW1lYm94Iik7CiAgICAgIGlmICghZWwgfHwgIWRhdGEpIHJldHVybjsKICAgICAgY29uc3Qgc3RhdHVzID0gZGF0YS5hbmFseXNpc19zdGF0dXMgPT09ICJ1cGRhdGVkIiA/ICJhY3R1YWxpemF0xIMiIDogKGRhdGEuYW5hbHlzaXNfc3RhdHVzIHx8ICLDrm4gdmVyaWZpY2FyZSIpOwogICAgICBjb25zdCBsYXN0ID0gZm9ybWF0QW5hbHlzaXNUaW1lKGRhdGEubGFzdF9hbmFseXNpc19hdCB8fCBkYXRhLmdlbmVyYXRlZF9hdCk7CiAgICAgIGNvbnN0IG5leHQgPSBmb3JtYXRBbmFseXNpc1RpbWUoZGF0YS5uZXh0X2FuYWx5c2lzX2V4cGVjdGVkX2F0KTsKICAgICAgZWwuaW5uZXJIVE1MID0KICAgICAgICA8c3Ryb25nPlN0YXR1cyBhbmFsaXrEODwvc3Ryb25nPiAke3N0YXR1c308YnI+ICsKICAgICAgICA8c3Ryb25nPlVsdGltYSBhbmFsaXrEODwvc3Ryb25nPiAke2xhc3R9PGJyPiArCiAgICAgICAgPHN0cm9uZz5Vcm3Eg3RvYXJlYSBlc3RpbWF0xIM6PC9zdHJvbmc+ICR7bmV4dH07CiAgICB9Cg=='
-          css = base64.b64decode(css_b64).decode('utf-8')
-          js = base64.b64decode(js_b64).decode('utf-8')
+          css = "\n".join([
+              "",
+              "    /* COHESIVX_THEME_TOGGLE_CSS */",
+              "    body.light-mode {",
+              "      --bg-main: #f8fafc;",
+              "      --bg-card: rgba(255,255,255,0.96);",
+              "      --border-card: #cbd5e1;",
+              "      --text-main: #0f172a;",
+              "      --text-muted: #475569;",
+              "      --text-soft: #64748b;",
+              "      --accent-bg-chip: rgba(255,255,255,0.9);",
+              "      background:",
+              "        radial-gradient(circle at 10% -10%, #e0f2fe 0, transparent 55%),",
+              "        radial-gradient(circle at 90% 110%, #ffffff 0, #e2e8f0 60%);",
+              "    }",
+              "    body.light-mode .card { box-shadow: 0 18px 50px rgba(15,23,42,0.16); }",
+              "    body.light-mode .card::before { opacity: .08; }",
+              "    body.light-mode .history-row,",
+              "    body.light-mode .daily-ai-item,",
+              "    body.light-mode .risk-metric,",
+              "    body.light-mode .participation-metric {",
+              "      background: rgba(248,250,252,0.92);",
+              "      border-color: rgba(148,163,184,0.55);",
+              "    }",
+              "    body.light-mode .daily-ai-state,",
+              "    body.light-mode .risk-pill,",
+              "    body.light-mode .participation-pill,",
+              "    body.light-mode .fg-zone-pill,",
+              "    body.light-mode .signal-chip,",
+              "    body.light-mode .history-signal-chip { background: rgba(255,255,255,0.92); }",
+              "    .top-controls { display:flex; justify-content:flex-end; align-items:center; margin:-2px 0 10px; gap:8px; }",
+              "    .theme-toggle-btn {",
+              "      border:1px solid rgba(56,189,248,0.65);",
+              "      background:rgba(15,23,42,0.9);",
+              "      color:#bae6fd;",
+              "      border-radius:999px;",
+              "      padding:6px 11px;",
+              "      font-size:11px;",
+              "      letter-spacing:.06em;",
+              "      text-transform:uppercase;",
+              "      cursor:pointer;",
+              "      box-shadow:0 10px 24px rgba(0,0,0,0.28);",
+              "    }",
+              "    body.light-mode .theme-toggle-btn { background:rgba(255,255,255,0.95); color:#075985; box-shadow:0 8px 18px rgba(15,23,42,0.12); }",
+              "    .daily-ai-timebox {",
+              "      border-radius:14px;",
+              "      border:1px solid rgba(56,189,248,0.32);",
+              "      background:rgba(15,23,42,0.72);",
+              "      padding:8px 10px;",
+              "      margin:0 0 10px;",
+              "      font-size:11px;",
+              "      color:var(--text-muted);",
+              "      line-height:1.45;",
+              "    }",
+              "    body.light-mode .daily-ai-timebox { background:rgba(248,250,252,0.92); border-color:rgba(14,165,233,0.35); }",
+              "    .daily-ai-timebox strong { color:var(--text-main); font-weight:650; }",
+          ])
+
+          js = "\n".join([
+              "",
+              "    // COHESIVX_THEME_TOGGLE_JS",
+              "    const THEME_STORAGE_KEY = 'cohesivxTheme';",
+              "    const THEME_TOGGLE_EL = document.getElementById('theme-toggle');",
+              "",
+              "    function applyTheme(theme) {",
+              "      const selected = theme === 'light' ? 'light' : 'dark';",
+              "      document.body.classList.toggle('light-mode', selected === 'light');",
+              "      if (THEME_TOGGLE_EL) {",
+              "        THEME_TOGGLE_EL.textContent = selected === 'light' ? 'Light' : 'Dark';",
+              "        THEME_TOGGLE_EL.setAttribute('aria-pressed', selected === 'light' ? 'true' : 'false');",
+              "      }",
+              "      try { localStorage.setItem(THEME_STORAGE_KEY, selected); } catch (_) {}",
+              "    }",
+              "",
+              "    function initThemeToggle() {",
+              "      let saved = 'dark';",
+              "      try { saved = localStorage.getItem(THEME_STORAGE_KEY) || 'dark'; } catch (_) {}",
+              "      applyTheme(saved);",
+              "      if (THEME_TOGGLE_EL) {",
+              "        THEME_TOGGLE_EL.addEventListener('click', () => {",
+              "          const next = document.body.classList.contains('light-mode') ? 'dark' : 'light';",
+              "          applyTheme(next);",
+              "          setTimeout(() => { if (typeof renderChart === 'function') renderChart(); }, 80);",
+              "        });",
+              "      }",
+              "    }",
+              "",
+              "    function formatAnalysisTime(iso) {",
+              "      if (!iso) return 'n/a';",
+              "      const d = new Date(iso);",
+              "      if (Number.isNaN(d.getTime())) return 'n/a';",
+              "      return d.toLocaleString('ro-RO', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit', timeZoneName:'short' });",
+              "    }",
+              "",
+              "    function updateDailyTimebox(data) {",
+              "      const el = document.getElementById('daily-ai-timebox');",
+              "      if (!el || !data) return;",
+              "      const status = data.analysis_status === 'updated' ? 'actualizata' : (data.analysis_status || 'in verificare');",
+              "      const last = formatAnalysisTime(data.last_analysis_at || data.generated_at);",
+              "      const next = formatAnalysisTime(data.next_analysis_expected_at);",
+              "      el.innerHTML = `<strong>Status analiza:</strong> ${status}<br>` + `<strong>Ultima analiza:</strong> ${last}<br>` + `<strong>Urmatoarea estimata:</strong> ${next}`;",
+              "    }",
+          ])
 
           if '/* COHESIVX_THEME_TOGGLE_CSS */' not in text:
               text = text.replace('\n  </style>', css + '\n  </style>')
           if 'COHESIVX_THEME_TOGGLE_BUTTON' not in text:
-              text = text.replace('    <div class="title-bar">MECANISM COEZIV BTC</div>', '    <div class="title-bar">MECANISM COEZIV BTC</div>\n    <!-- COHESIVX_THEME_TOGGLE_BUTTON -->\n    <div class="top-controls">\n      <button id="theme-toggle" class="theme-toggle-btn" type="button" aria-label="Schimbă tema aplicației">🌙 Dark</button>\n    </div>')
+              text = text.replace('    <div class="title-bar">MECANISM COEZIV BTC</div>', '    <div class="title-bar">MECANISM COEZIV BTC</div>\n    <!-- COHESIVX_THEME_TOGGLE_BUTTON -->\n    <div class="top-controls">\n      <button id="theme-toggle" class="theme-toggle-btn" type="button" aria-label="Schimba tema aplicatiei">Dark</button>\n    </div>')
           if 'daily-ai-timebox' not in text:
-              text = text.replace('        <div id="daily-ai-state" class="daily-ai-state">Se încarcă...</div>', '        <div id="daily-ai-state" class="daily-ai-state">Se încarcă...</div>\n        <div id="daily-ai-timebox" class="daily-ai-timebox">\n          <strong>Status analiză:</strong> se verifică ultima actualizare zilnică.\n        </div>')
+              text = text.replace('        <div id="daily-ai-state" class="daily-ai-state">Se încarcă...</div>', '        <div id="daily-ai-state" class="daily-ai-state">Se încarcă...</div>\n        <div id="daily-ai-timebox" class="daily-ai-timebox">\n          <strong>Status analiza:</strong> se verifica ultima actualizare zilnica.\n        </div>')
           if 'COHESIVX_THEME_TOGGLE_JS' not in text:
               text = text.replace('    // DAILY_COHESIV_INTERPRETATION_JS', js + '\n\n    // DAILY_COHESIV_INTERPRETATION_JS')
           if 'updateDailyTimebox(data);' not in text:
