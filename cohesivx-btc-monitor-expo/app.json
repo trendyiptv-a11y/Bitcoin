@@ -1,5 +1,6 @@
 {
   "expo": {
+    "owner": "speednet19",
     "name": "CohesivX BTC Monitor",
     "slug": "cohesivx-btc-monitor",
     "version": "0.1.0",
@@ -23,10 +24,7 @@
     },
     "extra": {
       "cohesivxUrl": "https://coezivx.vercel.app/btc-swing-strategy/mecanism.html",
-      "privacyPolicyUrl": "https://coezivx.vercel.app/btc-swing-strategy/privacy/",
-      "eas": {
-        "projectId": "00000000-0000-0000-0000-000000000000"
-      }
+      "privacyPolicyUrl": "https://coezivx.vercel.app/btc-swing-strategy/privacy/"
     }
   }
 }
