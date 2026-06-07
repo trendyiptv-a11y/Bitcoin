@@ -1,0 +1,51 @@
+name: Build CohesivX Native Android
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-native-android:
+    name: Build native CohesivX APK and AAB
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: android/cohesivx-btc-monitor
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: 8.10.2
+
+      - name: Build debug APK
+        run: gradle clean assembleDebug --stacktrace
+
+      - name: Build release AAB
+        run: gradle bundleRelease --stacktrace
+
+      - name: Upload debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: cohesivx-native-debug-apk-v0.2.5-code2
+          path: android/cohesivx-btc-monitor/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+
+      - name: Upload unsigned release AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: cohesivx-native-release-aab-unsigned-v0.2.5-code2
+          path: android/cohesivx-btc-monitor/app/build/outputs/bundle/release/*.aab
+          if-no-files-found: error
