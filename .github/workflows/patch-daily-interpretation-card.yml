@@ -2,6 +2,11 @@ name: Patch Daily Cohesiv Interpretation Card
 
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - 'patch_daily_interpretation_card.py'
+      - 'btc-swing-strategy/daily_cohesiv_interpretation.json'
+      - '.github/workflows/patch-daily-interpretation-card.yml'
   schedule:
     - cron: '50 6 * * *'
 
