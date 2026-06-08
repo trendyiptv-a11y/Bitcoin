@@ -1130,22 +1130,25 @@ details.regime-detail[open] summary::after {
 
     /* COMPACT_REGIME_CHIP_CSS */
     #regime-line.regime-chip {
-      width: auto;
-      max-width: 96px;
-      min-width: 72px;
+      width: 74px;
+      height: 74px;
+      min-width: 74px;
+      max-width: 74px;
       align-self: flex-start;
       margin-top: 0;
-      padding: 6px 9px;
+      padding: 0;
       border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       text-align: center;
-      font-size: 10px;
-      line-height: 1.15;
-      font-weight: 750;
+      font-size: 11px;
+      line-height: 1.05;
+      font-weight: 850;
       letter-spacing: .08em;
       text-transform: uppercase;
-      white-space: normal;
-      overflow-wrap: normal;
-      word-break: normal;
+      white-space: pre-line;
+      overflow: hidden;
       color: #bae6fd;
       background: rgba(15,23,42,0.78);
       border: 1px solid rgba(56,189,248,0.28);
@@ -1158,10 +1161,11 @@ details.regime-detail[open] summary::after {
     }
     @media (max-width: 480px) {
       #regime-line.regime-chip {
-        max-width: 82px;
-        min-width: 64px;
-        padding: 5px 7px;
-        font-size: 9px;
+        width: 66px;
+        height: 66px;
+        min-width: 66px;
+        max-width: 66px;
+        font-size: 10px;
       }
     }
 
@@ -1657,9 +1661,7 @@ details.regime-detail[open] summary::after {
     // COMPACT_REGIME_CHIP_JS
     function compactRegimeLabel(fullText) {
       const t = String(fullText || '').toLowerCase();
-      if (t.includes('ascendent') && t.includes('susținut')) return 'TREND+';
       if (t.includes('ascendent')) return 'TREND+';
-      if (t.includes('descendent') && t.includes('susținut')) return 'TREND−';
       if (t.includes('descendent')) return 'TREND−';
       if (t.includes('range') && t.includes('pozitiv')) return 'RANGE+';
       if (t.includes('range') && t.includes('negativ')) return 'RANGE−';
@@ -1673,9 +1675,24 @@ details.regime-detail[open] summary::after {
       const el = document.getElementById('regime-line');
       if (!el) return;
       el.classList.add('regime-chip');
-      const full = el.getAttribute('data-full-regime') || el.textContent || '';
-      el.title = full;
-      el.textContent = compactRegimeLabel(full);
+      const current = el.textContent || '';
+      const full = el.getAttribute('data-full-regime') || current;
+      const compact = compactRegimeLabel(full);
+      if (current !== compact) {
+        el.setAttribute('data-full-regime', full);
+        el.title = full;
+        el.textContent = compact;
+      }
+    }
+    function startCompactRegimeChipSync() {
+      applyCompactRegimeChip();
+      const el = document.getElementById('regime-line');
+      if (!el) return;
+      const observer = new MutationObserver(function(){
+        window.requestAnimationFrame(applyCompactRegimeChip);
+      });
+      observer.observe(el, { childList: true, characterData: true, subtree: true });
+      setInterval(applyCompactRegimeChip, 700);
     }
 
     const STATE_URL = "coeziv_state.json";
@@ -2787,7 +2804,7 @@ else if (LIQ_REGIME === "normală" || LIQ_REGIME === "moderată")
 
     function start() {
       initThemeToggle();
-    applyCompactRegimeChip();
+    startCompactRegimeChipSync();
       loadState();
     loadParticipationCohesion();
     // DAILY_COHESIV_INTERPRETATION_CALL
