@@ -1,0 +1,49 @@
+name: Patch Premium UI Refresh
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'patch_premium_ui_refresh.py'
+      - '.github/workflows/patch-premium-ui-refresh.yml'
+  schedule:
+    - cron: '55 6 * * *'
+
+permissions:
+  contents: write
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  patch-premium-ui:
+    name: Patch mecanism with premium UI refresh
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Apply premium UI refresh
+        run: |
+          python patch_premium_ui_refresh.py
+
+      - name: Commit premium UI refresh if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add btc-swing-strategy/mecanism.html
+          if git diff --cached --quiet; then
+            echo "No mecanism.html changes to commit."
+          else
+            git commit -m "Apply premium UI refresh"
+            git push
+          fi
