@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CohesivX BTC Monitor · UI 0.3</title>
+  <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
+  <style>
+    :root{
+      --bg:#060812;--bg2:#0b1020;--card:rgba(18,24,38,.72);--card2:rgba(12,17,31,.88);
+      --border:rgba(148,163,184,.14);--text:#f8fafc;--muted:#94a3b8;--soft:#64748b;
+      --blue:#38bdf8;--violet:#8b5cf6;--green:#22c55e;--yellow:#facc15;--orange:#fb923c;--red:#f97373;
+      --shadow:0 24px 80px rgba(0,0,0,.55)
+    }
+    [data-theme="light"]{--bg:#f8fafc;--bg2:#e2e8f0;--card:rgba(255,255,255,.78);--card2:rgba(255,255,255,.92);--border:rgba(15,23,42,.12);--text:#0f172a;--muted:#475569;--soft:#64748b;--shadow:0 18px 55px rgba(15,23,42,.12)}
+    *{box-sizing:border-box} body{margin:0;min-height:100vh;background:radial-gradient(circle at 12% 8%,rgba(56,189,248,.16),transparent 34%),radial-gradient(circle at 88% 0%,rgba(139,92,246,.18),transparent 36%),linear-gradient(135deg,var(--bg),var(--bg2));color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;overflow-x:hidden}
+    body:before{content:"";position:fixed;inset:0;background:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:42px 42px;mask-image:radial-gradient(circle at center,black,transparent 80%);pointer-events:none}
+    .app{position:relative;z-index:1;min-height:100vh}.topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:14px;justify-content:space-between;padding:14px 16px;background:rgba(2,6,23,.58);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+    [data-theme="light"] .topbar{background:rgba(248,250,252,.72)}.brand{display:flex;align-items:center;gap:12px}.logo{width:42px;height:42px;border-radius:16px;background:linear-gradient(135deg,var(--blue),var(--violet));display:grid;place-items:center;font-weight:900;color:white;box-shadow:0 12px 34px rgba(56,189,248,.28)}
+    .brand h1{margin:0;font-size:17px;letter-spacing:.04em}.brand p{margin:2px 0 0;color:var(--muted);font-size:12px}.top-actions{display:flex;align-items:center;gap:8px}.pill-btn{border:1px solid var(--border);background:var(--card);color:var(--text);border-radius:999px;padding:9px 12px;font-size:12px;font-weight:650;cursor:pointer;backdrop-filter:blur(12px)}
+    .layout{display:grid;grid-template-columns:240px minmax(0,1fr);gap:18px;max-width:1240px;margin:0 auto;padding:18px}.sidebar{position:sticky;top:86px;height:calc(100vh - 110px);padding:16px;border:1px solid var(--border);background:var(--card);backdrop-filter:blur(24px);border-radius:28px;box-shadow:var(--shadow)}
+    .nav-title{font-size:11px;text-transform:uppercase;letter-spacing:.18em;color:var(--soft);margin:6px 8px 12px}.nav{display:flex;flex-direction:column;gap:8px}.nav a{color:var(--muted);text-decoration:none;border:1px solid transparent;border-radius:16px;padding:11px 12px;font-size:13px;display:flex;gap:9px;align-items:center}.nav a:hover{background:rgba(148,163,184,.08);border-color:var(--border);color:var(--text)}
+    .content{display:flex;flex-direction:column;gap:16px}.hero{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(260px,.75fr);gap:16px}.card{background:var(--card);border:1px solid var(--border);border-radius:28px;box-shadow:var(--shadow);backdrop-filter:blur(24px);overflow:hidden}.card-inner{padding:20px;position:relative}.card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:14px}.eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:.18em;color:var(--soft);font-weight:750}.title{font-size:19px;font-weight:780;margin:4px 0 0}.subtitle{font-size:12px;color:var(--muted);line-height:1.45;margin-top:4px}.status-pill{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--border);border-radius:999px;padding:6px 11px;font-size:11px;font-weight:780;background:rgba(15,23,42,.4);white-space:nowrap}.dot{width:8px;height:8px;border-radius:50%;background:var(--soft)}
+    .good{color:#bbf7d0;border-color:rgba(34,197,94,.5)}.good .dot{background:var(--green)}.warn{color:#fef3c7;border-color:rgba(250,204,21,.5)}.warn .dot{background:var(--yellow)}.fragile{color:#fed7aa;border-color:rgba(251,146,60,.5)}.fragile .dot{background:var(--orange)}.danger{color:#fecaca;border-color:rgba(249,115,115,.55)}.danger .dot{background:var(--red)}.neutral{color:#bae6fd;border-color:rgba(56,189,248,.45)}.neutral .dot{background:var(--blue)}
+    .price{font-size:52px;font-weight:880;letter-spacing:-.04em;line-height:1;margin:18px 0 4px;background:linear-gradient(135deg,var(--blue),var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent}.metric-line{font-size:13px;color:var(--muted);line-height:1.6}.message{margin-top:16px;padding:15px;border:1px solid var(--border);border-radius:18px;background:rgba(15,23,42,.35);font-size:14px;line-height:1.6;color:var(--text)}
+    .chart{height:275px;border-radius:20px;border:1px solid var(--border);background:var(--card2);overflow:hidden}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.score{font-size:42px;font-weight:880;line-height:1}.bar{height:9px;border-radius:999px;background:rgba(148,163,184,.12);overflow:hidden;margin-top:14px}.bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--blue),var(--violet));transition:width .5s ease}.mini-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:13px}.mini{border:1px solid var(--border);background:rgba(15,23,42,.3);border-radius:16px;padding:10px}.mini label{display:block;color:var(--soft);font-size:10px;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}.mini strong{font-size:13px}.daily-text{font-size:15px;line-height:1.65}.section-list{display:grid;gap:10px;margin-top:14px}.section-item{border:1px solid var(--border);background:rgba(15,23,42,.28);border-radius:18px;padding:12px}.section-item h4{margin:0 0 5px;font-size:11px;color:var(--soft);text-transform:uppercase;letter-spacing:.12em}.section-item p{margin:0;color:var(--text);font-size:13px;line-height:1.55}.history{display:grid;gap:8px;max-height:280px;overflow:auto}.history-row{display:flex;justify-content:space-between;gap:12px;align-items:center;border:1px solid var(--border);border-radius:16px;padding:10px 12px;background:rgba(15,23,42,.3)}.history-row span{font-size:12px;color:var(--muted)}.history-row strong{font-size:13px}.footer-note{font-size:11px;color:var(--soft);line-height:1.55;margin-top:12px}.skeleton{color:var(--soft)}
+    @media(max-width:920px){.layout{display:block;padding:12px}.sidebar{position:relative;top:auto;height:auto;margin-bottom:14px;border-radius:22px}.nav{display:grid;grid-template-columns:repeat(3,1fr)}.nav a{justify-content:center;text-align:center}.hero,.grid,.grid2{grid-template-columns:1fr}.price{font-size:43px}.chart{height:230px}.topbar{padding:12px}.brand h1{font-size:15px}.brand p{display:none}}
+  </style>
+</head>
+<body data-theme="dark">
+<div class="app">
+  <header class="topbar">
+    <div class="brand"><div class="logo">CX</div><div><h1>CohesivX BTC Monitor</h1><p>Observator structural Bitcoin · UI 0.3</p></div></div>
+    <div class="top-actions"><button id="refresh" class="pill-btn">↻ Refresh</button><button id="theme" class="pill-btn">☾ / ☀</button></div>
+  </header>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="nav-title">Navigare</div>
+      <nav class="nav">
+        <a href="#daily">🧠 Interpretare</a>
+        <a href="#participation">◎ Participare</a>
+        <a href="#risk">⚠ Risc</a>
+        <a href="#fg">◐ Fear & Greed</a>
+        <a href="#history">⏱ Istoric</a>
+        <a href="mecanism.html">↩ UI stabil</a>
+      </nav>
+      <div class="footer-note">Prototip vizual separat. Motorul actual rămâne neschimbat.</div>
+    </aside>
+    <main class="content">
+      <section class="hero">
+        <div class="card"><div class="card-inner">
+          <div class="card-head"><div><div class="eyebrow">Stare mecanism</div><div class="title">Bitcoin · structură curentă</div><div id="meta" class="subtitle">Se încarcă snapshotul...</div></div><div id="context-pill" class="status-pill neutral"><span class="dot"></span><span>Context</span></div></div>
+          <div id="price" class="price">–</div>
+          <div id="live-line" class="metric-line">Preț live / model: n/a</div>
+          <div id="regime-line" class="metric-line">Regim structural: n/a</div>
+          <div id="message" class="message">Se încarcă mesajul coeziv...</div>
+        </div></div>
+        <div class="card"><div class="card-inner">
+          <div class="card-head"><div><div class="eyebrow">Grafic</div><div class="title">BTC context</div><div class="subtitle">Vizualizare compactă pe seria disponibilă.</div></div></div>
+          <div id="chart" class="chart"></div>
+        </div></div>
+      </section>
+
+      <section id="daily" class="card"><div class="card-inner">
+        <div class="card-head"><div><div class="eyebrow">Interpretare coezivă zilnică</div><div class="title">Explicație pe înțelesul tuturor</div><div id="daily-date" class="subtitle">În așteptarea interpretării.</div></div><div id="daily-state" class="status-pill neutral"><span class="dot"></span><span>În așteptare</span></div></div>
+        <div id="daily-summary" class="daily-text skeleton">Cardul va fi completat după prima analiză aprobată.</div>
+        <div class="section-list">
+          <div class="section-item"><h4>Participare</h4><p id="daily-participation">–</p></div>
+          <div class="section-item"><h4>Fereastră risc</h4><p id="daily-risk">–</p></div>
+          <div class="section-item"><h4>Fear & Greed / Regim</h4><p id="daily-fg-regime">–</p></div>
+          <div class="section-item"><h4>Ce urmărim</h4><p id="daily-watch">–</p></div>
+        </div>
+        <div id="daily-footer" class="footer-note">Interpretare structurală experimentală, nu recomandare financiară.</div>
+      </div></section>
+
+      <section class="grid">
+        <div id="participation" class="card"><div class="card-inner"><div class="card-head"><div><div class="eyebrow">Coeziune participativă</div><div class="title">Interesul participanților</div></div><div id="participation-pill" class="status-pill neutral"><span class="dot"></span><span>n/a</span></div></div><div id="participation-score" class="score">–</div><div class="bar"><span id="participation-bar"></span></div><div id="participation-text" class="footer-note">Se încarcă.</div><div class="mini-grid"><div class="mini"><label>Flux</label><strong id="participation-flow">–</strong></div><div class="mini"><label>Lichiditate</label><strong id="participation-liquidity">–</strong></div></div></div></div>
+        <div id="risk" class="card"><div class="card-inner"><div class="card-head"><div><div class="eyebrow">Fereastră de risc</div><div class="title">Degradare contextuală</div></div><div id="risk-pill" class="status-pill neutral"><span class="dot"></span><span>n/a</span></div></div><div id="risk-text" class="daily-text">Se încarcă.</div><div class="mini-grid"><div class="mini"><label>Confirmare</label><strong id="risk-rate">–</strong></div><div class="mini"><label>Persistență</label><strong id="risk-streak">–</strong></div></div></div></div>
+        <div id="fg" class="card"><div class="card-inner"><div class="card-head"><div><div class="eyebrow">Fear & Greed Coeziv</div><div class="title">Sentiment structural</div></div><div id="fg-pill" class="status-pill neutral"><span class="dot"></span><span>n/a</span></div></div><div id="fg-score" class="score">–</div><div class="bar"><span id="fg-bar"></span></div><div id="fg-text" class="footer-note">Se încarcă.</div><div class="mini-grid"><div class="mini"><label>Structural</label><strong id="fg-struct">–</strong></div><div class="mini"><label>Tensiune</label><strong id="fg-tension">–</strong></div></div></div></div>
+      </section>
+
+      <section id="history" class="card"><div class="card-inner"><div class="card-head"><div><div class="eyebrow">Istoric contexte</div><div class="title">Ultimele stări ale mecanismului</div><div class="subtitle">Context observat, nu semnal de tranzacționare.</div></div></div><div id="history-list" class="history"><div class="footer-note">Se încarcă istoricul.</div></div></div></section>
+    </main>
+  </div>
+</div>
+<script>
+  const $ = id => document.getElementById(id);
+  const urls = name => [name, './'+name, '/btc-swing-strategy/'+name];
+  async function getJson(name){ for(const u of urls(name)){ try{ const r=await fetch(u+'?t='+Date.now(),{cache:'no-store'}); if(r.ok) return await r.json(); }catch(e){} } return null; }
+  function text(id,v){ const el=$(id); if(el) el.textContent = (v===undefined||v===null||v==='')?'–':v; }
+  function clsFor(s){ const x=String(s||'').toLowerCase(); if(x.includes('degrad')||x.includes('high')||x.includes('ridicat')||x.includes('scădere')||x.includes('scadere')) return 'danger'; if(x.includes('fragil')||x.includes('bear')) return 'fragile'; if(x.includes('tension')||x.includes('moderate')||x.includes('risc')) return 'warn'; if(x.includes('coeziv')||x.includes('stable')||x.includes('stabil')||x.includes('low')) return 'good'; return 'neutral'; }
+  function setPill(id,label){ const el=$(id); if(!el) return; el.className='status-pill '+clsFor(label); el.innerHTML='<span class="dot"></span><span>'+ (label||'n/a') +'</span>'; }
+  function n(v,d=0){ const x=Number(v); return Number.isFinite(x)?x:d; }
+  function pct(v){ return Number.isFinite(Number(v)) ? Math.round(Number(v)*100)+'%' : 'n/a'; }
+  function score(v){ return Number.isFinite(Number(v)) ? Math.round(Number(v)) : '–'; }
+  function shortDate(s){ try{return new Date(s).toLocaleString('ro-RO',{dateStyle:'medium',timeStyle:'short'})}catch(e){return s||'n/a'} }
+
+  async function loadState(){ const st=await getJson('coeziv_state.json'); if(!st){text('message','Nu am putut încărca coeziv_state.json.'); return;} text('price','$'+n(st.price_usd||st.model_price_usd).toLocaleString('en-US',{maximumFractionDigits:0})); text('live-line','Preț analizat: '+n(st.price_usd).toLocaleString('en-US')+' USD · Model: '+n(st.model_price_usd).toLocaleString('en-US')+' USD'); text('message',st.message||'Mecanism încărcat.'); text('meta','Snapshot: '+shortDate(st.timestamp)+' · Generat: '+shortDate(st.generated_at)); const regime=st.market_regime&&st.market_regime.label?st.market_regime.label:(st.signal||'context'); text('regime-line','Regim structural: '+regime); setPill('context-pill', regime);
+    const hist=Array.isArray(st.signal_history)?st.signal_history.slice(-12).reverse():[]; $('history-list').innerHTML = hist.length?hist.map(h=>'<div class="history-row"><div><strong>'+shortDate(h.timestamp)+'</strong><br><span>Context: '+(h.signal||'n/a')+'</span></div><strong>$'+n(h.model_price_usd).toLocaleString('en-US',{maximumFractionDigits:0})+'</strong></div>').join(''):'<div class="footer-note">Istoric indisponibil.</div>';
+    drawChart(hist.reverse()); const fg=st.fg||{}; const fgScore=n(fg.combined,NaN); if(Number.isFinite(fgScore)){ text('fg-score',Math.round(fgScore)); $('fg-bar').style.width=Math.max(0,Math.min(100,fgScore))+'%'; } setPill('fg-pill', fg.combined_zone||'n/a'); text('fg-text',fg.description||'Indicator derivat din structura mecanismului.'); text('fg-struct',score(fg.structural)); text('fg-tension',score(fg.tension)); }
+  function drawChart(hist){ if(!window.Plotly||!$('chart')) return; if(!hist||hist.length<2){$('chart').innerHTML='<div class="footer-note" style="padding:20px">Graficul apare după date suficiente.</div>';return;} Plotly.newPlot('chart',[{x:hist.map(h=>h.timestamp),y:hist.map(h=>h.model_price_usd),type:'scatter',mode:'lines+markers',line:{width:3,color:'#38bdf8'},marker:{size:5}}],{paper_bgcolor:'transparent',plot_bgcolor:'transparent',font:{color:getComputedStyle(document.body).getPropertyValue('--text')},margin:{t:10,r:20,b:35,l:45},xaxis:{gridcolor:'rgba(148,163,184,.08)'},yaxis:{gridcolor:'rgba(148,163,184,.08)'}},{responsive:true,displayModeBar:false}); }
+  async function loadRisk(){ const r=await getJson('risk_window.json'); if(!r) return; setPill('risk-pill',(r.active?'activ · ':'')+(r.level||'n/a')); text('risk-text',r.main_text||'Fereastra de risc este disponibilă.'); text('risk-rate',pct(r.historical_confirmation_rate)); text('risk-streak',(r.consecutive_degradation_days||0)+' zile'); }
+  async function loadParticipation(){ const p=await getJson('participation_cohesion.json') || await getJson('participation_cohesion_test.json'); if(!p) return; const data=p.participation_cohesion_test||p; const s=score(data.score); text('participation-score',s+' / 100'); $('participation-bar').style.width=(s==='–'?0:s)+'%'; setPill('participation-pill',data.label||data.status||'n/a'); text('participation-text',data.main_text||data.interpretation||'Indicator experimental de coeziune participativă.'); const c=data.components||{}; text('participation-flow',score(c.flow_component)); text('participation-liquidity',score(c.liquidity_component)); }
+  async function loadDaily(){ const d=await getJson('daily_cohesiv_interpretation.json'); if(!d) return; setPill('daily-state',d.general_state||d.status); text('daily-date',(d.date?'Data: '+d.date+' · ':'')+(d.source||'manual review')); text('daily-summary',d.plain_language||d.summary); text('daily-participation',d.participation); text('daily-risk',d.risk_window); text('daily-fg-regime',[d.fear_greed,d.market_regime].filter(Boolean).join(' • ')); text('daily-watch',d.watch_next); text('daily-footer',d.disclaimer||'Interpretare structurală experimentală, nu recomandare financiară.'); }
+  async function loadAll(){ await Promise.all([loadState(),loadRisk(),loadParticipation(),loadDaily()]); }
+  $('refresh').addEventListener('click',loadAll); $('theme').addEventListener('click',()=>{document.body.dataset.theme=document.body.dataset.theme==='dark'?'light':'dark';}); loadAll();
+</script>
+</body>
+</html>
