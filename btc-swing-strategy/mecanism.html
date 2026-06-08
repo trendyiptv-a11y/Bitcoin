@@ -1129,26 +1129,33 @@ details.regime-detail[open] summary::after {
 /* PREMIUM_UI_REFRESH_END */
 
     /* COMPACT_REGIME_CHIP_CSS */
+    .card:first-of-type {
+      position: relative;
+      overflow: hidden;
+    }
     #regime-line.regime-chip {
-      width: 74px;
-      height: 74px;
-      min-width: 74px;
-      max-width: 74px;
-      align-self: flex-start;
-      margin-top: 0;
+      position: absolute;
+      top: 30px;
+      right: 26px;
+      width: 58px;
+      height: 58px;
+      min-width: 58px;
+      max-width: 58px;
+      margin: 0;
       padding: 0;
       border-radius: 999px;
       display: flex;
       align-items: center;
       justify-content: center;
       text-align: center;
-      font-size: 11px;
+      font-size: 10px;
       line-height: 1.05;
       font-weight: 850;
-      letter-spacing: .08em;
+      letter-spacing: .06em;
       text-transform: uppercase;
       white-space: pre-line;
       overflow: hidden;
+      z-index: 3;
       color: #bae6fd;
       background: rgba(15,23,42,0.78);
       border: 1px solid rgba(56,189,248,0.28);
@@ -1161,11 +1168,35 @@ details.regime-detail[open] summary::after {
     }
     @media (max-width: 480px) {
       #regime-line.regime-chip {
-        width: 66px;
-        height: 66px;
-        min-width: 66px;
-        max-width: 66px;
-        font-size: 10px;
+        top: 28px;
+        right: 20px;
+        width: 54px;
+        height: 54px;
+        min-width: 54px;
+        max-width: 54px;
+        font-size: 9px;
+      }
+      .card:first-of-type .asset-row {
+        padding-right: 66px;
+      }
+      .card:first-of-type .signal-chip {
+        max-width: calc(100vw - 210px);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+    @media (max-width: 380px) {
+      #regime-line.regime-chip {
+        right: 14px;
+        width: 50px;
+        height: 50px;
+        min-width: 50px;
+        max-width: 50px;
+        font-size: 8px;
+      }
+      .card:first-of-type .asset-row {
+        padding-right: 58px;
       }
     }
 
@@ -1661,12 +1692,12 @@ details.regime-detail[open] summary::after {
     // COMPACT_REGIME_CHIP_JS
     function compactRegimeLabel(fullText) {
       const t = String(fullText || '').toLowerCase();
-      if (t.includes('ascendent')) return 'TREND+';
-      if (t.includes('descendent')) return 'TREND−';
       if (t.includes('range') && t.includes('pozitiv')) return 'RANGE+';
       if (t.includes('range') && t.includes('negativ')) return 'RANGE−';
       if (t.includes('range')) return 'RANGE';
-      if (t.includes('tranzi')) return 'TRANZIȚIE';
+      if (t.includes('ascendent')) return 'TREND+';
+      if (t.includes('descendent')) return 'TREND−';
+      if (t.includes('tranzi')) return 'TRANZ';
       if (t.includes('neutru')) return 'NEUTRU';
       if (t.includes('n/a')) return 'N/A';
       return 'REGIM';
@@ -1676,13 +1707,13 @@ details.regime-detail[open] summary::after {
       if (!el) return;
       el.classList.add('regime-chip');
       const current = el.textContent || '';
-      const full = el.getAttribute('data-full-regime') || current;
+      const stored = el.getAttribute('data-full-regime') || '';
+      const source = current && !['RANGE+','RANGE−','RANGE','TREND+','TREND−','TRANZ','NEUTRU','N/A','REGIM'].includes(current.trim()) ? current : stored;
+      const full = source || current || 'n/a';
       const compact = compactRegimeLabel(full);
-      if (current !== compact) {
-        el.setAttribute('data-full-regime', full);
-        el.title = full;
-        el.textContent = compact;
-      }
+      el.setAttribute('data-full-regime', full);
+      el.title = full;
+      if (current.trim() !== compact) el.textContent = compact;
     }
     function startCompactRegimeChipSync() {
       applyCompactRegimeChip();
@@ -1691,7 +1722,7 @@ details.regime-detail[open] summary::after {
       const observer = new MutationObserver(function(){
         window.requestAnimationFrame(applyCompactRegimeChip);
       });
-      observer.observe(el, { childList: true, characterData: true, subtree: true });
+      observer.observe(el, { childList: true, characterData: true, subtree: true, attributes: true });
       setInterval(applyCompactRegimeChip, 700);
     }
 
