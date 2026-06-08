@@ -5,6 +5,8 @@ on:
   push:
     paths:
       - 'patch_premium_ui_refresh.py'
+      - 'patch_compact_regime_chip.py'
+      - 'patch_premium_phase2_context.py'
       - '.github/workflows/patch-premium-ui-refresh.yml'
   schedule:
     - cron: '55 6 * * *'
@@ -35,6 +37,10 @@ jobs:
       - name: Apply premium UI refresh
         run: |
           python patch_premium_ui_refresh.py
+
+      - name: Apply compact regime chip
+        run: |
+          python patch_compact_regime_chip.py
 
       - name: Commit premium UI refresh if changed
         run: |
