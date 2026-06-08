@@ -1,41 +1,41 @@
 {
   "title": "COEZIUNE_PARTICIPATIVA",
-  "score": 73.01,
-  "label": "participare coezivă",
-  "level": "cohesive",
+  "score": 64.29,
+  "label": "participare tensionată",
+  "level": "tense",
   "signal": "short",
-  "main_text": "Participanții par activi și relativ coezivi. Interesul pentru ecosistem persistă, iar comportamentul observabil nu indică abandon.",
+  "main_text": "Participanții rămân activi, dar comportamentul este tensionat. Interesul persistă, însă fluxul dominant poate fi defensiv sau orientat spre ieșire.",
   "components": {
-    "liquidity_component": 66.67,
-    "flow_component": 69.61,
-    "production_component": 83.05,
-    "persistence_component": 70.0,
-    "probability_component": 84.97
+    "liquidity_component": 67.29,
+    "flow_component": 39.97,
+    "production_component": 79.32,
+    "persistence_component": 65.0,
+    "probability_component": 85.02
   },
   "inputs": {
-    "flow_score": 0.016344055779544578,
-    "liquidity_score": 0.018521984794864464,
-    "deviation_from_production": 0.05933325600185133,
-    "signal_probability": 0.37474541751527496,
+    "flow_score": -0.008358036493974381,
+    "liquidity_score": 0.019206694749395983,
+    "deviation_from_production": 0.07237420926418062,
+    "signal_probability": 0.3751696065128901,
     "recent_days": 14,
-    "recent_short_days": 6,
+    "recent_short_days": 7,
     "recent_long_days": 0,
-    "recent_flat_days": 8
+    "recent_flat_days": 7
   },
   "history": {
-    "rows": 5606,
+    "rows": 5607,
     "from": "2011-02-01T00:00:00+00:00",
-    "to": "2026-06-07T00:00:00+00:00",
-    "mean_score": 74.55026578665716,
+    "to": "2026-06-08T00:00:00+00:00",
+    "mean_score": 74.55279828785447,
     "median_score": 77.22,
     "min_score": 56.04,
     "max_score": 97.21,
     "label_counts": {
-      "participare coezivă": 3649,
-      "participare tensionată": 1957
+      "participare coezivă": 3651,
+      "participare tensionată": 1956
     }
   },
   "footer": "Indicator experimental derivat din flux, lichiditate, persistență și tensiune față de model. Nu măsoară încă direct utilizarea peer-to-peer on-chain.",
-  "generated_at": "2026-06-07T10:10:37.374752+00:00",
-  "source_timestamp": "2026-06-07T00:00:00+00:00"
+  "generated_at": "2026-06-08T05:11:26.399071+00:00",
+  "source_timestamp": "2026-06-08T00:00:00+00:00"
 }
