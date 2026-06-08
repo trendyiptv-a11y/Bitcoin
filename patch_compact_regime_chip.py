@@ -1,4 +1,5 @@
 from pathlib import Path
+import re
 
 path = Path('btc-swing-strategy/mecanism.html')
 s = path.read_text(encoding='utf-8')
@@ -8,11 +9,11 @@ css = '''
     /* COMPACT_REGIME_CHIP_CSS */
     #regime-line.regime-chip {
       width: auto;
-      max-width: 96px;
-      min-width: 72px;
+      max-width: 82px;
+      min-width: 58px;
       align-self: flex-start;
       margin-top: 0;
-      padding: 6px 9px;
+      padding: 6px 8px;
       border-radius: 999px;
       text-align: center;
       font-size: 10px;
@@ -35,8 +36,8 @@ css = '''
     }
     @media (max-width: 480px) {
       #regime-line.regime-chip {
-        max-width: 82px;
-        min-width: 64px;
+        max-width: 74px;
+        min-width: 56px;
         padding: 5px 7px;
         font-size: 9px;
       }
@@ -54,15 +55,16 @@ js = '''
     // COMPACT_REGIME_CHIP_JS
     function compactRegimeLabel(fullText) {
       const t = String(fullText || '').toLowerCase();
-      if (t.includes('ascendent') && t.includes('susținut')) return 'TREND+\nPUTERNIC';
+      if (t.includes('ascendent') && t.includes('susținut')) return 'TREND+';
       if (t.includes('ascendent')) return 'TREND+';
-      if (t.includes('descendent') && t.includes('susținut')) return 'TREND−\nPUTERNIC';
+      if (t.includes('descendent') && t.includes('susținut')) return 'TREND−';
       if (t.includes('descendent')) return 'TREND−';
       if (t.includes('range') && t.includes('pozitiv')) return 'RANGE+';
       if (t.includes('range') && t.includes('negativ')) return 'RANGE−';
       if (t.includes('range')) return 'RANGE';
       if (t.includes('tranzi')) return 'TRANZIȚIE';
       if (t.includes('neutru')) return 'NEUTRU';
+      if (t.includes('n/a')) return 'N/A';
       return 'REGIM';
     }
     function applyCompactRegimeChip() {
@@ -74,14 +76,17 @@ js = '''
       el.textContent = compactRegimeLabel(full);
     }
 '''
-if js_marker not in s:
+pattern = r"\n\s*// COMPACT_REGIME_CHIP_JS\n\s*function compactRegimeLabel\(fullText\) \{.*?\n\s*function applyCompactRegimeChip\(\) \{.*?\n\s*\}\n"
+if js_marker in s:
+    s = re.sub(pattern, '\n' + js, s, count=1, flags=re.S)
+else:
     s = s.replace('    const STATE_URL = "coeziv_state.json";', js + '\n    const STATE_URL = "coeziv_state.json";')
 
-# Add sync calls after known updates and at init.
+# Add sync calls after known updates; safe if already applied.
 s = s.replace('if (REGIME_EL) REGIME_EL.textContent = `Regim de piață: ${regime}`;', "if (REGIME_EL) { REGIME_EL.textContent = `Regim de piață: ${regime}`; REGIME_EL.setAttribute('data-full-regime', `Regim de piață: ${regime}`); applyCompactRegimeChip(); }")
 s = s.replace('if (REGIME_EL) REGIME_EL.textContent = "Regim de piață: n/a (așteptăm date suficiente din mecanism).";', "if (REGIME_EL) { REGIME_EL.textContent = 'Regim de piață: n/a (așteptăm date suficiente din mecanism).'; REGIME_EL.setAttribute('data-full-regime', REGIME_EL.textContent); applyCompactRegimeChip(); }")
 
-if 'applyCompactRegimeChip();' not in s.split('// COMPACT_REGIME_CHIP_JS', 1)[-1].split('</script>', 1)[0].replace('function applyCompactRegimeChip()', ''):
+if 'initThemeToggle();\n    applyCompactRegimeChip();' not in s:
     s = s.replace('initThemeToggle();', 'initThemeToggle();\n    applyCompactRegimeChip();')
 
 path.write_text(s, encoding='utf-8')
