@@ -8,22 +8,25 @@ css_marker = '/* COMPACT_REGIME_CHIP_CSS */'
 css = '''
     /* COMPACT_REGIME_CHIP_CSS */
     #regime-line.regime-chip {
-      width: auto;
-      max-width: 82px;
-      min-width: 58px;
+      width: 74px;
+      height: 74px;
+      min-width: 74px;
+      max-width: 74px;
       align-self: flex-start;
       margin-top: 0;
-      padding: 6px 8px;
+      padding: 0;
       border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       text-align: center;
-      font-size: 10px;
-      line-height: 1.15;
-      font-weight: 750;
+      font-size: 11px;
+      line-height: 1.05;
+      font-weight: 850;
       letter-spacing: .08em;
       text-transform: uppercase;
-      white-space: normal;
-      overflow-wrap: normal;
-      word-break: normal;
+      white-space: pre-line;
+      overflow: hidden;
       color: #bae6fd;
       background: rgba(15,23,42,0.78);
       border: 1px solid rgba(56,189,248,0.28);
@@ -36,14 +39,19 @@ css = '''
     }
     @media (max-width: 480px) {
       #regime-line.regime-chip {
-        max-width: 74px;
-        min-width: 56px;
-        padding: 5px 7px;
-        font-size: 9px;
+        width: 66px;
+        height: 66px;
+        min-width: 66px;
+        max-width: 66px;
+        font-size: 10px;
       }
     }
 '''
-if css_marker not in s:
+# Replace old compact CSS block if present, otherwise insert.
+css_pattern = r"\n\s*/\* COMPACT_REGIME_CHIP_CSS \*/\n\s*#regime-line\.regime-chip \{.*?\n\s*\}\n\s*body\.light-mode #regime-line\.regime-chip \{.*?\n\s*\}\n\s*@media \(max-width: 480px\) \{\n\s*#regime-line\.regime-chip \{.*?\n\s*\}\n\s*\}\n"
+if css_marker in s:
+    s = re.sub(css_pattern, '\n' + css, s, count=1, flags=re.S)
+else:
     s = s.replace('  </style>', css + '\n  </style>')
 
 html_old = '<div id="regime-line" class="live-delta">'
@@ -55,9 +63,7 @@ js = '''
     // COMPACT_REGIME_CHIP_JS
     function compactRegimeLabel(fullText) {
       const t = String(fullText || '').toLowerCase();
-      if (t.includes('ascendent') && t.includes('susținut')) return 'TREND+';
       if (t.includes('ascendent')) return 'TREND+';
-      if (t.includes('descendent') && t.includes('susținut')) return 'TREND−';
       if (t.includes('descendent')) return 'TREND−';
       if (t.includes('range') && t.includes('pozitiv')) return 'RANGE+';
       if (t.includes('range') && t.includes('negativ')) return 'RANGE−';
@@ -71,22 +77,35 @@ js = '''
       const el = document.getElementById('regime-line');
       if (!el) return;
       el.classList.add('regime-chip');
-      const full = el.getAttribute('data-full-regime') || el.textContent || '';
-      el.title = full;
-      el.textContent = compactRegimeLabel(full);
+      const current = el.textContent || '';
+      const full = el.getAttribute('data-full-regime') || current;
+      const compact = compactRegimeLabel(full);
+      if (current !== compact) {
+        el.setAttribute('data-full-regime', full);
+        el.title = full;
+        el.textContent = compact;
+      }
+    }
+    function startCompactRegimeChipSync() {
+      applyCompactRegimeChip();
+      const el = document.getElementById('regime-line');
+      if (!el) return;
+      const observer = new MutationObserver(function(){
+        window.requestAnimationFrame(applyCompactRegimeChip);
+      });
+      observer.observe(el, { childList: true, characterData: true, subtree: true });
+      setInterval(applyCompactRegimeChip, 700);
     }
 '''
-pattern = r"\n\s*// COMPACT_REGIME_CHIP_JS\n\s*function compactRegimeLabel\(fullText\) \{.*?\n\s*function applyCompactRegimeChip\(\) \{.*?\n\s*\}\n"
+pattern = r"\n\s*// COMPACT_REGIME_CHIP_JS\n\s*function compactRegimeLabel\(fullText\) \{.*?\n\s*function applyCompactRegimeChip\(\) \{.*?\n\s*\}\n(?:\s*function startCompactRegimeChipSync\(\) \{.*?\n\s*\}\n)?"
 if js_marker in s:
     s = re.sub(pattern, '\n' + js, s, count=1, flags=re.S)
 else:
     s = s.replace('    const STATE_URL = "coeziv_state.json";', js + '\n    const STATE_URL = "coeziv_state.json";')
 
-# Add sync calls after known updates; safe if already applied.
-s = s.replace('if (REGIME_EL) REGIME_EL.textContent = `Regim de piață: ${regime}`;', "if (REGIME_EL) { REGIME_EL.textContent = `Regim de piață: ${regime}`; REGIME_EL.setAttribute('data-full-regime', `Regim de piață: ${regime}`); applyCompactRegimeChip(); }")
-s = s.replace('if (REGIME_EL) REGIME_EL.textContent = "Regim de piață: n/a (așteptăm date suficiente din mecanism).";', "if (REGIME_EL) { REGIME_EL.textContent = 'Regim de piață: n/a (așteptăm date suficiente din mecanism).'; REGIME_EL.setAttribute('data-full-regime', REGIME_EL.textContent); applyCompactRegimeChip(); }")
-
-if 'initThemeToggle();\n    applyCompactRegimeChip();' not in s:
-    s = s.replace('initThemeToggle();', 'initThemeToggle();\n    applyCompactRegimeChip();')
+# Replace old direct call with sync call.
+s = s.replace('initThemeToggle();\n    applyCompactRegimeChip();', 'initThemeToggle();\n    startCompactRegimeChipSync();')
+if 'startCompactRegimeChipSync();' not in s:
+    s = s.replace('initThemeToggle();', 'initThemeToggle();\n    startCompactRegimeChipSync();')
 
 path.write_text(s, encoding='utf-8')
