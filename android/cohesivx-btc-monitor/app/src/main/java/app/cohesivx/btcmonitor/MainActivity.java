@@ -11,7 +11,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
@@ -23,7 +22,6 @@ import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -66,6 +64,7 @@ public class MainActivity extends Activity {
     private ProgressBar progressBar;
     private TextView offlineMessage;
     private View splashOverlay;
+    private TextView btnTheme;
     private float pullStartY = 0f;
     private boolean pullRefreshArmed = false;
 
@@ -77,11 +76,25 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         applySystemBarPadding();
 
-        webView = findViewById(R.id.webView);
-        progressBar = findViewById(R.id.progressBar);
+        webView        = findViewById(R.id.webView);
+        progressBar    = findViewById(R.id.progressBar);
         offlineMessage = findViewById(R.id.offlineMessage);
+        btnTheme       = findViewById(R.id.btnTheme);
+        if (btnTheme != null) btnTheme.setText("LIGHT");
+
+        // Top bar wiring
+        if (btnTheme != null) btnTheme.setOnClickListener(v -> {
+            if (webView != null) {
+                webView.evaluateJavascript(
+                    "document.getElementById('theme-toggle') && document.getElementById('theme-toggle').click();",
+                    value -> new Handler(Looper.getMainLooper()).postDelayed(this::syncThemeButton, 250)
+                );
+            }
+        });
+        View infoButton = findViewById(R.id.btnInfo);
+        if (infoButton != null) infoButton.setOnClickListener(v -> showAboutDialog());
+
         createSplashOverlay();
-        createAboutButton();
         NotificationHelper.ensureReady(this);
 
         WebSettings settings = webView.getSettings();
@@ -153,6 +166,7 @@ public class MainActivity extends Activity {
             public void onPageFinished(WebView view, String url) {
                 progressBar.setVisibility(View.GONE);
                 hideSplashOverlay();
+                injectNativeTopBarCss();
                 if (url != null && url.startsWith("https://coezivx.vercel.app") && hasNetwork()) {
                     getPreferences(MODE_PRIVATE).edit()
                             .putLong(PREF_LAST_SUCCESSFUL_LOAD, System.currentTimeMillis())
@@ -167,6 +181,34 @@ public class MainActivity extends Activity {
         showDisclaimerOnce();
         loadApp();
     }
+
+    // ── Top bar helpers ──────────────────────────────────────────────────────
+
+    private void injectNativeTopBarCss() {
+        if (webView == null) return;
+        String js = "(function(){" +
+                "if(document.getElementById('cohesivx-native-topbar-css'))return;" +
+                "var s=document.createElement('style');" +
+                "s.id='cohesivx-native-topbar-css';" +
+                "s.textContent='.title-bar,.top-controls{display:none!important;}';" +
+                "document.head.appendChild(s);" +
+                "})()";
+        webView.evaluateJavascript(js, value -> syncThemeButton());
+    }
+
+    private void syncThemeButton() {
+        if (webView == null || btnTheme == null) return;
+        webView.evaluateJavascript(
+            "(function(){return document.body.classList.contains('light-mode')?'LIGHT':'DARK';})()",
+            value -> {
+                String mode = (value != null && value.contains("LIGHT")) ? "LIGHT" : "DARK";
+                String action = "LIGHT".equals(mode) ? "DARK" : "LIGHT";
+                runOnUiThread(() -> btnTheme.setText(action));
+            }
+        );
+    }
+
+    // ── Snapshot / offline ───────────────────────────────────────────────────
 
     private void saveRenderedSnapshotDelayed() {
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
@@ -193,18 +235,15 @@ public class MainActivity extends Activity {
     private void saveOfflineHtml(String html) {
         try {
             byte[] bytes = html.getBytes(StandardCharsets.UTF_8);
-
             File latest = new File(getFilesDir(), OFFLINE_HTML_FILE);
             try (FileOutputStream fos = new FileOutputStream(latest, false)) {
                 fos.write(bytes);
             }
-
             String stamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date());
             File history = new File(getFilesDir(), HISTORY_PREFIX + stamp + HISTORY_SUFFIX);
             try (FileOutputStream fos = new FileOutputStream(history, false)) {
                 fos.write(bytes);
             }
-
             pruneSnapshotHistory();
         } catch (Exception ignored) {
         }
@@ -217,10 +256,7 @@ public class MainActivity extends Activity {
         Arrays.sort(files, Comparator.comparingLong(File::lastModified));
         int toDelete = files.length - MAX_HISTORY_SNAPSHOTS;
         for (int i = 0; i < toDelete; i++) {
-            try {
-                files[i].delete();
-            } catch (Exception ignored) {
-            }
+            try { files[i].delete(); } catch (Exception ignored) {}
         }
     }
 
@@ -245,8 +281,7 @@ public class MainActivity extends Activity {
                 return raw.substring(6, 8) + "." + raw.substring(4, 6) + "." + raw.substring(0, 4)
                         + " " + raw.substring(9, 11) + ":" + raw.substring(11, 13) + ":" + raw.substring(13, 15);
             }
-        } catch (Exception ignored) {
-        }
+        } catch (Exception ignored) {}
         return name;
     }
 
@@ -296,8 +331,7 @@ public class MainActivity extends Activity {
             webView.loadDataWithBaseURL(START_URL, html, "text/html", "UTF-8", START_URL);
             hideSplashOverlay();
             Toast.makeText(this, "Mod offline: snapshot local complet.", Toast.LENGTH_LONG).show();
-        } catch (Exception ignored) {
-        }
+        } catch (Exception ignored) {}
     }
 
     private WebResourceResponse cachedJsonResponse(Uri uri) {
@@ -368,26 +402,73 @@ public class MainActivity extends Activity {
         return buffer.toByteArray();
     }
 
-    private void createAboutButton() {
-        FrameLayout root = findViewById(R.id.appRoot);
-        if (root == null) return;
-        TextView button = new TextView(this);
-        button.setText("ⓘ");
-        button.setTextColor(getColor(R.color.accent_primary));
-        button.setTextSize(22);
-        button.setGravity(Gravity.CENTER);
-        button.setBackgroundColor(getColor(R.color.surface_dark));
-        button.setAlpha(0.88f);
-        button.setOnClickListener(v -> showAboutDialog());
-        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(82, 82);
-        params.gravity = Gravity.TOP | Gravity.END;
-        params.topMargin = 16;
-        params.rightMargin = 16;
-        root.addView(button, params);
+    // ── UI helpers ───────────────────────────────────────────────────────────
+
+    private void createSplashOverlay() {
+        // Splash se adaugă în FrameLayout-ul interior (parent al WebView)
+        android.widget.FrameLayout inner = findViewById(R.id.webViewFrame);
+        if (inner == null) return;
+
+        LinearLayout box = new LinearLayout(this);
+        box.setOrientation(LinearLayout.VERTICAL);
+        box.setGravity(android.view.Gravity.CENTER);
+        box.setPadding(48, 48, 48, 48);
+        box.setBackgroundColor(getColor(R.color.app_background));
+
+        ImageView logo = new ImageView(this);
+        logo.setImageResource(R.drawable.ic_launcher_foreground);
+        LinearLayout.LayoutParams logoParams = new LinearLayout.LayoutParams(220, 220);
+        box.addView(logo, logoParams);
+
+        TextView title = new TextView(this);
+        title.setText("COHESIVX");
+        title.setTextColor(getColor(R.color.text_primary));
+        title.setTextSize(26);
+        title.setGravity(android.view.Gravity.CENTER);
+        title.setLetterSpacing(0.18f);
+        title.setTypeface(null, android.graphics.Typeface.BOLD);
+        LinearLayout.LayoutParams titleParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT);
+        titleParams.topMargin = 28;
+        box.addView(title, titleParams);
+
+        TextView subtitle = new TextView(this);
+        subtitle.setText("BTC MONITOR");
+        subtitle.setTextColor(getColor(R.color.accent_primary));
+        subtitle.setTextSize(15);
+        subtitle.setGravity(android.view.Gravity.CENTER);
+        subtitle.setLetterSpacing(0.12f);
+        LinearLayout.LayoutParams subParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT);
+        subParams.topMargin = 10;
+        box.addView(subtitle, subParams);
+
+        android.widget.ProgressBar spinner = new android.widget.ProgressBar(this);
+        LinearLayout.LayoutParams spinParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT);
+        spinParams.topMargin = 36;
+        box.addView(spinner, spinParams);
+
+        inner.addView(box, new android.widget.FrameLayout.LayoutParams(
+                android.widget.FrameLayout.LayoutParams.MATCH_PARENT,
+                android.widget.FrameLayout.LayoutParams.MATCH_PARENT));
+        splashOverlay = box;
+    }
+
+    private void hideSplashOverlay() {
+        if (splashOverlay == null) return;
+        splashOverlay.animate()
+                .alpha(0f)
+                .setDuration(250)
+                .withEndAction(() -> splashOverlay.setVisibility(View.GONE))
+                .start();
     }
 
     private void showAboutDialog() {
-        String message = "Versiune aplicație: 0.2.5\n\n" +
+        String message = "Versiune aplicație: 0.2.6\n\n" +
                 "CohesivX BTC Monitor este un instrument experimental de observare structurală a ecosistemului Bitcoin.\n\n" +
                 "Module active:\n" +
                 "• Mecanism Coeziv BTC\n" +
@@ -411,73 +492,6 @@ public class MainActivity extends Activity {
                 .setNeutralButton("Istoric local", (dialog, which) -> showSnapshotHistoryDialog())
                 .setPositiveButton("Închide", null)
                 .show();
-    }
-
-    private void createSplashOverlay() {
-        FrameLayout root = findViewById(R.id.appRoot);
-        if (root == null) return;
-
-        LinearLayout box = new LinearLayout(this);
-        box.setOrientation(LinearLayout.VERTICAL);
-        box.setGravity(Gravity.CENTER);
-        box.setPadding(48, 48, 48, 48);
-        box.setBackgroundColor(getColor(R.color.app_background));
-
-        ImageView logo = new ImageView(this);
-        logo.setImageResource(R.drawable.ic_launcher_foreground);
-        LinearLayout.LayoutParams logoParams = new LinearLayout.LayoutParams(220, 220);
-        box.addView(logo, logoParams);
-
-        TextView title = new TextView(this);
-        title.setText("COHESIVX");
-        title.setTextColor(getColor(R.color.text_primary));
-        title.setTextSize(26);
-        title.setGravity(Gravity.CENTER);
-        title.setLetterSpacing(0.18f);
-        title.setTypeface(null, android.graphics.Typeface.BOLD);
-        LinearLayout.LayoutParams titleParams = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-        );
-        titleParams.topMargin = 28;
-        box.addView(title, titleParams);
-
-        TextView subtitle = new TextView(this);
-        subtitle.setText("BTC MONITOR");
-        subtitle.setTextColor(getColor(R.color.accent_primary));
-        subtitle.setTextSize(15);
-        subtitle.setGravity(Gravity.CENTER);
-        subtitle.setLetterSpacing(0.12f);
-        LinearLayout.LayoutParams subParams = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-        );
-        subParams.topMargin = 10;
-        box.addView(subtitle, subParams);
-
-        ProgressBar spinner = new ProgressBar(this);
-        LinearLayout.LayoutParams spinParams = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-        );
-        spinParams.topMargin = 36;
-        box.addView(spinner, spinParams);
-
-        FrameLayout.LayoutParams overlayParams = new FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.MATCH_PARENT,
-                FrameLayout.LayoutParams.MATCH_PARENT
-        );
-        root.addView(box, overlayParams);
-        splashOverlay = box;
-    }
-
-    private void hideSplashOverlay() {
-        if (splashOverlay == null) return;
-        splashOverlay.animate()
-                .alpha(0f)
-                .setDuration(250)
-                .withEndAction(() -> splashOverlay.setVisibility(View.GONE))
-                .start();
     }
 
     private void configureSystemBars() {
