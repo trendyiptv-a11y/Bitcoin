@@ -36,7 +36,7 @@
             android:layout_weight="1"
             android:gravity="center"
             android:singleLine="true"
-            android:text="MECANISM COEZIV BTC"
+            android:text="COHESIVX BTC"
             android:textColor="@color/text_secondary"
             android:textSize="13sp"
             android:letterSpacing="0.18" />
