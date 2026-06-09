@@ -5,6 +5,7 @@ on:
   push:
     paths:
       - 'android/cohesivx-btc-monitor/**'
+      - 'patch_update1_premium_topbar.py'
       - '.github/workflows/android-build.yml'
 
 permissions:
@@ -13,7 +14,6 @@ permissions:
 defaults:
   run:
     shell: bash
-    working-directory: android/cohesivx-btc-monitor
 
 jobs:
   build:
@@ -23,6 +23,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Apply Update 1 premium top bar patch
+        run: |
+          python patch_update1_premium_topbar.py
 
       - name: Set up JDK
         uses: actions/setup-java@v4
@@ -34,10 +38,12 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Build debug APK
+        working-directory: android/cohesivx-btc-monitor
         run: |
           gradle :app:assembleDebug
 
       - name: Build release AAB unsigned
+        working-directory: android/cohesivx-btc-monitor
         run: |
           gradle :app:bundleRelease
 
