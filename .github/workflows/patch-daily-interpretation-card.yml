@@ -5,6 +5,7 @@ on:
   push:
     paths:
       - 'patch_daily_interpretation_card.py'
+      - 'patch_mecanism_daily_full.py'
       - 'btc-swing-strategy/daily_cohesiv_interpretation.json'
       - '.github/workflows/patch-daily-interpretation-card.yml'
   schedule:
@@ -37,6 +38,10 @@ jobs:
         run: |
           python patch_daily_interpretation_card.py
 
+      - name: Run full interpretation expander patcher
+        run: |
+          python patch_mecanism_daily_full.py
+
       - name: Commit patched mecanism if changed
         run: |
           git config user.name "github-actions[bot]"
@@ -45,6 +50,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "No mecanism.html changes to commit."
           else
-            git commit -m "Add daily cohesiv interpretation card"
+            git commit -m "Update daily cohesiv interpretation UI"
             git push
           fi
