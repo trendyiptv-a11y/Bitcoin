@@ -8,8 +8,16 @@ s = main_path.read_text(encoding='utf-8')
 
 s = s.replace('        createAboutButton();', '        createPremiumTopBar();')
 
+# Inject APK-only CSS after each page finish, so the browser version remains unchanged.
+s = s.replace('''                progressBar.setVisibility(View.GONE);
+                hideSplashOverlay();''', '''                progressBar.setVisibility(View.GONE);
+                hideSplashOverlay();
+                injectNativeTopBarCss();''')
+
 old = r'''    private void createAboutButton\(\) \{.*?\n    \}\n\n    private void showAboutDialog\(\) \{'''
-new = '''    private void createPremiumTopBar() {
+new = '''    private TextView nativeThemeButton;
+
+    private void createPremiumTopBar() {
         FrameLayout root = findViewById(R.id.appRoot);
         if (root == null) return;
 
@@ -21,15 +29,16 @@ new = '''    private void createPremiumTopBar() {
         bar.setAlpha(0.94f);
         bar.setElevation(18f);
 
-        TextView themeButton = new TextView(this);
-        themeButton.setText("DARK");
-        themeButton.setTextColor(getColor(R.color.accent_primary));
-        themeButton.setTextSize(12);
-        themeButton.setGravity(Gravity.CENTER);
-        themeButton.setPadding(12, 6, 12, 6);
-        themeButton.setOnClickListener(v -> {
+        nativeThemeButton = new TextView(this);
+        nativeThemeButton.setText("DARK");
+        nativeThemeButton.setTextColor(getColor(R.color.accent_primary));
+        nativeThemeButton.setTextSize(12);
+        nativeThemeButton.setGravity(Gravity.CENTER);
+        nativeThemeButton.setPadding(12, 6, 12, 6);
+        nativeThemeButton.setOnClickListener(v -> {
             if (webView != null) {
-                webView.evaluateJavascript("document.getElementById('theme-toggle') && document.getElementById('theme-toggle').click();", null);
+                webView.evaluateJavascript("document.getElementById('theme-toggle') && document.getElementById('theme-toggle').click();", value -> syncNativeThemeButton());
+                new Handler(Looper.getMainLooper()).postDelayed(this::syncNativeThemeButton, 250);
             }
         });
 
@@ -49,7 +58,7 @@ new = '''    private void createPremiumTopBar() {
 
         LinearLayout.LayoutParams sideParams = new LinearLayout.LayoutParams(88, 56);
         LinearLayout.LayoutParams titleParams = new LinearLayout.LayoutParams(0, 56, 1f);
-        bar.addView(themeButton, sideParams);
+        bar.addView(nativeThemeButton, sideParams);
         bar.addView(title, titleParams);
         bar.addView(infoButton, sideParams);
 
@@ -66,10 +75,34 @@ new = '''    private void createPremiumTopBar() {
         }
     }
 
+    private void injectNativeTopBarCss() {
+        if (webView == null) return;
+        String js = "(function(){" +
+                "if(document.getElementById('cohesivx-native-topbar-css')) return;" +
+                "var s=document.createElement('style');" +
+                "s.id='cohesivx-native-topbar-css';" +
+                "s.textContent='.title-bar,.top-controls{display:none!important;}';" +
+                "document.head.appendChild(s);" +
+                "})()";
+        webView.evaluateJavascript(js, value -> syncNativeThemeButton());
+    }
+
+    private void syncNativeThemeButton() {
+        if (webView == null || nativeThemeButton == null) return;
+        webView.evaluateJavascript("(function(){return document.body.classList.contains('light-mode') ? 'LIGHT' : 'DARK';})()", value -> {
+            String clean = value == null ? "DARK" : value.replace("\\\"", "").trim();
+            if (!"LIGHT".equals(clean)) clean = "DARK";
+            nativeThemeButton.setText(clean);
+        });
+    }
+
     private void showAboutDialog() {'''
 
 if 'private void createPremiumTopBar()' not in s:
     s = re.sub(old, new, s, count=1, flags=re.S)
+else:
+    # Upgrade older generated method in build workspace if patch already ran once.
+    s = re.sub(r'''    private void createPremiumTopBar\(\) \{.*?\n    \}\n\n    private void showAboutDialog\(\) \{''', new, s, count=1, flags=re.S)
 
 s = s.replace('Versiune aplicație: 0.2.5', 'Versiune aplicație: 0.2.6')
 main_path.write_text(s, encoding='utf-8')
