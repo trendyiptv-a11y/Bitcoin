@@ -704,6 +704,65 @@
       color: var(--text-soft);
     }
 
+
+
+    /* DAILY_FULL_INTERPRETATION_EXPANDER_CSS */
+    .daily-full-toggle {
+      margin: 12px 0 0;
+      width: 100%;
+      border: 1px solid rgba(56,189,248,0.45);
+      background: rgba(56,189,248,0.08);
+      color: #bae6fd;
+      border-radius: 999px;
+      padding: 9px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+    }
+    .daily-full-toggle:hover {
+      border-color: rgba(56,189,248,0.75);
+      background: rgba(56,189,248,0.14);
+    }
+    .daily-full-panel {
+      display: none;
+      margin-top: 10px;
+      border-radius: 16px;
+      border: 1px solid rgba(56,189,248,0.26);
+      background: rgba(15,23,42,0.62);
+      padding: 12px 13px;
+      font-size: 13px;
+      line-height: 1.58;
+      color: var(--text-main);
+      white-space: pre-wrap;
+    }
+    .daily-full-panel.open {
+      display: block;
+    }
+    .daily-full-panel strong,
+    .daily-full-panel b {
+      font-weight: 750;
+    }
+    .daily-full-panel h2,
+    .daily-full-panel h3 {
+      margin: 12px 0 7px;
+      font-size: 13px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    body.light-mode .daily-full-toggle {
+      background: rgba(14,165,233,0.08);
+      color: #075985;
+      border-color: rgba(14,165,233,0.38);
+    }
+    body.light-mode .daily-full-panel {
+      background: rgba(248,250,252,0.88);
+      border-color: rgba(14,165,233,0.25);
+    }
+
     /* COHESIVX_THEME_TOGGLE_CSS */
     body.light-mode {
       --bg-main: #f8fafc;
@@ -1325,6 +1384,13 @@ details.regime-detail[open] summary::after {
         <div id="daily-ai-footer" class="daily-ai-footer">
           Interpretare structurală experimentală, nu recomandare financiară.
         </div>
+
+        <!-- DAILY_FULL_INTERPRETATION_EXPANDER_START -->
+        <button id="daily-ai-full-toggle" class="daily-full-toggle" type="button" aria-expanded="false">
+          Vezi interpretarea completă
+        </button>
+        <div id="daily-ai-full-panel" class="daily-full-panel" aria-hidden="true"></div>
+        <!-- DAILY_FULL_INTERPRETATION_EXPANDER_END -->
       </div>
     </div>
     <!-- DAILY_COHESIV_INTERPRETATION_CARD_END -->
@@ -1676,6 +1742,7 @@ details.regime-detail[open] summary::after {
       if (!data) {
         setText("daily-ai-state", "Interpretare indisponibilă");
         setText("daily-ai-summary", "Cardul va fi completat după prima analiză zilnică aprobată.");
+        updateDailyFullInterpretation(null);
         return;
       }
       updateDailyTimebox(data);
@@ -1687,6 +1754,47 @@ details.regime-detail[open] summary::after {
       setText("daily-ai-fg-regime", fgRegime || "–");
       setText("daily-ai-watch", data.watch_next || "–");
       setText("daily-ai-footer", data.disclaimer || "Interpretare structurală experimentală, nu recomandare financiară.");
+      updateDailyFullInterpretation(data);
+    }
+
+
+
+    // DAILY_FULL_INTERPRETATION_EXPANDER_JS
+    function formatDailyFullInterpretation(raw) {
+      let text = String(raw || '').trim();
+      if (!text) return '';
+      text = text.replace(/^##\s+/gm, '');
+      text = text.replace(/^###\s+/gm, '');
+      text = text.replace(/\*\*(.*?)\*\*/g, '$1');
+      return text;
+    }
+
+    function updateDailyFullInterpretation(data) {
+      const btn = document.getElementById('daily-ai-full-toggle');
+      const panel = document.getElementById('daily-ai-full-panel');
+      if (!btn || !panel) return;
+
+      const fullText = formatDailyFullInterpretation(data && data.full_interpretation);
+      if (!fullText) {
+        btn.style.display = 'none';
+        panel.style.display = 'none';
+        panel.textContent = '';
+        return;
+      }
+
+      btn.style.display = 'block';
+      panel.style.display = '';
+      panel.textContent = fullText;
+
+      if (!btn.dataset.bound) {
+        btn.dataset.bound = '1';
+        btn.addEventListener('click', () => {
+          const isOpen = panel.classList.toggle('open');
+          btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+          panel.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+          btn.textContent = isOpen ? 'Ascunde interpretarea completă' : 'Vezi interpretarea completă';
+        });
+      }
     }
 
     // COMPACT_REGIME_CHIP_JS
