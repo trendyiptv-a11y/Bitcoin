@@ -2,7 +2,7 @@ name: coeziv_state – Generate snapshot BTC
 
 on:
   schedule:
-    - cron: "30 0 * * *"      # o dată pe oră (UTC)
+    - cron: "30 0 * * *"      # o dată pe zi (UTC)
   workflow_dispatch:          # îl poți porni și manual din Actions
 
 permissions:
@@ -29,7 +29,7 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
       # 3. Ne asigurăm că suntem pe ultimul main,
-      #    ÎNAINTE să modificăm fișierele (asta era problema de până acum)
+      #    ÎNAINTE să modificăm fișierele
       - name: Pull latest main
         run: git pull --rebase origin main
 
@@ -44,10 +44,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # 5. Generăm snapshot-ul coeziv (ic_btc_series + coeziv_state.json)
-      - name: Update IC series & coeziv state
+      # 5. Generăm snapshot-ul coeziv și fereastra de risc extinsă
+      - name: Update IC series, coeziv state & risk window
         run: |
           python coeziv_state.py
+          python risk_window.py
 
       # 6. Curățăm gunoiul (.pyc, __pycache__)
       - name: Clean pycache and pyc files
@@ -55,10 +56,10 @@ jobs:
           find . -type d -name "__pycache__" -exec rm -rf {} +
           find . -name "*.pyc" -delete
 
-      # 7. Commit + push pentru fișierul final
-      - name: Auto-commit coeziv_state.json
+      # 7. Commit + push pentru fișierele finale
+      - name: Auto-commit coeziv state and risk window
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "Update coeziv_state.json (BTC)"
+          commit_message: "Update coeziv_state and risk window (BTC)"
           branch: main
-          file_pattern: btc-swing-strategy/coeziv_state.json
+          file_pattern: btc-swing-strategy/coeziv_state.json btc-swing-strategy/risk_window.json btc-swing-strategy/risk_window_history.json
