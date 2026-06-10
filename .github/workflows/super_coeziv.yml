@@ -1,39 +1,34 @@
-name: coeziv_state – Generate snapshot BTC
+name: coeziv_state - Generate snapshot BTC
 
 on:
   schedule:
-    - cron: "30 0 * * *"      # o dată pe zi (UTC)
-  workflow_dispatch:          # îl poți porni și manual din Actions
+    - cron: "30 0 * * *"
+  workflow_dispatch:
 
 permissions:
-  contents: write             # necesar pentru commit/push
+  contents: write
 
 env:
-  PYTHONDONTWRITEBYTECODE: "1"   # nu mai generează .pyc / __pycache__
+  PYTHONDONTWRITEBYTECODE: "1"
 
 jobs:
   coeziv_state:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Luăm ultima versiune din repo
       - name: Checkout repo
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      # 2. Configurăm git pentru bot
       - name: Configure git
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      # 3. Ne asigurăm că suntem pe ultimul main,
-      #    ÎNAINTE să modificăm fișierele
       - name: Pull latest main
         run: git pull --rebase origin main
 
-      # 4. Python ready
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
@@ -44,22 +39,20 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # 5. Generăm snapshot-ul coeziv și fereastra de risc extinsă
-      - name: Update IC series, coeziv state & risk window
+      - name: Update state, risk window and UI
         run: |
           python coeziv_state_runner.py
           python risk_window.py
+          python patch_standard_regime_ui.py
 
-      # 6. Curățăm gunoiul (.pyc, __pycache__)
       - name: Clean pycache and pyc files
         run: |
           find . -type d -name "__pycache__" -exec rm -rf {} +
           find . -name "*.pyc" -delete
 
-      # 7. Commit + push pentru fișierele finale
-      - name: Auto-commit coeziv state and risk window
+      - name: Auto-commit generated files
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "Update coeziv_state and risk window (BTC)"
+          commit_message: "Update BTC state, risk window and UI"
           branch: main
-          file_pattern: btc-swing-strategy/coeziv_state.json btc-swing-strategy/risk_window.json btc-swing-strategy/risk_window_history.json
+          file_pattern: btc-swing-strategy/coeziv_state.json btc-swing-strategy/risk_window.json btc-swing-strategy/risk_window_history.json btc-swing-strategy/mecanism.html
