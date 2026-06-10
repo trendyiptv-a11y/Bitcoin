@@ -1,0 +1,2097 @@
+{
+  "title": "RISK_WINDOW_HISTORY",
+  "generated_at": "2026-06-10T14:37:42.564472+00:00",
+  "regimes": [
+    "accum_bear",
+    "bear_late",
+    "bear_struct"
+  ],
+  "window_days": 180,
+  "major_drawdown_threshold": -0.2,
+  "since_2025_12_summary": {
+    "since": "2025-12-01",
+    "events": 4,
+    "max_streak_days": 74,
+    "current_streak_days": 9,
+    "current_is_record": false,
+    "matching_or_longer_than_current": 2,
+    "top_streaks": [
+      {
+        "start": "2026-01-22",
+        "end": "2026-04-05",
+        "days": 74,
+        "is_current": false,
+        "start_price": 89454.2,
+        "end_price": 68983.7,
+        "regimes": [
+          "bear_late",
+          "bear_struct"
+        ],
+        "signals": [
+          "flat",
+          "short"
+        ],
+        "window_days": 180,
+        "major_drawdown_threshold": -0.2,
+        "min_drawdown": -0.3196999134752756,
+        "confirmed_major_drawdown": true,
+        "days_to_confirmation": 14
+      },
+      {
+        "start": "2026-06-02",
+        "end": "2026-06-10",
+        "days": 9,
+        "is_current": true,
+        "start_price": 66669.7,
+        "end_price": 61493.1,
+        "regimes": [
+          "bear_struct"
+        ],
+        "signals": [
+          "short"
+        ],
+        "window_days": 180,
+        "major_drawdown_threshold": -0.2,
+        "min_drawdown": -0.08720603212553835,
+        "confirmed_major_drawdown": false,
+        "days_to_confirmation": null
+      },
+      {
+        "start": "2026-04-07",
+        "end": "2026-04-10",
+        "days": 4,
+        "is_current": false,
+        "start_price": 71925.0,
+        "end_price": 72973.8,
+        "regimes": [
+          "bear_struct"
+        ],
+        "signals": [
+          "flat"
+        ],
+        "window_days": 180,
+        "major_drawdown_threshold": -0.2,
+        "min_drawdown": -0.15390059089329167,
+        "confirmed_major_drawdown": false,
+        "days_to_confirmation": null
+      },
+      {
+        "start": "2026-01-20",
+        "end": "2026-01-20",
+        "days": 1,
+        "is_current": false,
+        "start_price": 88309.9,
+        "end_price": 88309.9,
+        "regimes": [
+          "bear_struct"
+        ],
+        "signals": [
+          "short"
+        ],
+        "window_days": 180,
+        "major_drawdown_threshold": -0.2,
+        "min_drawdown": -0.3108847365923866,
+        "confirmed_major_drawdown": true,
+        "days_to_confirmation": 16
+      }
+    ]
+  },
+  "history": [
+    {
+      "start": "2011-04-04",
+      "end": "2011-04-16",
+      "days": 13,
+      "is_current": false,
+      "start_price": 0.68,
+      "end_price": 1.05,
+      "regimes": [
+        "bear_late",
+        "bear_struct"
+      ],
+      "signals": [
+        "flat"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": 0.04411764705882337,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2011-08-02",
+      "end": "2011-12-15",
+      "days": 136,
+      "is_current": false,
+      "start_price": 12.05,
+      "end_price": 3.2,
+      "regimes": [
+        "accum_bear",
+        "bear_struct"
+      ],
+      "signals": [
+        "flat",
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.8298755186721992,
+      "confirmed_major_drawdown": true,
+      "days_to_confirmation": 1
+    },
+    {
+      "start": "2012-02-29",
+      "end": "2012-04-13",
+      "days": 45,
+      "is_current": false,
+      "start_price": 4.86,
+      "end_price": 4.94,
+      "regimes": [
+        "accum_bear"
+      ],
+      "signals": [
+        "flat",
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.06378600823045277,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2012-04-23",
+      "end": "2012-04-24",
+      "days": 2,
+      "is_current": false,
+      "start_price": 4.96,
+      "end_price": 5.098,
+      "regimes": [
+        "accum_bear"
+      ],
+      "signals": [
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.022177419354838745,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2012-04-26",
+      "end": "2012-04-30",
+      "days": 5,
+      "is_current": false,
+      "start_price": 5.098,
+      "end_price": 4.949,
+      "regimes": [
+        "accum_bear"
+      ],
+      "signals": [
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.048646528050215854,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2012-05-04",
+      "end": "2012-05-17",
+      "days": 14,
+      "is_current": false,
+      "start_price": 5.067,
+      "end_price": 5.1,
+      "regimes": [
+        "accum_bear"
+      ],
+      "signals": [
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.04282612985987777,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2012-05-30",
+      "end": "2012-05-30",
+      "days": 1,
+      "is_current": false,
+      "start_price": 5.135,
+      "end_price": 5.135,
+      "regimes": [
+        "accum_bear"
+      ],
+      "signals": [
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": 0.008763388510223846,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2012-10-09",
+      "end": "2012-10-09",
+      "days": 1,
+      "is_current": false,
+      "start_price": 11.9,
+      "end_price": 11.9,
+      "regimes": [
+        "bear_late"
+      ],
+      "signals": [
+        "flat"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.14369747899159668,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2012-10-11",
+      "end": "2012-10-17",
+      "days": 7,
+      "is_current": false,
+      "start_price": 12.03,
+      "end_price": 11.84,
+      "regimes": [
+        "bear_late"
+      ],
+      "signals": [
+        "flat"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.15295095594347463,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2012-10-25",
+      "end": "2012-10-29",
+      "days": 5,
+      "is_current": false,
+      "start_price": 10.86,
+      "end_price": 10.6,
+      "regimes": [
+        "bear_struct"
+      ],
+      "signals": [
+        "flat",
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.06169429097605894,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2012-11-01",
+      "end": "2012-12-03",
+      "days": 33,
+      "is_current": false,
+      "start_price": 10.57,
+      "end_price": 12.68,
+      "regimes": [
+        "bear_struct"
+      ],
+      "signals": [
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.009460737937559083,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2013-06-02",
+      "end": "2013-06-11",
+      "days": 10,
+      "is_current": false,
+      "start_price": 122.5,
+      "end_price": 109.0,
+      "regimes": [
+        "bear_late",
+        "bear_struct"
+      ],
+      "signals": [
+        "flat"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.4408163265306122,
+      "confirmed_major_drawdown": true,
+      "days_to_confirmation": 26
+    },
+    {
+      "start": "2013-06-17",
+      "end": "2013-08-12",
+      "days": 57,
+      "is_current": false,
+      "start_price": 101.95,
+      "end_price": 106.81,
+      "regimes": [
+        "accum_bear",
+        "bear_struct"
+      ],
+      "signals": [
+        "flat",
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.32810201078960277,
+      "confirmed_major_drawdown": true,
+      "days_to_confirmation": 16
+    },
+    {
+      "start": "2013-08-18",
+      "end": "2013-08-18",
+      "days": 1,
+      "is_current": false,
+      "start_price": 113.38,
+      "end_price": 113.38,
+      "regimes": [
+        "bear_struct"
+      ],
+      "signals": [
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": 0.045157876168636424,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2014-01-25",
+      "end": "2014-02-03",
+      "days": 10,
+      "is_current": false,
+      "start_price": 961.05,
+      "end_price": 931.71,
+      "regimes": [
+        "bear_late",
+        "bear_struct"
+      ],
+      "signals": [
+        "flat"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.8839186306643775,
+      "confirmed_major_drawdown": true,
+      "days_to_confirmation": 13
+    },
+    {
+      "start": "2014-02-06",
+      "end": "2014-04-13",
+      "days": 67,
+      "is_current": false,
+      "start_price": 828.87,
+      "end_price": 427.6,
+      "regimes": [
+        "accum_bear",
+        "bear_struct"
+      ],
+      "signals": [
+        "flat",
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.8654071205375994,
+      "confirmed_major_drawdown": true,
+      "days_to_confirmation": 2
+    },
+    {
+      "start": "2014-04-27",
+      "end": "2014-05-25",
+      "days": 29,
+      "is_current": false,
+      "start_price": 443.18,
+      "end_price": 570.44,
+      "regimes": [
+        "accum_bear"
+      ],
+      "signals": [
+        "flat",
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.2714923958662394,
+      "confirmed_major_drawdown": true,
+      "days_to_confirmation": 160
+    },
+    {
+      "start": "2014-07-25",
+      "end": "2014-12-02",
+      "days": 131,
+      "is_current": false,
+      "start_price": 600.5,
+      "end_price": 380.64,
+      "regimes": [
+        "accum_bear",
+        "bear_late",
+        "bear_struct"
+      ],
+      "signals": [
+        "flat",
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.7253621981681933,
+      "confirmed_major_drawdown": true,
+      "days_to_confirmation": 24
+    },
+    {
+      "start": "2014-12-08",
+      "end": "2015-03-10",
+      "days": 93,
+      "is_current": false,
+      "start_price": 364.95,
+      "end_price": 291.37,
+      "regimes": [
+        "bear_late",
+        "bear_struct"
+      ],
+      "signals": [
+        "flat",
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.5481024797917523,
+      "confirmed_major_drawdown": true,
+      "days_to_confirmation": 26
+    },
+    {
+      "start": "2015-03-25",
+      "end": "2015-03-29",
+      "days": 5,
+      "is_current": false,
+      "start_price": 246.37,
+      "end_price": 242.08,
+      "regimes": [
+        "bear_late",
+        "bear_struct"
+      ],
+      "signals": [
+        "flat"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.14181921500182648,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2015-04-13",
+      "end": "2015-06-12",
+      "days": 61,
+      "is_current": false,
+      "start_price": 223.59,
+      "end_price": 230.46,
+      "regimes": [
+        "bear_late",
+        "bear_struct"
+      ],
+      "signals": [
+        "flat"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.05438525873250144,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2015-06-14",
+      "end": "2015-06-15",
+      "days": 2,
+      "is_current": false,
+      "start_price": 233.75,
+      "end_price": 237.0,
+      "regimes": [
+        "bear_late"
+      ],
+      "signals": [
+        "flat"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.09548663101604271,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2015-06-20",
+      "end": "2015-06-21",
+      "days": 2,
+      "is_current": false,
+      "start_price": 244.98,
+      "end_price": 244.1,
+      "regimes": [
+        "bear_late"
+      ],
+      "signals": [
+        "flat"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.13694995509837526,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2015-08-15",
+      "end": "2015-10-16",
+      "days": 63,
+      "is_current": false,
+      "start_price": 260.52,
+      "end_price": 262.87,
+      "regimes": [
+        "accum_bear",
+        "bear_late",
+        "bear_struct"
+      ],
+      "signals": [
+        "flat",
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.18843083064639943,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2016-01-28",
+      "end": "2016-03-14",
+      "days": 47,
+      "is_current": false,
+      "start_price": 379.69,
+      "end_price": 414.31,
+      "regimes": [
+        "bear_struct"
+      ],
+      "signals": [
+        "flat",
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.03073560009481424,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2016-03-20",
+      "end": "2016-03-21",
+      "days": 2,
+      "is_current": false,
+      "start_price": 411.53,
+      "end_price": 411.11,
+      "regimes": [
+        "bear_struct"
+      ],
+      "signals": [
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.0010205817315869226,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2016-03-24",
+      "end": "2016-03-24",
+      "days": 1,
+      "is_current": false,
+      "start_price": 414.74,
+      "end_price": 414.74,
+      "regimes": [
+        "bear_struct"
+      ],
+      "signals": [
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.0055456430534792656,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2016-04-14",
+      "end": "2016-04-14",
+      "days": 1,
+      "is_current": false,
+      "start_price": 424.02,
+      "end_price": 424.02,
+      "regimes": [
+        "bear_struct"
+      ],
+      "signals": [
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": 0.005282769680675425,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2016-04-17",
+      "end": "2016-04-22",
+      "days": 6,
+      "is_current": false,
+      "start_price": 426.26,
+      "end_price": 445.28,
+      "regimes": [
+        "bear_struct"
+      ],
+      "signals": [
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": 0.003354760005630286,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2016-04-27",
+      "end": "2016-04-30",
+      "days": 4,
+      "is_current": false,
+      "start_price": 447.01,
+      "end_price": 448.53,
+      "regimes": [
+        "bear_struct"
+      ],
+      "signals": [
+        "flat",
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.016532068633811292,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2016-08-02",
+      "end": "2016-09-30",
+      "days": 60,
+      "is_current": false,
+      "start_price": 513.43,
+      "end_price": 608.14,
+      "regimes": [
+        "bear_late",
+        "bear_struct"
+      ],
+      "signals": [
+        "flat",
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": 0.10324679118867253,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2016-10-05",
+      "end": "2016-10-07",
+      "days": 3,
+      "is_current": false,
+      "start_price": 611.82,
+      "end_price": 616.03,
+      "regimes": [
+        "bear_struct"
+      ],
+      "signals": [
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.0013892975058024115,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2016-10-09",
+      "end": "2016-10-10",
+      "days": 2,
+      "is_current": false,
+      "start_price": 615.77,
+      "end_price": 617.29,
+      "regimes": [
+        "bear_struct"
+      ],
+      "signals": [
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": 0.0024684541306005947,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2017-03-24",
+      "end": "2017-03-24",
+      "days": 1,
+      "is_current": false,
+      "start_price": 939.7,
+      "end_price": 939.7,
+      "regimes": [
+        "bear_late"
+      ],
+      "signals": [
+        "flat"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": 0.028306906459508285,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2018-01-30",
+      "end": "2018-05-08",
+      "days": 99,
+      "is_current": false,
+      "start_price": 10107.26,
+      "end_price": 9196.13,
+      "regimes": [
+        "accum_bear",
+        "bear_struct"
+      ],
+      "signals": [
+        "flat",
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.41910270439268416,
+      "confirmed_major_drawdown": true,
+      "days_to_confirmation": 6
+    },
+    {
+      "start": "2018-05-10",
+      "end": "2018-05-12",
+      "days": 3,
+      "is_current": false,
+      "start_price": 9032.22,
+      "end_price": 8486.67,
+      "regimes": [
+        "accum_bear"
+      ],
+      "signals": [
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.3499626891284756,
+      "confirmed_major_drawdown": true,
+      "days_to_confirmation": 18
+    },
+    {
+      "start": "2018-05-14",
+      "end": "2018-05-15",
+      "days": 2,
+      "is_current": false,
+      "start_price": 8672.9,
+      "end_price": 8480.16,
+      "regimes": [
+        "accum_bear"
+      ],
+      "signals": [
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.32303151195101987,
+      "confirmed_major_drawdown": true,
+      "days_to_confirmation": 27
+    },
+    {
+      "start": "2018-05-17",
+      "end": "2018-05-28",
+      "days": 12,
+      "is_current": false,
+      "start_price": 8071.04,
+      "end_price": 7118.88,
+      "regimes": [
+        "accum_bear"
+      ],
+      "signals": [
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.2725497581476489,
+      "confirmed_major_drawdown": true,
+      "days_to_confirmation": 27
+    },
+    {
+      "start": "2018-06-02",
+      "end": "2018-06-02",
+      "days": 1,
+      "is_current": false,
+      "start_price": 7643.26,
+      "end_price": 7643.26,
+      "regimes": [
+        "accum_bear"
+      ],
+      "signals": [
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.504846099700913,
+      "confirmed_major_drawdown": true,
+      "days_to_confirmation": 20
+    },
+    {
+      "start": "2018-06-10",
+      "end": "2018-07-23",
+      "days": 44,
+      "is_current": false,
+      "start_price": 6773.72,
+      "end_price": 7718.0,
+      "regimes": [
+        "accum_bear",
+        "bear_struct"
+      ],
+      "signals": [
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.49502341401770367,
+      "confirmed_major_drawdown": true,
+      "days_to_confirmation": 162
+    },
+    {
+      "start": "2018-07-31",
+      "end": "2018-08-20",
+      "days": 21,
+      "is_current": false,
+      "start_price": 7735.3,
+      "end_price": 6269.9,
+      "regimes": [
+        "bear_struct"
+      ],
+      "signals": [
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.5821092911716417,
+      "confirmed_major_drawdown": true,
+      "days_to_confirmation": 10
+    },
+    {
+      "start": "2018-08-22",
+      "end": "2018-08-22",
+      "days": 1,
+      "is_current": false,
+      "start_price": 6366.13,
+      "end_price": 6366.13,
+      "regimes": [
+        "bear_struct"
+      ],
+      "signals": [
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.49223311493796074,
+      "confirmed_major_drawdown": true,
+      "days_to_confirmation": 89
+    },
+    {
+      "start": "2018-09-05",
+      "end": "2018-10-08",
+      "days": 34,
+      "is_current": false,
+      "start_price": 6705.03,
+      "end_price": 6650.07,
+      "regimes": [
+        "bear_struct"
+      ],
+      "signals": [
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.5178977573552989,
+      "confirmed_major_drawdown": true,
+      "days_to_confirmation": 75
+    },
+    {
+      "start": "2018-10-11",
+      "end": "2018-11-06",
+      "days": 27,
+      "is_current": false,
+      "start_price": 6209.47,
+      "end_price": 6479.72,
+      "regimes": [
+        "bear_struct"
+      ],
+      "signals": [
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.47942255941328327,
+      "confirmed_major_drawdown": true,
+      "days_to_confirmation": 39
+    },
+    {
+      "start": "2018-11-08",
+      "end": "2019-02-07",
+      "days": 92,
+      "is_current": false,
+      "start_price": 6446.06,
+      "end_price": 3375.33,
+      "regimes": [
+        "bear_late",
+        "bear_struct"
+      ],
+      "signals": [
+        "flat",
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.4985293341979442,
+      "confirmed_major_drawdown": true,
+      "days_to_confirmation": 11
+    },
+    {
+      "start": "2019-02-15",
+      "end": "2019-02-22",
+      "days": 8,
+      "is_current": false,
+      "start_price": 3593.49,
+      "end_price": 3983.53,
+      "regimes": [
+        "bear_late",
+        "bear_struct"
+      ],
+      "signals": [
+        "flat"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": 0.006609173811531477,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2019-02-24",
+      "end": "2019-02-24",
+      "days": 1,
+      "is_current": false,
+      "start_price": 3771.62,
+      "end_price": 3771.62,
+      "regimes": [
+        "bear_struct"
+      ],
+      "signals": [
+        "flat"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.010695669234970562,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2019-02-26",
+      "end": "2019-03-10",
+      "days": 13,
+      "is_current": false,
+      "start_price": 3817.88,
+      "end_price": 3929.84,
+      "regimes": [
+        "bear_struct"
+      ],
+      "signals": [
+        "flat",
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.02268274539796955,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2019-08-21",
+      "end": "2019-09-13",
+      "days": 24,
+      "is_current": false,
+      "start_price": 10131.67,
+      "end_price": 10372.29,
+      "regimes": [
+        "bear_struct"
+      ],
+      "signals": [
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.34503986016125676,
+      "confirmed_major_drawdown": true,
+      "days_to_confirmation": 36
+    },
+    {
+      "start": "2019-09-16",
+      "end": "2020-01-16",
+      "days": 123,
+      "is_current": false,
+      "start_price": 10271.79,
+      "end_price": 8719.63,
+      "regimes": [
+        "accum_bear",
+        "bear_struct"
+      ],
+      "signals": [
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.521331725045002,
+      "confirmed_major_drawdown": true,
+      "days_to_confirmation": 10
+    },
+    {
+      "start": "2020-03-08",
+      "end": "2020-05-06",
+      "days": 60,
+      "is_current": false,
+      "start_price": 8057.67,
+      "end_price": 9153.2,
+      "regimes": [
+        "accum_bear",
+        "bear_struct"
+      ],
+      "signals": [
+        "flat",
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.3898012700942084,
+      "confirmed_major_drawdown": true,
+      "days_to_confirmation": 4
+    },
+    {
+      "start": "2020-06-28",
+      "end": "2020-06-28",
+      "days": 1,
+      "is_current": false,
+      "start_price": 9120.39,
+      "end_price": 9120.39,
+      "regimes": [
+        "bear_struct"
+      ],
+      "signals": [
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.005913124329113173,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2020-06-30",
+      "end": "2020-07-08",
+      "days": 9,
+      "is_current": false,
+      "start_price": 9136.47,
+      "end_price": 9439.2,
+      "regimes": [
+        "bear_struct"
+      ],
+      "signals": [
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.007662696862136054,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2020-07-11",
+      "end": "2020-07-22",
+      "days": 12,
+      "is_current": false,
+      "start_price": 9237.13,
+      "end_price": 9537.24,
+      "regimes": [
+        "bear_struct"
+      ],
+      "signals": [
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.011248082467173237,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2020-09-25",
+      "end": "2020-10-20",
+      "days": 26,
+      "is_current": false,
+      "start_price": 10694.12,
+      "end_price": 11921.78,
+      "regimes": [
+        "bear_struct"
+      ],
+      "signals": [
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.013285805657688554,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2021-04-20",
+      "end": "2021-04-25",
+      "days": 6,
+      "is_current": false,
+      "start_price": 56496.06,
+      "end_price": 49120.97,
+      "regimes": [
+        "bear_late"
+      ],
+      "signals": [
+        "flat"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.4726083553437178,
+      "confirmed_major_drawdown": true,
+      "days_to_confirmation": 27
+    },
+    {
+      "start": "2021-05-09",
+      "end": "2021-07-26",
+      "days": 79,
+      "is_current": false,
+      "start_price": 58294.18,
+      "end_price": 37269.52,
+      "regimes": [
+        "accum_bear",
+        "bear_struct"
+      ],
+      "signals": [
+        "flat",
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.488876076479676,
+      "confirmed_major_drawdown": true,
+      "days_to_confirmation": 7
+    },
+    {
+      "start": "2021-08-02",
+      "end": "2021-08-03",
+      "days": 2,
+      "is_current": false,
+      "start_price": 39158.53,
+      "end_price": 38189.3,
+      "regimes": [
+        "accum_bear"
+      ],
+      "signals": [
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.1042585102147604,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2021-09-28",
+      "end": "2021-09-29",
+      "days": 2,
+      "is_current": false,
+      "start_price": 41056.79,
+      "end_price": 41539.43,
+      "regimes": [
+        "accum_bear"
+      ],
+      "signals": [
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.14567310303606307,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2021-12-04",
+      "end": "2022-03-21",
+      "days": 108,
+      "is_current": false,
+      "start_price": 49243.39,
+      "end_price": 41043.9,
+      "regimes": [
+        "accum_bear",
+        "bear_struct"
+      ],
+      "signals": [
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.4192656110799845,
+      "confirmed_major_drawdown": true,
+      "days_to_confirmation": 48
+    },
+    {
+      "start": "2022-04-06",
+      "end": "2022-04-20",
+      "days": 15,
+      "is_current": false,
+      "start_price": 43177.78,
+      "end_price": 41375.35,
+      "regimes": [
+        "accum_bear"
+      ],
+      "signals": [
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.5722788434236313,
+      "confirmed_major_drawdown": true,
+      "days_to_confirmation": 32
+    },
+    {
+      "start": "2022-04-23",
+      "end": "2022-04-23",
+      "days": 1,
+      "is_current": false,
+      "start_price": 39445.97,
+      "end_price": 39445.97,
+      "regimes": [
+        "accum_bear"
+      ],
+      "signals": [
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.5318140230801778,
+      "confirmed_major_drawdown": true,
+      "days_to_confirmation": 16
+    },
+    {
+      "start": "2022-04-26",
+      "end": "2022-04-27",
+      "days": 2,
+      "is_current": false,
+      "start_price": 38117.39,
+      "end_price": 39252.04,
+      "regimes": [
+        "accum_bear"
+      ],
+      "signals": [
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.5154954208564647,
+      "confirmed_major_drawdown": true,
+      "days_to_confirmation": 13
+    },
+    {
+      "start": "2022-04-29",
+      "end": "2022-08-11",
+      "days": 105,
+      "is_current": false,
+      "start_price": 38594.22,
+      "end_price": 23943.36,
+      "regimes": [
+        "accum_bear",
+        "bear_late",
+        "bear_struct"
+      ],
+      "signals": [
+        "flat",
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.5214814549950744,
+      "confirmed_major_drawdown": true,
+      "days_to_confirmation": 10
+    },
+    {
+      "start": "2022-08-19",
+      "end": "2022-08-20",
+      "days": 2,
+      "is_current": false,
+      "start_price": 20833.43,
+      "end_price": 21142.06,
+      "regimes": [
+        "bear_struct"
+      ],
+      "signals": [
+        "flat"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.24351439009322995,
+      "confirmed_major_drawdown": true,
+      "days_to_confirmation": 82
+    },
+    {
+      "start": "2022-08-22",
+      "end": "2022-09-08",
+      "days": 18,
+      "is_current": false,
+      "start_price": 21399.66,
+      "end_price": 19321.77,
+      "regimes": [
+        "bear_struct"
+      ],
+      "signals": [
+        "flat"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.2635308224523193,
+      "confirmed_major_drawdown": true,
+      "days_to_confirmation": 79
+    },
+    {
+      "start": "2022-09-13",
+      "end": "2022-10-28",
+      "days": 46,
+      "is_current": false,
+      "start_price": 20173.77,
+      "end_price": 20599.89,
+      "regimes": [
+        "bear_struct"
+      ],
+      "signals": [
+        "flat",
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.218778146077803,
+      "confirmed_major_drawdown": true,
+      "days_to_confirmation": 57
+    },
+    {
+      "start": "2022-10-30",
+      "end": "2022-11-03",
+      "days": 5,
+      "is_current": false,
+      "start_price": 20630.65,
+      "end_price": 20207.99,
+      "regimes": [
+        "bear_struct"
+      ],
+      "signals": [
+        "flat"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.23607884385610733,
+      "confirmed_major_drawdown": true,
+      "days_to_confirmation": 10
+    },
+    {
+      "start": "2022-11-08",
+      "end": "2023-01-07",
+      "days": 61,
+      "is_current": false,
+      "start_price": 18544.7,
+      "end_price": 16942.73,
+      "regimes": [
+        "bear_late",
+        "bear_struct"
+      ],
+      "signals": [
+        "flat"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.15015125615404945,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2023-01-09",
+      "end": "2023-01-10",
+      "days": 2,
+      "is_current": false,
+      "start_price": 17179.03,
+      "end_price": 17442.44,
+      "regimes": [
+        "bear_late"
+      ],
+      "signals": [
+        "flat"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": 0.01533322894249567,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2023-05-16",
+      "end": "2023-06-20",
+      "days": 36,
+      "is_current": false,
+      "start_price": 27036.57,
+      "end_price": 28319.35,
+      "regimes": [
+        "bear_struct"
+      ],
+      "signals": [
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.07067612496703535,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2023-06-26",
+      "end": "2023-06-29",
+      "days": 4,
+      "is_current": false,
+      "start_price": 30271.91,
+      "end_price": 30447.17,
+      "regimes": [
+        "bear_struct"
+      ],
+      "signals": [
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.1689632401787664,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2023-07-04",
+      "end": "2023-07-04",
+      "days": 1,
+      "is_current": false,
+      "start_price": 30774.39,
+      "end_price": 30774.39,
+      "regimes": [
+        "bear_struct"
+      ],
+      "signals": [
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.1825322938976207,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2023-07-06",
+      "end": "2023-07-06",
+      "days": 1,
+      "is_current": false,
+      "start_price": 29907.98,
+      "end_price": 29907.98,
+      "regimes": [
+        "bear_struct"
+      ],
+      "signals": [
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.1588509153744252,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2023-07-27",
+      "end": "2023-07-27",
+      "days": 1,
+      "is_current": false,
+      "start_price": 29217.05,
+      "end_price": 29217.05,
+      "regimes": [
+        "bear_struct"
+      ],
+      "signals": [
+        "flat"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.1389592720688776,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2023-08-17",
+      "end": "2023-10-15",
+      "days": 60,
+      "is_current": false,
+      "start_price": 26629.67,
+      "end_price": 27177.41,
+      "regimes": [
+        "accum_bear",
+        "bear_struct"
+      ],
+      "signals": [
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.055299220756396816,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2024-02-02",
+      "end": "2024-02-08",
+      "days": 7,
+      "is_current": false,
+      "start_price": 43181.71,
+      "end_price": 45304.61,
+      "regimes": [
+        "bear_struct"
+      ],
+      "signals": [
+        "flat"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.01416108810883121,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2024-04-28",
+      "end": "2024-05-17",
+      "days": 20,
+      "is_current": false,
+      "start_price": 63111.34,
+      "end_price": 67051.35,
+      "regimes": [
+        "bear_late",
+        "bear_struct"
+      ],
+      "signals": [
+        "flat"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.14518848752062619,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2024-05-19",
+      "end": "2024-05-19",
+      "days": 1,
+      "is_current": false,
+      "start_price": 66268.25,
+      "end_price": 66268.25,
+      "regimes": [
+        "bear_struct"
+      ],
+      "signals": [
+        "flat"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.18591029640891377,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2024-05-23",
+      "end": "2024-06-11",
+      "days": 20,
+      "is_current": false,
+      "start_price": 67946.35,
+      "end_price": 67319.41,
+      "regimes": [
+        "bear_struct"
+      ],
+      "signals": [
+        "flat"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.20601621720666385,
+      "confirmed_major_drawdown": true,
+      "days_to_confirmation": 74
+    },
+    {
+      "start": "2024-06-13",
+      "end": "2024-06-15",
+      "days": 3,
+      "is_current": false,
+      "start_price": 66742.54,
+      "end_price": 66188.81,
+      "regimes": [
+        "bear_struct"
+      ],
+      "signals": [
+        "flat"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.19169543142948997,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2024-06-17",
+      "end": "2024-06-29",
+      "days": 13,
+      "is_current": false,
+      "start_price": 66481.73,
+      "end_price": 60860.0,
+      "regimes": [
+        "bear_struct"
+      ],
+      "signals": [
+        "flat",
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.18852442618445686,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2024-07-02",
+      "end": "2024-08-22",
+      "days": 52,
+      "is_current": false,
+      "start_price": 62019.9,
+      "end_price": 60391.1,
+      "regimes": [
+        "accum_bear",
+        "bear_struct"
+      ],
+      "signals": [
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.13014532432332204,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2024-08-24",
+      "end": "2024-08-24",
+      "days": 1,
+      "is_current": false,
+      "start_price": 64176.0,
+      "end_price": 64176.0,
+      "regimes": [
+        "bear_struct"
+      ],
+      "signals": [
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.1593695462478184,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2024-08-26",
+      "end": "2024-10-03",
+      "days": 39,
+      "is_current": false,
+      "start_price": 62854.7,
+      "end_price": 60739.6,
+      "regimes": [
+        "accum_bear",
+        "bear_struct"
+      ],
+      "signals": [
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.14169823418137373,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2024-10-07",
+      "end": "2024-10-10",
+      "days": 4,
+      "is_current": false,
+      "start_price": 62234.6,
+      "end_price": 60279.5,
+      "regimes": [
+        "accum_bear",
+        "bear_struct"
+      ],
+      "signals": [
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.03141500065879754,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2024-10-12",
+      "end": "2024-10-12",
+      "days": 1,
+      "is_current": false,
+      "start_price": 63184.0,
+      "end_price": 63184.0,
+      "regimes": [
+        "bear_struct"
+      ],
+      "signals": [
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.005525132945049305,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2024-10-23",
+      "end": "2024-10-23",
+      "days": 1,
+      "is_current": false,
+      "start_price": 66633.4,
+      "end_price": 66633.4,
+      "regimes": [
+        "bear_struct"
+      ],
+      "signals": [
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.0003991992004008793,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2025-01-12",
+      "end": "2025-01-12",
+      "days": 1,
+      "is_current": false,
+      "start_price": 94449.9,
+      "end_price": 94449.9,
+      "regimes": [
+        "bear_late"
+      ],
+      "signals": [
+        "flat"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.19241312060679783,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2025-01-20",
+      "end": "2025-01-20",
+      "days": 1,
+      "is_current": false,
+      "start_price": 102162.8,
+      "end_price": 102162.8,
+      "regimes": [
+        "bear_late"
+      ],
+      "signals": [
+        "flat"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.25338283602250533,
+      "confirmed_major_drawdown": true,
+      "days_to_confirmation": 48
+    },
+    {
+      "start": "2025-01-28",
+      "end": "2025-01-28",
+      "days": 1,
+      "is_current": false,
+      "start_price": 101299.8,
+      "end_price": 101299.8,
+      "regimes": [
+        "bear_late"
+      ],
+      "signals": [
+        "flat"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.24702220537454178,
+      "confirmed_major_drawdown": true,
+      "days_to_confirmation": 40
+    },
+    {
+      "start": "2025-02-01",
+      "end": "2025-04-25",
+      "days": 84,
+      "is_current": false,
+      "start_price": 100624.2,
+      "end_price": 94717.1,
+      "regimes": [
+        "accum_bear",
+        "bear_late",
+        "bear_struct"
+      ],
+      "signals": [
+        "flat",
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.24196664420686076,
+      "confirmed_major_drawdown": true,
+      "days_to_confirmation": 37
+    },
+    {
+      "start": "2025-05-01",
+      "end": "2025-05-01",
+      "days": 1,
+      "is_current": false,
+      "start_price": 96469.9,
+      "end_price": 96469.9,
+      "regimes": [
+        "accum_bear"
+      ],
+      "signals": [
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.022460891946607053,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2025-05-04",
+      "end": "2025-05-04",
+      "days": 1,
+      "is_current": false,
+      "start_price": 94303.1,
+      "end_price": 94303.1,
+      "regimes": [
+        "accum_bear"
+      ],
+      "signals": [
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": 0.004495080225358494,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2025-07-07",
+      "end": "2025-07-07",
+      "days": 1,
+      "is_current": false,
+      "start_price": 108282.1,
+      "end_price": 108282.1,
+      "regimes": [
+        "bear_late"
+      ],
+      "signals": [
+        "flat"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.21796954436605875,
+      "confirmed_major_drawdown": true,
+      "days_to_confirmation": 136
+    },
+    {
+      "start": "2025-08-25",
+      "end": "2025-09-30",
+      "days": 37,
+      "is_current": false,
+      "start_price": 110144.9,
+      "end_price": 113995.0,
+      "regimes": [
+        "bear_struct"
+      ],
+      "signals": [
+        "flat",
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.4293144757496715,
+      "confirmed_major_drawdown": true,
+      "days_to_confirmation": 87
+    },
+    {
+      "start": "2025-10-07",
+      "end": "2025-10-07",
+      "days": 1,
+      "is_current": false,
+      "start_price": 121419.8,
+      "end_price": 121419.8,
+      "regimes": [
+        "bear_struct"
+      ],
+      "signals": [
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.4823076631653157,
+      "confirmed_major_drawdown": true,
+      "days_to_confirmation": 38
+    },
+    {
+      "start": "2025-10-09",
+      "end": "2026-01-18",
+      "days": 102,
+      "is_current": false,
+      "start_price": 121699.0,
+      "end_price": 93632.6,
+      "regimes": [
+        "accum_bear",
+        "bear_struct"
+      ],
+      "signals": [
+        "flat",
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.48349534507267933,
+      "confirmed_major_drawdown": true,
+      "days_to_confirmation": 36
+    },
+    {
+      "start": "2026-01-20",
+      "end": "2026-01-20",
+      "days": 1,
+      "is_current": false,
+      "start_price": 88309.9,
+      "end_price": 88309.9,
+      "regimes": [
+        "bear_struct"
+      ],
+      "signals": [
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.3108847365923866,
+      "confirmed_major_drawdown": true,
+      "days_to_confirmation": 16
+    },
+    {
+      "start": "2026-01-22",
+      "end": "2026-04-05",
+      "days": 74,
+      "is_current": false,
+      "start_price": 89454.2,
+      "end_price": 68983.7,
+      "regimes": [
+        "bear_late",
+        "bear_struct"
+      ],
+      "signals": [
+        "flat",
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.3196999134752756,
+      "confirmed_major_drawdown": true,
+      "days_to_confirmation": 14
+    },
+    {
+      "start": "2026-04-07",
+      "end": "2026-04-10",
+      "days": 4,
+      "is_current": false,
+      "start_price": 71925.0,
+      "end_price": 72973.8,
+      "regimes": [
+        "bear_struct"
+      ],
+      "signals": [
+        "flat"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.15390059089329167,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    },
+    {
+      "start": "2026-06-02",
+      "end": "2026-06-10",
+      "days": 9,
+      "is_current": true,
+      "start_price": 66669.7,
+      "end_price": 61493.1,
+      "regimes": [
+        "bear_struct"
+      ],
+      "signals": [
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.08720603212553835,
+      "confirmed_major_drawdown": false,
+      "days_to_confirmation": null
+    }
+  ]
+}
