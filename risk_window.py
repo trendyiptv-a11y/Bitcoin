@@ -213,6 +213,39 @@ def level_for(active: bool, rate: Optional[float], streak_days: int):
     return "low"
 
 
+def fmt_pct(rate: Optional[float]) -> str:
+    if rate is None or not math.isfinite(float(rate)):
+        return "n/a"
+    return f"{float(rate) * 100:.0f}%"
+
+
+def fmt_days(days: Optional[float]) -> str:
+    if days is None or not math.isfinite(float(days)):
+        return "n/a"
+    return f"~{float(days):.0f} zile"
+
+
+def build_main_text(active: bool, s: Dict[str, Any], streak_days: int) -> str:
+    rate = s.get("confirmation_rate")
+    available = s.get("available_events") or 0
+    confirmed = s.get("confirmed_events") or 0
+    median_days = s.get("median_days")
+    rate_txt = fmt_pct(rate)
+    days_txt = fmt_days(median_days)
+
+    if not active:
+        return "Fereastra de risc structural nu este activă în snapshotul curent. Contextul actual nu se află în familia de degradare urmărită de acest card."
+
+    if available <= 0:
+        return f"Mecanismul indică {streak_days} zile consecutive de degradare structurală, dar nu există încă suficiente evenimente istorice comparabile pentru o rată robustă de confirmare."
+
+    return (
+        f"Contextul actual aparține unei familii istorice care a generat scăderi importante în {rate_txt} din cazuri "
+        f"({confirmed} confirmări din {available} episoade comparabile). "
+        f"Când acestea s-au confirmat, confirmarea a apărut în medie după {days_txt}."
+    )
+
+
 def main():
     df = generate_signals(load_df())
     last = df.iloc[-1]
@@ -242,7 +275,7 @@ def main():
         "median_min_drawdown": s.get("median_min_move"),
         "average_min_drawdown": s.get("average_min_move"),
         "since_2025_12_summary": summary_since,
-        "main_text": "Contextul actual aparține unei familii istorice care a generat scăderi importante în aproximativ 50% din cazuri. Când acestea s-au confirmat, confirmarea a apărut în medie după ~27 zile.",
+        "main_text": build_main_text(active, s, streak_days),
         "footer": "Interpretare statistică a degradării structurale, nu recomandare de tranzacționare.",
         "generated_at": pd.Timestamp.utcnow().isoformat(),
     }
