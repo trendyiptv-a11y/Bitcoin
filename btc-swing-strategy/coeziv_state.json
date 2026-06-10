@@ -1,11 +1,11 @@
 {
   "timestamp": "2026-06-10T00:00:00+00:00",
-  "price_usd": 61724.0,
+  "price_usd": 61376.0,
   "model_price_usd": 61493.1,
   "price_source": "spot",
   "signal": "short",
-  "message": "Prețul de tranzacționare la actualizarea sistemului: în jur de ~61,724 USD. Mecanismul vede un risc de scădere. Fluxul actual de piață este relativ echilibrat (slab). Lichiditatea este ridicată, iar mișcările de preț tind să fie mai stabile. Prețul este într-o zonă de echilibru față de costul estimat de producție al rețelei. Istoric, în contexte similare, mișcarea pe următoarele ~24 ore a fost de aproximativ -3.4% în scenariile mai pesimiste, -0.0% în scenariile mediene și până la 3.1% în scenariile mai favorabile. Nu este o recomandare de tranzacționare, ci o interpretare structurată a riscului.",
-  "generated_at": "2026-06-10T21:03:56.729847+00:00",
+  "message": "Prețul de tranzacționare la actualizarea sistemului: în jur de ~61,376 USD. Mecanismul vede un risc de scădere. Fluxul actual de piață este relativ echilibrat (slab). Lichiditatea este ridicată, iar mișcările de preț tind să fie mai stabile. Prețul este într-o zonă de echilibru față de costul estimat de producție al rețelei. Istoric, în contexte similare, mișcarea pe următoarele ~24 ore a fost de aproximativ -3.4% în scenariile mai pesimiste, -0.0% în scenariile mediene și până la 3.1% în scenariile mai favorabile. Nu este o recomandare de tranzacționare, ci o interpretare structurată a riscului.",
+  "generated_at": "2026-06-10T22:58:14.539965+00:00",
   "signal_history": [
     {
       "timestamp": "2026-05-12T00:00:00+00:00",
@@ -183,8 +183,8 @@
     "expensive": 92836.91106224971
   },
   "production_cost_reference": "average",
-  "production_cost_as_of": "2026-06-10T21:03:56.621316+00:00",
-  "deviation_from_production": 0.05773955212090965,
+  "production_cost_as_of": "2026-06-10T22:58:14.433186+00:00",
+  "deviation_from_production": 0.051776015018031085,
   "flow_score": -0.003161063479017833,
   "flow_bias": "neutru",
   "flow_strength": "slab",
@@ -194,10 +194,10 @@
   "liquidity_strength": "puternică",
   "liquidity_components": {},
   "fg": {
-    "structural": 36.44,
+    "structural": 36.29,
     "tactical_24h": 41.83,
-    "combined": 30.49,
-    "tension": 5.39,
+    "combined": 30.37,
+    "tension": 5.54,
     "structural_zone": "fear",
     "tactical_zone": "neutral",
     "combined_zone": "fear"

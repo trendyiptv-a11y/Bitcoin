@@ -1,20 +1,110 @@
 {
   "title": "FEREASTRA_DE_RISC",
   "active": true,
-  "level": "high",
+  "level": "moderate",
   "current_regime": "bear_struct",
   "current_signal": "short",
   "consecutive_degradation_days": 9,
+  "streak_days": 9,
   "window_days": 180,
   "major_drawdown_threshold": -0.2,
-  "historical_available_events": 108,
-  "historical_confirmed_events": 54,
-  "historical_confirmation_rate": 0.5,
+  "threshold": -0.2,
+  "historical_available_events": 56,
+  "historical_confirmed_events": 23,
+  "historical_confirmation_rate": 0.4107142857142857,
   "median_days_to_confirmation": 27.0,
-  "average_days_to_confirmation": 45.925925925925924,
-  "median_min_drawdown": -0.20037724044036376,
-  "average_min_drawdown": -0.24940033224870461,
+  "average_days_to_confirmation": 46.78260869565217,
+  "median_min_drawdown": -0.15663506857055504,
+  "average_min_drawdown": -0.22787909014563237,
+  "since_2025_12_summary": {
+    "since": "2025-12-01",
+    "events": 4,
+    "max_streak_days": 74,
+    "current_streak_days": 9,
+    "current_is_record": false,
+    "matching_or_longer_than_current": 2,
+    "top_streaks": [
+      {
+        "start": "2026-01-22",
+        "end": "2026-04-05",
+        "days": 74,
+        "is_current": false,
+        "start_price": 89454.2,
+        "end_price": 68983.7,
+        "regimes": [
+          "bear_late",
+          "bear_struct"
+        ],
+        "signals": [
+          "flat",
+          "short"
+        ],
+        "window_days": 180,
+        "major_drawdown_threshold": -0.2,
+        "min_drawdown": -0.3196999134752756,
+        "confirmed_major_drawdown": true,
+        "days_to_confirmation": 14
+      },
+      {
+        "start": "2026-06-02",
+        "end": "2026-06-10",
+        "days": 9,
+        "is_current": true,
+        "start_price": 66669.7,
+        "end_price": 61493.1,
+        "regimes": [
+          "bear_struct"
+        ],
+        "signals": [
+          "short"
+        ],
+        "window_days": 180,
+        "major_drawdown_threshold": -0.2,
+        "min_drawdown": -0.08720603212553835,
+        "confirmed_major_drawdown": false,
+        "days_to_confirmation": null
+      },
+      {
+        "start": "2026-04-07",
+        "end": "2026-04-10",
+        "days": 4,
+        "is_current": false,
+        "start_price": 71925.0,
+        "end_price": 72973.8,
+        "regimes": [
+          "bear_struct"
+        ],
+        "signals": [
+          "flat"
+        ],
+        "window_days": 180,
+        "major_drawdown_threshold": -0.2,
+        "min_drawdown": -0.15390059089329167,
+        "confirmed_major_drawdown": false,
+        "days_to_confirmation": null
+      },
+      {
+        "start": "2026-01-20",
+        "end": "2026-01-20",
+        "days": 1,
+        "is_current": false,
+        "start_price": 88309.9,
+        "end_price": 88309.9,
+        "regimes": [
+          "bear_struct"
+        ],
+        "signals": [
+          "short"
+        ],
+        "window_days": 180,
+        "major_drawdown_threshold": -0.2,
+        "min_drawdown": -0.3108847365923866,
+        "confirmed_major_drawdown": true,
+        "days_to_confirmation": 16
+      }
+    ]
+  },
   "main_text": "Contextul actual aparține unei familii istorice care a generat scăderi importante în aproximativ 50% din cazuri. Când acestea s-au confirmat, confirmarea a apărut în medie după ~27 zile.",
   "footer": "Interpretare statistică a degradării structurale, nu recomandare de tranzacționare.",
-  "generated_at": "2026-06-10T21:04:23.132663+00:00"
+  "generated_at": "2026-06-10T22:58:15.192320+00:00"
 }

@@ -1380,7 +1380,72 @@ body.light-mode .energy-label {
       }
     }
 
-  </style>
+  
+
+    /* ACTIVE_STANDARD_REGIME_HIGHLIGHT_CSS */
+    .standard-regime-row {
+      position: relative;
+      border-width: 1px;
+    }
+    .standard-regime-row.active-standard-regime {
+      border-width: 3px;
+      transform: translateY(-1px);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.04),
+        0 0 24px rgba(148,163,184,0.12);
+    }
+    .standard-regime-row.active-standard-regime::after {
+      content: "DETECTAT ACUM";
+      position: absolute;
+      top: 7px;
+      right: 9px;
+      padding: 3px 7px;
+      border-radius: 999px;
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      background: rgba(15,23,42,0.88);
+      color: var(--text-main);
+      border: 1px solid rgba(148,163,184,0.22);
+    }
+    .standard-regime-row.active-standard-regime.regime-family-up {
+      border-color: rgba(34,197,94,0.95);
+      box-shadow: 0 0 26px rgba(34,197,94,0.16);
+    }
+    .standard-regime-row.active-standard-regime.regime-family-up::after {
+      color: #bbf7d0;
+      border-color: rgba(34,197,94,0.55);
+    }
+    .standard-regime-row.active-standard-regime.regime-family-neutral {
+      border-color: rgba(148,163,184,0.95);
+      box-shadow: 0 0 24px rgba(148,163,184,0.14);
+    }
+    .standard-regime-row.active-standard-regime.regime-family-neutral::after {
+      color: #e2e8f0;
+      border-color: rgba(148,163,184,0.55);
+    }
+    .standard-regime-row.active-standard-regime.regime-family-down {
+      border-color: rgba(248,113,113,0.98);
+      box-shadow: 0 0 28px rgba(248,113,113,0.18);
+    }
+    .standard-regime-row.active-standard-regime.regime-family-down::after {
+      color: #fecaca;
+      border-color: rgba(248,113,113,0.58);
+    }
+    body.light-mode .standard-regime-row.active-standard-regime::after {
+      background: rgba(255,255,255,0.95);
+    }
+    @media (max-width: 480px) {
+      .standard-regime-row.active-standard-regime::after {
+        position: static;
+        width: fit-content;
+        margin-top: 7px;
+        display: inline-flex;
+      }
+    }
+
+</style>
 
   <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
 </head>
@@ -1689,7 +1754,7 @@ body.light-mode .energy-label {
     </div>
 
     <div class="history-list">
-      <div class="history-row">
+      <div class="history-row standard-regime-row" data-standard-regime="up_trend_strong">
         <div class="history-left">
           <div class="history-date">1. Trend ascendent susținut</div>
           <div class="history-tag">
@@ -1699,7 +1764,7 @@ body.light-mode .energy-label {
         </div>
       </div>
 
-      <div class="history-row">
+      <div class="history-row standard-regime-row" data-standard-regime="up_trend_moderate">
         <div class="history-left">
           <div class="history-date">2. Trend ascendent moderat</div>
           <div class="history-tag">
@@ -1709,7 +1774,7 @@ body.light-mode .energy-label {
         </div>
       </div>
 
-      <div class="history-row">
+      <div class="history-row standard-regime-row" data-standard-regime="range_bias_up">
         <div class="history-left">
           <div class="history-date">3. Range cu bias pozitiv</div>
           <div class="history-tag">
@@ -1719,7 +1784,7 @@ body.light-mode .energy-label {
         </div>
       </div>
 
-      <div class="history-row">
+      <div class="history-row standard-regime-row" data-standard-regime="range_neutral">
         <div class="history-left">
           <div class="history-date">4. Range neutru</div>
           <div class="history-tag">
@@ -1729,7 +1794,7 @@ body.light-mode .energy-label {
         </div>
       </div>
 
-      <div class="history-row">
+      <div class="history-row standard-regime-row" data-standard-regime="range_bias_down">
         <div class="history-left">
           <div class="history-date">5. Range cu bias negativ</div>
           <div class="history-tag">
@@ -1739,7 +1804,7 @@ body.light-mode .energy-label {
         </div>
       </div>
 
-      <div class="history-row">
+      <div class="history-row standard-regime-row" data-standard-regime="down_trend_moderate">
         <div class="history-left">
           <div class="history-date">6. Trend descendent moderat</div>
           <div class="history-tag">
@@ -1749,7 +1814,7 @@ body.light-mode .energy-label {
         </div>
       </div>
 
-      <div class="history-row">
+      <div class="history-row standard-regime-row" data-standard-regime="down_trend_strong">
         <div class="history-left">
           <div class="history-date">7. Trend descendent susținut</div>
           <div class="history-tag">
@@ -1759,7 +1824,7 @@ body.light-mode .energy-label {
         </div>
       </div>
 
-      <div class="history-row">
+      <div class="history-row standard-regime-row" data-standard-regime="transition_accumulation">
         <div class="history-left">
           <div class="history-date">8. Regim neutru / tranziție</div>
           <div class="history-tag">
@@ -1967,6 +2032,42 @@ body.light-mode .energy-label {
       });
       observer.observe(el, { childList: true, characterData: true, subtree: true, attributes: true });
       setInterval(applyCompactRegimeChip, 700);
+    }
+
+
+    // ACTIVE_STANDARD_REGIME_HIGHLIGHT_JS
+    function standardRegimeKeyFromCode(code) {
+      const c = String(code || '').toLowerCase();
+      if (c.startsWith('up_trend_strong')) return 'up_trend_strong';
+      if (c.startsWith('up_trend_moderate')) return 'up_trend_moderate';
+      if (c.startsWith('range_bias_up')) return 'range_bias_up';
+      if (c.startsWith('range_neutral')) return 'range_neutral';
+      if (c.startsWith('range_bias_down')) return 'range_bias_down';
+      if (c.startsWith('down_trend_strong')) return 'down_trend_strong';
+      if (c.startsWith('down_trend_moderate')) return 'down_trend_moderate';
+      if (c.startsWith('transition_accumulation')) return 'transition_accumulation';
+      return '';
+    }
+
+    function standardRegimeFamily(key) {
+      if (['up_trend_strong', 'up_trend_moderate', 'range_bias_up'].includes(key)) return 'regime-family-up';
+      if (['down_trend_strong', 'down_trend_moderate', 'range_bias_down'].includes(key)) return 'regime-family-down';
+      return 'regime-family-neutral';
+    }
+
+    function highlightActiveStandardRegime(state) {
+      const code = state && state.market_regime && state.market_regime.code;
+      const key = standardRegimeKeyFromCode(code);
+      const rows = document.querySelectorAll('[data-standard-regime]');
+      rows.forEach(row => {
+        row.classList.remove('active-standard-regime', 'regime-family-up', 'regime-family-neutral', 'regime-family-down');
+        row.removeAttribute('aria-current');
+      });
+      if (!key) return;
+      const active = document.querySelector(`[data-standard-regime="${key}"]`);
+      if (!active) return;
+      active.classList.add('active-standard-regime', standardRegimeFamily(key));
+      active.setAttribute('aria-current', 'true');
     }
 
     const STATE_URL = "coeziv_state.json";
@@ -2399,6 +2500,7 @@ body.light-mode .energy-label {
         const signal = state.signal;
         const history = state.signal_history;
         const regime = state.market_regime || null;
+        highlightActiveStandardRegime(state);
         const drift = state.signal_expected_drift || null;
 
         const flowBias = state.flow_bias || null;
