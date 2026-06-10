@@ -47,7 +47,7 @@ jobs:
       # 5. Generăm snapshot-ul coeziv și fereastra de risc extinsă
       - name: Update IC series, coeziv state & risk window
         run: |
-          python coeziv_state.py
+          python coeziv_state_runner.py
           python risk_window.py
 
       # 6. Curățăm gunoiul (.pyc, __pycache__)
