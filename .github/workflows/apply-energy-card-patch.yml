@@ -1,0 +1,43 @@
+name: Apply Energy Threshold Card Patch
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - patch_energy_card.py
+      - .github/workflows/apply-energy-card-patch.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: apply-energy-card-patch
+  cancel-in-progress: false
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Pull latest main
+        run: git pull --rebase origin main
+
+      - name: Apply UI patch
+        run: python patch_energy_card.py
+
+      - name: Commit patched UI
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add btc-swing-strategy/mecanism.html
+          git commit -m "Add energy threshold info card to UI" || echo "Nothing to commit"
+          git push origin main || echo "Push failed"
