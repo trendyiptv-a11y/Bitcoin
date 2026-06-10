@@ -144,11 +144,11 @@ def main():
         html = html.replace(old, new, 1)
         changed = True
 
-    if "highlightActiveStandardRegime(data);" not in html:
-        marker = "updateMainUi(data);"
+    if "highlightActiveStandardRegime(state);" not in html:
+        marker = "const regime = state.market_regime || null;"
         if marker not in html:
-            raise RuntimeError("Nu am găsit updateMainUi(data) pentru apelul highlightActiveStandardRegime.")
-        html = html.replace(marker, marker + "\n        highlightActiveStandardRegime(data);", 1)
+            raise RuntimeError("Nu am găsit market_regime în loadState pentru apelul highlightActiveStandardRegime.")
+        html = html.replace(marker, marker + "\n        highlightActiveStandardRegime(state);", 1)
         changed = True
 
     if changed:
