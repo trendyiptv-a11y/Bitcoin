@@ -2,11 +2,9 @@ name: Coeziv BTC Backtest
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '10 7 * * *'
   workflow_run:
     workflows:
-      - coeziv_state – Generate snapshot BTC
+      - coeziv_state - Generate snapshot BTC
     types:
       - completed
 
