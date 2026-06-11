@@ -2,8 +2,6 @@ name: Participation Cohesion Test
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '20 7 * * *'
   workflow_run:
     workflows:
       - Coeziv BTC Backtest
