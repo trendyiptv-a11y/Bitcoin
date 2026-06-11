@@ -1,41 +1,41 @@
 {
   "title": "COEZIUNE_PARTICIPATIVA",
-  "score": 63.85,
+  "score": 69.12,
   "label": "participare tensionată",
   "level": "tense",
-  "signal": "short",
+  "signal": "flat",
   "main_text": "Participanții rămân activi, dar comportamentul este tensionat. Interesul persistă, însă fluxul dominant poate fi defensiv sau orientat spre ieșire.",
   "components": {
-    "liquidity_component": 62.89,
-    "flow_component": 46.21,
-    "production_component": 83.5,
+    "liquidity_component": 69.25,
+    "flow_component": 72.11,
+    "production_component": 77.92,
     "persistence_component": 55.0,
-    "probability_component": 84.78
+    "probability_component": 64.86
   },
   "inputs": {
-    "flow_score": -0.003161063479017833,
-    "liquidity_score": 0.014320305855453797,
-    "deviation_from_production": 0.05773955212090965,
-    "signal_probability": 0.373134328358209,
+    "flow_score": 0.018426888776438315,
+    "liquidity_score": 0.021387853961234368,
+    "deviation_from_production": 0.07729241371396839,
+    "signal_probability": 0.20714483522569926,
     "recent_days": 14,
     "recent_short_days": 9,
     "recent_long_days": 0,
     "recent_flat_days": 5
   },
   "history": {
-    "rows": 5609,
+    "rows": 5610,
     "from": "2011-02-01T00:00:00+00:00",
-    "to": "2026-06-10T00:00:00+00:00",
-    "mean_score": 74.55389909074701,
+    "to": "2026-06-11T00:00:00+00:00",
+    "mean_score": 74.55351515151514,
     "median_score": 77.22,
     "min_score": 56.04,
     "max_score": 97.21,
     "label_counts": {
-      "participare coezivă": 3653,
+      "participare coezivă": 3654,
       "participare tensionată": 1956
     }
   },
   "footer": "Indicator experimental derivat din flux, lichiditate, persistență și tensiune față de model. Nu măsoară încă direct utilizarea peer-to-peer on-chain.",
-  "generated_at": "2026-06-10T21:04:47.146253+00:00",
-  "source_timestamp": "2026-06-10T00:00:00+00:00"
+  "generated_at": "2026-06-11T11:45:54.711893+00:00",
+  "source_timestamp": "2026-06-11T00:00:00+00:00"
 }
