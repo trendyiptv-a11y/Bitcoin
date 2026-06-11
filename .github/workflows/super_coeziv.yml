@@ -39,10 +39,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Update state, risk window and UI
+      - name: Update BTC state and UI
         run: |
           python coeziv_state_runner.py
-          python risk_window.py
           python patch_standard_regime_ui.py
 
       - name: Clean pycache and pyc files
@@ -53,6 +52,6 @@ jobs:
       - name: Auto-commit generated files
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "Update BTC state, risk window and UI"
+          commit_message: "Update BTC state and UI"
           branch: main
-          file_pattern: btc-swing-strategy/coeziv_state.json btc-swing-strategy/risk_window.json btc-swing-strategy/risk_window_history.json btc-swing-strategy/mecanism.html
+          file_pattern: btc-swing-strategy/coeziv_state.json btc-swing-strategy/mecanism.html
