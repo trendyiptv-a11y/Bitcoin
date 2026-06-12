@@ -1445,6 +1445,37 @@ body.light-mode .energy-label {
       }
     }
 
+
+    /* WEBVIEW_SCROLL_RENDER_STABILITY_START */
+    /*
+      Android WebView stability patch - minimal.
+      Doar card-urile primesc fix GPU; elementele de date rămân neatinse.
+    */
+    .card {
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+      transform: none !important;
+      will-change: auto !important;
+    }
+
+    .card:hover {
+      transform: none !important;
+    }
+
+    .card,
+    .card:first-of-type,
+    body.light-mode .card,
+    body.light-mode .card:first-of-type {
+      box-shadow: 0 14px 36px rgba(0,0,0,0.42) !important;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .card:hover {
+        border-color: rgba(56,189,248,0.28);
+      }
+    }
+    /* WEBVIEW_SCROLL_RENDER_STABILITY_END */
+
 </style>
 
   <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
@@ -3019,187 +3050,4 @@ body.light-mode .energy-label {
         plot_bgcolor: "rgba(15,23,42,0)",
         xaxis: {
           showgrid: false,
-          zeroline: false,
-          tickfont: { color: "#9ca3af", size: 10 },
-          rangeselector: {
-            buttons: [
-              { count: 6,  label: "6h",  step: "hour", stepmode: "backward" },
-              { count: 24, label: "24h", step: "hour", stepmode: "backward" },
-              { count: 3,  label: "3d", step: "day", stepmode: "backward" },
-              { step: "all", label: "All" }
-            ]
-          },
-          rangeslider: { visible: false }
-        },
-        yaxis: {
-          domain: [0.35, 1],
-          showgrid: true,
-          gridcolor: "#111827",
-          tickfont: { color: "#9ca3af", size: 10 }
-        },
-        yaxis2: {
-          domain: [0, 0.28],
-          showgrid: false,
-          tickfont: { color: "#6b7280", size: 9 }
-        },
-        showlegend: false
-      };
-
-      const config = {
-        displayModeBar: true,
-        displaylogo: false,
-        scrollZoom: true,
-        modeBarButtonsToRemove: ["select2d", "lasso2d"],
-        responsive: true
-      };
-
-      Plotly.newPlot(el, traces, layout, config);
-    }
-
-    // ---------------- ISTORIC SEMNALE (CARD 2) ----------------
-
-    function renderHistory() {
-      if (!HISTORY_LIST_EL) return;
-
-      HISTORY_LIST_EL.innerHTML = "";
-
-      if (!Array.isArray(SIGNAL_HISTORY) || SIGNAL_HISTORY.length === 0) {
-        HISTORY_LIST_EL.innerHTML =
-          '<div class="history-empty">Istoricul nu este disponibil încă. Va apărea după următorul update al mecanismului.</div>';
-        if (HISTORY_META_EL) HISTORY_META_EL.textContent = "";
-        return;
-      }
-
-      const maxItems = Math.min(SIGNAL_HISTORY.length, 8);
-      const items = SIGNAL_HISTORY.slice(-maxItems).reverse();
-
-      let countLong = 0;
-      let countShort = 0;
-      let countFlat = 0;
-
-      items.forEach(entry => {
-        if (!entry) return;
-        const sig = String(entry.signal || "").toLowerCase();
-        const ts = entry.timestamp;
-        const price = entry.model_price_usd;
-        const sigMap = mapSignal(sig);
-
-        if (sig === "long") countLong++;
-        else if (sig === "short") countShort++;
-        else countFlat++;
-
-        const row = document.createElement("div");
-        row.className = "history-row";
-
-        const left = document.createElement("div");
-        left.className = "history-left";
-
-        const dateEl = document.createElement("div");
-        dateEl.className = "history-date";
-        dateEl.textContent = formatShortDate(ts);
-
-        const sigChip = document.createElement("div");
-        sigChip.className = "history-signal-chip";
-        if (sig === "long") sigChip.classList.add("history-signal-long");
-        else if (sig === "short") sigChip.classList.add("history-signal-short");
-        else sigChip.classList.add("history-signal-flat");
-
-        const dot = document.createElement("span");
-        dot.className = "history-signal-dot";
-
-        const label = document.createElement("span");
-        label.textContent = sigMap.shortLabel;
-
-        sigChip.appendChild(dot);
-        sigChip.appendChild(label);
-
-        left.appendChild(dateEl);
-        left.appendChild(sigChip);
-
-        const right = document.createElement("div");
-        right.className = "history-right";
-
-        const priceEl = document.createElement("div");
-        priceEl.className = "history-price";
-        if (typeof price === "number" && Number.isFinite(price)) {
-          priceEl.textContent = USD_FORMATTER.format(price) + " USD";
-        } else {
-          priceEl.textContent = "–";
-        }
-
-        const tagEl = document.createElement("div");
-        tagEl.className = "history-tag";
-        tagEl.textContent = "Preț model la snapshot";
-
-        right.appendChild(priceEl);
-        right.appendChild(tagEl);
-
-        row.appendChild(left);
-        row.appendChild(right);
-
-        HISTORY_LIST_EL.appendChild(row);
-      });
-
-      if (HISTORY_META_EL) {
-        const totalLine =
-          `<span>Total contexte: ${SIGNAL_HISTORY.length}</span>` +
-          `<span class="history-meta-dot">•</span>` +
-          `<span>Presiune de creștere: ${countLong}</span>` +
-          `<span class="history-meta-dot">•</span>` +
-          `<span>Risc de scădere: ${countShort}</span>` +
-          `<span class="history-meta-dot">•</span>` +
-          `<span>Context neutru: ${countFlat}</span>`;
-
-        let flowLiqLine = "";
-        if (FLOW_BIAS || LIQ_REGIME) {
-          let flowPart = "";
-          if (FLOW_BIAS === "pozitiv") flowPart = "Flux actual: orientat spre cumpărare";
-          else if (FLOW_BIAS === "negativ") flowPart = "Flux actual: orientat spre vânzare";
-          else if (FLOW_BIAS === "neutru") flowPart = "Flux actual: relativ echilibrat";
-
-          let liqPart = "";
-if (LIQ_REGIME === "ridicată") liqPart = "Lichiditate ridicată";
-else if (LIQ_REGIME === "scăzută") liqPart = "Lichiditate scăzută";
-else if (LIQ_REGIME === "normală" || LIQ_REGIME === "moderată")
-  liqPart = "Lichiditate moderată";
-          const parts = [];
-          if (flowPart) parts.push(flowPart);
-          if (liqPart) parts.push(liqPart);
-
-          if (parts.length > 0) {
-            flowLiqLine = parts.join(", ") + ".";
-          }
-        }
-
-        if (flowLiqLine) {
-          HISTORY_META_EL.innerHTML =
-            `<div>${totalLine}</div><div>${flowLiqLine}</div>`;
-        } else {
-          HISTORY_META_EL.innerHTML = `<div>${totalLine}</div>`;
-        }
-      }
-    }
-
-    // ---------------- START ----------------
-
-    function start() {
-      initThemeToggle();
-    startCompactRegimeChipSync();
-      loadState();
-    loadParticipationCohesion();
-    // DAILY_COHESIV_INTERPRETATION_CALL
-    loadDailyCohesivInterpretation();
-
-    loadRiskWindow();
-      updateLivePrice();
-      loadOHLC();
-
-      setInterval(updateLivePrice, 10 * 1000);
-      setInterval(loadState, 5 * 60 * 1000);
-      setInterval(loadOHLC, 60 * 1000);
-    }
-
-    document.addEventListener("DOMContentLoaded", start);
-  </script>
-</body>
-</html>
+          ze
