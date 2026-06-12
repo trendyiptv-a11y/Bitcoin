@@ -1445,6 +1445,38 @@ body.light-mode .energy-label {
       }
     }
 
+/* WEBVIEW_SCROLL_RENDER_STABILITY_START */
+/*
+  Android WebView stability patch.
+  Motiv: la scroll rapid, backdrop-filter + transform + shadow-uri mari pot produce
+  artefacte GPU: pete albe/negre, flicker sau dreptunghiuri temporare.
+  Păstrăm designul, dar eliminăm efectele costisitoare la randare.
+*/
+.card {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  transform: none !important;
+  will-change: auto !important;
+}
+
+.card:hover {
+  transform: none !important;
+}
+
+.card,
+.card:first-of-type,
+body.light-mode .card,
+body.light-mode .card:first-of-type {
+  box-shadow: 0 14px 36px rgba(0,0,0,0.42) !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .card:hover {
+    border-color: rgba(56,189,248,0.28);
+  }
+}
+/* WEBVIEW_SCROLL_RENDER_STABILITY_END */
+    
 </style>
 
   <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
