@@ -498,7 +498,7 @@ public class MainActivity extends Activity {
 
     private void showAboutDialog(boolean english) {
         int localCount = countSnapshotHistory();
-        String version = BuildConfig.VERSION_NAME;
+        String version = getAppVersionName();
 
         String message = english
                 ? "App version: " + version + "\n\n" +
@@ -545,6 +545,16 @@ public class MainActivity extends Activity {
                         (dialog, which) -> showSnapshotHistoryDialog(english))
                 .setPositiveButton(english ? "Close" : "Închide", null)
                 .show();
+    }
+
+    private String getAppVersionName() {
+        try {
+            return getPackageManager()
+                    .getPackageInfo(getPackageName(), 0)
+                    .versionName;
+        } catch (Exception ignored) {
+            return "0.2.6";
+        }
     }
 
     private void configureSystemBars() {
