@@ -286,9 +286,17 @@ public class MainActivity extends Activity {
     }
 
     private void showSnapshotHistoryDialog() {
+        showSnapshotHistoryDialog(false);
+    }
+
+    private void showSnapshotHistoryDialog(boolean english) {
         File[] files = getSnapshotHistoryFiles();
         if (files.length == 0) {
-            Toast.makeText(this, "Nu există încă snapshoturi locale.", Toast.LENGTH_LONG).show();
+            Toast.makeText(
+                    this,
+                    english ? "No local snapshots yet." : "Nu există încă snapshoturi locale.",
+                    Toast.LENGTH_LONG
+            ).show();
             return;
         }
         String[] labels = new String[files.length];
@@ -296,9 +304,9 @@ public class MainActivity extends Activity {
             labels[i] = labelForSnapshot(files[i]);
         }
         new AlertDialog.Builder(this)
-                .setTitle("Istoric local")
+                .setTitle(english ? "Local history" : "Istoric local")
                 .setItems(labels, (dialog, which) -> loadHistorySnapshot(files[which]))
-                .setNegativeButton("Închide", null)
+                .setNegativeButton(english ? "Close" : "Închide", null)
                 .show();
     }
 
@@ -468,7 +476,50 @@ public class MainActivity extends Activity {
     }
 
     private void showAboutDialog() {
-        String message = "Versiune aplicație: 0.2.6\n\n" +
+        if (webView == null) {
+            showAboutDialog(false);
+            return;
+        }
+
+        String js = "(function(){" +
+                "try{" +
+                "return (localStorage.getItem('coeziv_btc_lang') || document.documentElement.lang || 'ro');" +
+                "}catch(e){return 'ro';}" +
+                "})()";
+
+        webView.evaluateJavascript(js, value ->
+                runOnUiThread(() -> showAboutDialog(isEnglishValue(value)))
+        );
+    }
+
+    private boolean isEnglishValue(String value) {
+        return value != null && value.toLowerCase(Locale.US).contains("en");
+    }
+
+    private void showAboutDialog(boolean english) {
+        int localCount = countSnapshotHistory();
+        String version = BuildConfig.VERSION_NAME;
+
+        String message = english
+                ? "App version: " + version + "\n\n" +
+                "CohesivX BTC Monitor is an experimental tool for structural observation of the Bitcoin ecosystem.\n\n" +
+                "Active modules:\n" +
+                "• Cohesive BTC Mechanism\n" +
+                "• Participation Cohesion\n" +
+                "• Risk Window\n" +
+                "• Cohesive Fear & Greed\n" +
+                "• Contextual Backtest\n" +
+                "• Structural Notifications\n\n" +
+                "Updates:\n" +
+                "• automatic snapshot\n" +
+                "• live BTC data\n" +
+                "• manual pull-to-refresh\n" +
+                "• local cache for JSON files\n" +
+                "• complete local HTML snapshot for offline mode\n" +
+                "• local history: " + localCount + " / " + MAX_HISTORY_SNAPSHOTS + " snapshots\n\n" +
+                "Model author: Sergiu Bulboacă, Coeziv 3.14 project.\n\n" +
+                "This is not financial advice. It does not execute transactions and does not manage funds."
+                : "Versiune aplicație: " + version + "\n\n" +
                 "CohesivX BTC Monitor este un instrument experimental de observare structurală a ecosistemului Bitcoin.\n\n" +
                 "Module active:\n" +
                 "• Mecanism Coeziv BTC\n" +
@@ -483,14 +534,16 @@ public class MainActivity extends Activity {
                 "• refresh manual prin tragere în jos\n" +
                 "• cache local pentru JSON-uri\n" +
                 "• snapshot HTML local complet pentru modul offline\n" +
-                "• istoric local: " + countSnapshotHistory() + " / " + MAX_HISTORY_SNAPSHOTS + " snapshoturi\n\n" +
+                "• istoric local: " + localCount + " / " + MAX_HISTORY_SNAPSHOTS + " snapshoturi\n\n" +
                 "Autor model: Sergiu Bulboacă, proiectul Coeziv 3.14.\n\n" +
                 "Nu este recomandare financiară. Nu execută tranzacții și nu administrează fonduri.";
+
         new AlertDialog.Builder(this)
-                .setTitle("Despre CohesivX")
+                .setTitle(english ? "About CohesivX" : "Despre CohesivX")
                 .setMessage(message)
-                .setNeutralButton("Istoric local", (dialog, which) -> showSnapshotHistoryDialog())
-                .setPositiveButton("Închide", null)
+                .setNeutralButton(english ? "Local history" : "Istoric local",
+                        (dialog, which) -> showSnapshotHistoryDialog(english))
+                .setPositiveButton(english ? "Close" : "Închide", null)
                 .show();
     }
 
