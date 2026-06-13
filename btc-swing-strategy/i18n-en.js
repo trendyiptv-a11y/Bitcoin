@@ -93,6 +93,7 @@
     applyTranslation();
     updateButtonState();
     refreshCompactLabel();
+    refreshRegimeChipFromState();
   }
 
   function getScale() {
@@ -107,6 +108,7 @@
     applyScale();
     updateScaleButtons();
     refreshCompactLabel();
+    refreshRegimeChipFromState();
   }
 
   function bumpScale(direction) {
@@ -174,6 +176,43 @@
     if (!document.body) return;
     walk(document.body);
     translateAttributes();
+    refreshRegimeChipFromState();
+  }
+
+  function regimeCompactLabel(fullText, code) {
+    const t = `${fullText || ""} ${code || ""}`.toLowerCase();
+    if (t.includes("range") && (t.includes("pozitiv") || t.includes("bias_up"))) return "RANGE+";
+    if (t.includes("range") && (t.includes("negativ") || t.includes("bias_down"))) return "RANGE−";
+    if (t.includes("range")) return "RANGE";
+    if (t.includes("ascendent") || t.includes("up_trend")) return "TREND+";
+    if (t.includes("descendent") || t.includes("down_trend")) return "TREND−";
+    if (t.includes("tranzi") || t.includes("transition")) return "TRANZ";
+    if (t.includes("neutru") || t.includes("neutral")) return "NEUTRU";
+    if (t.includes("n/a")) return "N/A";
+    return "REGIM";
+  }
+
+  async function refreshRegimeChipFromState() {
+    const el = document.getElementById("regime-line");
+    if (!el) return;
+    try {
+      const res = await fetch(`coeziv_state.json?t=${Date.now()}`, { cache: "no-store" });
+      if (!res.ok) return;
+      const state = await res.json();
+      const regime = state && state.market_regime;
+      let label = "n/a";
+      let code = "";
+      if (typeof regime === "string") label = regime;
+      else if (regime && typeof regime === "object") {
+        label = regime.label || label;
+        code = regime.code || "";
+      }
+      const full = `Regim de piață: ${label}.`;
+      const compact = regimeCompactLabel(full, code);
+      el.setAttribute("data-full-regime", full);
+      el.setAttribute("title", full);
+      el.textContent = compact;
+    } catch (e) {}
   }
 
   function injectStyles() {
@@ -261,11 +300,14 @@
   function observeChanges() {
     const observer = new MutationObserver((mutations) => {
       let shouldTranslate = false;
+      let shouldRefreshRegime = false;
       for (const mutation of mutations) {
         if (mutation.target && mutation.target.closest && mutation.target.closest("#coeziv-accessibility-panel")) continue;
-        if (mutation.type === "childList" || mutation.type === "characterData") { shouldTranslate = true; break; }
+        if (mutation.target && mutation.target.id === "regime-line") shouldRefreshRegime = true;
+        if (mutation.type === "childList" || mutation.type === "characterData") { shouldTranslate = true; }
       }
       if (shouldTranslate && getLang() === "en") requestAnimationFrame(applyTranslation);
+      if (shouldRefreshRegime) requestAnimationFrame(refreshRegimeChipFromState);
     });
     observer.observe(document.body, { childList: true, subtree: true, characterData: true });
   }
@@ -276,10 +318,12 @@
     applyScale();
     setLang(getLang());
     observeChanges();
+    refreshRegimeChipFromState();
+    setInterval(refreshRegimeChipFromState, 5000);
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
   else boot();
 
-  window.CoezivI18n = { setLang, getLang, setScale, getScale, applyScale, applyTranslation, translateText };
+  window.CoezivI18n = { setLang, getLang, setScale, getScale, applyScale, applyTranslation, translateText, refreshRegimeChipFromState };
 })();
