@@ -1,4 +1,4 @@
-/* CohesivX BTC — compact language + accessibility module */
+/* CohesivX BTC — professional RO/EN language + accessibility module */
 (function () {
   "use strict";
 
@@ -6,20 +6,18 @@
   const SCALE_KEY = "coeziv_btc_scale";
   const SCALE_STEPS = [1, 1.15, 1.30];
   let collapseTimer = null;
+  let refreshTimer = null;
 
-  const PHRASE_MAP = new Map([
+  const USD = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
+
+  const STATIC_EN = new Map([
     ["MECANISM COEZIV BTC", "COHESIVE BTC MECHANISM"],
-    ["Bitcoin (BTC)", "Bitcoin (BTC)"],
     ["Actualizat aproximativ la 24h.", "Mechanism snapshot: updated approximately every 24h."],
     ["Context: neutru", "Context: neutral"],
     ["Context: presiune de creștere", "Context: upward pressure"],
     ["Context: risc de scădere", "Context: downside risk"],
     ["Preț live:", "Live price:"],
-    ["Status deviație: Normală.", "Deviation status: Normal."],
-    ["Status deviație: Controlată.", "Deviation status: Controlled."],
-    ["Status deviație: Tensionată.", "Deviation status: Tense."],
-    ["Status deviație: Extremă.", "Deviation status: Extreme."],
-    ["Prag energetic BTC", "BTC energy threshold"],
+    ["Prag energetic BTC", "BTC ENERGY THRESHOLD"],
     ["Cost energetic estimat de producție", "Estimated energy cost of production"],
     ["estimare", "estimate"],
     ["Miner eficient", "Efficient miner"],
@@ -32,57 +30,43 @@
     ["Fereastră risc", "Risk window"],
     ["Fear & Greed / Regim", "Fear & Greed / Regime"],
     ["Ce urmărim", "What to watch"],
-    ["Interpretare structurală experimentală, nu recomandare financiară.", "Experimental structural interpretation, not financial advice."],
     ["Vezi interpretarea completă", "View full interpretation"],
     ["Ascunde interpretarea completă", "Hide full interpretation"],
     ["ISTORIC SEMNALE", "SIGNAL HISTORY"],
     ["Preț model la snapshot", "Model price at snapshot"],
-    ["COEZIUNE_PARTICIPATIVA", "PARTICIPATION_COHESION"],
-    ["FEREASTRA_DE_RISC", "RISK_WINDOW"],
+    ["COEZIUNE PARTICIPATIVĂ", "PARTICIPATION COHESION"],
+    ["Starea interesului participanților în ecosistem.", "State of participant interest across the ecosystem."],
+    ["FEREASTRA DE RISC", "RISK WINDOW"],
     ["Nu este o recomandare de tranzacționare.", "This is not a trading recommendation."],
     ["Nu este o recomandare financiară.", "This is not financial advice."]
   ]);
 
-  const REGEX_RULES = [
+  const COMPLETE_EN_RULES = [
     [/Prețul live este egal cu prețul analizat de mecanism\./g, "The live price is equal to the price analyzed by the mechanism."],
     [/Preț live încărcat\. Așteptăm un snapshot de preț valid din mecanism\./g, "Live price loaded. Waiting for a valid price snapshot from the mechanism."],
     [/Nu am putut încărca snapshotul de preț\. Așteptăm ca mecanismul să revină\./g, "Could not load the price snapshot. Waiting for the mechanism to recover."],
-    [/Nu am reușit să obținem mesajul coeziv\./g, "Could not retrieve the cohesive message."],
-    [/Diferență foarte mică \(zgomot normal de piață\)\./g, "Very small difference (normal market noise)."],
-    [/Mișcare mică; semnalul mecanismului rămâne reperul principal\./g, "Small move; the mechanism signal remains the main reference."],
-    [/Mișcare relevantă; poți ajusta timing-ul intrării sau ieșirii\./g, "Relevant move; entry or exit timing may be adjusted."],
-    [/Mișcare puternică; verifică contextul și lichiditatea\./g, "Strong move; check context and liquidity."],
+    [/Diferență foarte mică \(zgomot normal de piață\)\./g, "Very small difference, normal market noise."],
+    [/Mișcare mică; semnalul mecanismului rămâne reperul principal\./g, "Small movement; the mechanism signal remains the main reference."],
+    [/Mișcare relevantă; poți ajusta timing-ul intrării sau ieșirii\./g, "Relevant movement; entry or exit timing can be adjusted."],
+    [/Mișcare puternică; verifică contextul și lichiditatea\./g, "Strong movement; check context and liquidity."],
     [/Prețul live este ([+−\-]?[0-9.,]+)% \(([+−\-]?[0-9.,]+) USD\) peste prețul mecanismului\./g, "The live price is $1% ($2 USD) above the mechanism price."],
     [/Prețul live este ([+−\-]?[0-9.,]+)% \(([+−\-]?[0-9.,]+) USD\) sub prețul mecanismului\./g, "The live price is $1% ($2 USD) below the mechanism price."],
-    [/Status deviație: Normală \(fără abatere față de model\)\./g, "Deviation status: Normal (no deviation from the model)."],
-    [/Status deviație: n\/a \(nu avem date suficiente de la mecanism\)\./g, "Deviation status: n/a (not enough mechanism data)."],
-    [/Probabilitate istorică:/g, "Historical probability:"],
-    [/Distribuție istorică:/g, "Historical distribution:"],
-    [/Interval tipic de mișcare:/g, "Typical movement range:"],
-    [/Flux de piață:/g, "Market flow:"],
-    [/Lichiditate piață:/g, "Market liquidity:"],
-    [/Context neutru/g, "Neutral context"],
-    [/Presiune de creștere/g, "Upward pressure"],
-    [/Risc de scădere/g, "Downside risk"],
-    [/neutru/g, "neutral"],
-    [/scădere/g, "decline"],
-    [/creștere/g, "growth"],
-    [/ridicată/g, "high"],
-    [/scăzută/g, "low"],
-    [/normală/g, "normal"],
-    [/moderată/g, "moderate"],
-    [/puternică/g, "strong"],
-    [/slab/g, "weak"],
-    [/participare tensionată/g, "tense participation"],
-    [/participare coezivă/g, "cohesive participation"],
-    [/Regim neutru/g, "Neutral regime"],
-    [/tranziție/g, "transition"],
-    [/deviație normală față de model/g, "normal deviation from the model"],
-    [/flux tensionat/g, "tense flow"]
+    [/Status deviație: Normală \(fără abatere față de model\)\./g, "Deviation status: Normal, with no meaningful deviation from the model."],
+    [/Status deviație: Controlată\./g, "Deviation status: Controlled."],
+    [/Status deviație: Tensionată\./g, "Deviation status: Tense."],
+    [/Status deviație: Extremă\./g, "Deviation status: Extreme."]
   ];
 
-  function getLang() {
-    return localStorage.getItem(LANG_KEY) || window.COEZIV_DEFAULT_LANG || "ro";
+  function getLang() { return localStorage.getItem(LANG_KEY) || window.COEZIV_DEFAULT_LANG || "ro"; }
+
+  function getScale() {
+    const raw = parseFloat(localStorage.getItem(SCALE_KEY) || "1");
+    return SCALE_STEPS.includes(raw) ? raw : 1;
+  }
+
+  function setText(id, value) {
+    const el = document.getElementById(id);
+    if (el && typeof value === "string") el.textContent = value;
   }
 
   function setLang(lang) {
@@ -90,15 +74,7 @@
     localStorage.setItem(LANG_KEY, next);
     document.documentElement.setAttribute("lang", next);
     if (document.body) document.body.setAttribute("data-lang", next);
-    applyTranslation();
-    updateButtonState();
-    refreshCompactLabel();
-    refreshRegimeChipFromState();
-  }
-
-  function getScale() {
-    const raw = parseFloat(localStorage.getItem(SCALE_KEY) || "1");
-    return SCALE_STEPS.includes(raw) ? raw : 1;
+    applyAll();
   }
 
   function setScale(scale) {
@@ -108,14 +84,12 @@
     applyScale();
     updateScaleButtons();
     refreshCompactLabel();
-    refreshRegimeChipFromState();
   }
 
   function bumpScale(direction) {
     const current = getScale();
     const index = Math.max(0, SCALE_STEPS.indexOf(current));
-    const nextIndex = Math.min(SCALE_STEPS.length - 1, Math.max(0, index + direction));
-    setScale(SCALE_STEPS[nextIndex]);
+    setScale(SCALE_STEPS[Math.min(SCALE_STEPS.length - 1, Math.max(0, index + direction))]);
   }
 
   function applyScale() {
@@ -128,10 +102,11 @@
 
   function translateText(value) {
     if (!value || typeof value !== "string") return value;
+    if (getLang() !== "en") return value;
     const trimmed = value.trim();
-    if (PHRASE_MAP.has(trimmed)) return value.replace(trimmed, PHRASE_MAP.get(trimmed));
+    if (STATIC_EN.has(trimmed)) return value.replace(trimmed, STATIC_EN.get(trimmed));
     let out = value;
-    for (const [pattern, replacement] of REGEX_RULES) out = out.replace(pattern, replacement);
+    for (const [pattern, replacement] of COMPLETE_EN_RULES) out = out.replace(pattern, replacement);
     return out;
   }
 
@@ -148,8 +123,8 @@
         const parent = node.parentElement;
         if (!parent) return NodeFilter.FILTER_REJECT;
         if (parent.closest && parent.closest("#coeziv-accessibility-panel")) return NodeFilter.FILTER_REJECT;
-        const tag = parent.tagName;
-        if (["SCRIPT", "STYLE", "NOSCRIPT"].includes(tag)) return NodeFilter.FILTER_REJECT;
+        if (parent.closest && parent.closest("#daily-ai-card")) return NodeFilter.FILTER_REJECT;
+        if (["SCRIPT", "STYLE", "NOSCRIPT"].includes(parent.tagName)) return NodeFilter.FILTER_REJECT;
         if (!node.nodeValue || !node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
         return NodeFilter.FILTER_ACCEPT;
       }
@@ -159,7 +134,8 @@
     nodes.forEach(translateNode);
   }
 
-  function translateAttributes() {
+  function applyStaticTranslation() {
+    walk(document.body);
     document.querySelectorAll("[title], [aria-label]").forEach((el) => {
       if (el.closest && el.closest("#coeziv-accessibility-panel")) return;
       ["title", "aria-label"].forEach((attr) => {
@@ -172,12 +148,8 @@
     });
   }
 
-  function applyTranslation() {
-    if (!document.body) return;
-    walk(document.body);
-    translateAttributes();
-    refreshRegimeChipFromState();
-  }
+  function fmtUsd(v) { return Number.isFinite(Number(v)) ? USD.format(Number(v)) : "n/a"; }
+  function pct(v, decimals = 1) { return Number.isFinite(Number(v)) ? (Number(v) * 100).toFixed(decimals) : "n/a"; }
 
   function regimeCompactLabel(fullText, code) {
     const t = `${fullText || ""} ${code || ""}`.toLowerCase();
@@ -192,26 +164,120 @@
     return "REGIM";
   }
 
-  async function refreshRegimeChipFromState() {
-    const el = document.getElementById("regime-line");
-    if (!el) return;
+  function flowRo(bias, strength) {
+    let text = "Flux de piață: n/a (așteptăm date despre flux).";
+    if (bias === "pozitiv") text = "Flux de piață: orientat spre cumpărare";
+    else if (bias === "negativ") text = "Flux de piață: orientat spre vânzare";
+    else if (bias === "neutru") text = "Flux de piață: relativ echilibrat între cumpărători și vânzători";
+    if (bias && strength) text += ` (${strength}).`; else if (bias) text += ".";
+    return text;
+  }
+
+  function flowEn(bias, strength) {
+    const s = strength === "slab" ? "weak" : strength === "puternică" || strength === "puternic" ? "strong" : strength || "";
+    if (bias === "pozitiv") return `Market flow: tilted toward buying${s ? ` (${s})` : ""}.`;
+    if (bias === "negativ") return `Market flow: tilted toward selling${s ? ` (${s})` : ""}.`;
+    if (bias === "neutru") return `Market flow: relatively balanced between buyers and sellers${s ? ` (${s})` : ""}.`;
+    return "Market flow: not available yet.";
+  }
+
+  function liquidityRo(regime, strength) {
+    const r = String(regime || "").trim().toLowerCase();
+    let text = "Lichiditate piață: n/a (așteptăm date suplimentare)";
+    if (r === "ridicată") text = "Lichiditate piață: ridicată; mișcări peste nivelurile obișnuite.";
+    else if (r === "scăzută") text = "Lichiditate piață: scăzută; mișcări sub nivelurile obișnuite.";
+    else if (r === "normală" || r === "moderată") text = "Lichiditate piață: moderată pentru acest context.";
+    if (regime && strength && r !== "normală" && r !== "moderată") text += ` (deviație ${strength} față de nivelurile obișnuite.)`;
+    return text;
+  }
+
+  function liquidityEn(regime, strength) {
+    const r = String(regime || "").trim().toLowerCase();
+    const s = strength === "puternică" || strength === "puternic" ? "strong" : strength === "slab" ? "weak" : strength || "";
+    if (r === "ridicată") return `Market liquidity: high; movement is above usual levels${s ? `, with a ${s} deviation from normal activity` : ""}.`;
+    if (r === "scăzută") return `Market liquidity: low; movement is below usual levels${s ? `, with a ${s} deviation from normal activity` : ""}.`;
+    if (r === "normală" || r === "moderată") return "Market liquidity: moderate for this context.";
+    return "Market liquidity: not available yet.";
+  }
+
+  async function fetchJson(url) {
+    const res = await fetch(`${url}?t=${Date.now()}`, { cache: "no-store" });
+    if (!res.ok) throw new Error(url);
+    return await res.json();
+  }
+
+  async function renderStateLanguage() {
     try {
-      const res = await fetch(`coeziv_state.json?t=${Date.now()}`, { cache: "no-store" });
-      if (!res.ok) return;
-      const state = await res.json();
-      const regime = state && state.market_regime;
-      let label = "n/a";
-      let code = "";
-      if (typeof regime === "string") label = regime;
-      else if (regime && typeof regime === "object") {
-        label = regime.label || label;
-        code = regime.code || "";
+      const state = await fetchJson("coeziv_state.json");
+      const en = getLang() === "en";
+      const price = state.price_usd;
+      const model = state.model_price_usd;
+      const signal = String(state.signal || "flat").toLowerCase();
+      const prob = state.signal_probability;
+      const samples = state.signal_prob_samples || 0;
+      const horizon = state.signal_prob_horizon_hours || 24;
+      const drift = state.signal_expected_drift || {};
+      const bd = state.signal_prob_breakdown || {};
+      const costs = state.production_costs_usd || {};
+      const avgCost = costs.average;
+      const deviation = state.deviation_from_production;
+      const fg = state.fg || {};
+
+      const signalLabel = en
+        ? signal === "long" ? "Context: upward pressure" : signal === "short" ? "Context: downside risk" : "Context: neutral"
+        : signal === "long" ? "Context: presiune de creștere" : signal === "short" ? "Context: risc de scădere" : "Context: neutru";
+      setText("signal-label", signalLabel);
+
+      const regime = state.market_regime;
+      let regimeLabel = "n/a", regimeCode = "";
+      if (typeof regime === "string") regimeLabel = regime;
+      else if (regime && typeof regime === "object") { regimeLabel = regime.label || regimeLabel; regimeCode = regime.code || ""; }
+      const fullRegime = en ? `Market regime: ${regimeLabel}.` : `Regim de piață: ${regimeLabel}.`;
+      const regimeEl = document.getElementById("regime-line");
+      if (regimeEl) {
+        regimeEl.setAttribute("data-full-regime", fullRegime);
+        regimeEl.setAttribute("title", fullRegime);
+        regimeEl.textContent = regimeCompactLabel(fullRegime, regimeCode);
       }
-      const full = `Regim de piață: ${label}.`;
-      const compact = regimeCompactLabel(full, code);
-      el.setAttribute("data-full-regime", full);
-      el.setAttribute("title", full);
-      el.textContent = compact;
+
+      if (en) {
+        setText("message", `At the mechanism update, BTC was trading around ${fmtUsd(price)} USD. The mechanism reads the current context as neutral. Market flow is relatively balanced and weak. Liquidity is high, so price movement is more easily absorbed. Price remains close to the network’s estimated production-cost equilibrium. In similar historical contexts, the next ~24 hours typically ranged from about ${pct(drift.p10)}% in weaker scenarios to ${pct(drift.p90)}% in stronger scenarios, with a median near ${pct(drift.p50)}%. This is a structural risk interpretation, not financial advice.`);
+        setText("signal-prob", `Historical probability: about ${pct(prob, 0)}% for price to move with the mechanism’s signal over the next ${horizon}h, based on ${samples} similar historical contexts.`);
+        setText("signal-prob-breakdown", `Historical distribution over ${horizon}h: about ${pct(bd.in_direction, 0)}% with the signal, ${pct(bd.opposite, 0)}% against it, and ${pct(bd.flat, 0)}% neutral movement or noise.`);
+        setText("drift-range", `Typical movement range (${horizon}h): between ~${pct(drift.p10)}% and ~${pct(drift.p90)}%, with a median near ~${pct(drift.p50)}%, based on similar historical contexts.`);
+        setText("flow-line", flowEn(state.flow_bias, state.flow_strength));
+        setText("liquidity-line", liquidityEn(state.liquidity_regime, state.liquidity_strength));
+      } else {
+        setText("message", state.message || "Nu există mesaj coeziv pentru acest moment.");
+        setText("signal-prob", `Probabilitate istorică: ~${pct(prob, 0)}% ca prețul să se miște în direcția semnalului în următoarele ${horizon}h (bazat pe ${samples} situații similare).`);
+        setText("signal-prob-breakdown", `Distribuție istorică (în ${horizon}h): ~${pct(bd.in_direction, 0)}% în direcția semnalului, ~${pct(bd.opposite, 0)}% contra semnalului și ~${pct(bd.flat, 0)}% mișcare neutră / zgomot.`);
+        setText("drift-range", `Interval tipic de mișcare (${horizon}h): între ~${pct(drift.p10)}% și ~${pct(drift.p90)}% (mediană ~${pct(drift.p50)}%), bazat pe contexte similare din istoric.`);
+        setText("flow-line", flowRo(state.flow_bias, state.flow_strength));
+        setText("liquidity-line", liquidityRo(state.liquidity_regime, state.liquidity_strength));
+      }
+    } catch (e) {}
+  }
+
+  async function renderDailyLanguage() {
+    try {
+      const data = await fetchJson("daily_cohesiv_interpretation.json");
+      const en = getLang() === "en";
+      setText("daily-ai-state", en ? (data.general_state_en || data.general_state || "structural state pending") : (data.general_state || "stare în curs de interpretare"));
+      setText("daily-ai-summary", en ? (data.plain_language_en || data.summary_en || data.plain_language || data.summary || "Daily interpretation pending.") : (data.plain_language || data.summary || "Interpretarea nu este încă disponibilă."));
+      setText("daily-ai-participation", en ? (data.participation_en || data.participation || "–") : (data.participation || "–"));
+      setText("daily-ai-risk", en ? (data.risk_window_en || data.risk_window || "–") : (data.risk_window || "–"));
+      const fgRegime = en
+        ? [data.fear_greed_en || data.fear_greed, data.market_regime_en || data.market_regime].filter(Boolean).join(" • ")
+        : [data.fear_greed, data.market_regime].filter(Boolean).join(" • ");
+      setText("daily-ai-fg-regime", fgRegime || "–");
+      setText("daily-ai-watch", en ? (data.watch_next_en || data.watch_next || "–") : (data.watch_next || "–"));
+      setText("daily-ai-footer", en ? (data.disclaimer_en || "Experimental structural interpretation, not financial advice.") : (data.disclaimer || "Interpretare structurală experimentală, nu recomandare financiară."));
+
+      const panel = document.getElementById("daily-ai-full-panel");
+      const btn = document.getElementById("daily-ai-full-toggle");
+      const full = en ? (data.full_interpretation_en || data.full_interpretation || "") : (data.full_interpretation || "");
+      if (panel && full) panel.textContent = full.replace(/^##\s+/gm, "").replace(/^###\s+/gm, "").replace(/\*\*(.*?)\*\*/g, "$1").trim();
+      if (btn) btn.textContent = en ? (panel && panel.classList.contains("open") ? "Hide full interpretation" : "View full interpretation") : (panel && panel.classList.contains("open") ? "Ascunde interpretarea completă" : "Vezi interpretarea completă");
     } catch (e) {}
   }
 
@@ -267,11 +333,7 @@
       </div>`;
     panel.addEventListener("click", (event) => {
       const compact = event.target.closest(".coeziv-compact-toggle");
-      if (compact) {
-        panel.classList.toggle("collapsed");
-        if (!panel.classList.contains("collapsed")) scheduleCollapse();
-        return;
-      }
+      if (compact) { panel.classList.toggle("collapsed"); if (!panel.classList.contains("collapsed")) scheduleCollapse(); return; }
       const langBtn = event.target.closest("button[data-lang]");
       if (langBtn) { setLang(langBtn.dataset.lang); scheduleCollapse(); return; }
       const scaleBtn = event.target.closest("button[data-scale-action]");
@@ -291,25 +353,34 @@
   function updateScaleButtons() {
     const scale = getScale();
     document.querySelectorAll("#coeziv-accessibility-panel button[data-scale-action]").forEach((btn) => btn.classList.remove("active"));
-    if (scale > 1) {
-      const up = document.querySelector("#coeziv-accessibility-panel button[data-scale-action='up']");
-      if (up) up.classList.add("active");
-    }
+    const up = document.querySelector("#coeziv-accessibility-panel button[data-scale-action='up']");
+    if (up && scale > 1) up.classList.add("active");
+  }
+
+  function scheduleRefresh() {
+    clearTimeout(refreshTimer);
+    refreshTimer = setTimeout(applyAll, 120);
   }
 
   function observeChanges() {
     const observer = new MutationObserver((mutations) => {
-      let shouldTranslate = false;
-      let shouldRefreshRegime = false;
       for (const mutation of mutations) {
         if (mutation.target && mutation.target.closest && mutation.target.closest("#coeziv-accessibility-panel")) continue;
-        if (mutation.target && mutation.target.id === "regime-line") shouldRefreshRegime = true;
-        if (mutation.type === "childList" || mutation.type === "characterData") { shouldTranslate = true; }
+        scheduleRefresh();
+        break;
       }
-      if (shouldTranslate && getLang() === "en") requestAnimationFrame(applyTranslation);
-      if (shouldRefreshRegime) requestAnimationFrame(refreshRegimeChipFromState);
     });
     observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+  }
+
+  function applyAll() {
+    if (!document.body) return;
+    applyStaticTranslation();
+    renderStateLanguage();
+    renderDailyLanguage();
+    updateButtonState();
+    updateScaleButtons();
+    refreshCompactLabel();
   }
 
   function boot() {
@@ -318,12 +389,11 @@
     applyScale();
     setLang(getLang());
     observeChanges();
-    refreshRegimeChipFromState();
-    setInterval(refreshRegimeChipFromState, 5000);
+    setInterval(applyAll, 5000);
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
   else boot();
 
-  window.CoezivI18n = { setLang, getLang, setScale, getScale, applyScale, applyTranslation, translateText, refreshRegimeChipFromState };
+  window.CoezivI18n = { setLang, getLang, setScale, getScale, applyScale, applyAll, translateText };
 })();
