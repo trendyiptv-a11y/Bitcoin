@@ -1,14 +1,6 @@
 /*
-  Mecanism Coeziv BTC — language + accessibility module
+  CohesivX BTC — compact language + accessibility module
   Author: Sergiu Bulboacă / Coeziv 3.14 project
-
-  Purpose:
-  - Adds RO/EN language switching without changing the data model.
-  - Adds A-/A+ screen/text scaling for browser and Android WebView APK.
-  - Keeps JSON values, prices, timestamps, scores and calculations unchanged.
-
-  Usage inside mecanism.html:
-    <script src="./i18n-en.js" defer></script>
 */
 (function () {
   "use strict";
@@ -16,27 +8,19 @@
   const LANG_KEY = "coeziv_btc_lang";
   const SCALE_KEY = "coeziv_btc_scale";
   const SCALE_STEPS = [1, 1.15, 1.30];
+  let collapseTimer = null;
 
   const PHRASE_MAP = new Map([
     ["MECANISM COEZIV BTC", "COHESIVE BTC MECHANISM"],
-    ["Schimba tema aplicatiei", "Change app theme"],
     ["Actualizat aproximativ la 24h.", "Mechanism snapshot: updated approximately every 24h."],
     ["Context: neutru", "Context: neutral"],
     ["Context: presiune de creștere", "Context: upward pressure"],
     ["Context: risc de scădere", "Context: downside risk"],
-    ["Regim de piață: n/a (așteptăm date suficiente din mecanism).", "Market regime: n/a (waiting for enough mechanism data)."],
     ["Preț live:", "Live price:"],
-    ["Se compară prețul live cu prețul analizat de mecanism.", "Live price is compared with the mechanism snapshot price."],
-    ["Status deviație: n/a (așteptăm un snapshot al modelului).", "Deviation status: n/a (waiting for a valid mechanism snapshot)."],
     ["Status deviație: Normală.", "Deviation status: Normal."],
     ["Status deviație: Controlată.", "Deviation status: Controlled."],
     ["Status deviație: Tensionată.", "Deviation status: Tense."],
     ["Status deviație: Extremă.", "Deviation status: Extreme."],
-    ["Probabilitate istorică: n/a (așteptăm date suficiente din mecanism).", "Historical probability: n/a (waiting for enough mechanism data)."],
-    ["Distribuție istorică: n/a (mecanismul nu are încă o descompunere robustă a probabilității).", "Historical distribution: n/a (the mechanism does not yet have a robust probability breakdown)."],
-    ["Interval tipic de mișcare: n/a (așteptăm statistici suficiente din mecanism).", "Typical movement range: n/a (waiting for enough statistics from the mechanism)."],
-    ["Flux de piață: n/a (așteptăm date despre flux).", "Market flow: n/a (waiting for flow data)."],
-    ["Lichiditate piață: n/a (așteptăm date despre lichiditate).", "Market liquidity: n/a (waiting for liquidity data)."],
     ["Prag energetic BTC", "BTC energy threshold"],
     ["Cost energetic estimat de producție", "Estimated energy cost of production"],
     ["estimare", "estimate"],
@@ -50,8 +34,6 @@
     ["Generat: n/a", "Generated: n/a"],
     ["INTERPRETARE COEZIVĂ ZILNICĂ", "DAILY COHESIVE INTERPRETATION"],
     ["Explicație naturală a stării structurale observate de mecanism.", "Natural-language explanation of the structural state observed by the mechanism."],
-    ["Se încarcă...", "Loading..."],
-    ["Interpretarea zilnică va apărea după prima analiză aprobată.", "The daily interpretation will appear after the first approved analysis."],
     ["Participare", "Participation"],
     ["Fereastră risc", "Risk window"],
     ["Fear & Greed / Regim", "Fear & Greed / Regime"],
@@ -60,7 +42,6 @@
     ["Vezi interpretarea completă", "View full interpretation"],
     ["Ascunde interpretarea completă", "Hide full interpretation"],
     ["ISTORIC SEMNALE", "SIGNAL HISTORY"],
-    ["Istoricul nu este disponibil încă. Va apărea după următorul update al mecanismului.", "History is not available yet. It will appear after the next mechanism update."],
     ["Preț model la snapshot", "Model price at snapshot"],
     ["COEZIUNE_PARTICIPATIVA", "PARTICIPATION_COHESION"],
     ["FEREASTRA_DE_RISC", "RISK_WINDOW"],
@@ -120,6 +101,7 @@
     document.body.setAttribute("data-lang", next);
     applyTranslation();
     updateButtonState();
+    refreshCompactLabel();
   }
 
   function getScale() {
@@ -133,6 +115,7 @@
     localStorage.setItem(SCALE_KEY, String(next));
     applyScale();
     updateScaleButtons();
+    refreshCompactLabel();
   }
 
   function bumpScale(direction) {
@@ -210,7 +193,7 @@
     style.textContent = `
       #coeziv-accessibility-panel {
         position: fixed;
-        right: 12px;
+        right: 10px;
         bottom: 14px;
         z-index: 2147483647;
         display: flex;
@@ -218,17 +201,44 @@
         gap: 6px;
         padding: 6px;
         border-radius: 999px;
-        border: 1px solid rgba(148,163,184,.35);
-        background: rgba(15,23,42,.92);
+        border: 1px solid rgba(56,189,248,.42);
+        background: linear-gradient(135deg, rgba(15,23,42,.94), rgba(12,74,110,.90));
         color: #e5e7eb;
-        box-shadow: 0 14px 42px rgba(0,0,0,.38);
+        box-shadow: 0 14px 42px rgba(0,0,0,.38), 0 0 0 1px rgba(125,211,252,.12), 0 0 22px rgba(56,189,248,.18);
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
         font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
         font-size: 11px;
         line-height: 1;
+        transition: opacity .18s ease, transform .18s ease, box-shadow .18s ease;
       }
-      #coeziv-accessibility-panel button {
+      #coeziv-accessibility-panel.collapsed {
+        padding: 5px 8px;
+        box-shadow: 0 10px 30px rgba(0,0,0,.36), 0 0 24px rgba(56,189,248,.26);
+      }
+      #coeziv-accessibility-panel .coeziv-compact-toggle {
+        border: 0;
+        border-radius: 999px;
+        background: rgba(56,189,248,.18);
+        color: #bae6fd;
+        min-width: 96px;
+        height: 30px;
+        padding: 0 10px;
+        cursor: pointer;
+        font-size: 11px;
+        font-weight: 900;
+        letter-spacing: .03em;
+        line-height: 30px;
+        text-align: center;
+        white-space: nowrap;
+      }
+      #coeziv-accessibility-panel .coeziv-panel-controls {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+      }
+      #coeziv-accessibility-panel.collapsed .coeziv-panel-controls { display: none; }
+      #coeziv-accessibility-panel button:not(.coeziv-compact-toggle) {
         border: 0;
         border-radius: 999px;
         background: transparent;
@@ -243,7 +253,7 @@
         text-align: center;
       }
       #coeziv-accessibility-panel button.active {
-        background: rgba(56,189,248,.22);
+        background: rgba(56,189,248,.25);
         color: #7dd3fc;
       }
       #coeziv-accessibility-panel .sep {
@@ -252,17 +262,24 @@
         background: rgba(148,163,184,.28);
       }
       body.light-mode #coeziv-accessibility-panel {
-        background: rgba(255,255,255,.92);
+        background: linear-gradient(135deg, rgba(255,255,255,.96), rgba(224,242,254,.92));
         color: #0f172a;
       }
       @media (max-width: 420px) {
         #coeziv-accessibility-panel {
           right: 8px;
           bottom: 10px;
-          gap: 3px;
+          gap: 4px;
           padding: 5px;
         }
-        #coeziv-accessibility-panel button {
+        #coeziv-accessibility-panel .coeziv-compact-toggle {
+          min-width: 88px;
+          height: 28px;
+          padding: 0 8px;
+          font-size: 10px;
+          line-height: 28px;
+        }
+        #coeziv-accessibility-panel button:not(.coeziv-compact-toggle) {
           min-width: 30px;
           height: 28px;
           padding: 0 7px;
@@ -274,32 +291,62 @@
     document.head.appendChild(style);
   }
 
+  function scheduleCollapse() {
+    clearTimeout(collapseTimer);
+    collapseTimer = setTimeout(() => {
+      const panel = document.getElementById("coeziv-accessibility-panel");
+      if (panel) panel.classList.add("collapsed");
+    }, 3500);
+  }
+
+  function refreshCompactLabel() {
+    const btn = document.querySelector("#coeziv-accessibility-panel .coeziv-compact-toggle");
+    if (!btn) return;
+    const lang = getLang().toUpperCase();
+    const scale = getScale();
+    const scaleLabel = scale === 1 ? "A+" : scale === 1.15 ? "A×1.15" : "A×1.30";
+    btn.textContent = `${lang}/EN · ${scaleLabel}`;
+  }
+
   function injectPanel() {
     if (document.getElementById("coeziv-accessibility-panel")) return;
     const panel = document.createElement("div");
     panel.id = "coeziv-accessibility-panel";
+    panel.className = "collapsed";
     panel.setAttribute("aria-label", "Language and text size controls");
     panel.innerHTML = `
-      <button type="button" data-lang="ro" title="Română">RO</button>
-      <button type="button" data-lang="en" title="English">EN</button>
-      <span class="sep" aria-hidden="true"></span>
-      <button type="button" data-scale-action="down" title="Micșorează textul">A−</button>
-      <button type="button" data-scale-action="up" title="Mărește textul">A+</button>
+      <button type="button" class="coeziv-compact-toggle" title="Language / text size">RO/EN · A+</button>
+      <div class="coeziv-panel-controls">
+        <button type="button" data-lang="ro" title="Română">RO</button>
+        <button type="button" data-lang="en" title="English">EN</button>
+        <span class="sep" aria-hidden="true"></span>
+        <button type="button" data-scale-action="down" title="Micșorează textul">A−</button>
+        <button type="button" data-scale-action="up" title="Mărește textul">A+</button>
+      </div>
     `;
     panel.addEventListener("click", (event) => {
+      const compact = event.target.closest(".coeziv-compact-toggle");
+      if (compact) {
+        panel.classList.toggle("collapsed");
+        if (!panel.classList.contains("collapsed")) scheduleCollapse();
+        return;
+      }
       const langBtn = event.target.closest("button[data-lang]");
       if (langBtn) {
         setLang(langBtn.dataset.lang);
+        scheduleCollapse();
         return;
       }
       const scaleBtn = event.target.closest("button[data-scale-action]");
       if (scaleBtn) {
         bumpScale(scaleBtn.dataset.scaleAction === "up" ? 1 : -1);
+        scheduleCollapse();
       }
     });
     document.body.appendChild(panel);
     updateButtonState();
     updateScaleButtons();
+    refreshCompactLabel();
   }
 
   function updateButtonState() {
@@ -311,9 +358,7 @@
 
   function updateScaleButtons() {
     const scale = getScale();
-    document.querySelectorAll("#coeziv-accessibility-panel button[data-scale-action]").forEach((btn) => {
-      btn.classList.remove("active");
-    });
+    document.querySelectorAll("#coeziv-accessibility-panel button[data-scale-action]").forEach((btn) => btn.classList.remove("active"));
     if (scale > 1) {
       const up = document.querySelector("#coeziv-accessibility-panel button[data-scale-action='up']");
       if (up) up.classList.add("active");
@@ -343,11 +388,8 @@
     observeChanges();
   }
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", boot);
-  } else {
-    boot();
-  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
+  else boot();
 
   window.CoezivI18n = {
     setLang,
