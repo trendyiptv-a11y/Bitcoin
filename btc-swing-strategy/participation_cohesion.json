@@ -1,41 +1,41 @@
 {
   "title": "COEZIUNE_PARTICIPATIVA",
-  "score": 50.13,
+  "score": 52.46,
   "label": "participare tensionată",
   "level": "tense",
   "signal": "flat",
   "main_text": "Participanții rămân activi, dar comportamentul este tensionat. Interesul persistă, însă fluxul dominant poate fi defensiv sau orientat spre ieșire.",
   "components": {
-    "liquidity_component": 60.83,
-    "flow_component": 44.86,
-    "production_component": 25.93,
-    "persistence_component": 60.0,
-    "probability_component": 64.86
+    "liquidity_component": 58.86,
+    "flow_component": 51.94,
+    "production_component": 27.89,
+    "persistence_component": 65.0,
+    "probability_component": 64.85
   },
   "inputs": {
-    "flow_score": -0.004284574175181755,
-    "liquidity_score": 0.012028733202727777,
-    "deviation_from_production": 0.2592571724686645,
-    "signal_probability": 0.20713495575221239,
+    "flow_score": 0.0016171413939422166,
+    "liquidity_score": 0.009843918576534895,
+    "deviation_from_production": 0.25239556651587763,
+    "signal_probability": 0.20707768869228643,
     "recent_days": 14,
-    "recent_short_days": 8,
+    "recent_short_days": 7,
     "recent_long_days": 0,
-    "recent_flat_days": 6
+    "recent_flat_days": 7
   },
   "history": {
-    "rows": 5615,
+    "rows": 5616,
     "from": "2011-02-01T00:00:00+00:00",
-    "to": "2026-06-16T00:00:00+00:00",
-    "mean_score": 74.55547462154942,
+    "to": "2026-06-17T00:00:00+00:00",
+    "mean_score": 74.55440349002849,
     "median_score": 77.22,
     "min_score": 56.04,
     "max_score": 97.21,
     "label_counts": {
       "participare coezivă": 3658,
-      "participare tensionată": 1957
+      "participare tensionată": 1958
     }
   },
   "footer": "Indicator experimental derivat din flux, lichiditate, persistență și tensiune față de model. Nu măsoară încă direct utilizarea peer-to-peer on-chain.",
-  "generated_at": "2026-06-16T05:43:32.730891+00:00",
-  "source_timestamp": "2026-06-16T00:00:00+00:00"
+  "generated_at": "2026-06-17T05:23:17.795660+00:00",
+  "source_timestamp": "2026-06-17T00:00:00+00:00"
 }
