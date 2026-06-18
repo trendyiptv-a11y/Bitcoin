@@ -26,7 +26,7 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Apply neutral structural wording
+      - name: Apply neutral structural wording and distribution note cache bust
         run: |
           python - <<'PY'
           from pathlib import Path
@@ -54,14 +54,10 @@ jobs:
                   "Nu sunt îndemnuri de intrare automată, ci context structural.",
               "These are not automatic entries, but structural context.":
                   "These are not entry prompts, but structural context.",
-
-              # Historical distribution / probability wording
               "direcția semnalului":
                   "direcția contextului structural",
               "contra semnalului":
                   "în sens opus contextului structural",
-              "ca prețul să se miște în direcția contextului structural":
-                  "ca prețul să se miște în direcția contextului structural",
               "with the mechanism’s signal":
                   "with the structural context",
               "with the mechanism's signal":
@@ -81,12 +77,17 @@ jobs:
               original = text
               for old, new in replacements.items():
                   text = text.replace(old, new)
+              if path.name == "mecanism.html":
+                  text = text.replace('./distribution-note.js?v=ff55a4f', './distribution-note.js?v=ff55a4f')
+                  text = text.replace('./distribution-note.js" defer', './distribution-note.js?v=ff55a4f" defer')
+                  if './distribution-note.js?v=ff55a4f' not in text:
+                      text = text.replace('</body>', '  <script src="./distribution-note.js?v=ff55a4f" defer></script>\n</body>')
               if text != original:
                   path.write_text(text, encoding="utf-8")
                   changed.append(str(path))
                   print(f"Updated {path}")
               else:
-                  print(f"No wording changes needed in {path}")
+                  print(f"No changes needed in {path}")
 
           forbidden = [
               "poți ajusta timing-ul intrării sau ieșirii",
@@ -112,13 +113,17 @@ jobs:
                   if phrase in text:
                       remaining.append(f"{path}: {phrase}")
 
+          html = Path("btc-swing-strategy/mecanism.html")
+          if html.exists() and './distribution-note.js?v=ff55a4f' not in html.read_text(encoding="utf-8"):
+              remaining.append("btc-swing-strategy/mecanism.html: distribution note cache-bust script missing")
+
           if remaining:
-              print("Risky wording remains:")
+              print("Audit failed:")
               for item in remaining:
                   print(" - " + item)
               sys.exit(1)
 
-          print("Copy audit passed.")
+          print("Copy audit and distribution note cache-bust passed.")
           PY
 
       - name: Commit neutral wording if changed
