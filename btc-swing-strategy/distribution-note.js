@@ -8,11 +8,8 @@ const BUTTON_ID = "dist-note-button";
 const MODAL_ID = "dist-note-modal";
 
 function lang() {
-try {
-return localStorage.getItem(LANG_KEY) === "en" ? "en" : "ro";
-} catch (_) {
-return "ro";
-}
+try { return localStorage.getItem(LANG_KEY) === "en" ? "en" : "ro"; }
+catch (_) { return "ro"; }
 }
 
 function by(id) {
@@ -76,9 +73,7 @@ s.textContent = `
     border-radius:20px;
     border:1px solid rgba(56,189,248,.26);
     background:linear-gradient(180deg,rgba(15,23,42,.97),rgba(2,6,23,.96));
-    box-shadow:
-      0 28px 90px rgba(0,0,0,.62),
-      inset 0 1px 0 rgba(255,255,255,.05);
+    box-shadow:0 28px 90px rgba(0,0,0,.62),inset 0 1px 0 rgba(255,255,255,.05);
     padding:16px;
     color:#e5e7eb;
   }
@@ -170,7 +165,6 @@ function contextDirection() {
 const flow = String(by("flow-line")?.textContent || "").toLowerCase();
 const delta = String(by("live-delta")?.textContent || "").toLowerCase();
 
-// Context structural orientat spre jos
 if (
   flow.includes("vânzare") ||
   flow.includes("selling") ||
@@ -181,7 +175,6 @@ if (
   return -1;
 }
 
-// Context structural orientat spre sus
 if (
   flow.includes("cumpărare") ||
   flow.includes("buying") ||
@@ -192,7 +185,6 @@ if (
   return 1;
 }
 
-// Fallback conservator: exemplu orientat spre jos
 return -1;
 
 }
@@ -209,10 +201,6 @@ if (!price) {
 
 const direction = contextDirection();
 
-// Exemple orientative calculate din prețul live:
-// continuare = ~2.6% în direcția contextului structural
-// reacție opusă = ~1.8% în sens opus contextului structural
-// neutru / zgomot = ±0.4%
 const continuation = price * (1 + direction * 0.026);
 const opposite = price * (1 - direction * 0.018);
 const neutralLow = price * 0.996;
@@ -244,9 +232,6 @@ for (let i = 1; i < 3; i++) {
 }
 
 const sorted = [...values].sort((a, b) => b - a);
-
-// Dacă diferența dintre primele două scenarii este sub 5 puncte procentuale,
-// citirea este echilibrată, nu dominantă.
 return Math.abs(sorted[0] - sorted[1]) < 5 ? "balanced" : labels[max];
 
 }
@@ -269,16 +254,11 @@ if (e) {
 `;
 
   const meaning = {
-    with:
-      "Reading: continuation was the most frequent historical path. The context had clearer directional follow-through, but it remains an observation, not a prompt.",
-    against:
-      "Reading: the opposite reaction was the most frequent historical path. The context is tense or unstable; similar cases reversed more often than they continued.",
-    neutral:
-      "Reading: neutral/noisy movement was the most frequent historical path. The context often absorbed the tension without a clear move.",
-    balanced:
-      "Reading: the historical paths were close to each other. The context does not show a strong directional advantage.",
-    unknown:
-      "Reading: the distribution is a structural context map, not a direct forecast. It describes what happened in similar historical cases."
+    with: "Reading: continuation was the most frequent historical path. The context had clearer directional follow-through, but it remains an observation, not a prompt.",
+    against: "Reading: the opposite reaction was the most frequent historical path. The context is tense or unstable; similar cases reversed more often than they continued.",
+    neutral: "Reading: neutral/noisy movement was the most frequent historical path. The context often absorbed the tension without a clear move.",
+    balanced: "Reading: the historical paths were close to each other. The context does not show a strong directional advantage.",
+    unknown: "Reading: the distribution is a structural context map, not a direct forecast. It describes what happened in similar historical cases."
   }[d];
 
   return base + exampleBlock() + "\n\n" + meaning;
@@ -296,16 +276,11 @@ const base = values.length >= 3
 `;
 
 const meaning = {
-  with:
-    "Citire: continuarea a fost scenariul istoric cel mai frecvent. Contextul a avut urmărire direcțională mai clară, dar rămâne observație, nu îndemn.",
-  against:
-    "Citire: reacția opusă a fost scenariul istoric cel mai frecvent. Contextul este tensionat sau instabil; cazurile similare au inversat mai des decât au continuat.",
-  neutral:
-    "Citire: mișcarea neutră/zgomotoasă a fost scenariul istoric cel mai frecvent. Contextul a absorbit des tensiunea fără mișcare clară.",
-  balanced:
-    "Citire: scenariile istorice sunt apropiate între ele. Contextul nu arată un avantaj direcțional puternic.",
-  unknown:
-    "Citire: distribuția este o hartă de context structural, nu o prognoză directă. Ea descrie ce s-a întâmplat în cazuri istorice similare."
+  with: "Citire: continuarea a fost scenariul istoric cel mai frecvent. Contextul a avut urmărire direcțională mai clară, dar rămâne observație, nu îndemn.",
+  against: "Citire: reacția opusă a fost scenariul istoric cel mai frecvent. Contextul este tensionat sau instabil; cazurile similare au inversat mai des decât au continuat.",
+  neutral: "Citire: mișcarea neutră/zgomotoasă a fost scenariul istoric cel mai frecvent. Contextul a absorbit des tensiunea fără mișcare clară.",
+  balanced: "Citire: scenariile istorice sunt apropiate între ele. Contextul nu arată un avantaj direcțional puternic.",
+  unknown: "Citire: distribuția este o hartă de context structural, nu o prognoză directă. Ea descrie ce s-a întâmplat în cazuri istorice similare."
 }[d];
 
 return base + exampleBlock() + "\n\n" + meaning;
@@ -337,13 +312,7 @@ if (!by(MODAL_ID)) {
   const modal = document.createElement("div");
   modal.id = MODAL_ID;
   modal.className = "dist-note-modal";
-  modal.innerHTML = `
-    <div class="dist-note-dialog" role="dialog" aria-modal="true">
-      <div id="dist-note-title" class="dist-note-title"></div>
-      <div id="dist-note-body" class="dist-note-body"></div>
-      <button id="dist-note-close" class="dist-note-close" type="button"></button>
-    </div>
-  `;
+  modal.innerHTML = `<div class="dist-note-dialog" role="dialog" aria-modal="true"><div id="dist-note-title" class="dist-note-title"></div><div id="dist-note-body" class="dist-note-body"></div><button id="dist-note-close" class="dist-note-close" type="button"></button></div>`;
   document.body.appendChild(modal);
 
   modal.addEventListener("click", ev => {
@@ -363,21 +332,15 @@ updateLabels();
 
 function updateLabels() {
 const l = labels();
-
 if (by(BUTTON_ID)) by(BUTTON_ID).textContent = l.button;
 if (by("dist-note-title")) by("dist-note-title").textContent = l.title;
 if (by("dist-note-close")) by("dist-note-close").textContent = l.close;
-
 }
 
 function openNote() {
 updateLabels();
-
-const body = by("dist-note-body");
-if (body) body.textContent = noteText();
-
+if (by("dist-note-body")) by("dist-note-body").textContent = noteText();
 by(MODAL_ID)?.classList.add("open");
-
 }
 
 function closeNote() {
