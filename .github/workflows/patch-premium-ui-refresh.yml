@@ -54,6 +54,22 @@ jobs:
                   "Nu sunt îndemnuri de intrare automată, ci context structural.",
               "These are not automatic entries, but structural context.":
                   "These are not entry prompts, but structural context.",
+
+              # Historical distribution / probability wording
+              "direcția semnalului":
+                  "direcția contextului structural",
+              "contra semnalului":
+                  "în sens opus contextului structural",
+              "ca prețul să se miște în direcția contextului structural":
+                  "ca prețul să se miște în direcția contextului structural",
+              "with the mechanism’s signal":
+                  "with the structural context",
+              "with the mechanism's signal":
+                  "with the structural context",
+              "with the signal":
+                  "with the structural context",
+              "against it":
+                  "against the structural context",
           }
 
           changed = []
@@ -79,6 +95,12 @@ jobs:
               "Relevant movement; check the context and timing",
               "automatic entries",
               "semnale de intrare automată",
+              "direcția semnalului",
+              "contra semnalului",
+              "with the mechanism’s signal",
+              "with the mechanism's signal",
+              "with the signal",
+              "against it",
           ]
 
           remaining = []
