@@ -9,6 +9,7 @@
   let lastState = null;
   let lastRisk = null;
   let lastLang = null;
+  let lastToneClass = null;
 
   function by(id) { return document.getElementById(id); }
   function lang() { return localStorage.getItem(LANG_KEY) === "en" ? "en" : "ro"; }
@@ -44,8 +45,8 @@
     const s = document.createElement("style");
     s.id = "coeziv-mini-radar-style";
     s.textContent = `
-      #${ID}{margin:14px auto 12px;padding:10px 10px 12px;border-radius:18px;border:1px solid rgba(109,255,176,.20);background:radial-gradient(circle at 50% -18%,rgba(109,255,176,.10),transparent 55%),linear-gradient(180deg,rgba(12,17,24,.82),rgba(12,17,24,.50));box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 14px 30px rgba(0,0,0,.24);text-align:center;overflow:hidden;position:relative}
-      #${ID} .radar-stage{position:relative;width:172px;height:172px;margin:0 auto 8px}
+      #${ID}{margin:14px auto 12px;padding:10px 10px 12px;border-radius:18px;border:1px solid rgba(109,255,176,.20);background:radial-gradient(circle at 50% -18%,rgba(109,255,176,.10),transparent 55%),linear-gradient(180deg,rgba(12,17,24,.82),rgba(12,17,24,.50));box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 14px 30px rgba(0,0,0,.24);text-align:center;overflow:hidden;position:relative;transition:border-color .25s ease,box-shadow .25s ease,transform .25s ease}
+      #${ID} .radar-stage{position:relative;width:172px;height:172px;margin:0 auto 8px;transition:transform .25s ease,filter .25s ease}
       #${ID} svg{width:100%;height:100%;display:block}
       #${ID} .radar-tick{stroke:rgba(148,163,184,.20);stroke-width:1}
       #${ID} .radar-sweep{transform-origin:86px 86px;animation:coezivRadarSpin 4.8s linear infinite}
@@ -53,19 +54,27 @@
       #${ID} .radar-pulse.p2{animation-delay:1.4s}
       #${ID} .radar-dot{transform-origin:86px 86px;animation:coezivRadarBreath 2.8s ease-in-out infinite}
       @keyframes coezivRadarSpin{to{transform:rotate(360deg)}}
+      @keyframes coezivRadarSpinFast{to{transform:rotate(360deg)}}
       @keyframes coezivRadarPulse{0%{opacity:.55;transform:scale(.45)}70%,100%{opacity:0;transform:scale(1)}}
       @keyframes coezivRadarBreath{0%,100%{r:5}50%{r:6.6}}
+      @keyframes coezivRadarAlert{0%{transform:scale(1);box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 14px 30px rgba(0,0,0,.24)}18%{transform:scale(1.018);box-shadow:0 0 0 2px rgba(255,255,255,.10),0 0 34px var(--radar-alert,rgba(255,180,84,.45)),0 18px 42px rgba(0,0,0,.30)}42%{transform:scale(1)}62%{transform:scale(1.012);box-shadow:0 0 0 1px rgba(255,255,255,.08),0 0 24px var(--radar-alert,rgba(255,180,84,.35)),0 18px 42px rgba(0,0,0,.30)}100%{transform:scale(1)}}
+      @keyframes coezivIconPop{0%{transform:scale(1)}20%{transform:scale(1.22)}45%{transform:scale(.96)}70%{transform:scale(1.08)}100%{transform:scale(1)}}
+      #${ID}.state-changed{animation:coezivRadarAlert 2.6s ease-out 1}
+      #${ID}.state-changed .radar-stage{filter:drop-shadow(0 0 20px var(--radar-alert,rgba(255,180,84,.45)))}
+      #${ID}.state-changed .radar-sweep{animation:coezivRadarSpinFast .72s linear infinite}
+      #${ID}.state-changed .radar-pulse{animation-duration:1.15s;opacity:.8}
+      #${ID}.state-changed .radar-icon{animation:coezivIconPop 1.1s ease-out 1}
       #${ID} .radar-read{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none}
-      #${ID} .radar-icon{font-size:27px;line-height:1;filter:drop-shadow(0 0 14px currentColor)}
+      #${ID} .radar-icon{font-size:27px;line-height:1;filter:drop-shadow(0 0 14px currentColor);transform-origin:center;display:inline-block}
       #${ID} .radar-title{font-size:13px;font-weight:850;color:#e5e7eb;line-height:1.12;margin-top:5px}
       #${ID} .radar-price{font-size:10.5px;color:#94a3b8;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;margin-top:5px}
       #${ID} .radar-badges{display:flex;justify-content:center;flex-wrap:wrap;gap:7px;margin-top:2px}
       #${ID} .radar-badge{border-radius:11px;padding:6px 9px;font-size:10.5px;font-weight:850;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;border:1px solid rgba(148,163,184,.22);background:rgba(2,6,23,.36);color:#cbd5e1;white-space:nowrap}
       #${ID} .radar-badge.day{border-color:rgba(255,180,84,.36);color:#ffd29c}
       #${ID} .radar-badge.threshold{border-color:rgba(255,93,108,.38);color:#ffb2ba}
-      #${ID}.tone-green{border-color:rgba(109,255,176,.24)}
-      #${ID}.tone-orange{border-color:rgba(255,180,84,.24)}
-      #${ID}.tone-red{border-color:rgba(255,93,108,.26)}
+      #${ID}.tone-green{border-color:rgba(109,255,176,.24);--radar-alert:rgba(109,255,176,.46)}
+      #${ID}.tone-orange{border-color:rgba(255,180,84,.24);--radar-alert:rgba(255,180,84,.46)}
+      #${ID}.tone-red{border-color:rgba(255,93,108,.26);--radar-alert:rgba(255,93,108,.50)}
       body.light-mode #${ID}{background:radial-gradient(circle at 50% -18%,rgba(14,165,233,.10),transparent 55%),linear-gradient(180deg,rgba(255,255,255,.94),rgba(248,250,252,.84));border-color:rgba(14,165,233,.25);box-shadow:0 10px 24px rgba(15,23,42,.10)}
       body.light-mode #${ID} .radar-title{color:#0f172a}
       @media(max-width:380px){#${ID} .radar-stage{width:156px;height:156px}}
@@ -136,6 +145,13 @@
     }
     return { cls: "tone-orange", icon: "🟠", title: tr("Degradare activă", "Active degradation"), color: "#ffb454" };
   }
+  function triggerStateChange(card, toneClass) {
+    if (!card || !lastToneClass || lastToneClass === toneClass) return;
+    card.classList.remove("state-changed");
+    void card.offsetWidth;
+    card.classList.add("state-changed");
+    setTimeout(() => card.classList.remove("state-changed"), 2800);
+  }
   function render(state, risk) {
     lastState = state || lastState;
     lastRisk = risk || lastRisk;
@@ -145,7 +161,9 @@
     const start = deriveStart(lastState);
     const threshold = start * (1 + Number((lastRisk && lastRisk.major_drawdown_threshold) ?? -0.2));
     const live = currentLivePrice();
+    const oldTone = lastToneClass;
     card.className = tone.cls;
+    if (oldTone && oldTone !== tone.cls) triggerStateChange(card, tone.cls);
     set("mini-radar-icon", tone.icon);
     set("mini-radar-title", tone.title);
     set("mini-radar-price", usdK(live || lastState.price_usd));
@@ -154,6 +172,7 @@
     card.querySelectorAll(".radar-pulse").forEach(el => el.setAttribute("stroke", tone.color));
     const dot = card.querySelector(".radar-dot");
     if (dot) dot.setAttribute("fill", tone.color);
+    lastToneClass = tone.cls;
     lastLang = lang();
   }
 
