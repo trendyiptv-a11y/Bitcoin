@@ -114,7 +114,7 @@ jobs:
                       remaining.append(f"{path}: {phrase}")
 
           html = Path("btc-swing-strategy/mecanism.html")
-          if html.exists() and './distribution-note.js?v=ff55a4f' not in html.read_text(encoding="utf-8"):
+          if html.exists() and './distribution-note.js?v=9a986e3' not in html.read_text(encoding="utf-8"):
               remaining.append("btc-swing-strategy/mecanism.html: distribution note cache-bust script missing")
 
           if remaining:
