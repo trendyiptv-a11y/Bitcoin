@@ -1,11 +1,17 @@
-/* CohesivX BTC — minimal animated radar insert for mecanism.html */
+/* CohesivX BTC — minimal animated radar insert for mecanism.html, RO/EN aware */
 (function () {
   "use strict";
 
   const ID = "coeziv-mini-radar";
+  const LANG_KEY = "coeziv_btc_lang";
   let refreshTimer = null;
+  let lastState = null;
+  let lastRisk = null;
+  let lastLang = null;
 
   function by(id) { return document.getElementById(id); }
+  function lang() { return localStorage.getItem(LANG_KEY) === "en" ? "en" : "ro"; }
+  function tr(ro, en) { return lang() === "en" ? en : ro; }
   function usdK(v) {
     const n = Number(v);
     if (!Number.isFinite(n)) return "—";
@@ -113,25 +119,30 @@
     const days = Number((risk && risk.consecutive_degradation_days) || 0);
     const median = Number((risk && risk.median_days_to_confirmation) || 27);
     const level = String((risk && risk.level) || "");
-    if (!active) return { cls: "tone-green", icon: "🟢", title: "Structură refăcută", color: "#6dffb0" };
-    if (days >= median || level === "high") return { cls: "tone-red", icon: "🔴", title: days >= median ? "Degradare persistentă" : "Risc structural", color: "#ff5d6c" };
-    return { cls: "tone-orange", icon: "🟠", title: "Degradare activă", color: "#ffb454" };
+    if (!active) return { cls: "tone-green", icon: "🟢", title: tr("Structură refăcută", "Structure repaired"), color: "#6dffb0" };
+    if (days >= median || level === "high") {
+      return { cls: "tone-red", icon: "🔴", title: days >= median ? tr("Degradare persistentă", "Persistent degradation") : tr("Risc structural", "Structural risk"), color: "#ff5d6c" };
+    }
+    return { cls: "tone-orange", icon: "🟠", title: tr("Degradare activă", "Active degradation"), color: "#ffb454" };
   }
   function render(state, risk) {
+    lastState = state || lastState;
+    lastRisk = risk || lastRisk;
     const card = ensureCard();
-    if (!card || !state) return;
-    const tone = toneFor(risk || {});
-    const start = deriveStart(state);
-    const threshold = start * (1 + Number((risk && risk.major_drawdown_threshold) ?? -0.2));
+    if (!card || !lastState) return;
+    const tone = toneFor(lastRisk || {});
+    const start = deriveStart(lastState);
+    const threshold = start * (1 + Number((lastRisk && lastRisk.major_drawdown_threshold) ?? -0.2));
     card.className = tone.cls;
     set("mini-radar-icon", tone.icon);
     set("mini-radar-title", tone.title);
-    set("mini-radar-price", usdK(state.price_usd));
-    set("mini-radar-day", `⏳ Ziua ${(risk && risk.consecutive_degradation_days) ?? "—"} / ~${(risk && risk.median_days_to_confirmation) ?? "—"}`);
-    set("mini-radar-threshold", `❌ Prag ${usdK(threshold)}`);
+    set("mini-radar-price", usdK(lastState.price_usd));
+    set("mini-radar-day", `⏳ ${tr("Ziua", "Day")} ${(lastRisk && lastRisk.consecutive_degradation_days) ?? "—"} / ~${(lastRisk && lastRisk.median_days_to_confirmation) ?? "—"}`);
+    set("mini-radar-threshold", `❌ ${tr("Prag", "Threshold")} ${usdK(threshold)}`);
     card.querySelectorAll(".radar-pulse").forEach(el => el.setAttribute("stroke", tone.color));
     const dot = card.querySelector(".radar-dot");
     if (dot) dot.setAttribute("fill", tone.color);
+    lastLang = lang();
   }
 
   async function load() {
@@ -141,14 +152,20 @@
       const [state, risk] = await Promise.all([json("coeziv_state.json"), json("risk_window.json")]);
       render(state, risk);
     } catch (_) {
-      set("mini-radar-title", "Radar indisponibil");
+      set("mini-radar-title", tr("Radar indisponibil", "Radar unavailable"));
     }
   }
 
   function boot() {
     load();
     clearInterval(refreshTimer);
-    refreshTimer = setInterval(load, 60 * 1000);
+    refreshTimer = setInterval(() => {
+      if (lastLang !== lang()) render(lastState, lastRisk);
+      else load();
+    }, 60 * 1000);
+    setInterval(() => {
+      if (lastLang !== lang()) render(lastState, lastRisk);
+    }, 500);
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
