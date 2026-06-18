@@ -1,15 +1,7 @@
-name: Patch Premium UI Refresh
+name: Patch BTC Copy Wording
 
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - 'patch_premium_ui_refresh.py'
-      - 'patch_compact_regime_chip.py'
-      - 'patch_premium_phase2_context.py'
-      - '.github/workflows/patch-premium-ui-refresh.yml'
-  schedule:
-    - cron: '55 6 * * *'
 
 permissions:
   contents: write
@@ -19,8 +11,8 @@ defaults:
     shell: bash
 
 jobs:
-  patch-premium-ui:
-    name: Patch mecanism with premium UI refresh
+  patch-copy-wording:
+    name: Patch BTC Monitor wording only
     runs-on: ubuntu-latest
 
     steps:
@@ -34,22 +26,87 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Apply premium UI refresh
+      - name: Apply neutral structural wording
         run: |
-          python patch_premium_ui_refresh.py
+          python - <<'PY'
+          from pathlib import Path
+          import sys
 
-      - name: Apply compact regime chip
-        run: |
-          python patch_compact_regime_chip.py
+          targets = [
+              Path("btc-swing-strategy/mecanism.html"),
+              Path("btc-swing-strategy/i18n-en.js"),
+          ]
 
-      - name: Commit premium UI refresh if changed
+          replacements = {
+              "Mișcare mică; semnalul mecanismului rămâne reperul principal.":
+                  "Mișcare mică față de mecanism; reperul structural rămâne principal.",
+              "Mișcare relevantă; poți ajusta timing-ul intrării sau ieșirii.":
+                  "Mișcare relevantă față de mecanism; urmărește contextul și nivelurile de risc.",
+              "Mișcare puternică; verifică contextul și lichiditatea înainte de decizie.":
+                  "Mișcare puternică față de mecanism; verifică contextul, lichiditatea și nivelurile de risc.",
+              "Small movement; the mechanism signal remains the main reference.":
+                  "Small movement versus the mechanism; the structural reference remains primary.",
+              "Relevant movement; check the context and timing.":
+                  "Relevant movement versus the mechanism; watch context and risk levels.",
+              "Strong movement; check context and liquidity.":
+                  "Strong movement versus the mechanism; check context, liquidity and risk levels.",
+              "Nu sunt semnale de intrare automată, ci context.":
+                  "Nu sunt îndemnuri de intrare automată, ci context structural.",
+              "These are not automatic entries, but structural context.":
+                  "These are not entry prompts, but structural context.",
+          }
+
+          changed = []
+          for path in targets:
+              if not path.exists():
+                  print(f"Missing target: {path}")
+                  continue
+              text = path.read_text(encoding="utf-8")
+              original = text
+              for old, new in replacements.items():
+                  text = text.replace(old, new)
+              if text != original:
+                  path.write_text(text, encoding="utf-8")
+                  changed.append(str(path))
+                  print(f"Updated {path}")
+              else:
+                  print(f"No wording changes needed in {path}")
+
+          forbidden = [
+              "poți ajusta timing-ul intrării sau ieșirii",
+              "timing-ul intrării",
+              "timing-ul ieșirii",
+              "Relevant movement; check the context and timing",
+              "automatic entries",
+              "semnale de intrare automată",
+          ]
+
+          remaining = []
+          for path in targets:
+              if not path.exists():
+                  continue
+              text = path.read_text(encoding="utf-8")
+              for phrase in forbidden:
+                  if phrase in text:
+                      remaining.append(f"{path}: {phrase}")
+
+          if remaining:
+              print("Risky wording remains:")
+              for item in remaining:
+                  print(" - " + item)
+              sys.exit(1)
+
+          print("Copy audit passed.")
+          PY
+
+      - name: Commit neutral wording if changed
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add btc-swing-strategy/mecanism.html
+          git add btc-swing-strategy/mecanism.html btc-swing-strategy/i18n-en.js
           if git diff --cached --quiet; then
-            echo "No mecanism.html changes to commit."
+            echo "No copy wording changes to commit."
           else
-            git commit -m "Apply premium UI refresh"
+            git commit -m "Neutralize BTC Monitor wording"
             git push
           fi
