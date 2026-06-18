@@ -2748,7 +2748,7 @@ body.light-mode .card:first-of-type {
             else qual = "slab";
 
             SIGNAL_PROB_EL.textContent =
-              `Probabilitate istorică: ~${pct}% ca prețul să se miște în direcția semnalului ` +
+              `Probabilitate istorică: ~${pct}% ca prețul să se miște în direcția contextului structural ` +
               `în următoarele ${STATE_PROB_HORIZON}h (bazat pe ${STATE_PROB_SAMPLES} situații similare, semnal ${qual}).`;
           } else if (STATE_PROB_SAMPLES > 0) {
             SIGNAL_PROB_EL.textContent =
@@ -2774,8 +2774,8 @@ body.light-mode .card:first-of-type {
             const pctFlat = (STATE_PROB_FLAT * 100).toFixed(0);
 
             SIGNAL_PROB_BREAKDOWN_EL.textContent =
-              `Distribuție istorică (în ${STATE_PROB_HORIZON}h): ~${pctIn}% în direcția semnalului, ` +
-              `~${pctOpp}% contra semnalului și ~${pctFlat}% mișcare neutră / zgomot.`;
+              `Distribuție istorică (în ${STATE_PROB_HORIZON}h): ~${pctIn}% în direcția contextului structural, ` +
+              `~${pctOpp}% în sens opus contextului structural și ~${pctFlat}% mișcare neutră / zgomot.`;
           } else if (STATE_PROB_SAMPLES > 0) {
             SIGNAL_PROB_BREAKDOWN_EL.textContent =
               "Distribuție istorică: mecanismul nu are încă o descompunere robustă pe direcție / contra / flat pentru acest context.";
