@@ -5,6 +5,7 @@
   const ID = "coeziv-mini-radar";
   const LANG_KEY = "coeziv_btc_lang";
   let refreshTimer = null;
+  let liveSyncTimer = null;
   let lastState = null;
   let lastRisk = null;
   let lastLang = null;
@@ -16,6 +17,16 @@
     const n = Number(v);
     if (!Number.isFinite(n)) return "—";
     return (n / 1000).toFixed(1).replace(".0", "") + "K USD";
+  }
+  function parseUsdText(text) {
+    const raw = String(text || "").replace(/[^0-9.,-]/g, "").replace(/,/g, "");
+    const n = Number(raw);
+    return Number.isFinite(n) && n > 0 ? n : null;
+  }
+  function currentLivePrice() {
+    const liveEl = by("live-price");
+    const live = liveEl ? parseUsdText(liveEl.textContent) : null;
+    return live || Number(lastState && lastState.price_usd) || null;
   }
   async function json(path) {
     const r = await fetch(path + "?t=" + Date.now(), { cache: "no-store" });
@@ -133,10 +144,11 @@
     const tone = toneFor(lastRisk || {});
     const start = deriveStart(lastState);
     const threshold = start * (1 + Number((lastRisk && lastRisk.major_drawdown_threshold) ?? -0.2));
+    const live = currentLivePrice();
     card.className = tone.cls;
     set("mini-radar-icon", tone.icon);
     set("mini-radar-title", tone.title);
-    set("mini-radar-price", usdK(lastState.price_usd));
+    set("mini-radar-price", usdK(live || lastState.price_usd));
     set("mini-radar-day", `⏳ ${tr("Ziua", "Day")} ${(lastRisk && lastRisk.consecutive_degradation_days) ?? "—"} / ~${(lastRisk && lastRisk.median_days_to_confirmation) ?? "—"}`);
     set("mini-radar-threshold", `❌ ${tr("Prag", "Threshold")} ${usdK(threshold)}`);
     card.querySelectorAll(".radar-pulse").forEach(el => el.setAttribute("stroke", tone.color));
@@ -159,13 +171,12 @@
   function boot() {
     load();
     clearInterval(refreshTimer);
+    clearInterval(liveSyncTimer);
     refreshTimer = setInterval(() => {
       if (lastLang !== lang()) render(lastState, lastRisk);
       else load();
     }, 60 * 1000);
-    setInterval(() => {
-      if (lastLang !== lang()) render(lastState, lastRisk);
-    }, 500);
+    liveSyncTimer = setInterval(() => render(lastState, lastRisk), 1000);
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
