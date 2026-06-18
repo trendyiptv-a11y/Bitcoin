@@ -7,514 +7,60 @@
 <style>
 @font-face{font-family:'system-mono';src:local('SF Mono'),local('Roboto Mono')}
 :root{
-  --bg:#040608;
-  --bg2:#070b10;
-  --panel:#0c1118;
-  --panel2:#10161f;
-  --line:rgba(143,168,184,.12);
-  --line-bright:rgba(143,168,184,.24);
-  --text:#e9eef2;
-  --muted:#7d8e9c;
-  --muted-dim:#566370;
-  --signal:#6dffb0;
-  --signal-dim:rgba(109,255,176,.14);
-  --warn:#ffb454;
-  --warn-dim:rgba(255,180,84,.14);
-  --danger:#ff5d6c;
-  --danger-dim:rgba(255,93,108,.14);
-  --radius:20px;
-  --mono:'SF Mono','Roboto Mono','JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;
+  --bg:#040608;--bg2:#070b10;--panel:#0c1118;--panel2:#10161f;
+  --line:rgba(143,168,184,.12);--line-bright:rgba(143,168,184,.24);
+  --text:#e9eef2;--muted:#7d8e9c;--muted-dim:#566370;
+  --signal:#6dffb0;--signal-dim:rgba(109,255,176,.14);
+  --warn:#ffb454;--warn-dim:rgba(255,180,84,.14);
+  --danger:#ff5d6c;--danger-dim:rgba(255,93,108,.14);
+  --radius:20px;--mono:'SF Mono','Roboto Mono','JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;
   --sans:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sans-serif;
 }
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html{scroll-behavior:smooth}
-body{
-  margin:0;
-  background:
-    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(109,255,176,.06), transparent 60%),
-    radial-gradient(ellipse 60% 40% at 90% 0%, rgba(255,180,84,.05), transparent 50%),
-    var(--bg);
-  color:var(--text);
-  font-family:var(--sans);
-  overflow-x:hidden;
-}
-::selection{background:rgba(109,255,176,.25)}
-
-/* ---------- Ambient radar sweep background ---------- */
-.sweep-field{
-  position:fixed;inset:0;z-index:0;pointer-events:none;
-  opacity:.5;
-}
-.sweep-field svg{width:100%;height:100%}
-
-@media (prefers-reduced-motion: reduce){
-  .sweep-arm, .pulse-ring, .core-dot{animation:none !important}
-}
-
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html{scroll-behavior:smooth}
+body{margin:0;background:radial-gradient(ellipse 80% 50% at 50% -10%,rgba(109,255,176,.06),transparent 60%),radial-gradient(ellipse 60% 40% at 90% 0%,rgba(255,180,84,.05),transparent 50%),var(--bg);color:var(--text);font-family:var(--sans);overflow-x:hidden}::selection{background:rgba(109,255,176,.25)}
+.sweep-field{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5}.sweep-field svg{width:100%;height:100%}@media(prefers-reduced-motion:reduce){.sweep-arm,.pulse-ring,.core-dot{animation:none!important}}
 .app{position:relative;z-index:1;max-width:560px;margin:0 auto;padding:0 0 56px}
-
-/* ---------- Header ---------- */
-header{
-  position:sticky;top:0;z-index:40;
-  padding:16px 18px 10px;
-  background:linear-gradient(180deg,rgba(4,6,8,.97) 60%,rgba(4,6,8,.85) 85%,transparent);
-  backdrop-filter:blur(10px);
-}
-.top{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.brand{display:flex;align-items:center;gap:10px}
-.brand-mark{width:30px;height:30px;flex:0 0 auto;position:relative}
-.brand h1{margin:0;font-size:14px;font-weight:700;letter-spacing:.02em}
-.brand .sub{display:block;color:var(--muted-dim);font-size:10.5px;font-family:var(--mono);letter-spacing:.03em;margin-top:1px}
-.livepill{
-  display:flex;align-items:center;gap:6px;
-  border:1px solid var(--line-bright);border-radius:999px;
-  padding:6px 10px 6px 8px;font-size:10.5px;font-family:var(--mono);color:var(--muted);
-  background:rgba(255,255,255,.02);
-}
-.livepill .dot{width:6px;height:6px;border-radius:50%;background:var(--signal);box-shadow:0 0 8px var(--signal)}
-
-/* ---------- Hero / Core display ---------- */
-.hero{padding:8px 18px 4px}
-.core-wrap{
-  position:relative;
-  display:flex;flex-direction:column;align-items:center;
-  padding:22px 0 6px;
-}
-.core-stage{position:relative;width:220px;height:220px;margin-bottom:2px}
-.core-stage svg{width:100%;height:100%;display:block}
-.ring-static{fill:none;stroke:var(--line);stroke-width:1}
-.ring-tick{stroke:var(--line-bright);stroke-width:1}
-.pulse-ring{
-  fill:none;stroke-width:1.4;opacity:0;
-  transform-origin:center;
-  animation:pulseOut 2.8s cubic-bezier(.2,.7,.3,1) infinite;
-}
-@keyframes pulseOut{
-  0%{opacity:.55;transform:scale(.42)}
-  70%{opacity:0;transform:scale(1)}
-  100%{opacity:0;transform:scale(1)}
-}
-.sweep-arm{
-  transform-origin:110px 110px;
-  animation:rotate 4.5s linear infinite;
-}
-@keyframes rotate{to{transform:rotate(360deg)}}
-.core-dot{transform-origin:110px 110px;animation:breathe 2.8s ease-in-out infinite}
-@keyframes breathe{0%,100%{r:5}50%{r:6.4}}
-
-.core-readout{
-  position:absolute;inset:0;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  text-align:center;pointer-events:none;
-}
-.core-icon{font-size:26px;line-height:1;margin-bottom:6px;filter:drop-shadow(0 0 12px currentColor)}
-.core-title{font-size:14.5px;font-weight:700;letter-spacing:.01em;max-width:160px;line-height:1.25}
-.core-sub{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:4px;letter-spacing:.02em}
-
-.status-row{display:flex;gap:7px;flex-wrap:wrap;justify-content:center;margin-top:16px}
-.badge{
-  display:inline-flex;align-items:center;gap:6px;
-  border-radius:10px;padding:7px 10px;
-  font-size:11px;font-weight:600;font-family:var(--mono);letter-spacing:.01em;
-  border:1px solid var(--line-bright);background:rgba(255,255,255,.02);color:var(--muted);
-}
-.badge b{font-weight:700;color:var(--text)}
-.badge.tone-green{border-color:rgba(109,255,176,.3);color:#a8ffcf}
-.badge.tone-orange{border-color:rgba(255,180,84,.3);color:#ffd29c}
-.badge.tone-red{border-color:rgba(255,93,108,.3);color:#ffb2ba}
-
-.lead{
-  margin:18px 0 0;color:#aab6c0;font-size:14.5px;line-height:1.6;text-align:center;
-  padding:0 6px;
-}
-
-.readline{
-  margin-top:14px;font-family:var(--mono);font-size:10.5px;color:var(--muted-dim);
-  text-align:center;letter-spacing:.02em;
-}
-
-/* ---------- Metric strip ---------- */
-.metrics{
-  display:grid;grid-template-columns:repeat(2,1fr);gap:9px;
-  margin:20px 18px 0;
-}
-.metric{
-  border:1px solid var(--line);background:var(--panel);
-  border-radius:14px;padding:12px 13px;position:relative;overflow:hidden;
-}
-.metric:before{
-  content:'';position:absolute;left:0;top:0;bottom:0;width:2px;
-  background:var(--m-accent,var(--line-bright));
-}
-.metric.info{--m-accent:#4fb8e0}
-.metric.warn{--m-accent:var(--warn)}
-.metric.danger{--m-accent:var(--danger)}
-.metric small{display:block;color:var(--muted);font-size:10px;font-family:var(--mono);letter-spacing:.02em;margin-bottom:6px;text-transform:uppercase}
-.metric strong{font-size:16.5px;font-family:var(--mono);font-weight:700;letter-spacing:-.01em}
-.metric.info strong{color:#bfe6f5}
-.metric.warn strong{color:#ffd29c}
-.metric.danger strong{color:#ffb2ba}
-
-/* ---------- Tabs ---------- */
-.tabs{
-  position:sticky;top:0;z-index:39;
-  display:flex;gap:2px;
-  margin:22px 14px 0;padding:4px;
-  border:1px solid var(--line);border-radius:14px;
-  background:rgba(8,11,16,.92);backdrop-filter:blur(14px);
-  overflow-x:auto;scrollbar-width:none;
-}
-.tabs::-webkit-scrollbar{display:none}
-.tab{
-  flex:1 0 auto;border:0;border-radius:11px;background:transparent;
-  color:var(--muted);padding:9px 10px;font-size:11.5px;font-weight:600;
-  font-family:var(--sans);white-space:nowrap;transition:color .2s, background .2s;
-}
-.tab.active{background:rgba(109,255,176,.1);color:#bdffdc}
-
-.section{display:none;margin:14px 18px 0;animation:fadeUp .35s ease both}
-.section.active{display:block}
-@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-
-.card{
-  border:1px solid var(--line);background:var(--panel);
-  border-radius:var(--radius);padding:17px;margin-bottom:11px;
-}
-.card h3{margin:0 0 11px;font-size:13.5px;font-weight:700;letter-spacing:.01em;display:flex;align-items:center;gap:7px}
-.card h3 .tag{font-family:var(--mono);font-size:9.5px;color:var(--muted-dim);font-weight:600;border:1px solid var(--line);border-radius:6px;padding:2px 5px}
-.card p{margin:0;color:#aebac4;line-height:1.6;font-size:13.5px}
-
-.row{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}
-.row:last-child{border-bottom:0}
-.row small{color:var(--muted);font-size:12.5px}
-.row b{text-align:right;font-family:var(--mono);font-size:13.5px;font-weight:700}
-
-.watchlist{display:grid;gap:9px;margin-top:13px}
-.watch{display:flex;gap:11px;padding:11px;border-radius:13px;background:rgba(255,255,255,.025);border:1px solid var(--line)}
-.num{
-  min-width:24px;height:24px;border-radius:7px;flex:0 0 auto;
-  display:grid;place-items:center;background:rgba(109,255,176,.12);
-  color:#9fffc8;font-weight:700;font-size:11px;font-family:var(--mono);
-}
-.watch b{font-size:13px;display:block}
-.watch span{display:block;color:var(--muted);font-size:12px;margin-top:3px;line-height:1.4}
-
-.note{color:var(--muted-dim);font-size:11.5px;line-height:1.55;margin-top:10px}
-.error{color:#ffb2ba}
-.loading{opacity:.6;font-family:var(--mono);font-size:12.5px;color:var(--muted)}
-
-/* ---------- Chart ---------- */
-.chart-wrap{border-radius:18px;border:1px solid var(--line);background:linear-gradient(180deg,rgba(109,255,176,.04),rgba(255,255,255,.01));overflow:hidden}
-.chart-wrap svg{width:100%;display:block}
-.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:12px;color:var(--muted);font-size:11.5px}
-.legend span{display:flex;align-items:center;gap:6px}
-.legend i{width:9px;height:9px;border-radius:50%;display:block}
-.dot-cyan{background:#4fb8e0}
-.dot-green{background:var(--signal)}
-.dot-red{background:var(--danger)}
-
-/* ---------- Bar ---------- */
-.bar{height:8px;border-radius:999px;background:rgba(255,255,255,.06);overflow:hidden;margin:13px 0 7px}
-.bar i{display:block;height:100%;background:linear-gradient(90deg,#4fb8e0,var(--signal));width:0%;transition:width .8s cubic-bezier(.2,.8,.3,1)}
-
-footer.foot{margin:30px 18px 0;text-align:center;color:var(--muted-dim);font-size:10.5px;font-family:var(--mono);letter-spacing:.02em}
-
-@media(max-width:380px){
-  .core-stage{width:188px;height:188px}
-  .metrics{grid-template-columns:1fr 1fr}
-}
-
-:focus-visible{outline:2px solid var(--signal);outline-offset:2px;border-radius:6px}
+header{position:sticky;top:0;z-index:40;padding:16px 18px 10px;background:linear-gradient(180deg,rgba(4,6,8,.97) 60%,rgba(4,6,8,.85) 85%,transparent);backdrop-filter:blur(10px)}.top{display:flex;align-items:center;justify-content:space-between;gap:10px}.brand{display:flex;align-items:center;gap:10px}.brand-mark{width:30px;height:30px;flex:0 0 auto;position:relative}.brand h1{margin:0;font-size:14px;font-weight:700;letter-spacing:.02em}.brand .sub{display:block;color:var(--muted-dim);font-size:10.5px;font-family:var(--mono);letter-spacing:.03em;margin-top:1px}.livepill{display:flex;align-items:center;gap:6px;border:1px solid var(--line-bright);border-radius:999px;padding:6px 10px 6px 8px;font-size:10.5px;font-family:var(--mono);color:var(--muted);background:rgba(255,255,255,.02)}.livepill .dot{width:6px;height:6px;border-radius:50%;background:var(--signal);box-shadow:0 0 8px var(--signal)}.livepill.stale .dot{background:var(--warn);box-shadow:0 0 8px var(--warn)}
+.hero{padding:8px 18px 4px}.core-wrap{position:relative;display:flex;flex-direction:column;align-items:center;padding:22px 0 6px}.core-stage{position:relative;width:220px;height:220px;margin-bottom:2px}.core-stage svg{width:100%;height:100%;display:block}.ring-static{fill:none;stroke:var(--line);stroke-width:1}.ring-tick{stroke:var(--line-bright);stroke-width:1}.pulse-ring{fill:none;stroke-width:1.4;opacity:0;transform-origin:center;animation:pulseOut 2.8s cubic-bezier(.2,.7,.3,1) infinite}@keyframes pulseOut{0%{opacity:.55;transform:scale(.42)}70%{opacity:0;transform:scale(1)}100%{opacity:0;transform:scale(1)}}.sweep-arm{transform-origin:110px 110px;animation:rotate 4.5s linear infinite}@keyframes rotate{to{transform:rotate(360deg)}}.core-dot{transform-origin:110px 110px;animation:breathe 2.8s ease-in-out infinite}@keyframes breathe{0%,100%{r:5}50%{r:6.4}}
+.core-readout{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;pointer-events:none}.core-icon{font-size:26px;line-height:1;margin-bottom:6px;filter:drop-shadow(0 0 12px currentColor)}.core-title{font-size:14.5px;font-weight:700;letter-spacing:.01em;max-width:160px;line-height:1.25}.core-sub{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:4px;letter-spacing:.02em}
+.status-row{display:flex;gap:7px;flex-wrap:wrap;justify-content:center;margin-top:16px}.badge{display:inline-flex;align-items:center;gap:6px;border-radius:10px;padding:7px 10px;font-size:11px;font-weight:600;font-family:var(--mono);letter-spacing:.01em;border:1px solid var(--line-bright);background:rgba(255,255,255,.02);color:var(--muted)}.badge b{font-weight:700;color:var(--text)}.badge.tone-green{border-color:rgba(109,255,176,.3);color:#a8ffcf}.badge.tone-orange{border-color:rgba(255,180,84,.3);color:#ffd29c}.badge.tone-red{border-color:rgba(255,93,108,.3);color:#ffb2ba}.lead{margin:18px 0 0;color:#aab6c0;font-size:14.5px;line-height:1.6;text-align:center;padding:0 6px}.readline{margin-top:14px;font-family:var(--mono);font-size:10.5px;color:var(--muted-dim);text-align:center;letter-spacing:.02em}
+.metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin:20px 18px 0}.metric{border:1px solid var(--line);background:var(--panel);border-radius:14px;padding:12px 13px;position:relative;overflow:hidden}.metric:before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--m-accent,var(--line-bright))}.metric.info{--m-accent:#4fb8e0}.metric.warn{--m-accent:var(--warn)}.metric.danger{--m-accent:var(--danger)}.metric small{display:block;color:var(--muted);font-size:10px;font-family:var(--mono);letter-spacing:.02em;margin-bottom:6px;text-transform:uppercase}.metric strong{font-size:16.5px;font-family:var(--mono);font-weight:700;letter-spacing:-.01em}.metric.info strong{color:#bfe6f5}.metric.warn strong{color:#ffd29c}.metric.danger strong{color:#ffb2ba}.mini{display:block;margin-top:5px;color:var(--muted-dim);font-size:9.8px;font-family:var(--mono);line-height:1.3}
+.tabs{position:sticky;top:0;z-index:39;display:flex;gap:2px;margin:22px 14px 0;padding:4px;border:1px solid var(--line);border-radius:14px;background:rgba(8,11,16,.92);backdrop-filter:blur(14px);overflow-x:auto;scrollbar-width:none}.tabs::-webkit-scrollbar{display:none}.tab{flex:1 0 auto;border:0;border-radius:11px;background:transparent;color:var(--muted);padding:9px 10px;font-size:11.5px;font-weight:600;font-family:var(--sans);white-space:nowrap;transition:color .2s,background .2s}.tab.active{background:rgba(109,255,176,.1);color:#bdffdc}.section{display:none;margin:14px 18px 0;animation:fadeUp .35s ease both}.section.active{display:block}@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}.card{border:1px solid var(--line);background:var(--panel);border-radius:var(--radius);padding:17px;margin-bottom:11px}.card h3{margin:0 0 11px;font-size:13.5px;font-weight:700;letter-spacing:.01em;display:flex;align-items:center;gap:7px}.card h3 .tag{font-family:var(--mono);font-size:9.5px;color:var(--muted-dim);font-weight:600;border:1px solid var(--line);border-radius:6px;padding:2px 5px}.card p{margin:0;color:#aebac4;line-height:1.6;font-size:13.5px}.row{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}.row:last-child{border-bottom:0}.row small{color:var(--muted);font-size:12.5px}.row b{text-align:right;font-family:var(--mono);font-size:13.5px;font-weight:700}.watchlist{display:grid;gap:9px;margin-top:13px}.watch{display:flex;gap:11px;padding:11px;border-radius:13px;background:rgba(255,255,255,.025);border:1px solid var(--line)}.num{min-width:24px;height:24px;border-radius:7px;flex:0 0 auto;display:grid;place-items:center;background:rgba(109,255,176,.12);color:#9fffc8;font-weight:700;font-size:11px;font-family:var(--mono)}.watch b{font-size:13px;display:block}.watch span{display:block;color:var(--muted);font-size:12px;margin-top:3px;line-height:1.4}.note{color:var(--muted-dim);font-size:11.5px;line-height:1.55;margin-top:10px}.error{color:#ffb2ba}.loading{opacity:.6;font-family:var(--mono);font-size:12.5px;color:var(--muted)}
+.chart-wrap{border-radius:18px;border:1px solid var(--line);background:linear-gradient(180deg,rgba(109,255,176,.04),rgba(255,255,255,.01));overflow:hidden}.chart-wrap svg{width:100%;display:block}.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:12px;color:var(--muted);font-size:11.5px}.legend span{display:flex;align-items:center;gap:6px}.legend i{width:9px;height:9px;border-radius:50%;display:block}.dot-cyan{background:#4fb8e0}.dot-green{background:var(--signal)}.dot-red{background:var(--danger)}.bar{height:8px;border-radius:999px;background:rgba(255,255,255,.06);overflow:hidden;margin:13px 0 7px}.bar i{display:block;height:100%;background:linear-gradient(90deg,#4fb8e0,var(--signal));width:0%;transition:width .8s cubic-bezier(.2,.8,.3,1)}footer.foot{margin:30px 18px 0;text-align:center;color:var(--muted-dim);font-size:10.5px;font-family:var(--mono);letter-spacing:.02em}@media(max-width:380px){.core-stage{width:188px;height:188px}.metrics{grid-template-columns:1fr 1fr}}:focus-visible{outline:2px solid var(--signal);outline-offset:2px;border-radius:6px}
 </style>
 </head>
 <body>
-
-<div class="sweep-field" aria-hidden="true">
-  <svg viewBox="0 0 400 400" preserveAspectRatio="xMidYMid slice"></svg>
-</div>
-
+<div class="sweep-field" aria-hidden="true"><svg viewBox="0 0 400 400" preserveAspectRatio="xMidYMid slice"></svg></div>
 <div class="app">
-
-<header>
-  <div class="top">
-    <div class="brand">
-      <div class="brand-mark">
-        <svg viewBox="0 0 30 30" width="30" height="30">
-          <circle cx="15" cy="15" r="13" fill="none" stroke="rgba(109,255,176,.35)" stroke-width="1"/>
-          <circle cx="15" cy="15" r="8" fill="none" stroke="rgba(109,255,176,.5)" stroke-width="1"/>
-          <circle cx="15" cy="15" r="2.4" fill="#6dffb0"/>
-        </svg>
-      </div>
-      <div>
-        <h1>CohesivX</h1>
-        <span class="sub" id="updated">se sincronizează…</span>
-      </div>
-    </div>
-    <div class="livepill"><span class="dot"></span>LIVE</div>
-  </div>
-</header>
-
+<header><div class="top"><div class="brand"><div class="brand-mark"><svg viewBox="0 0 30 30" width="30" height="30"><circle cx="15" cy="15" r="13" fill="none" stroke="rgba(109,255,176,.35)" stroke-width="1"/><circle cx="15" cy="15" r="8" fill="none" stroke="rgba(109,255,176,.5)" stroke-width="1"/><circle cx="15" cy="15" r="2.4" fill="#6dffb0"/></svg></div><div><h1>CohesivX</h1><span class="sub" id="updated">se sincronizează…</span></div></div><div class="livepill" id="livePill"><span class="dot"></span><span id="livePillText">LIVE</span></div></div></header>
 <main>
-
-  <section class="hero">
-    <div class="core-wrap">
-      <div class="core-stage">
-        <svg viewBox="0 0 220 220">
-          <circle class="ring-static" cx="110" cy="110" r="104"/>
-          <circle class="ring-static" cx="110" cy="110" r="74"/>
-          <g id="tickMarks"></g>
-          <circle id="pulse1" class="pulse-ring" cx="110" cy="110" r="46" stroke="#6dffb0"/>
-          <circle id="pulse2" class="pulse-ring" cx="110" cy="110" r="46" stroke="#6dffb0" style="animation-delay:1.4s"/>
-          <g class="sweep-arm" id="sweepArm">
-            <path d="M110 110 L110 6 A104 104 0 0 1 178 35 Z" fill="url(#sweepGrad)" opacity=".5"/>
-          </g>
-          <defs>
-            <linearGradient id="sweepGrad" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stop-color="#6dffb0" stop-opacity=".55"/>
-              <stop offset="100%" stop-color="#6dffb0" stop-opacity="0"/>
-            </linearGradient>
-          </defs>
-          <circle id="coreDot" class="core-dot" cx="110" cy="110" r="5" fill="#6dffb0"/>
-        </svg>
-        <div class="core-readout">
-          <div class="core-icon" id="coreIcon">🟠</div>
-          <div class="core-title" id="headline">Se sincronizează mecanismul</div>
-          <div class="core-sub" id="coreSub">—</div>
-        </div>
-      </div>
-
-      <div class="status-row">
-        <span class="badge tone-orange" id="dayBadge">⏳ Fereastră risc</span>
-        <span class="badge tone-red" id="confirmBadge">❌ Confirmare &gt;20%</span>
-      </div>
-
-      <p class="lead" id="lead">Interfața citește datele actuale din mecanism și le reduce la verdict, praguri și explicație simplă.</p>
-      <div class="readline" id="readline"></div>
-    </div>
-  </section>
-
-  <div class="metrics">
-    <div class="metric info"><small>Preț live</small><strong id="priceLive">—</strong></div>
-    <div class="metric info"><small>Preț mecanism</small><strong id="priceModel">—</strong></div>
-    <div class="metric warn"><small>Reper degradare</small><strong id="seriesStart">—</strong></div>
-    <div class="metric danger"><small>Prag confirmare</small><strong id="majorThreshold">—</strong></div>
-  </div>
-
-  <nav class="tabs" role="tablist">
-    <button class="tab active" data-tab="now" role="tab">Acum</button>
-    <button class="tab" data-tab="serie" role="tab">Serie</button>
-    <button class="tab" data-tab="risk" role="tab">Risc</button>
-    <button class="tab" data-tab="chart" role="tab">Grafic</button>
-    <button class="tab" data-tab="history" role="tab">Istoric</button>
-  </nav>
-
-  <section id="now" class="section active">
-    <div class="card">
-      <h3>Ce face mecanismul? <span class="tag">cum citești</span></h3>
-      <p>Mecanismul compară <b>prețul live</b> cu <b>prețul structural al modelului</b>, urmărește fereastra de degradare și verifică dacă piața repară ruptura sau confirmă scăderea majoră.</p>
-      <div class="watchlist">
-        <div class="watch"><div class="num">01</div><div><b>Preț mecanism</b><span>Reper structural calculat de model, nu preț de cumpărare/vânzare.</span></div></div>
-        <div class="watch"><div class="num">02</div><div><b>Persistență</b><span>Câte zile structura rămâne degradată fără reparare clară.</span></div></div>
-        <div class="watch"><div class="num">03</div><div><b>Confirmare</b><span>Timpul arată rana nereparată; -20% confirmă amplitudinea majoră.</span></div></div>
-      </div>
-    </div>
-    <div class="card">
-      <h3>Ce spune acum?</h3>
-      <p id="simpleInterpretation" class="loading">Se încarcă interpretarea mecanismului...</p>
-      <div class="watchlist" id="watchlist"></div>
-    </div>
-  </section>
-
-  <section id="serie" class="section">
-    <div class="card">
-      <h3>Serie curentă</h3>
-      <div class="row"><small>Regim curent</small><b id="currentRegime">—</b></div>
-      <div class="row"><small>Semnal curent</small><b id="currentSignal">—</b></div>
-      <div class="row"><small>Zile degradare</small><b id="degradationDays">—</b></div>
-      <div class="row"><small>Preț mecanism</small><b id="modelDetail">—</b></div>
-      <div class="row"><small>Prag -20%</small><b id="thresholdDetail">—</b></div>
-      <p class="note">Seria se citește de la close-ul/reperul zilei de semnal. Dacă pragul -20% nu este atins, nu există confirmare de scădere majoră, chiar dacă degradarea persistă.</p>
-    </div>
-  </section>
-
-  <section id="risk" class="section">
-    <div class="card">
-      <h3>Fereastră risc</h3>
-      <div class="row"><small>Nivel</small><b id="riskLevel">—</b></div>
-      <div class="row"><small>Rată istorică confirmare</small><b id="confirmRate">—</b></div>
-      <div class="row"><small>Mediană confirmare</small><b id="medianDays">—</b></div>
-      <div class="row"><small>Drawdown mediu istoric</small><b id="avgDrawdown">—</b></div>
-    </div>
-    <div class="card">
-      <h3>Participare</h3>
-      <div class="row"><small>Scor participare</small><b id="partScore">—</b></div>
-      <div class="bar"><i id="partBar"></i></div>
-      <p id="partText" class="note">—</p>
-    </div>
-  </section>
-
-  <section id="chart" class="section">
-    <div class="card">
-      <h3>Grafic simplificat</h3>
-      <p>Preț live/snapshot, preț mecanism și pragul -20% sunt repere diferite. Linia roșie marchează confirmarea de amplitudine majoră.</p>
-      <div class="chart-wrap">
-        <svg viewBox="0 0 600 280" width="100%" height="100%" preserveAspectRatio="none" id="svgChart"></svg>
-      </div>
-      <div class="legend">
-        <span><i class="dot-cyan"></i>Preț snapshot</span>
-        <span><i class="dot-green"></i>Preț mecanism</span>
-        <span><i class="dot-red"></i>Prag -20%</span>
-      </div>
-    </div>
-  </section>
-
-  <section id="history" class="section">
-    <div class="card">
-      <h3>Istoric mecanism</h3>
-      <div id="historyRows" class="loading">Se încarcă istoricul semnalelor...</div>
-    </div>
-  </section>
-
-</main>
-
-<footer class="foot">cohesivx · radar structural btc</footer>
-
-</div>
-
+<section class="hero"><div class="core-wrap"><div class="core-stage"><svg viewBox="0 0 220 220"><circle class="ring-static" cx="110" cy="110" r="104"/><circle class="ring-static" cx="110" cy="110" r="74"/><g id="tickMarks"></g><circle id="pulse1" class="pulse-ring" cx="110" cy="110" r="46" stroke="#6dffb0"/><circle id="pulse2" class="pulse-ring" cx="110" cy="110" r="46" stroke="#6dffb0" style="animation-delay:1.4s"/><g class="sweep-arm" id="sweepArm"><path d="M110 110 L110 6 A104 104 0 0 1 178 35 Z" fill="url(#sweepGrad)" opacity=".5"/></g><defs><linearGradient id="sweepGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#6dffb0" stop-opacity=".55"/><stop offset="100%" stop-color="#6dffb0" stop-opacity="0"/></linearGradient></defs><circle id="coreDot" class="core-dot" cx="110" cy="110" r="5" fill="#6dffb0"/></svg><div class="core-readout"><div class="core-icon" id="coreIcon">🟠</div><div class="core-title" id="headline">Se sincronizează mecanismul</div><div class="core-sub" id="coreSub">—</div></div></div><div class="status-row"><span class="badge tone-orange" id="dayBadge">⏳ Fereastră risc</span><span class="badge tone-red" id="confirmBadge">❌ Confirmare &gt;20%</span></div><p class="lead" id="lead">Interfața citește datele actuale din mecanism și le reduce la verdict, praguri și explicație simplă.</p><div class="readline" id="readline"></div></div></section>
+<div class="metrics"><div class="metric info"><small>Preț live</small><strong id="priceLive">—</strong><span class="mini" id="liveStamp">actualizare live...</span></div><div class="metric info"><small>Preț mecanism</small><strong id="priceModel">—</strong><span class="mini">snapshot 24h</span></div><div class="metric warn"><small>Reper degradare</small><strong id="seriesStart">—</strong></div><div class="metric danger"><small>Prag confirmare</small><strong id="majorThreshold">—</strong></div></div>
+<nav class="tabs" role="tablist"><button class="tab active" data-tab="now" role="tab">Acum</button><button class="tab" data-tab="serie" role="tab">Serie</button><button class="tab" data-tab="risk" role="tab">Risc</button><button class="tab" data-tab="chart" role="tab">Grafic</button><button class="tab" data-tab="history" role="tab">Istoric</button></nav>
+<section id="now" class="section active"><div class="card"><h3>Ce face mecanismul? <span class="tag">cum citești</span></h3><p>Mecanismul compară <b>prețul live</b> cu <b>prețul structural al modelului</b>, urmărește fereastra de degradare și verifică dacă piața repară ruptura sau confirmă scăderea majoră.</p><div class="watchlist"><div class="watch"><div class="num">01</div><div><b>Preț mecanism</b><span>Reper structural calculat de model, nu preț de cumpărare/vânzare.</span></div></div><div class="watch"><div class="num">02</div><div><b>Persistență</b><span>Câte zile structura rămâne degradată fără reparare clară.</span></div></div><div class="watch"><div class="num">03</div><div><b>Confirmare</b><span>Timpul arată rana nereparată; -20% confirmă amplitudinea majoră.</span></div></div></div></div><div class="card"><h3>Ce spune acum?</h3><p id="simpleInterpretation" class="loading">Se încarcă interpretarea mecanismului...</p><div class="watchlist" id="watchlist"></div></div></section>
+<section id="serie" class="section"><div class="card"><h3>Serie curentă</h3><div class="row"><small>Regim curent</small><b id="currentRegime">—</b></div><div class="row"><small>Semnal curent</small><b id="currentSignal">—</b></div><div class="row"><small>Zile degradare</small><b id="degradationDays">—</b></div><div class="row"><small>Preț mecanism</small><b id="modelDetail">—</b></div><div class="row"><small>Prag -20%</small><b id="thresholdDetail">—</b></div><p class="note">Seria se citește de la close-ul/reperul zilei de semnal. Dacă pragul -20% nu este atins, nu există confirmare de scădere majoră, chiar dacă degradarea persistă.</p></div></section>
+<section id="risk" class="section"><div class="card"><h3>Fereastră risc</h3><div class="row"><small>Nivel</small><b id="riskLevel">—</b></div><div class="row"><small>Rată istorică confirmare</small><b id="confirmRate">—</b></div><div class="row"><small>Mediană confirmare</small><b id="medianDays">—</b></div><div class="row"><small>Drawdown mediu istoric</small><b id="avgDrawdown">—</b></div></div><div class="card"><h3>Participare</h3><div class="row"><small>Scor participare</small><b id="partScore">—</b></div><div class="bar"><i id="partBar"></i></div><p id="partText" class="note">—</p></div></section>
+<section id="chart" class="section"><div class="card"><h3>Grafic simplificat</h3><p>Preț live, preț mecanism și pragul -20% sunt repere diferite. Linia roșie marchează confirmarea de amplitudine majoră.</p><div class="chart-wrap"><svg viewBox="0 0 600 280" width="100%" height="100%" preserveAspectRatio="none" id="svgChart"></svg></div><div class="legend"><span><i class="dot-cyan"></i>Preț live</span><span><i class="dot-green"></i>Preț mecanism</span><span><i class="dot-red"></i>Prag -20%</span></div></div></section>
+<section id="history" class="section"><div class="card"><h3>Istoric mecanism</h3><div id="historyRows" class="loading">Se încarcă istoricul semnalelor...</div></div></section>
+</main><footer class="foot">cohesivx · radar structural btc</footer></div>
 <script>
-/* ---------- tick marks + ambient sweep field (purely decorative) ---------- */
-(function(){
-  const ticks = document.getElementById('tickMarks');
-  if(ticks){
-    let html='';
-    for(let i=0;i<24;i++){
-      const a = (i/24)*2*Math.PI;
-      const r1=96, r2= i%3===0?88:92;
-      const x1=110+r1*Math.cos(a), y1=110+r1*Math.sin(a);
-      const x2=110+r2*Math.cos(a), y2=110+r2*Math.sin(a);
-      html+=`<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="rgba(143,168,184,.22)" stroke-width="1"/>`;
-    }
-    ticks.innerHTML = html;
-  }
-  const bg = document.querySelector('.sweep-field svg');
-  if(bg){
-    let html='';
-    for(let i=0;i<3;i++){
-      html += `<circle cx="200" cy="200" r="${60+i*55}" fill="none" stroke="rgba(109,255,176,${0.05-i*0.012})" stroke-width="1"/>`;
-    }
-    bg.innerHTML = html;
-  }
-})();
-
-const $=id=>document.getElementById(id);
-const fmtUsd=(v,compact=false)=>{if(v===null||v===undefined||Number.isNaN(Number(v)))return"—";const n=Number(v);if(compact)return(n/1000).toFixed(1).replace(".0","")+"K USD";return n.toLocaleString("ro-RO",{maximumFractionDigits:0})+" USD"};
-const pct=(v,d=1)=>{if(v===null||v===undefined||Number.isNaN(Number(v)))return"—";return(Number(v)*100).toFixed(d).replace(".",",")+"%"};
-const dateRo=iso=>{if(!iso)return"—";try{return new Date(iso).toLocaleDateString("ro-RO",{day:"2-digit",month:"short",year:"numeric"})}catch{return iso}};
-async function getJson(path){const res=await fetch(path+"?v="+Date.now(),{cache:"no-store"});if(!res.ok)throw new Error(path+" "+res.status);return res.json()}
-
-function statusFrom(risk){
-  const active=!!risk.active,days=Number(risk.consecutive_degradation_days||0),median=Number(risk.median_days_to_confirmation||27),level=String(risk.level||"n/a");
-  if(!active)return{cls:"green",icon:"🟢",title:"Structură refăcută",text:"Fereastra de risc nu este activă în datele curente."};
-  if(days>=median)return{cls:"red",icon:"🔴",title:"Degradare persistentă",text:`Structura nu s-a reparat în fereastra mediană istorică de ~${median} zile.`};
-  if(level==="high")return{cls:"red",icon:"🔴",title:"Risc structural ridicat",text:"Mecanismul vede degradare puternică, dar confirmarea >20% cere atingerea pragului de amplitudine."};
-  return{cls:"orange",icon:"🟠",title:"Degradare activă",text:"Structura este slăbită, dar confirmarea majoră încă nu este prezentă."};
-}
-
-function applyCoreTone(cls){
-  const stage = document.querySelector('.core-stage');
-  const toneMap = {
-    green:{ring:'#6dffb0', icon:'🟢'},
-    orange:{ring:'#ffb454', icon:'🟠'},
-    red:{ring:'#ff5d6c', icon:'🔴'}
-  };
-  const t = toneMap[cls] || toneMap.orange;
-  ['pulse1','pulse2','coreDot'].forEach(id=>{
-    const el = $(id);
-    if(el) el.setAttribute('stroke', t.ring), el.setAttribute('fill', t.ring);
-  });
-  $('coreIcon').textContent = t.icon;
-}
-
-function deriveStart(state){
-  const hist=Array.isArray(state.signal_history)?state.signal_history:[];
-  const firstShort=hist.find(x=>x.signal==="short");
-  return firstShort?Number(firstShort.model_price_usd):Number(state.model_price_usd||state.price_usd);
-}
-
-function renderChart(state,start,threshold){
-  const price=Number(state.price_usd),model=Number(state.model_price_usd),
-    max=Math.max(start,price,model)*1.04,min=Math.min(threshold,price,model)*.96,
-    y=v=>250-((v-min)/(max-min))*215,
-    pY=y(price),mY=y(model),tY=y(threshold);
-  $("svgChart").innerHTML=`<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#4fb8e0"/><stop offset="1" stop-color="#6dffb0"/></linearGradient></defs><line x1="0" y1="${tY}" x2="600" y2="${tY}" stroke="#ff5d6c" stroke-dasharray="7 7" opacity=".85"/><line x1="0" y1="${mY}" x2="600" y2="${mY}" stroke="#6dffb0" stroke-dasharray="5 6" opacity=".85"/><path d="M20 ${y(start)} C120 ${y(start*.97)},220 ${y(start*.91)},330 ${Math.min(y(start*.913),pY+18)} S500 ${pY+10},580 ${pY}" fill="none" stroke="url(#g)" stroke-width="4"/><circle cx="580" cy="${pY}" r="7" fill="#4fb8e0"/><text x="22" y="${Math.max(16,tY-8)}" fill="#ffb2ba" font-size="14">Prag -20% ${fmtUsd(threshold,true)}</text><text x="22" y="${Math.max(16,mY-8)}" fill="#a8ffcf" font-size="14">Mecanism ${fmtUsd(model,true)}</text><text x="426" y="${Math.max(18,pY-12)}" fill="#bfe6f5" font-size="14">Preț ${fmtUsd(price,true)}</text>`;
-}
-
-function renderHistory(state){
-  const hist=(state.signal_history||[]).slice(-12).reverse();
-  $("historyRows").classList.remove("loading");
-  $("historyRows").innerHTML=hist.map(x=>`<div class="row"><small>${dateRo(x.timestamp)} · ${x.signal}</small><b>${fmtUsd(x.model_price_usd)}</b></div>`).join("");
-}
-
-async function start(){
-  try{
-    const[state,risk,part]=await Promise.all([getJson("./coeziv_state.json"),getJson("./risk_window.json"),getJson("./participation_cohesion.json")]);
-    const startPrice=deriveStart(state),
-      threshold=startPrice*(1+Number(risk.major_drawdown_threshold??-.2)),
-      status=statusFrom(risk),
-      deviation=(Number(state.price_usd)-Number(state.model_price_usd))/Number(state.model_price_usd);
-
-    $("updated").textContent="snapshot "+dateRo(state.timestamp)+" · gen "+dateRo(state.generated_at);
-    applyCoreTone(status.cls);
-    $("headline").textContent=status.title;
-    $("coreSub").textContent=fmtUsd(state.price_usd,true);
-    $("dayBadge").textContent=`⏳ Ziua ${risk.consecutive_degradation_days??"—"} / ~${risk.median_days_to_confirmation??"—"}`;
-    $("confirmBadge").textContent=`❌ Prag: ${fmtUsd(threshold,true)}`;
-    $("lead").textContent=status.text+" Confirmarea majoră cere atingerea pragului -20%; fereastra de timp măsoară persistența degradării.";
-    $("readline").textContent=`deviație live/model ${pct(deviation)}`;
-
-    $("priceLive").textContent=fmtUsd(state.price_usd,true);
-    $("priceModel").textContent=fmtUsd(state.model_price_usd,true);
-    $("seriesStart").textContent=fmtUsd(startPrice,true);
-    $("majorThreshold").textContent="sub "+fmtUsd(threshold,true);
-
-    $("simpleInterpretation").textContent=state.message||risk.main_text||"Mecanismul nu are încă mesaj textual.";
-    $("simpleInterpretation").classList.remove("loading");
-
-    $("watchlist").innerHTML=`<div class="watch"><div class="num">01</div><div><b>Deviație live/model</b><span>${pct(deviation)} față de prețul mecanismului.</span></div></div><div class="watch"><div class="num">02</div><div><b>Persistență</b><span>${risk.consecutive_degradation_days??"—"} zile degradare; mediană istorică ~${risk.median_days_to_confirmation??"—"} zile.</span></div></div><div class="watch"><div class="num">03</div><div><b>Confirmare majoră</b><span>Doar sub ${fmtUsd(threshold,true)} apare confirmare de amplitudine &gt;20%.</span></div></div>`;
-
-    $("currentRegime").textContent=risk.current_regime||state.market_regime?.code||"—";
-    $("currentSignal").textContent=risk.current_signal||state.signal||"—";
-    $("degradationDays").textContent=(risk.consecutive_degradation_days??"—")+" zile";
-    $("modelDetail").textContent=fmtUsd(state.model_price_usd)+" — reper structural snapshot";
-    $("thresholdDetail").textContent=fmtUsd(threshold)+" — calculat din "+fmtUsd(startPrice);
-
-    $("riskLevel").textContent=risk.level||"—";
-    $("confirmRate").textContent=pct(risk.historical_confirmation_rate);
-    $("medianDays").textContent=(risk.median_days_to_confirmation??"—")+" zile";
-    $("avgDrawdown").textContent=pct(risk.average_min_drawdown);
-
-    $("partScore").textContent=(part.score??"—")+" / 100 · "+(part.label||"");
-    $("partBar").style.width=Math.max(0,Math.min(100,Number(part.score||0)))+"%";
-    $("partText").textContent=part.main_text||"—";
-
-    renderChart(state,startPrice,threshold);
-    renderHistory(state);
-  }catch(err){
-    $("headline").textContent="Mecanism indisponibil";
-    $("coreIcon").textContent="⚠️";
-    $("lead").innerHTML='<span class="error">Nu am putut încărca fișierele JSON ale mecanismului: '+err.message+'</span>';
-  }
-}
-
-document.querySelectorAll(".tab").forEach(btn=>btn.addEventListener("click",()=>{
-  document.querySelectorAll(".tab").forEach(b=>b.classList.remove("active"));
-  document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
-  btn.classList.add("active");
-  $(btn.dataset.tab).classList.add("active");
-  window.scrollTo({top:0,behavior:"smooth"});
-}));
-
-start();
+(function(){const ticks=document.getElementById('tickMarks');if(ticks){let html='';for(let i=0;i<24;i++){const a=(i/24)*2*Math.PI,r1=96,r2=i%3===0?88:92,x1=110+r1*Math.cos(a),y1=110+r1*Math.sin(a),x2=110+r2*Math.cos(a),y2=110+r2*Math.sin(a);html+=`<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="rgba(143,168,184,.22)" stroke-width="1"/>`}ticks.innerHTML=html}const bg=document.querySelector('.sweep-field svg');if(bg){let html='';for(let i=0;i<3;i++)html+=`<circle cx="200" cy="200" r="${60+i*55}" fill="none" stroke="rgba(109,255,176,${0.05-i*0.012})" stroke-width="1"/>`;bg.innerHTML=html}})();
+const $=id=>document.getElementById(id);let APP={state:null,risk:null,part:null,startPrice:null,threshold:null,live:null,liveSource:'snapshot'};
+const fmtUsd=(v,compact=false)=>{if(v===null||v===undefined||Number.isNaN(Number(v)))return'—';const n=Number(v);if(compact)return(n/1000).toFixed(1).replace('.0','')+'K USD';return n.toLocaleString('ro-RO',{maximumFractionDigits:0})+' USD'};
+const pct=(v,d=1)=>{if(v===null||v===undefined||Number.isNaN(Number(v)))return'—';return(Number(v)*100).toFixed(d).replace('.',',')+'%'};
+const dateRo=iso=>{if(!iso)return'—';try{return new Date(iso).toLocaleDateString('ro-RO',{day:'2-digit',month:'short',year:'numeric'})}catch{return iso}};
+const timeRo=()=>new Date().toLocaleTimeString('ro-RO',{hour:'2-digit',minute:'2-digit'});
+async function getJson(path){const res=await fetch(path+'?v='+Date.now(),{cache:'no-store'});if(!res.ok)throw new Error(path+' '+res.status);return res.json()}
+async function fetchLivePrice(){const endpoints=[{name:'Binance',url:'https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT',pick:j=>Number(j.price)},{name:'Coinbase',url:'https://api.coinbase.com/v2/prices/BTC-USD/spot',pick:j=>Number(j?.data?.amount)},{name:'CoinGecko',url:'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd',pick:j=>Number(j?.bitcoin?.usd)}];for(const e of endpoints){try{const r=await fetch(e.url,{cache:'no-store'});if(!r.ok)continue;const j=await r.json();const p=e.pick(j);if(Number.isFinite(p)&&p>0)return{price:p,source:e.name}}catch(_){}}throw new Error('live unavailable')}
+function statusFrom(risk){const active=!!risk.active,days=Number(risk.consecutive_degradation_days||0),median=Number(risk.median_days_to_confirmation||27),level=String(risk.level||'n/a');if(!active)return{cls:'green',icon:'🟢',title:'Structură refăcută',text:'Fereastra de risc nu este activă în datele curente.'};if(days>=median)return{cls:'red',icon:'🔴',title:'Degradare persistentă',text:`Structura nu s-a reparat în fereastra mediană istorică de ~${median} zile.`};if(level==='high')return{cls:'red',icon:'🔴',title:'Risc structural ridicat',text:'Mecanismul vede degradare puternică, dar confirmarea >20% cere atingerea pragului de amplitudine.'};return{cls:'orange',icon:'🟠',title:'Degradare activă',text:'Structura este slăbită, dar confirmarea majoră încă nu este prezentă.'}}
+function applyCoreTone(cls){const toneMap={green:{ring:'#6dffb0',icon:'🟢'},orange:{ring:'#ffb454',icon:'🟠'},red:{ring:'#ff5d6c',icon:'🔴'}},t=toneMap[cls]||toneMap.orange;['pulse1','pulse2','coreDot'].forEach(id=>{const el=$(id);if(el){el.setAttribute('stroke',t.ring);el.setAttribute('fill',t.ring)}});$('coreIcon').textContent=t.icon}
+function deriveStart(state){const hist=Array.isArray(state.signal_history)?state.signal_history:[],firstShort=hist.find(x=>x.signal==='short');return firstShort?Number(firstShort.model_price_usd):Number(state.model_price_usd||state.price_usd)}
+function renderChart(price){const state=APP.state,start=APP.startPrice,threshold=APP.threshold,live=Number(price??state.price_usd),model=Number(state.model_price_usd),max=Math.max(start,live,model)*1.04,min=Math.min(threshold,live,model)*.96,y=v=>250-((v-min)/(max-min))*215,pY=y(live),mY=y(model),tY=y(threshold);$('svgChart').innerHTML=`<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#4fb8e0"/><stop offset="1" stop-color="#6dffb0"/></linearGradient></defs><line x1="0" y1="${tY}" x2="600" y2="${tY}" stroke="#ff5d6c" stroke-dasharray="7 7" opacity=".85"/><line x1="0" y1="${mY}" x2="600" y2="${mY}" stroke="#6dffb0" stroke-dasharray="5 6" opacity=".85"/><path d="M20 ${y(start)} C120 ${y(start*.97)},220 ${y(start*.91)},330 ${Math.min(y(start*.913),pY+18)} S500 ${pY+10},580 ${pY}" fill="none" stroke="url(#g)" stroke-width="4"/><circle cx="580" cy="${pY}" r="7" fill="#4fb8e0"/><text x="22" y="${Math.max(16,tY-8)}" fill="#ffb2ba" font-size="14">Prag -20% ${fmtUsd(threshold,true)}</text><text x="22" y="${Math.max(16,mY-8)}" fill="#a8ffcf" font-size="14">Mecanism ${fmtUsd(model,true)}</text><text x="426" y="${Math.max(18,pY-12)}" fill="#bfe6f5" font-size="14">Live ${fmtUsd(live,true)}</text>`}
+function renderDynamic(price){const state=APP.state,risk=APP.risk,live=Number(price??state.price_usd),deviation=(live-Number(state.model_price_usd))/Number(state.model_price_usd);$('priceLive').textContent=fmtUsd(live,true);$('coreSub').textContent=fmtUsd(live,true);$('readline').textContent=`deviație live/model ${pct(deviation)} · sursă ${APP.liveSource}`;$('watchlist').innerHTML=`<div class="watch"><div class="num">01</div><div><b>Deviație live/model</b><span>${pct(deviation)} față de prețul mecanismului.</span></div></div><div class="watch"><div class="num">02</div><div><b>Persistență</b><span>${risk.consecutive_degradation_days??'—'} zile degradare; mediană istorică ~${risk.median_days_to_confirmation??'—'} zile.</span></div></div><div class="watch"><div class="num">03</div><div><b>Confirmare majoră</b><span>Doar sub ${fmtUsd(APP.threshold,true)} apare confirmare de amplitudine &gt;20%.</span></div></div>`;renderChart(live)}
+async function updateLivePrice(){if(!APP.state)return;try{const live=await fetchLivePrice();APP.live=live.price;APP.liveSource=live.source;$('liveStamp').textContent='live '+timeRo()+' · '+live.source;$('livePillText').textContent='LIVE '+timeRo();$('livePill').classList.remove('stale');renderDynamic(live.price)}catch(_){APP.live=Number(APP.state.price_usd);APP.liveSource='snapshot';$('liveStamp').textContent='fallback: snapshot mecanism';$('livePillText').textContent='SNAPSHOT';$('livePill').classList.add('stale');renderDynamic(APP.live)}}
+function renderHistory(state){const hist=(state.signal_history||[]).slice(-12).reverse();$('historyRows').classList.remove('loading');$('historyRows').innerHTML=hist.map(x=>`<div class="row"><small>${dateRo(x.timestamp)} · ${x.signal}</small><b>${fmtUsd(x.model_price_usd)}</b></div>`).join('')}
+async function start(){try{const[state,risk,part]=await Promise.all([getJson('./coeziv_state.json'),getJson('./risk_window.json'),getJson('./participation_cohesion.json')]);APP={state,risk,part,startPrice:deriveStart(state),threshold:null,live:null,liveSource:'snapshot'};APP.threshold=APP.startPrice*(1+Number(risk.major_drawdown_threshold??-.2));const status=statusFrom(risk);$('updated').textContent='snapshot '+dateRo(state.timestamp)+' · gen '+dateRo(state.generated_at);applyCoreTone(status.cls);$('headline').textContent=status.title;$('dayBadge').textContent=`⏳ Ziua ${risk.consecutive_degradation_days??'—'} / ~${risk.median_days_to_confirmation??'—'}`;$('confirmBadge').textContent=`❌ Prag: ${fmtUsd(APP.threshold,true)}`;$('lead').textContent=status.text+' Confirmarea majoră cere atingerea pragului -20%; fereastra de timp măsoară persistența degradării.';$('priceModel').textContent=fmtUsd(state.model_price_usd,true);$('seriesStart').textContent=fmtUsd(APP.startPrice,true);$('majorThreshold').textContent='sub '+fmtUsd(APP.threshold,true);$('simpleInterpretation').textContent=state.message||risk.main_text||'Mecanismul nu are încă mesaj textual.';$('simpleInterpretation').classList.remove('loading');$('currentRegime').textContent=risk.current_regime||state.market_regime?.code||'—';$('currentSignal').textContent=risk.current_signal||state.signal||'—';$('degradationDays').textContent=(risk.consecutive_degradation_days??'—')+' zile';$('modelDetail').textContent=fmtUsd(state.model_price_usd)+' — reper structural snapshot';$('thresholdDetail').textContent=fmtUsd(APP.threshold)+' — calculat din '+fmtUsd(APP.startPrice);$('riskLevel').textContent=risk.level||'—';$('confirmRate').textContent=pct(risk.historical_confirmation_rate);$('medianDays').textContent=(risk.median_days_to_confirmation??'—')+' zile';$('avgDrawdown').textContent=pct(risk.average_min_drawdown);$('partScore').textContent=(part.score??'—')+' / 100 · '+(part.label||'');$('partBar').style.width=Math.max(0,Math.min(100,Number(part.score||0)))+'%';$('partText').textContent=part.main_text||'—';renderHistory(state);await updateLivePrice();setInterval(updateLivePrice,30000)}catch(err){$('headline').textContent='Mecanism indisponibil';$('coreIcon').textContent='⚠️';$('lead').innerHTML='<span class="error">Nu am putut încărca fișierele JSON ale mecanismului: '+err.message+'</span>'}}
+document.querySelectorAll('.tab').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));btn.classList.add('active');$(btn.dataset.tab).classList.add('active');window.scrollTo({top:0,behavior:'smooth'})}));start();
 </script>
 <script src="./i18n-en.js" defer></script>
 </body></html>
