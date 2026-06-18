@@ -1,244 +1,37 @@
 <!doctype html>
 <html lang="ro">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-  <title>CohesivX BTC Radar</title>
-  <style>
-    :root{
-      --bg:#08111f;--panel:#101827;--panel2:#0d1726;--line:rgba(148,163,184,.18);
-      --text:#e5e7eb;--muted:#94a3b8;--cyan:#38bdf8;--cyan2:#7dd3fc;
-      --orange:#fb923c;--red:#ef4444;--green:#22c55e;--yellow:#facc15;
-      --radius:22px;--shadow:0 18px 50px rgba(0,0,0,.34)
-    }
-    *{box-sizing:border-box} body{margin:0;background:radial-gradient(circle at 10% 0%,rgba(56,189,248,.18),transparent 36%),radial-gradient(circle at 90% 5%,rgba(251,146,60,.13),transparent 34%),var(--bg);color:var(--text);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-    .app{max-width:1040px;margin:0 auto;padding:18px 14px 92px}
-    header{position:sticky;top:0;z-index:20;margin:-18px -14px 12px;padding:16px 14px 10px;background:linear-gradient(180deg,rgba(8,17,31,.96),rgba(8,17,31,.78),transparent);backdrop-filter:blur(12px)}
-    .top{display:flex;align-items:center;justify-content:space-between;gap:12px}.brand{display:flex;align-items:center;gap:10px}.logo{width:38px;height:38px;border-radius:14px;background:linear-gradient(135deg,var(--cyan),#1d4ed8);box-shadow:0 0 28px rgba(56,189,248,.35)}.brand h1{margin:0;font-size:18px;letter-spacing:.02em}.brand span{display:block;color:var(--muted);font-size:12px;margin-top:2px}.pill{border:1px solid rgba(56,189,248,.38);border-radius:999px;padding:8px 11px;color:var(--cyan2);font-size:12px;font-weight:800;background:rgba(56,189,248,.08)}
-    .hero{position:relative;overflow:hidden;border:1px solid rgba(56,189,248,.22);background:linear-gradient(145deg,rgba(15,23,42,.94),rgba(13,23,38,.92));border-radius:28px;padding:20px;box-shadow:var(--shadow)}
-    .hero:before{content:"";position:absolute;right:-70px;top:-90px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(56,189,248,.23),transparent 65%)}
-    .statusline{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}.badge{display:inline-flex;align-items:center;gap:7px;border-radius:999px;padding:8px 11px;font-size:12px;font-weight:900;border:1px solid var(--line);background:rgba(255,255,255,.04)}.badge.orange{color:#fed7aa;border-color:rgba(251,146,60,.35);background:rgba(251,146,60,.12)}.badge.red{color:#fecaca;border-color:rgba(239,68,68,.32);background:rgba(239,68,68,.10)}.badge.cyan{color:#bae6fd;border-color:rgba(56,189,248,.35);background:rgba(56,189,248,.10)}.badge.green{color:#bbf7d0;border-color:rgba(34,197,94,.32);background:rgba(34,197,94,.10)}
-    h2{margin:0 0 10px;font-size:clamp(28px,6vw,48px);line-height:1.05;letter-spacing:-.04em}.lead{margin:0 0 18px;color:#cbd5e1;font-size:15px;max-width:780px;line-height:1.55}.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.metric{border:1px solid var(--line);background:rgba(255,255,255,.04);border-radius:18px;padding:13px}.metric small{display:block;color:var(--muted);font-size:11px;margin-bottom:7px}.metric strong{font-size:18px}.metric.info strong{color:var(--cyan2)}.metric.warn strong{color:#fdba74}.metric.danger strong{color:#fca5a5}.metric.green strong{color:#86efac}
-    .tabs{position:fixed;left:50%;bottom:12px;transform:translateX(-50%);z-index:50;display:grid;grid-template-columns:repeat(5,1fr);gap:4px;width:min(560px,calc(100% - 24px));padding:6px;border:1px solid rgba(148,163,184,.24);border-radius:999px;background:rgba(15,23,42,.88);backdrop-filter:blur(14px);box-shadow:0 12px 40px rgba(0,0,0,.36)}.tab{border:0;border-radius:999px;background:transparent;color:#94a3b8;padding:10px 7px;font-size:12px;font-weight:900}.tab.active{background:rgba(56,189,248,.18);color:#bae6fd}
-    .section{display:none;margin-top:12px}.section.active{display:block}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.card{border:1px solid var(--line);background:rgba(15,23,42,.72);border-radius:var(--radius);padding:16px;box-shadow:0 10px 30px rgba(0,0,0,.18)}.card h3{margin:0 0 10px;font-size:16px}.card p{margin:0;color:#cbd5e1;line-height:1.55;font-size:14px}.row{display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}.row:last-child{border-bottom:0}.row small{color:var(--muted)}.row b{text-align:right}
-    .watchlist{display:grid;gap:9px;margin-top:12px}.watch{display:flex;gap:10px;padding:10px;border-radius:16px;background:rgba(255,255,255,.04);border:1px solid var(--line)}.num{min-width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:rgba(56,189,248,.16);color:#7dd3fc;font-weight:900}.watch span{display:block;color:var(--muted);font-size:12px;margin-top:3px;line-height:1.35}
-    .chart{height:280px;border-radius:22px;border:1px solid var(--line);background:linear-gradient(180deg,rgba(56,189,248,.06),rgba(255,255,255,.02));overflow:hidden}.legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;color:var(--muted);font-size:12px}.legend span{display:flex;align-items:center;gap:6px}.legend i{width:10px;height:10px;border-radius:50%;display:block}.cyan{background:var(--cyan)}.orange{background:var(--orange)}.red{background:var(--red)}.green{background:var(--green)}
-    .bar{height:10px;border-radius:999px;background:rgba(148,163,184,.18);overflow:hidden;margin:12px 0 6px}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--cyan),var(--orange));width:50%}.note{color:var(--muted);font-size:12px;line-height:1.45;margin-top:8px}.error{color:#fecaca}.loading{opacity:.72}
-    @media(max-width:760px){.grid{grid-template-columns:1fr}.metrics{grid-template-columns:1fr 1fr}.hero{padding:17px}.metric strong{font-size:16px}.tab{font-size:11px;padding:9px 4px}.brand h1{font-size:16px}.pill{display:none}}
-  </style>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>CohesivX BTC Radar</title>
+<style>
+:root{--bg:#08111f;--line:rgba(148,163,184,.18);--text:#e5e7eb;--muted:#94a3b8;--cyan:#38bdf8;--cyan2:#7dd3fc;--orange:#fb923c;--red:#ef4444;--green:#22c55e;--radius:22px;--shadow:0 18px 50px rgba(0,0,0,.34)}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 10% 0%,rgba(56,189,248,.18),transparent 36%),radial-gradient(circle at 90% 5%,rgba(251,146,60,.13),transparent 34%),var(--bg);color:var(--text);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.app{max-width:1040px;margin:0 auto;padding:18px 14px 42px}header{position:sticky;top:0;z-index:30;margin:-18px -14px 12px;padding:16px 14px 10px;background:linear-gradient(180deg,rgba(8,17,31,.96),rgba(8,17,31,.78),transparent);backdrop-filter:blur(12px)}.top{display:flex;align-items:center;justify-content:space-between;gap:12px}.brand{display:flex;align-items:center;gap:10px}.logo{width:38px;height:38px;border-radius:14px;background:linear-gradient(135deg,var(--cyan),#1d4ed8);box-shadow:0 0 28px rgba(56,189,248,.35)}.brand h1{margin:0;font-size:18px}.brand span{display:block;color:var(--muted);font-size:12px;margin-top:2px}.pill{border:1px solid rgba(56,189,248,.38);border-radius:999px;padding:8px 11px;color:var(--cyan2);font-size:12px;font-weight:800;background:rgba(56,189,248,.08)}
+.hero{position:relative;overflow:hidden;border:1px solid rgba(56,189,248,.22);background:linear-gradient(145deg,rgba(15,23,42,.94),rgba(13,23,38,.92));border-radius:28px;padding:20px;box-shadow:var(--shadow)}.hero:before{content:"";position:absolute;right:-70px;top:-90px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(56,189,248,.23),transparent 65%)}.statusline{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}.badge{display:inline-flex;align-items:center;gap:7px;border-radius:999px;padding:8px 11px;font-size:12px;font-weight:900;border:1px solid var(--line);background:rgba(255,255,255,.04)}.orange{color:#fed7aa;border-color:rgba(251,146,60,.35);background:rgba(251,146,60,.12)}.red{color:#fecaca;border-color:rgba(239,68,68,.32);background:rgba(239,68,68,.10)}.cyan{color:#bae6fd;border-color:rgba(56,189,248,.35);background:rgba(56,189,248,.10)}.green{color:#bbf7d0;border-color:rgba(34,197,94,.32);background:rgba(34,197,94,.10)}h2{margin:0 0 10px;font-size:clamp(28px,6vw,48px);line-height:1.05;letter-spacing:-.04em}.lead{margin:0 0 18px;color:#cbd5e1;font-size:15px;max-width:780px;line-height:1.55}.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.metric{border:1px solid var(--line);background:rgba(255,255,255,.04);border-radius:18px;padding:13px}.metric small{display:block;color:var(--muted);font-size:11px;margin-bottom:7px}.metric strong{font-size:18px}.metric.info strong{color:var(--cyan2)}.metric.warn strong{color:#fdba74}.metric.danger strong{color:#fca5a5}
+.tabs{position:sticky;top:72px;z-index:25;display:grid;grid-template-columns:repeat(5,1fr);gap:4px;width:100%;margin:12px 0 4px;padding:6px;border:1px solid rgba(148,163,184,.24);border-radius:22px;background:rgba(15,23,42,.88);backdrop-filter:blur(14px);box-shadow:0 10px 28px rgba(0,0,0,.24)}.tab{border:0;border-radius:16px;background:transparent;color:#94a3b8;padding:10px 7px;font-size:12px;font-weight:900}.tab.active{background:rgba(56,189,248,.18);color:#bae6fd}.section{display:none;margin-top:12px}.section.active{display:block}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.card{border:1px solid var(--line);background:rgba(15,23,42,.72);border-radius:var(--radius);padding:16px;box-shadow:0 10px 30px rgba(0,0,0,.18)}.card h3{margin:0 0 10px;font-size:16px}.card p{margin:0;color:#cbd5e1;line-height:1.55;font-size:14px}.row{display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}.row:last-child{border-bottom:0}.row small{color:var(--muted)}.row b{text-align:right}.watchlist{display:grid;gap:9px;margin-top:12px}.watch{display:flex;gap:10px;padding:10px;border-radius:16px;background:rgba(255,255,255,.04);border:1px solid var(--line)}.num{min-width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:rgba(56,189,248,.16);color:#7dd3fc;font-weight:900}.watch span{display:block;color:var(--muted);font-size:12px;margin-top:3px;line-height:1.35}.chart{height:280px;border-radius:22px;border:1px solid var(--line);background:linear-gradient(180deg,rgba(56,189,248,.06),rgba(255,255,255,.02));overflow:hidden}.legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;color:var(--muted);font-size:12px}.legend span{display:flex;align-items:center;gap:6px}.legend i{width:10px;height:10px;border-radius:50%;display:block}.dot-cyan{background:var(--cyan)}.dot-green{background:var(--green)}.dot-red{background:var(--red)}.bar{height:10px;border-radius:999px;background:rgba(148,163,184,.18);overflow:hidden;margin:12px 0 6px}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--cyan),var(--orange));width:50%}.note{color:var(--muted);font-size:12px;line-height:1.45;margin-top:8px}.error{color:#fecaca}.loading{opacity:.72}
+@media(max-width:760px){.app{padding-bottom:42px}.grid{grid-template-columns:1fr}.metrics{grid-template-columns:1fr 1fr}.hero{padding:17px}.metric strong{font-size:16px}.tab{font-size:11px;padding:9px 4px}.brand h1{font-size:16px}.pill{display:none}.tabs{top:70px;border-radius:20px}}
+</style>
 </head>
 <body>
-  <div class="app">
-    <header>
-      <div class="top">
-        <div class="brand"><div class="logo"></div><div><h1>CohesivX BTC Radar</h1><span id="updated">Se încarcă mecanismul...</span></div></div>
-        <div class="pill">RO/EN · A+</div>
-      </div>
-    </header>
-
-    <main>
-      <section class="hero">
-        <div class="statusline">
-          <span class="badge orange" id="mainBadge">🟠 Se încarcă</span>
-          <span class="badge cyan" id="dayBadge">⏳ Fereastră risc</span>
-          <span class="badge red" id="confirmBadge">❌ Confirmare &gt;20%</span>
-        </div>
-        <h2 id="headline">BTC Radar structural</h2>
-        <p class="lead" id="lead">Interfața citește datele actuale din mecanism și le reduce la verdict, praguri și explicație simplă.</p>
-        <div class="metrics">
-          <div class="metric info"><small>Preț live / snapshot</small><strong id="priceLive">—</strong></div>
-          <div class="metric info"><small>Preț mecanism</small><strong id="priceModel">—</strong></div>
-          <div class="metric warn"><small>Start serie / reper degradare</small><strong id="seriesStart">—</strong></div>
-          <div class="metric danger"><small>Confirmare &gt;20%</small><strong id="majorThreshold">—</strong></div>
-        </div>
-      </section>
-
-      <section id="now" class="section active grid">
-        <div class="card">
-          <h3>Ce face mecanismul?</h3>
-          <p>Mecanismul compară <b>prețul live</b> cu <b>prețul structural al modelului</b>, urmărește fereastra de degradare și verifică dacă piața repară ruptura sau confirmă scăderea majoră.</p>
-          <div class="watchlist">
-            <div class="watch"><div class="num">1</div><div><b>Preț mecanism</b><span>Reper structural calculat de model, nu preț de cumpărare/vânzare.</span></div></div>
-            <div class="watch"><div class="num">2</div><div><b>Persistență</b><span>Câte zile structura rămâne degradată fără reparare clară.</span></div></div>
-            <div class="watch"><div class="num">3</div><div><b>Confirmare</b><span>Timpul arată rana nereparată; -20% confirmă amplitudinea majoră.</span></div></div>
-          </div>
-        </div>
-        <div class="card">
-          <h3>Ce spune acum?</h3>
-          <p id="simpleInterpretation">Se încarcă interpretarea mecanismului...</p>
-          <div class="watchlist" id="watchlist"></div>
-        </div>
-      </section>
-
-      <section id="serie" class="section">
-        <div class="card">
-          <h3>Serie curentă</h3>
-          <div class="row"><small>Regim curent</small><b id="currentRegime">—</b></div>
-          <div class="row"><small>Semnal curent</small><b id="currentSignal">—</b></div>
-          <div class="row"><small>Zile degradare</small><b id="degradationDays">—</b></div>
-          <div class="row"><small>Preț mecanism</small><b id="modelDetail">—</b></div>
-          <div class="row"><small>Prag -20%</small><b id="thresholdDetail">—</b></div>
-          <p class="note">Seria trebuie citită de la close-ul/reperul zilei de semnal. Dacă pragul -20% nu este atins, nu există confirmare de scădere majoră, chiar dacă degradarea persistă.</p>
-        </div>
-      </section>
-
-      <section id="risk" class="section grid">
-        <div class="card">
-          <h3>Fereastră risc</h3>
-          <div class="row"><small>Nivel</small><b id="riskLevel">—</b></div>
-          <div class="row"><small>Rată istorică confirmare</small><b id="confirmRate">—</b></div>
-          <div class="row"><small>Mediană confirmare</small><b id="medianDays">—</b></div>
-          <div class="row"><small>Drawdown mediu istoric</small><b id="avgDrawdown">—</b></div>
-        </div>
-        <div class="card">
-          <h3>Participare</h3>
-          <div class="row"><small>Scor participare</small><b id="partScore">—</b></div>
-          <div class="bar"><i id="partBar"></i></div>
-          <p id="partText">—</p>
-        </div>
-      </section>
-
-      <section id="chart" class="section">
-        <div class="card">
-          <h3>Grafic simplificat</h3>
-          <p>Preț live/snapshot, preț mecanism și pragul -20% sunt repere diferite. Linia roșie marchează confirmarea de amplitudine majoră.</p>
-          <div class="chart">
-            <svg viewBox="0 0 600 280" width="100%" height="100%" preserveAspectRatio="none" id="svgChart"></svg>
-          </div>
-          <div class="legend"><span><i class="cyan"></i>Preț snapshot</span><span><i class="green"></i>Preț mecanism</span><span><i class="red"></i>Prag -20%</span></div>
-        </div>
-      </section>
-
-      <section id="history" class="section">
-        <div class="card">
-          <h3>Istoric mecanism</h3>
-          <div id="historyRows" class="loading">Se încarcă istoricul semnalelor...</div>
-        </div>
-      </section>
-    </main>
-
-    <nav class="tabs">
-      <button class="tab active" data-tab="now">Acum</button>
-      <button class="tab" data-tab="serie">Serie</button>
-      <button class="tab" data-tab="risk">Risc</button>
-      <button class="tab" data-tab="chart">Grafic</button>
-      <button class="tab" data-tab="history">Istoric</button>
-    </nav>
-  </div>
-
-  <script>
-    const $ = (id) => document.getElementById(id);
-    const fmtUsd = (v, compact=false) => {
-      if (v === null || v === undefined || Number.isNaN(Number(v))) return "—";
-      const n = Number(v);
-      if (compact) return (n/1000).toFixed(1).replace(".0","") + "K USD";
-      return n.toLocaleString("ro-RO", { maximumFractionDigits: 0 }) + " USD";
-    };
-    const pct = (v, d=1) => {
-      if (v === null || v === undefined || Number.isNaN(Number(v))) return "—";
-      return (Number(v)*100).toFixed(d).replace(".", ",") + "%";
-    };
-    const dateRo = (iso) => {
-      if (!iso) return "—";
-      try { return new Date(iso).toLocaleDateString("ro-RO", { day:"2-digit", month:"short", year:"numeric" }); }
-      catch { return iso; }
-    };
-    async function getJson(path){
-      const res = await fetch(path + "?v=" + Date.now(), { cache:"no-store" });
-      if(!res.ok) throw new Error(path + " " + res.status);
-      return res.json();
-    }
-    function statusFrom(risk, state, part){
-      const active = !!risk.active;
-      const days = Number(risk.consecutive_degradation_days || 0);
-      const median = Number(risk.median_days_to_confirmation || 27);
-      const level = String(risk.level || "n/a");
-      if(!active) return { cls:"green", icon:"🟢", title:"Structură refăcută", text:"Fereastra de risc nu este activă în datele curente." };
-      if(days >= median) return { cls:"red", icon:"🔴", title:"Degradare persistentă", text:`Structura nu s-a reparat în fereastra mediană istorică de ~${median} zile.` };
-      if(level === "high") return { cls:"red", icon:"🔴", title:"Risc structural ridicat", text:"Mecanismul vede degradare puternică, dar confirmarea >20% cere atingerea pragului de amplitudine." };
-      return { cls:"orange", icon:"🟠", title:"Degradare activă", text:"Structura este slăbită, dar confirmarea majoră încă nu este prezentă." };
-    }
-    function deriveStart(state, risk){
-      const hist = Array.isArray(state.signal_history) ? state.signal_history : [];
-      const firstShort = hist.find(x => x.signal === "short");
-      return firstShort ? Number(firstShort.model_price_usd) : Number(state.model_price_usd || state.price_usd);
-    }
-    function renderChart(state, start, threshold){
-      const price = Number(state.price_usd);
-      const model = Number(state.model_price_usd);
-      const max = Math.max(start, price, model) * 1.04;
-      const min = Math.min(threshold, price, model) * .96;
-      const y = (v) => 250 - ((v - min) / (max - min)) * 215;
-      const pY = y(price), mY = y(model), tY = y(threshold);
-      $("svgChart").innerHTML = `
-        <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#38bdf8"/><stop offset="1" stop-color="#7dd3fc"/></linearGradient></defs>
-        <line x1="0" y1="${tY}" x2="600" y2="${tY}" stroke="#ef4444" stroke-dasharray="7 7" opacity=".85"/>
-        <line x1="0" y1="${mY}" x2="600" y2="${mY}" stroke="#22c55e" stroke-dasharray="5 6" opacity=".85"/>
-        <path d="M20 ${y(start)} C120 ${y(start*0.97)}, 220 ${y(start*0.91)}, 330 ${Math.min(y(start*0.913),pY+18)} S500 ${pY+10}, 580 ${pY}" fill="none" stroke="url(#g)" stroke-width="4"/>
-        <circle cx="580" cy="${pY}" r="7" fill="#38bdf8"/>
-        <text x="22" y="${Math.max(16,tY-8)}" fill="#fecaca" font-size="14">Prag -20% ${fmtUsd(threshold,true)}</text>
-        <text x="22" y="${Math.max(16,mY-8)}" fill="#bbf7d0" font-size="14">Mecanism ${fmtUsd(model,true)}</text>
-        <text x="426" y="${Math.max(18,pY-12)}" fill="#bae6fd" font-size="14">Preț ${fmtUsd(price,true)}</text>`;
-    }
-    function renderHistory(state){
-      const hist = (state.signal_history || []).slice(-12).reverse();
-      $("historyRows").classList.remove("loading");
-      $("historyRows").innerHTML = hist.map(x => `<div class="row"><small>${dateRo(x.timestamp)} · ${x.signal}</small><b>${fmtUsd(x.model_price_usd)}</b></div>`).join("");
-    }
-    async function start(){
-      try{
-        const [state, risk, part] = await Promise.all([
-          getJson("./coeziv_state.json"),
-          getJson("./risk_window.json"),
-          getJson("./participation_cohesion.json")
-        ]);
-        const startPrice = deriveStart(state, risk);
-        const threshold = startPrice * (1 + Number(risk.major_drawdown_threshold ?? -0.2));
-        const status = statusFrom(risk, state, part);
-        const deviation = (Number(state.price_usd) - Number(state.model_price_usd)) / Number(state.model_price_usd);
-        $("updated").textContent = "Snapshot " + dateRo(state.timestamp) + " · generat " + dateRo(state.generated_at);
-        $("mainBadge").className = "badge " + status.cls;
-        $("mainBadge").textContent = status.icon + " " + status.title;
-        $("dayBadge").textContent = `⏳ Ziua ${risk.consecutive_degradation_days ?? "—"} / ~${risk.median_days_to_confirmation ?? "—"} zile`;
-        $("confirmBadge").textContent = `❌ Prag -20%: ${fmtUsd(threshold,true)}`;
-        $("headline").textContent = status.title + " BTC";
-        $("lead").textContent = status.text + " Confirmarea majoră cere atingerea pragului -20%; fereastra de timp măsoară persistența degradării.";
-        $("priceLive").textContent = fmtUsd(state.price_usd, true);
-        $("priceModel").textContent = fmtUsd(state.model_price_usd, true);
-        $("seriesStart").textContent = fmtUsd(startPrice, true);
-        $("majorThreshold").textContent = "sub " + fmtUsd(threshold, true);
-        $("simpleInterpretation").textContent = state.message || risk.main_text || "Mecanismul nu are încă mesaj textual.";
-        $("watchlist").innerHTML = `
-          <div class="watch"><div class="num">1</div><div><b>Deviație live/model</b><span>${pct(deviation)} față de prețul mecanismului.</span></div></div>
-          <div class="watch"><div class="num">2</div><div><b>Persistență</b><span>${risk.consecutive_degradation_days ?? "—"} zile degradare; mediană istorică ~${risk.median_days_to_confirmation ?? "—"} zile.</span></div></div>
-          <div class="watch"><div class="num">3</div><div><b>Confirmare majoră</b><span>Doar sub ${fmtUsd(threshold,true)} apare confirmare de amplitudine >20%.</span></div></div>`;
-        $("currentRegime").textContent = risk.current_regime || state.market_regime?.code || "—";
-        $("currentSignal").textContent = risk.current_signal || state.signal || "—";
-        $("degradationDays").textContent = (risk.consecutive_degradation_days ?? "—") + " zile";
-        $("modelDetail").textContent = fmtUsd(state.model_price_usd) + " — reper structural snapshot";
-        $("thresholdDetail").textContent = fmtUsd(threshold) + " — calculat din " + fmtUsd(startPrice);
-        $("riskLevel").textContent = risk.level || "—";
-        $("confirmRate").textContent = pct(risk.historical_confirmation_rate);
-        $("medianDays").textContent = (risk.median_days_to_confirmation ?? "—") + " zile";
-        $("avgDrawdown").textContent = pct(risk.average_min_drawdown);
-        $("partScore").textContent = (part.score ?? "—") + " / 100 · " + (part.label || "");
-        $("partBar").style.width = Math.max(0, Math.min(100, Number(part.score || 0))) + "%";
-        $("partText").textContent = part.main_text || "—";
-        renderChart(state, startPrice, threshold);
-        renderHistory(state);
-      }catch(err){
-        $("headline").textContent = "Mecanism indisponibil";
-        $("lead").innerHTML = '<span class="error">Nu am putut încărca fișierele JSON ale mecanismului: ' + err.message + '</span>';
-      }
-    }
-    document.querySelectorAll(".tab").forEach(btn => btn.addEventListener("click", () => {
-      document.querySelectorAll(".tab").forEach(b => b.classList.remove("active"));
-      document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
-      btn.classList.add("active");
-      $(btn.dataset.tab).classList.add("active");
-    }));
-    start();
-  </script>
-  <script src="./i18n-en.js" defer></script>
-</body>
-</html>
+<div class="app">
+<header><div class="top"><div class="brand"><div class="logo"></div><div><h1>CohesivX BTC Radar</h1><span id="updated">Se încarcă mecanismul...</span></div></div><div class="pill">RO/EN · A+</div></div></header>
+<main>
+<section class="hero"><div class="statusline"><span class="badge orange" id="mainBadge">🟠 Se încarcă</span><span class="badge cyan" id="dayBadge">⏳ Fereastră risc</span><span class="badge red" id="confirmBadge">❌ Confirmare &gt;20%</span></div><h2 id="headline">BTC Radar structural</h2><p class="lead" id="lead">Interfața citește datele actuale din mecanism și le reduce la verdict, praguri și explicație simplă.</p><div class="metrics"><div class="metric info"><small>Preț live / snapshot</small><strong id="priceLive">—</strong></div><div class="metric info"><small>Preț mecanism</small><strong id="priceModel">—</strong></div><div class="metric warn"><small>Start serie / reper degradare</small><strong id="seriesStart">—</strong></div><div class="metric danger"><small>Confirmare &gt;20%</small><strong id="majorThreshold">—</strong></div></div></section>
+<nav class="tabs"><button class="tab active" data-tab="now">Acum</button><button class="tab" data-tab="serie">Serie</button><button class="tab" data-tab="risk">Risc</button><button class="tab" data-tab="chart">Grafic</button><button class="tab" data-tab="history">Istoric</button></nav>
+<section id="now" class="section active grid"><div class="card"><h3>Ce face mecanismul?</h3><p>Mecanismul compară <b>prețul live</b> cu <b>prețul structural al modelului</b>, urmărește fereastra de degradare și verifică dacă piața repară ruptura sau confirmă scăderea majoră.</p><div class="watchlist"><div class="watch"><div class="num">1</div><div><b>Preț mecanism</b><span>Reper structural calculat de model, nu preț de cumpărare/vânzare.</span></div></div><div class="watch"><div class="num">2</div><div><b>Persistență</b><span>Câte zile structura rămâne degradată fără reparare clară.</span></div></div><div class="watch"><div class="num">3</div><div><b>Confirmare</b><span>Timpul arată rana nereparată; -20% confirmă amplitudinea majoră.</span></div></div></div></div><div class="card"><h3>Ce spune acum?</h3><p id="simpleInterpretation">Se încarcă interpretarea mecanismului...</p><div class="watchlist" id="watchlist"></div></div></section>
+<section id="serie" class="section"><div class="card"><h3>Serie curentă</h3><div class="row"><small>Regim curent</small><b id="currentRegime">—</b></div><div class="row"><small>Semnal curent</small><b id="currentSignal">—</b></div><div class="row"><small>Zile degradare</small><b id="degradationDays">—</b></div><div class="row"><small>Preț mecanism</small><b id="modelDetail">—</b></div><div class="row"><small>Prag -20%</small><b id="thresholdDetail">—</b></div><p class="note">Seria se citește de la close-ul/reperul zilei de semnal. Dacă pragul -20% nu este atins, nu există confirmare de scădere majoră, chiar dacă degradarea persistă.</p></div></section>
+<section id="risk" class="section grid"><div class="card"><h3>Fereastră risc</h3><div class="row"><small>Nivel</small><b id="riskLevel">—</b></div><div class="row"><small>Rată istorică confirmare</small><b id="confirmRate">—</b></div><div class="row"><small>Mediană confirmare</small><b id="medianDays">—</b></div><div class="row"><small>Drawdown mediu istoric</small><b id="avgDrawdown">—</b></div></div><div class="card"><h3>Participare</h3><div class="row"><small>Scor participare</small><b id="partScore">—</b></div><div class="bar"><i id="partBar"></i></div><p id="partText">—</p></div></section>
+<section id="chart" class="section"><div class="card"><h3>Grafic simplificat</h3><p>Preț live/snapshot, preț mecanism și pragul -20% sunt repere diferite. Linia roșie marchează confirmarea de amplitudine majoră.</p><div class="chart"><svg viewBox="0 0 600 280" width="100%" height="100%" preserveAspectRatio="none" id="svgChart"></svg></div><div class="legend"><span><i class="dot-cyan"></i>Preț snapshot</span><span><i class="dot-green"></i>Preț mecanism</span><span><i class="dot-red"></i>Prag -20%</span></div></div></section>
+<section id="history" class="section"><div class="card"><h3>Istoric mecanism</h3><div id="historyRows" class="loading">Se încarcă istoricul semnalelor...</div></div></section>
+</main>
+</div>
+<script>
+const $=id=>document.getElementById(id);const fmtUsd=(v,compact=false)=>{if(v===null||v===undefined||Number.isNaN(Number(v)))return"—";const n=Number(v);if(compact)return(n/1000).toFixed(1).replace(".0","")+"K USD";return n.toLocaleString("ro-RO",{maximumFractionDigits:0})+" USD"};const pct=(v,d=1)=>{if(v===null||v===undefined||Number.isNaN(Number(v)))return"—";return(Number(v)*100).toFixed(d).replace(".",",")+"%"};const dateRo=iso=>{if(!iso)return"—";try{return new Date(iso).toLocaleDateString("ro-RO",{day:"2-digit",month:"short",year:"numeric"})}catch{return iso}};async function getJson(path){const res=await fetch(path+"?v="+Date.now(),{cache:"no-store"});if(!res.ok)throw new Error(path+" "+res.status);return res.json()}
+function statusFrom(risk){const active=!!risk.active,days=Number(risk.consecutive_degradation_days||0),median=Number(risk.median_days_to_confirmation||27),level=String(risk.level||"n/a");if(!active)return{cls:"green",icon:"🟢",title:"Structură refăcută",text:"Fereastra de risc nu este activă în datele curente."};if(days>=median)return{cls:"red",icon:"🔴",title:"Degradare persistentă",text:`Structura nu s-a reparat în fereastra mediană istorică de ~${median} zile.`};if(level==="high")return{cls:"red",icon:"🔴",title:"Risc structural ridicat",text:"Mecanismul vede degradare puternică, dar confirmarea >20% cere atingerea pragului de amplitudine."};return{cls:"orange",icon:"🟠",title:"Degradare activă",text:"Structura este slăbită, dar confirmarea majoră încă nu este prezentă."}}
+function deriveStart(state){const hist=Array.isArray(state.signal_history)?state.signal_history:[];const firstShort=hist.find(x=>x.signal==="short");return firstShort?Number(firstShort.model_price_usd):Number(state.model_price_usd||state.price_usd)}
+function renderChart(state,start,threshold){const price=Number(state.price_usd),model=Number(state.model_price_usd),max=Math.max(start,price,model)*1.04,min=Math.min(threshold,price,model)*.96,y=v=>250-((v-min)/(max-min))*215,pY=y(price),mY=y(model),tY=y(threshold);$("svgChart").innerHTML=`<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#38bdf8"/><stop offset="1" stop-color="#7dd3fc"/></linearGradient></defs><line x1="0" y1="${tY}" x2="600" y2="${tY}" stroke="#ef4444" stroke-dasharray="7 7" opacity=".85"/><line x1="0" y1="${mY}" x2="600" y2="${mY}" stroke="#22c55e" stroke-dasharray="5 6" opacity=".85"/><path d="M20 ${y(start)} C120 ${y(start*.97)},220 ${y(start*.91)},330 ${Math.min(y(start*.913),pY+18)} S500 ${pY+10},580 ${pY}" fill="none" stroke="url(#g)" stroke-width="4"/><circle cx="580" cy="${pY}" r="7" fill="#38bdf8"/><text x="22" y="${Math.max(16,tY-8)}" fill="#fecaca" font-size="14">Prag -20% ${fmtUsd(threshold,true)}</text><text x="22" y="${Math.max(16,mY-8)}" fill="#bbf7d0" font-size="14">Mecanism ${fmtUsd(model,true)}</text><text x="426" y="${Math.max(18,pY-12)}" fill="#bae6fd" font-size="14">Preț ${fmtUsd(price,true)}</text>`}
+function renderHistory(state){const hist=(state.signal_history||[]).slice(-12).reverse();$("historyRows").classList.remove("loading");$("historyRows").innerHTML=hist.map(x=>`<div class="row"><small>${dateRo(x.timestamp)} · ${x.signal}</small><b>${fmtUsd(x.model_price_usd)}</b></div>`).join("")}
+async function start(){try{const[state,risk,part]=await Promise.all([getJson("./coeziv_state.json"),getJson("./risk_window.json"),getJson("./participation_cohesion.json")]);const startPrice=deriveStart(state),threshold=startPrice*(1+Number(risk.major_drawdown_threshold??-.2)),status=statusFrom(risk),deviation=(Number(state.price_usd)-Number(state.model_price_usd))/Number(state.model_price_usd);$("updated").textContent="Snapshot "+dateRo(state.timestamp)+" · generat "+dateRo(state.generated_at);$("mainBadge").className="badge "+status.cls;$("mainBadge").textContent=status.icon+" "+status.title;$("dayBadge").textContent=`⏳ Ziua ${risk.consecutive_degradation_days??"—"} / ~${risk.median_days_to_confirmation??"—"} zile`;$("confirmBadge").textContent=`❌ Prag -20%: ${fmtUsd(threshold,true)}`;$("headline").textContent=status.title+" BTC";$("lead").textContent=status.text+" Confirmarea majoră cere atingerea pragului -20%; fereastra de timp măsoară persistența degradării.";$("priceLive").textContent=fmtUsd(state.price_usd,true);$("priceModel").textContent=fmtUsd(state.model_price_usd,true);$("seriesStart").textContent=fmtUsd(startPrice,true);$("majorThreshold").textContent="sub "+fmtUsd(threshold,true);$("simpleInterpretation").textContent=state.message||risk.main_text||"Mecanismul nu are încă mesaj textual.";$("watchlist").innerHTML=`<div class="watch"><div class="num">1</div><div><b>Deviație live/model</b><span>${pct(deviation)} față de prețul mecanismului.</span></div></div><div class="watch"><div class="num">2</div><div><b>Persistență</b><span>${risk.consecutive_degradation_days??"—"} zile degradare; mediană istorică ~${risk.median_days_to_confirmation??"—"} zile.</span></div></div><div class="watch"><div class="num">3</div><div><b>Confirmare majoră</b><span>Doar sub ${fmtUsd(threshold,true)} apare confirmare de amplitudine >20%.</span></div></div>`;$("currentRegime").textContent=risk.current_regime||state.market_regime?.code||"—";$("currentSignal").textContent=risk.current_signal||state.signal||"—";$("degradationDays").textContent=(risk.consecutive_degradation_days??"—")+" zile";$("modelDetail").textContent=fmtUsd(state.model_price_usd)+" — reper structural snapshot";$("thresholdDetail").textContent=fmtUsd(threshold)+" — calculat din "+fmtUsd(startPrice);$("riskLevel").textContent=risk.level||"—";$("confirmRate").textContent=pct(risk.historical_confirmation_rate);$("medianDays").textContent=(risk.median_days_to_confirmation??"—")+" zile";$("avgDrawdown").textContent=pct(risk.average_min_drawdown);$("partScore").textContent=(part.score??"—")+" / 100 · "+(part.label||"");$("partBar").style.width=Math.max(0,Math.min(100,Number(part.score||0)))+"%";$("partText").textContent=part.main_text||"—";renderChart(state,startPrice,threshold);renderHistory(state)}catch(err){$("headline").textContent="Mecanism indisponibil";$("lead").innerHTML='<span class="error">Nu am putut încărca fișierele JSON ale mecanismului: '+err.message+'</span>'}}
+document.querySelectorAll(".tab").forEach(btn=>btn.addEventListener("click",()=>{document.querySelectorAll(".tab").forEach(b=>b.classList.remove("active"));document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));btn.classList.add("active");$(btn.dataset.tab).classList.add("active");window.scrollTo({top:0,behavior:"smooth"})}));start();
+</script>
+<script src="./i18n-en.js" defer></script>
+</body></html>
