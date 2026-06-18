@@ -32,6 +32,10 @@ jobs:
           from pathlib import Path
           import sys
 
+          CACHE_BUST = "9a986e3"
+          NOTE_SRC = f'./distribution-note.js?v={CACHE_BUST}'
+          NOTE_TAG = f'<script src="{NOTE_SRC}" defer></script>'
+
           targets = [
               Path("btc-swing-strategy/mecanism.html"),
               Path("btc-swing-strategy/i18n-en.js"),
@@ -77,11 +81,15 @@ jobs:
               original = text
               for old, new in replacements.items():
                   text = text.replace(old, new)
+
               if path.name == "mecanism.html":
-                  text = text.replace('./distribution-note.js?v=ff55a4f', './distribution-note.js?v=ff55a4f')
-                  text = text.replace('./distribution-note.js" defer', './distribution-note.js?v=ff55a4f" defer')
-                  if './distribution-note.js?v=ff55a4f' not in text:
-                      text = text.replace('</body>', '  <script src="./distribution-note.js?v=ff55a4f" defer></script>\n</body>')
+                  text = text.replace('./distribution-note.js?v=ff55a4f', NOTE_SRC)
+                  text = text.replace('./distribution-note.js?v=9a986e3', NOTE_SRC)
+                  text = text.replace('./distribution-note.js" defer', f'{NOTE_SRC}" defer')
+                  text = text.replace('./distribution-note.js\" defer', f'{NOTE_SRC}\" defer')
+                  if NOTE_SRC not in text:
+                      text = text.replace('</body>', f'  {NOTE_TAG}\n</body>')
+
               if text != original:
                   path.write_text(text, encoding="utf-8")
                   changed.append(str(path))
@@ -114,7 +122,7 @@ jobs:
                       remaining.append(f"{path}: {phrase}")
 
           html = Path("btc-swing-strategy/mecanism.html")
-          if html.exists() and './distribution-note.js' not in html.read_text(encoding="utf-8"):
+          if html.exists() and NOTE_SRC not in html.read_text(encoding="utf-8"):
               remaining.append("btc-swing-strategy/mecanism.html: distribution note cache-bust script missing")
 
           if remaining:
