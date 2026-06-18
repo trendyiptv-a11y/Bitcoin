@@ -48,7 +48,12 @@
   }
 
   function currentPrice() {
-    return parseUsdText(by("live-price")?.textContent) || parseUsdText(by("price")?.textContent) || null;
+    const direct = parseUsdText(by("live-price")?.textContent) || parseUsdText(by("price")?.textContent);
+    if (direct) return direct;
+
+    const bodyText = document.body ? document.body.innerText : "";
+    const match = bodyText.match(/Preț live:\s*([0-9.,]+)\s*USD/i) || bodyText.match(/Live price:\s*([0-9.,]+)\s*USD/i);
+    return match ? parseUsdText(match[1]) : null;
   }
 
   function usd(value) {
@@ -58,8 +63,8 @@
   }
 
   function contextDirection() {
-    const flow = String(by("flow-line")?.textContent || "").toLowerCase();
-    const delta = String(by("live-delta")?.textContent || "").toLowerCase();
+    const flow = String(by("flow-line")?.textContent || document.body?.innerText || "").toLowerCase();
+    const delta = String(by("live-delta")?.textContent || document.body?.innerText || "").toLowerCase();
     if (flow.includes("vânzare") || flow.includes("selling") || flow.includes("sell") || delta.includes("sub prețul") || delta.includes("below")) return -1;
     if (flow.includes("cumpărare") || flow.includes("buying") || flow.includes("buy") || delta.includes("peste prețul") || delta.includes("above")) return 1;
     return -1;
@@ -91,9 +96,18 @@
     return Math.abs(sorted[0] - sorted[1]) < 5 ? "balanced" : labels[max];
   }
 
+  function probabilityBreakdownEl() {
+    const direct = by("signal-prob-breakdown");
+    if (direct) return direct;
+
+    return Array.from(document.querySelectorAll(".live-delta, div, p, span"))
+      .find(el => /Distribuție istorică|Historical distribution/i.test(el.textContent || "")) || null;
+  }
+
   function noteText() {
     const e = lang() === "en";
-    const values = parsePercents(by("signal-prob-breakdown")?.textContent || "");
+    const breakdown = probabilityBreakdownEl();
+    const values = parsePercents(breakdown?.textContent || "");
     const d = dominant(values);
     if (e) {
       const base = values.length >= 3
@@ -131,7 +145,7 @@
   }
 
   function ensureUi() {
-    const breakdown = by("signal-prob-breakdown");
+    const breakdown = probabilityBreakdownEl();
     if (!breakdown) return;
     if (!by(BUTTON_ID)) {
       const wrap = document.createElement("div");
