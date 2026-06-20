@@ -32,15 +32,13 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # IMPORTANT: aducem ultimul main înainte să generăm fișiere
       - name: Pull latest main
         run: git pull --rebase origin main
 
       - name: Run Cohesiv Pipeline (best effort)
         run: |
           python fetch_btc_daily.py
-          # dacă Yahoo pică în partea macro, nu dărâmăm jobul BTC
-          python run_cohesiv_pipeline.py || echo "Pipeline failed (likely Yahoo macro). Continuing to commit any produced outputs."
+          python run_cohesiv_pipeline.py || echo "Pipeline failed. Continuing to commit any produced outputs."
 
       - name: Debug outputs
         run: |
@@ -50,18 +48,17 @@ jobs:
           ls -lah data || true
           echo "=== data_global/ ==="
           ls -lah data_global || true
+          echo "=== btc-swing-strategy state ==="
+          ls -lah btc-swing-strategy/coeziv_state.json || true
 
       - name: Commit updated data
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          # adaugă datele generate (BTC + macro dacă există)
           git add data/*.json data/*.csv || true
           git add data_global/*.csv || true
+          git add btc-swing-strategy/coeziv_state.json || true
 
-          # dacă nu sunt schimbări, nu e problemă
           git commit -m "Auto-update data" || echo "Nothing to commit"
-
-          # dacă push-ul e blocat, nu dărâmă jobul
           git push origin main || echo "Push failed (will retry on next run)"
