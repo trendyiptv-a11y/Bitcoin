@@ -2,12 +2,13 @@
 # run_cohesiv_pipeline.py
 
 """
-Pipeline Coeziv BTC-only (fără Yahoo / macro global).
+Pipeline Coeziv BTC-only.
 
-Generează:
+Generates:
 1. data/btc_state_latest.json
 2. data/ic_btc_series.json
-3. data/ic_btc_mega_latest.json
+3. BTC historical 72h statistics
+4. data/ic_btc_mega_latest.json
 """
 
 import subprocess
@@ -21,17 +22,17 @@ def run(cmd: list[str]) -> None:
     print(f"\n[PIPELINE] Running: {' '.join(cmd)}")
     result = subprocess.run(cmd, cwd=ROOT)
     if result.returncode != 0:
-        print(f"[PIPELINE] Eroare la comanda: {' '.join(cmd)}", file=sys.stderr)
+        print(f"[PIPELINE] Error running command: {' '.join(cmd)}", file=sys.stderr)
         sys.exit(result.returncode)
 
 
 def main() -> None:
-    # BTC state + serie + mega (fără macro/yahoo)
     run([sys.executable, "update_btc_state_latest_from_daily.py"])
     run([sys.executable, "export_ic_btc_series.py"])
+    run([sys.executable, "update_btc_72h_statistics.py"])
     run([sys.executable, "build_ic_btc_mega_state.py"])
 
-    print("\n[PIPELINE] ✅ Pipeline Coeziv BTC complet (fără Yahoo).")
+    print("\n[PIPELINE] BTC Cohesiv pipeline complete.")
 
 
 if __name__ == "__main__":
