@@ -9,6 +9,7 @@ Generates:
 2. data/ic_btc_series.json
 3. BTC historical 72h statistics
 4. data/ic_btc_mega_latest.json
+5. btc-swing-strategy/coeziv_state.json with Coeziv model_price V2
 """
 
 import subprocess
@@ -31,6 +32,7 @@ def main() -> None:
     run([sys.executable, "export_ic_btc_series.py"])
     run([sys.executable, "update_btc_72h_statistics.py"])
     run([sys.executable, "build_ic_btc_mega_state.py"])
+    run([sys.executable, "coeziv_state_v2.py"])
 
     print("\n[PIPELINE] BTC Cohesiv pipeline complete.")
 
