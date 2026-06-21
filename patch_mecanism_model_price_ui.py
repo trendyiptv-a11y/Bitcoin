@@ -45,7 +45,17 @@ CONST_BLOCK = """
     // MODEL_PRICE_EXPLANATION_CONST_END
 """
 
-FUNCTION_BLOCK = r'''
+CONFIRMATION_URLS_BLOCK = """
+    // STRUCTURAL_CONFIRMATION_URLS_START
+    const STRUCTURAL_CONFIRMATION_URLS = [
+      "comparative_backtest_summary.json",
+      "./comparative_backtest_summary.json",
+      "/btc-swing-strategy/comparative_backtest_summary.json"
+    ];
+    // STRUCTURAL_CONFIRMATION_URLS_END
+"""
+
+FUNCTION_BLOCK = """
     // MODEL_PRICE_EXPLANATION_JS_START
     function formatModelPriceExplanation(state) {
       if (!state || typeof state !== "object") return "";
@@ -102,7 +112,78 @@ FUNCTION_BLOCK = r'''
       MODEL_PRICE_EXPLANATION_EL.textContent = text;
     }
     // MODEL_PRICE_EXPLANATION_JS_END
-'''
+"""
+
+STRUCTURAL_CONFIRMATION_BLOCK = """
+    // STRUCTURAL_CONFIRMATION_JS_START
+    function pctDisplay(value, digits = 0) {
+      const n = Number(value);
+      if (!Number.isFinite(n)) return null;
+      return `~${(n * 100).toFixed(digits)}%`;
+    }
+
+    function currentRegimeFromState(state) {
+      const ctxRegime = state && state.model_price_context && state.model_price_context.regime;
+      if (ctxRegime) return String(ctxRegime);
+      const market = state && state.market_regime;
+      if (market && typeof market.code === "string") return market.code;
+      if (market && typeof market.label === "string") return market.label;
+      return "n/a";
+    }
+
+    function confirmationStats(summary, horizonDays, thresholdName = "threshold_10pct") {
+      const model = summary && summary.models && summary.models.cohesive_v2;
+      const horizon = model && model[`horizon_${horizonDays}d`];
+      const block = horizon && horizon[thresholdName];
+      if (!block) return null;
+      const rate = Number(block.directional_hit_rate);
+      const events = Number(block.events);
+      if (!Number.isFinite(rate) || !Number.isFinite(events)) return null;
+      return { rate, events };
+    }
+
+    function updateStructuralConfirmation(state, summary) {
+      if (!SIGNAL_PROB_EL && !SIGNAL_PROB_BREAKDOWN_EL && !DRIFT_EL) return;
+
+      const h7 = confirmationStats(summary, 7);
+      const h30 = confirmationStats(summary, 30);
+      const samples = state && state.model_price_components
+        ? Number(state.model_price_components.similar_context_samples)
+        : null;
+      const regime = currentRegimeFromState(state);
+      const dev = pctDisplay(state && state.model_price_deviation, 1);
+
+      if (SIGNAL_PROB_EL) {
+        if (h7 && h30) {
+          SIGNAL_PROB_EL.textContent =
+            `Confirmare istorică: ${pctDisplay(h7.rate, 0)} pe 7 zile și ${pctDisplay(h30.rate, 0)} pe 30 zile în situații similare.`;
+        } else {
+          SIGNAL_PROB_EL.textContent =
+            "Confirmare istorică: se actualizează după următorul backtest al mecanismului.";
+        }
+      }
+
+      if (SIGNAL_PROB_BREAKDOWN_EL) {
+        if (h30) {
+          const sampleText = Number.isFinite(samples) && samples > 0
+            ? ` Contextul curent folosește ${samples.toFixed(0)} contexte istorice similare.`
+            : "";
+          SIGNAL_PROB_BREAKDOWN_EL.textContent =
+            `Bază statistică: ${h30.events.toFixed(0)} evenimente istorice cu deviații ample față de reperul coeziv.${sampleText}`;
+        } else {
+          SIGNAL_PROB_BREAKDOWN_EL.textContent =
+            "Bază statistică: așteptăm fișierul de confirmare istorică.";
+        }
+      }
+
+      if (DRIFT_EL) {
+        const devText = dev ? ` Deviația curentă este ${dev} față de prețul coeziv.` : "";
+        DRIFT_EL.textContent =
+          `Semnal structural, nu intraday. Regim curent: ${regime}.${devText}`;
+      }
+    }
+    // STRUCTURAL_CONFIRMATION_JS_END
+"""
 
 
 def replace_once(text: str, needle: str, replacement: str, label: str) -> str:
@@ -138,6 +219,48 @@ def main() -> None:
             call_anchor,
             call_anchor + "        updateModelPriceExplanation(state);\n",
             "apel explicație preț mecanism",
+        )
+
+    if "STRUCTURAL_CONFIRMATION_URLS_START" not in html:
+        urls_anchor = '    const STATE_URLS = ["coeziv_state.json", "./coeziv_state.json", "/btc-swing-strategy/coeziv_state.json", "/coeziv_state.json"];\n'
+        html = replace_once(
+            html,
+            urls_anchor,
+            urls_anchor + CONFIRMATION_URLS_BLOCK,
+            "URL-uri confirmare structurală",
+        )
+
+    if "STRUCTURAL_CONFIRMATION_JS_START" not in html:
+        fn_anchor = "    function resetDeviationStatus(text) {\n"
+        html = replace_once(
+            html,
+            fn_anchor,
+            STRUCTURAL_CONFIRMATION_BLOCK + "\n" + fn_anchor,
+            "funcții confirmare structurală",
+        )
+
+    if "let structuralConfirmationSummary = null;" not in html:
+        state_anchor = "        const state = await fetchJsonFallback(STATE_URLS);\n"
+        html = replace_once(
+            html,
+            state_anchor,
+            state_anchor
+            + "        let structuralConfirmationSummary = null;\n"
+            + "        try {\n"
+            + "          structuralConfirmationSummary = await fetchJsonFallback(STRUCTURAL_CONFIRMATION_URLS);\n"
+            + "        } catch (_) {\n"
+            + "          structuralConfirmationSummary = null;\n"
+            + "        }\n",
+            "încărcare confirmare structurală",
+        )
+
+    if "updateStructuralConfirmation(state, structuralConfirmationSummary);" not in html:
+        update_anchor = "        updateFGCard(fgBlock);\n"
+        html = replace_once(
+            html,
+            update_anchor,
+            "        updateStructuralConfirmation(state, structuralConfirmationSummary);\n" + update_anchor,
+            "apel confirmare structurală",
         )
 
     if html != original:
