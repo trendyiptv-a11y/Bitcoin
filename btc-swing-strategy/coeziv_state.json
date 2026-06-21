@@ -4,7 +4,7 @@
   "model_price_usd": 63540.8,
   "price_source": "spot",
   "signal": "flat",
-  "message": "Prețul de tranzacționare la actualizarea sistemului: în jur de ~63,500 USD. Mecanismul vede un neutru. Fluxul actual de piață este relativ echilibrat (slab). Lichiditatea este ridicată, iar mișcările de preț tind să fie mai stabile. Prețul este semnificativ peste costul estimat de producție, zonă specifică fazelor speculative moderate. Istoric, în contexte similare, mișcarea pe următoarele ~24 ore a fost de aproximativ -3.6% în scenariile mai pesimiste, 0.2% în scenariile mediene și până la 4.3% în scenariile mai favorabile. Nu este o recomandare de tranzacționare, ci o interpretare structurată a riscului.",
+  "message": "Prețul de tranzacționare la actualizarea sistemului: în jur de ~63,500 USD. Mecanismul vede un neutru. Fluxul actual de piață este relativ echilibrat (slab). Lichiditatea este ridicată, iar mișcările de preț tind să fie mai stabile. Prețul este semnificativ peste costul estimat de producție, zonă specifică fazelor speculative moderate. Istoric, în contexte similare, mișcarea pe următoarele ~3 zile a fost de aproximativ -3.6% în scenariile mai pesimiste, 0.2% în scenariile mediene și până la 4.3% în scenariile mai favorabile. Nu este o recomandare de tranzacționare, ci o interpretare structurată a riscului.",
   "generated_at": "2026-06-20T04:48:36.259507+00:00",
   "signal_history": [
     {
@@ -159,19 +159,20 @@
     }
   ],
   "signal_probability": 0.2066869300911854,
-  "signal_prob_samples": 3619,
-  "signal_prob_horizon_hours": 24,
-  "signal_prob_source": "ohlc",
+  "signal_prob_samples": 750,
+  "signal_prob_horizon_hours": 72,
+  "signal_prob_source": "historical_72h_ic_similarity",
   "signal_prob_breakdown": {
-    "in_direction": 0.2066869300911854,
-    "opposite": 0.4302293451229621,
-    "flat": 0.36308372478585244
+    "in_direction": 0.38666666666666666,
+    "opposite": 0.43333333333333335,
+    "flat": 0.18
   },
   "signal_expected_drift": {
-    "horizon_hours": 24,
-    "p10": -0.035578438839403405,
-    "p50": 0.0015705692656038757,
-    "p90": 0.043472082121190594
+    "horizon_hours": 72,
+    "p10": -0.05561233585805625,
+    "p50": 0.0021409597415611437,
+    "p90": 0.05673578909157517,
+    "mean": 0.0014313229350722471
   },
   "market_regime": {
     "label": "8. Regim neutru / tranziție cu deviație normală față de model — flux tensionat",
@@ -201,5 +202,14 @@
     "structural_zone": "neutral",
     "tactical_zone": "neutral",
     "combined_zone": "neutral"
+  },
+  "signal_context_direction": "down",
+  "signal_stat_window": {
+    "horizon_days": 3,
+    "horizon_hours": 72,
+    "flat_threshold": 0.0075,
+    "sample_method": "nearest historical IC context",
+    "max_similar_samples": 750,
+    "samples_used": 750
   }
 }
