@@ -59,6 +59,7 @@ jobs:
           git add data/*.json data/*.csv || true
           git add data_global/*.csv || true
           git add btc-swing-strategy/coeziv_state.json || true
+          git add btc-swing-strategy/mecanism.html || true
 
           git commit -m "Auto-update data" || echo "Nothing to commit"
           git push origin main || echo "Push failed (will retry on next run)"
