@@ -10,6 +10,7 @@ Generates:
 3. BTC historical 72h statistics
 4. data/ic_btc_mega_latest.json
 5. btc-swing-strategy/coeziv_state.json with Coeziv model_price V2
+6. Ensures mecanism.html displays the V2 explanation dynamically
 """
 
 import subprocess
@@ -33,6 +34,7 @@ def main() -> None:
     run([sys.executable, "update_btc_72h_statistics.py"])
     run([sys.executable, "build_ic_btc_mega_state.py"])
     run([sys.executable, "coeziv_state_v2.py"])
+    run([sys.executable, "patch_mecanism_model_price_ui.py"])
 
     print("\n[PIPELINE] BTC Cohesiv pipeline complete.")
 
