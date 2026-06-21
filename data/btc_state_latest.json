@@ -1,19 +1,19 @@
 {
   "as_of": "2026-06-21",
-  "close": 64159.5,
-  "ic_struct": 59.47,
-  "ic_dir": 18.3,
-  "vol30_ann_pct": 42.82,
-  "vol30_index": 24.06,
+  "close": 64232.9,
+  "ic_struct": 59.43,
+  "ic_dir": 18.42,
+  "vol30_ann_pct": 42.84,
+  "vol30_index": 24.11,
   "regime_code": "bear_struct",
   "regime_label": "Bear structural",
   "regime_short": "Trend descendent în formare / structură în răcire.",
   "regime_color": "red",
-  "prob_up": 0.3065,
-  "prob_down": 0.6935,
+  "prob_up": 0.3076,
+  "prob_down": 0.6924,
   "bias_label": "bias bear pronunțat",
   "confidence_label": "mediu",
-  "confidence_score": 61.0,
+  "confidence_score": 60.9,
   "context_short": {
     "trend": {
       "text": "Trend: zonă de tranziție (IC 59), bias direcțional bear (ICD 18).",
@@ -28,6 +28,7 @@
       "color": "grey"
     }
   },
+  "signal_probability": 0.38666666666666666,
   "signal_prob_horizon_hours": 72,
   "signal_prob_samples": 750,
   "signal_prob_source": "historical_72h_ic_similarity",
@@ -41,7 +42,7 @@
     "p10": -0.05561233585805625,
     "p50": 0.0021409597415611437,
     "p90": 0.05673578909157517,
-    "mean": 0.0014313229350722471
+    "mean": 0.0014354981211920114
   },
   "signal_context_direction": "down",
   "signal_stat_window": {
