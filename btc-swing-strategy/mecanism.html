@@ -2196,6 +2196,14 @@ body.light-mode .card:first-of-type {
 
 
     const STATE_URLS = ["coeziv_state.json", "./coeziv_state.json", "/btc-swing-strategy/coeziv_state.json", "/coeziv_state.json"];
+
+    // STRUCTURAL_CONFIRMATION_URLS_START
+    const STRUCTURAL_CONFIRMATION_URLS = [
+      "comparative_backtest_summary.json",
+      "./comparative_backtest_summary.json",
+      "/btc-swing-strategy/comparative_backtest_summary.json"
+    ];
+    // STRUCTURAL_CONFIRMATION_URLS_END
     async function fetchJsonFallback(urls) {
       let lastError = null;
       for (const url of urls) {
@@ -2428,6 +2436,76 @@ body.light-mode .card:first-of-type {
     }
     // MODEL_PRICE_EXPLANATION_JS_END
 
+
+    // STRUCTURAL_CONFIRMATION_JS_START
+    function pctDisplay(value, digits = 0) {
+      const n = Number(value);
+      if (!Number.isFinite(n)) return null;
+      return `~${(n * 100).toFixed(digits)}%`;
+    }
+
+    function currentRegimeFromState(state) {
+      const ctxRegime = state && state.model_price_context && state.model_price_context.regime;
+      if (ctxRegime) return String(ctxRegime);
+      const market = state && state.market_regime;
+      if (market && typeof market.code === "string") return market.code;
+      if (market && typeof market.label === "string") return market.label;
+      return "n/a";
+    }
+
+    function confirmationStats(summary, horizonDays, thresholdName = "threshold_10pct") {
+      const model = summary && summary.models && summary.models.cohesive_v2;
+      const horizon = model && model[`horizon_${horizonDays}d`];
+      const block = horizon && horizon[thresholdName];
+      if (!block) return null;
+      const rate = Number(block.directional_hit_rate);
+      const events = Number(block.events);
+      if (!Number.isFinite(rate) || !Number.isFinite(events)) return null;
+      return { rate, events };
+    }
+
+    function updateStructuralConfirmation(state, summary) {
+      if (!SIGNAL_PROB_EL && !SIGNAL_PROB_BREAKDOWN_EL && !DRIFT_EL) return;
+
+      const h7 = confirmationStats(summary, 7);
+      const h30 = confirmationStats(summary, 30);
+      const samples = state && state.model_price_components
+        ? Number(state.model_price_components.similar_context_samples)
+        : null;
+      const regime = currentRegimeFromState(state);
+      const dev = pctDisplay(state && state.model_price_deviation, 1);
+
+      if (SIGNAL_PROB_EL) {
+        if (h7 && h30) {
+          SIGNAL_PROB_EL.textContent =
+            `Confirmare istorică: ${pctDisplay(h7.rate, 0)} pe 7 zile și ${pctDisplay(h30.rate, 0)} pe 30 zile în situații similare.`;
+        } else {
+          SIGNAL_PROB_EL.textContent =
+            "Confirmare istorică: se actualizează după următorul backtest al mecanismului.";
+        }
+      }
+
+      if (SIGNAL_PROB_BREAKDOWN_EL) {
+        if (h30) {
+          const sampleText = Number.isFinite(samples) && samples > 0
+            ? ` Contextul curent folosește ${samples.toFixed(0)} contexte istorice similare.`
+            : "";
+          SIGNAL_PROB_BREAKDOWN_EL.textContent =
+            `Bază statistică: ${h30.events.toFixed(0)} evenimente istorice cu deviații ample față de reperul coeziv.${sampleText}`;
+        } else {
+          SIGNAL_PROB_BREAKDOWN_EL.textContent =
+            "Bază statistică: așteptăm fișierul de confirmare istorică.";
+        }
+      }
+
+      if (DRIFT_EL) {
+        const devText = dev ? ` Deviația curentă este ${dev} față de prețul coeziv.` : "";
+        DRIFT_EL.textContent =
+          `Semnal structural, nu intraday. Regim curent: ${regime}.${devText}`;
+      }
+    }
+    // STRUCTURAL_CONFIRMATION_JS_END
+
     function resetDeviationStatus(text) {
       if (!DEV_STATUS_EL) return;
       DEV_STATUS_EL.classList.remove("dev-normal", "dev-mild", "dev-tension", "dev-extreme");
@@ -2615,6 +2693,12 @@ body.light-mode .card:first-of-type {
         MSG_EL.textContent = "Se încarcă mesajul coeziv...";
 
         const state = await fetchJsonFallback(STATE_URLS);
+        let structuralConfirmationSummary = null;
+        try {
+          structuralConfirmationSummary = await fetchJsonFallback(STRUCTURAL_CONFIRMATION_URLS);
+        } catch (_) {
+          structuralConfirmationSummary = null;
+        }
 
         const modelPrice = state.model_price_usd;
         const fallbackPrice = state.price_usd;
@@ -2878,6 +2962,7 @@ body.light-mode .card:first-of-type {
           }
         }
 
+        updateStructuralConfirmation(state, structuralConfirmationSummary);
         updateFGCard(fgBlock);
         
         refreshMMRecommendation();
