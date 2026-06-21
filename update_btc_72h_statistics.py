@@ -90,7 +90,6 @@ def classify_return(ret: float, direction: str) -> str:
         return "in_direction" if ret > 0 else "opposite"
     if direction == "down":
         return "in_direction" if ret < 0 else "opposite"
-    # context neutru: separăm mișcările sus/jos, iar neutralul rămâne flat
     return "in_direction" if ret > 0 else "opposite"
 
 
@@ -121,7 +120,6 @@ def compute_distribution(series: List[Dict[str, Any]]) -> Dict[str, Any]:
     direction = context_direction(latest_ic_dir)
     candidates: List[Dict[str, Any]] = []
 
-    # Excludem ultimele 3 zile, pentru că nu au încă rezultat T+72h.
     for i in range(0, len(series) - HORIZON_DAYS):
         rec = series[i]
         fut = series[i + HORIZON_DAYS]
@@ -153,6 +151,9 @@ def compute_distribution(series: List[Dict[str, Any]]) -> Dict[str, Any]:
     breakdown = {k: (counts[k] / n if n else 0.0) for k in counts}
 
     return {
+        # Câmpul pe care UI-ul îl afișează la „Probabilitate istorică”.
+        # Trebuie sincronizat cu distribuția 72h, altfel rămâne vechiul procent 24h.
+        "signal_probability": breakdown["in_direction"],
         "signal_prob_horizon_hours": HORIZON_HOURS,
         "signal_prob_samples": n,
         "signal_prob_source": "historical_72h_ic_similarity",
