@@ -47,6 +47,89 @@ def _safe_liquidity() -> Dict[str, Any]:
         return {"liquidity_score": None, "liquidity_regime": None, "liquidity_strength": None, "components": {}}
 
 
+def _fmt_usd(value: Any) -> str:
+    try:
+        v = float(value)
+        if math.isfinite(v):
+            return f"~{v:,.0f} USD"
+    except Exception:
+        pass
+    return "n/a"
+
+
+def _fmt_pct(value: Any) -> str:
+    try:
+        v = float(value)
+        if math.isfinite(v):
+            sign = "+" if v > 0 else "−" if v < 0 else ""
+            return f"{sign}{abs(v) * 100:.1f}%"
+    except Exception:
+        pass
+    return "n/a"
+
+
+def _build_model_price_explanation(
+    fair_price: Optional[Dict[str, Any]],
+    model_price: float,
+    price_for_text: float,
+    dev_pct_model: Optional[float],
+) -> Optional[str]:
+    """
+    Builds the UI-facing explanation from actual JSON fields.
+    No fixed price or fixed sample count is hardcoded here.
+    """
+    if not fair_price:
+        return None
+
+    comps = fair_price.get("components") or {}
+    bands = fair_price.get("bands") or {}
+
+    samples = comps.get("similar_context_samples")
+    multiplier = comps.get("historical_multiplier_p50")
+    cost_anchor = comps.get("production_cost_anchor_usd")
+    p10 = bands.get("p10")
+    p90 = bands.get("p90")
+
+    if not (math.isfinite(model_price) and model_price > 0):
+        return None
+
+    relation = "sub" if dev_pct_model is not None and dev_pct_model < 0 else "peste"
+
+    pieces = [
+        f"Prețul coeziv central este {_fmt_usd(model_price)}, calculat din costul de producție actual",
+    ]
+
+    if cost_anchor is not None:
+        pieces[0] += f" ({_fmt_usd(cost_anchor)})"
+
+    if samples is not None and multiplier is not None:
+        try:
+            pieces.append(
+                f"și din {int(samples)} contexte istorice similare, unde multiplicatorul median preț/cost este {float(multiplier):.3f}×."
+            )
+        except Exception:
+            pieces.append("și din contexte istorice similare ale mecanismului.")
+    elif samples is not None:
+        try:
+            pieces.append(f"și din {int(samples)} contexte istorice similare.")
+        except Exception:
+            pieces.append("și din contexte istorice similare ale mecanismului.")
+    else:
+        pieces.append("și din contexte istorice similare ale mecanismului.")
+
+    if dev_pct_model is not None and math.isfinite(dev_pct_model):
+        pieces.append(
+            f"Prețul live este {_fmt_pct(dev_pct_model)} {relation} acest reper coeziv."
+        )
+
+    if p10 is not None and p90 is not None:
+        pieces.append(
+            f"Banda statistică a modelului este {_fmt_usd(p10)} – {_fmt_usd(p90)}; banda superioară nu este target, ci limită statistică a multiplicatorului istoric."
+        )
+
+    return " ".join(pieces)
+
+
 def main() -> None:
     df = base.load_ic_series()
     df = base.generate_signals(df)
@@ -137,6 +220,15 @@ def main() -> None:
         deviation_from_production=deviation_from_production,
     )
 
+    model_price_explanation = _build_model_price_explanation(
+        fair_price=fair_price,
+        model_price=model_price,
+        price_for_text=price_for_text,
+        dev_pct_model=dev_pct_model,
+    )
+    if model_price_explanation:
+        message = f"{message} {model_price_explanation}"
+
     state: Dict[str, Any] = {
         "timestamp": ts.isoformat() if isinstance(ts, pd.Timestamp) else str(ts),
         "price_usd": price_for_text,
@@ -146,6 +238,7 @@ def main() -> None:
         "model_price_source": model_price_source,
         "model_price_method": model_price_method,
         "model_price_deviation": dev_pct_model,
+        "model_price_explanation": model_price_explanation,
         "signal": signal,
         "message": message,
         "generated_at": datetime.now(timezone.utc).isoformat(),
@@ -196,6 +289,8 @@ def main() -> None:
     print("Preț coeziv model:", f"{model_price:,.2f} USD", "| metodă:", model_price_method)
     if dev_pct_model is not None:
         print("Deviație spot față de preț coeziv:", f"{dev_pct_model * 100:.2f}%")
+    if model_price_explanation:
+        print("Explicație preț coeziv:", model_price_explanation)
 
 
 if __name__ == "__main__":
