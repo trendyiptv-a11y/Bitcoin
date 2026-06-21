@@ -1,17 +1,12 @@
 {
-  "timestamp": "2026-06-20T00:00:00+00:00",
-  "price_usd": 63500.0,
-  "model_price_usd": 63540.8,
+  "timestamp": "2026-06-21T00:00:00+00:00",
+  "price_usd": 64176.0,
+  "model_price_usd": 64159.5,
   "price_source": "spot",
   "signal": "flat",
-  "message": "Prețul de tranzacționare la actualizarea sistemului: în jur de ~63,500 USD. Mecanismul vede un neutru. Fluxul actual de piață este relativ echilibrat (slab). Lichiditatea este ridicată, iar mișcările de preț tind să fie mai stabile. Prețul este semnificativ peste costul estimat de producție, zonă specifică fazelor speculative moderate. Istoric, în contexte similare, mișcarea pe următoarele ~3 zile a fost de aproximativ -3.6% în scenariile mai pesimiste, 0.2% în scenariile mediene și până la 4.3% în scenariile mai favorabile. Nu este o recomandare de tranzacționare, ci o interpretare structurată a riscului.",
-  "generated_at": "2026-06-20T04:48:36.259507+00:00",
+  "message": "Prețul de tranzacționare la actualizarea sistemului: în jur de ~64,176 USD. Mecanismul vede un neutru. Fluxul actual de piață este relativ echilibrat (slab). Lichiditatea este ridicată, iar mișcările de preț tind să fie mai stabile. Prețul este semnificativ peste costul estimat de producție, zonă specifică fazelor speculative moderate. Istoric, în contexte similare, mișcarea pe următoarele ~24 ore a fost de aproximativ -3.6% în scenariile mai pesimiste, 0.2% în scenariile mediene și până la 4.3% în scenariile mai favorabile. Nu este o recomandare de tranzacționare, ci o interpretare structurată a riscului.",
+  "generated_at": "2026-06-21T05:23:23.768911+00:00",
   "signal_history": [
-    {
-      "timestamp": "2026-05-22T00:00:00+00:00",
-      "signal": "flat",
-      "model_price_usd": 75456.5
-    },
     {
       "timestamp": "2026-05-23T00:00:00+00:00",
       "signal": "flat",
@@ -155,24 +150,28 @@
     {
       "timestamp": "2026-06-20T00:00:00+00:00",
       "signal": "flat",
-      "model_price_usd": 63540.8
+      "model_price_usd": 64250.1
+    },
+    {
+      "timestamp": "2026-06-21T00:00:00+00:00",
+      "signal": "flat",
+      "model_price_usd": 64159.5
     }
   ],
-  "signal_probability": 0.2066869300911854,
-  "signal_prob_samples": 750,
-  "signal_prob_horizon_hours": 72,
-  "signal_prob_source": "historical_72h_ic_similarity",
+  "signal_probability": 0.20662983425414364,
+  "signal_prob_samples": 3620,
+  "signal_prob_horizon_hours": 24,
+  "signal_prob_source": "ohlc",
   "signal_prob_breakdown": {
-    "in_direction": 0.38666666666666666,
-    "opposite": 0.43333333333333335,
-    "flat": 0.18
+    "in_direction": 0.20662983425414364,
+    "opposite": 0.4303867403314917,
+    "flat": 0.3629834254143646
   },
   "signal_expected_drift": {
-    "horizon_hours": 72,
-    "p10": -0.05561233585805625,
-    "p50": 0.0021409597415611437,
-    "p90": 0.05673578909157517,
-    "mean": 0.0014313229350722471
+    "horizon_hours": 24,
+    "p10": -0.03557409275093261,
+    "p50": 0.001575402887167371,
+    "p90": 0.043467198221790966
   },
   "market_regime": {
     "label": "8. Regim neutru / tranziție cu deviație normală față de model — flux tensionat",
@@ -184,32 +183,23 @@
     "expensive": 83468.40035234929
   },
   "production_cost_reference": "average",
-  "production_cost_as_of": "2026-06-20T04:48:36.146829+00:00",
-  "deviation_from_production": 0.21031105000545186,
-  "flow_score": 0.0008584529260643634,
+  "production_cost_as_of": "2026-06-21T05:23:23.665277+00:00",
+  "deviation_from_production": 0.22319562118346264,
+  "flow_score": -0.0014101145367866905,
   "flow_bias": "neutru",
   "flow_strength": "slab",
   "flow_components": {},
-  "liquidity_score": 0.006918389444262561,
+  "liquidity_score": 0.005634395529890352,
   "liquidity_regime": "ridicată",
   "liquidity_strength": "puternică",
   "liquidity_components": {},
   "fg": {
-    "structural": 55.26,
+    "structural": 55.58,
     "tactical_24h": 50.0,
-    "combined": 55.26,
-    "tension": 5.26,
+    "combined": 55.58,
+    "tension": 5.58,
     "structural_zone": "neutral",
     "tactical_zone": "neutral",
     "combined_zone": "neutral"
-  },
-  "signal_context_direction": "down",
-  "signal_stat_window": {
-    "horizon_days": 3,
-    "horizon_hours": 72,
-    "flat_threshold": 0.0075,
-    "sample_method": "nearest historical IC context",
-    "max_similar_samples": 750,
-    "samples_used": 750
   }
 }
