@@ -41,8 +41,9 @@ jobs:
 
       - name: Update BTC state and UI
         run: |
-          python coeziv_state_runner.py
+          python coeziv_state_v2.py
           python patch_standard_regime_ui.py
+          python patch_mecanism_model_price_ui.py
 
       - name: Clean pycache and pyc files
         run: |
@@ -52,6 +53,8 @@ jobs:
       - name: Auto-commit generated files
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "Update BTC state and UI"
+          commit_message: "Update BTC V2 state and UI"
           branch: main
-          file_pattern: btc-swing-strategy/coeziv_state.json btc-swing-strategy/mecanism.html
+          file_pattern: >
+            btc-swing-strategy/coeziv_state.json
+            btc-swing-strategy/mecanism.html
