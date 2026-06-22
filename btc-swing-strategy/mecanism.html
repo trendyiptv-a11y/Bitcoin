@@ -2704,7 +2704,7 @@ body.light-mode .card:first-of-type {
         const history = state.signal_history;
         const regime = state.market_regime || null;
         highlightActiveStandardRegime(state);
-        const drift = state.signal_expected_drift || null;
+       const drift = null;
 
         const flowBias = state.flow_bias || null;
         const flowStrength = state.flow_strength || null;
@@ -2719,28 +2719,12 @@ body.light-mode .card:first-of-type {
         LIQ_REGIME = liqRegime;
         LIQ_STRENGTH = liqStrength;
 
-        const prob = state.signal_probability;
-        const probSamples = state.signal_prob_samples || 0;
-        const probHorizon = state.signal_prob_horizon_hours || 24;
-        const probSource = state.signal_prob_source || "unknown";
-        const probBreakdown = state.signal_prob_breakdown || null;
-
-        STATE_PROB = (typeof prob === "number" && Number.isFinite(prob)) ? prob : null;
-        STATE_PROB_SAMPLES = probSamples;
-        STATE_PROB_HORIZON = probHorizon;
-
-        STATE_PROB_IN_DIR = null;
-        STATE_PROB_OPPOSITE = null;
-        STATE_PROB_FLAT = null;
-
-        if (probBreakdown && typeof probBreakdown === "object") {
-          const pIn = probBreakdown.in_direction;
-          const pOpp = probBreakdown.opposite;
-          const pFlat = probBreakdown.flat;
-          STATE_PROB_IN_DIR = (typeof pIn === "number" && Number.isFinite(pIn)) ? pIn : null;
-          STATE_PROB_OPPOSITE = (typeof pOpp === "number" && Number.isFinite(pOpp)) ? pOpp : null;
-          STATE_PROB_FLAT = (typeof pFlat === "number" && Number.isFinite(pFlat)) ? pFlat : null;
-        }
+      STATE_PROB = null;
+STATE_PROB_SAMPLES = 0;
+STATE_PROB_HORIZON = null;
+STATE_PROB_IN_DIR = null;
+STATE_PROB_OPPOSITE = null;
+STATE_PROB_FLAT = null;
 
         LAST_SIGNAL_RAW = (signal || "").toLowerCase();
         LAST_SNAPSHOT_TIME = ts ? new Date(ts) : null;
@@ -2792,39 +2776,7 @@ body.light-mode .card:first-of-type {
           REGIME_EL.textContent = regimeText;
         }
 
-        // interval tipic de mișcare (drift așteptat)
-        if (DRIFT_EL) {
-          let driftText =
-            "Interval tipic de mișcare: n/a (așteptăm statistici suficiente din mecanism).";
-          if (drift && typeof drift === "object") {
-            const horizon = drift.horizon_hours || 24;
-            const p10 = drift.p10;
-            const p50 = drift.p50;
-            const p90 = drift.p90;
-
-            const formatPct = (v) => {
-              if (typeof v !== "number" || !Number.isFinite(v)) return null;
-              const sign = v > 0 ? "+" : v < 0 ? "−" : "";
-              const abs = Math.abs(v * 100).toFixed(1);
-              return `${sign}${abs}%`;
-            };
-
-            const p10s = formatPct(p10);
-            const p50s = formatPct(p50);
-            const p90s = formatPct(p90);
-
-            if (p10s && p90s && p50s) {
-              driftText =
-                `Interval tipic de mișcare (${horizon}h): între ~${p10s} și ~${p90s} ` +
-                `(mediană ~${p50s}), bazat pe contexte similare din istoric.`;
-            } else if (p10s && p90s) {
-              driftText =
-                `Interval tipic de mișcare (${horizon}h): între ~${p10s} și ~${p90s}, ` +
-                `bazat pe contexte similare din istoric.`;
-            }
-          }
-          DRIFT_EL.textContent = driftText;
-        }
+     
 
         // flux de piață (Flow)
         if (FLOW_LINE_EL) {
@@ -2909,11 +2861,9 @@ body.light-mode .card:first-of-type {
           );
         }
 
-        // Confirmarea structurală 7/30 zile înlocuiește vechiul bloc tactic 72h.
-
-        updateStructuralConfirmation(state);
-        updateStructuralConfirmation(state, structuralConfirmationSummary);
-        updateFGCard(fgBlock);
+        // Confirmarea structurală 7/30 zile înlocuiește vechiul bloc tactic 24h/72h.
+updateStructuralConfirmation(state);
+updateFGCard(fgBlock);
         
         refreshMMRecommendation();
 
