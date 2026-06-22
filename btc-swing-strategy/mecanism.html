@@ -2316,7 +2316,7 @@ body.light-mode .card:first-of-type {
 
     let STATE_PROB = null;
     let STATE_PROB_SAMPLES = 0;
-    let STATE_PROB_HORIZON = 24;
+    let STATE_PROB_HORIZON = null;
     let LAST_DEV_ABS_PCT = null;
     let LAST_DEV_SIGN = 0;
 
@@ -2713,18 +2713,19 @@ body.light-mode .card:first-of-type {
         const productionCosts = state.production_costs_usd || null;
         const productionRef = state.production_cost_reference || "average";
         const fgBlock = state.fg || null;
+        STATE_PROB = null;
+STATE_PROB_SAMPLES = 0;
+STATE_PROB_HORIZON = null;
+STATE_PROB_IN_DIR = null;
+STATE_PROB_OPPOSITE = null;
+STATE_PROB_FLAT = null;
 
         FLOW_BIAS = flowBias;
         FLOW_STRENGTH = flowStrength;
         LIQ_REGIME = liqRegime;
         LIQ_STRENGTH = liqStrength;
 
-      STATE_PROB = null;
-STATE_PROB_SAMPLES = 0;
-STATE_PROB_HORIZON = null;
-STATE_PROB_IN_DIR = null;
-STATE_PROB_OPPOSITE = null;
-STATE_PROB_FLAT = null;
+      
 
         LAST_SIGNAL_RAW = (signal || "").toLowerCase();
         LAST_SNAPSHOT_TIME = ts ? new Date(ts) : null;
