@@ -102,17 +102,13 @@ JS_BLOCK = r'''
       return labels[key] || "context coeziv curent în evaluare structurală";
     }
 
-    function getStructuralConfirmation(state) {
-      return state && state.structural_confirmation ? state.structural_confirmation : null;
-    }
-
     function updateStructuralConfirmation(state) {
       const mainEl = document.getElementById("structural-confirmation-main");
       const baseEl = document.getElementById("structural-confirmation-base");
       const contextEl = document.getElementById("structural-confirmation-context");
       if (!mainEl || !baseEl || !contextEl) return;
 
-      const structural = getStructuralConfirmation(state);
+      const structural = state && state.structural_confirmation ? state.structural_confirmation : null;
       if (!structural) {
         mainEl.textContent = "Confirmarea structurală va apărea după următorul snapshot coeziv.";
         baseEl.textContent = "Bază statistică: așteptăm state.structural_confirmation din coeziv_state.json.";
@@ -140,12 +136,9 @@ JS_BLOCK = r'''
         mainEl.textContent = "Confirmarea structurală se actualizează după următorul backtest al mecanismului.";
       }
 
-      if (events) {
-        baseEl.textContent =
-          `Bază statistică: ${events} evenimente istorice cu ${thresholdLabel}.`;
-      } else {
-        baseEl.textContent = "Bază statistică: evenimentele istorice se actualizează.";
-      }
+      baseEl.textContent = events
+        ? `Bază statistică: ${events} evenimente istorice cu ${thresholdLabel}.`
+        : "Bază statistică: evenimentele istorice se actualizează.";
 
       const sampleSentence = samples
         ? `Analiza folosește ${samples} contexte istorice similare.`
@@ -154,6 +147,14 @@ JS_BLOCK = r'''
         `Context structural curent: ${contextLabel}. ${sampleSentence} Semnalul este un reper de structură, nu o recomandare de tranzacționare.`;
     }
     // STRUCTURAL_CONFIRMATION_JS_END
+'''
+
+LEGACY_LOAD_BLOCK = '''        let structuralConfirmationSummary = null;
+        try {
+          structuralConfirmationSummary = await fetchJsonFallback(STRUCTURAL_CONFIRMATION_URLS);
+        } catch (_) {
+          structuralConfirmationSummary = null;
+        }
 '''
 
 
@@ -167,27 +168,26 @@ def insert_before_once(text: str, anchor: str, addition: str, label: str) -> str
     return replace_once(text, anchor, addition + "\n" + anchor, label)
 
 
-def insert_after_once(text: str, anchor: str, addition: str, label: str) -> str:
-    return replace_once(text, anchor, anchor + addition, label)
-
-
 def remove_marked_block(text: str, start_marker: str, end_marker: str) -> str:
     start = text.find(start_marker)
     if start < 0:
-      return text
+        return text
     line_start = text.rfind("\n", 0, start)
     if line_start < 0:
-      line_start = 0
+        line_start = 0
     end = text.find(end_marker, start)
     if end < 0:
-      return text
+        return text
     line_end = text.find("\n", end + len(end_marker))
     if line_end < 0:
-      line_end = end + len(end_marker)
+        line_end = end + len(end_marker)
     return text[:line_start] + text[line_end:]
 
 
 def remove_legacy_summary_loader(text: str) -> str:
+    if LEGACY_LOAD_BLOCK in text:
+        return text.replace(LEGACY_LOAD_BLOCK, "", 1)
+
     marker = "let structuralConfirmationSummary = null;"
     start = text.find(marker)
     if start < 0:
@@ -195,14 +195,13 @@ def remove_legacy_summary_loader(text: str) -> str:
     line_start = text.rfind("\n", 0, start)
     if line_start < 0:
         line_start = start
-    end_marker = "structuralConfirmationSummary = null;"
-    end = text.find(end_marker, start)
+    end = text.find("\n        }", start)
     if end < 0:
         return text
-    brace_end = text.find("\n", end + len(end_marker))
-    if brace_end < 0:
-        brace_end = end + len(end_marker)
-    return text[:line_start] + text[brace_end:]
+    line_end = text.find("\n", end + 1)
+    if line_end < 0:
+        line_end = end + len("\n        }")
+    return text[:line_start] + text[line_end:]
 
 
 def remove_legacy_tactical_block(text: str) -> str:
