@@ -1,6 +1,7 @@
 (function(){
   'use strict';
   var KEY='coeziv_btc_lang';
+  var lastStructuralState=null;
 
   function en(){
     try{
@@ -9,6 +10,8 @@
         (document.body&&document.body.getAttribute('data-lang')==='en');
     }catch(e){return false;}
   }
+
+  function txt(ro,enText){return en()?enText:ro;}
 
   function samePageGuideLink(a){
     var href=(a.getAttribute('href')||'').toLowerCase();
@@ -40,6 +43,7 @@
     }
 
     document.documentElement.lang=isEnglish?'en':'ro';
+    if(lastStructuralState)renderStructural(lastStructuralState);
   }
 
   function addStructuralStyle(){
@@ -69,10 +73,10 @@
       card=document.createElement('div');
       card.id='structural-confirmation-card';
       card.innerHTML=''+
-        '<div class="structural-confirmation-title">Confirmare structurală</div>'+
-        '<div id="structural-confirmation-main" class="structural-confirmation-main">Se încarcă confirmarea structurală...</div>'+
-        '<div id="structural-confirmation-base" class="structural-confirmation-base">Bază statistică: se actualizează.</div>'+
-        '<div id="structural-confirmation-context" class="structural-confirmation-context">Context structural curent: se actualizează.</div>';
+        '<div id="structural-confirmation-title" class="structural-confirmation-title"></div>'+
+        '<div id="structural-confirmation-main" class="structural-confirmation-main"></div>'+
+        '<div id="structural-confirmation-base" class="structural-confirmation-base"></div>'+
+        '<div id="structural-confirmation-context" class="structural-confirmation-context"></div>';
     }
 
     if(card.parentNode!==anchor.parentNode||card.nextSibling!==anchor){
@@ -96,7 +100,7 @@
 
   function contextLabel(regime){
     var key=String(regime||'').toLowerCase();
-    var labels={
+    var ro={
       bear_late:'presiune descendentă aflată în fază matură, cu semne de stabilizare',
       bear_early:'presiune descendentă aflată în fază activă',
       bull_early:'reluare pozitivă timpurie, încă în confirmare',
@@ -104,21 +108,33 @@
       range:'zonă de echilibru relativ, fără direcție structurală dominantă',
       neutral:'zonă neutră, cu direcție structurală insuficient confirmată'
     };
-    return labels[key]||'context coeziv curent în evaluare structurală';
+    var enMap={
+      bear_late:'mature downside pressure with signs of stabilization',
+      bear_early:'active downside pressure',
+      bull_early:'early positive recovery, still awaiting confirmation',
+      bull_late:'mature positive impulse with exhaustion risk',
+      range:'relative equilibrium zone without a dominant structural direction',
+      neutral:'neutral zone with insufficient structural direction confirmation'
+    };
+    return (en()?enMap:ro)[key]||txt('context coeziv curent în evaluare structurală','current cohesive context under structural evaluation');
   }
 
   function renderStructural(state){
+    lastStructuralState=state||lastStructuralState;
     createStructuralCard();
+    var title=document.getElementById('structural-confirmation-title');
     var main=document.getElementById('structural-confirmation-main');
     var base=document.getElementById('structural-confirmation-base');
     var ctx=document.getElementById('structural-confirmation-context');
     if(!main||!base||!ctx)return;
 
+    if(title)title.textContent=txt('Confirmare structurală','Structural confirmation');
+
     var structural=state&&state.structural_confirmation?state.structural_confirmation:null;
     if(!structural){
-      main.textContent='Confirmarea structurală va apărea după următorul snapshot coeziv.';
-      base.textContent='Bază statistică: așteptăm state.structural_confirmation din coeziv_state.json.';
-      ctx.textContent='Context structural curent: indisponibil momentan. Semnalul este un reper de structură, nu o recomandare de tranzacționare.';
+      main.textContent=txt('Confirmarea structurală va apărea după următorul snapshot coeziv.','Structural confirmation will appear after the next cohesive snapshot.');
+      base.textContent=txt('Bază statistică: așteptăm state.structural_confirmation din coeziv_state.json.','Statistical base: waiting for state.structural_confirmation from coeziv_state.json.');
+      ctx.textContent=txt('Context structural curent: indisponibil momentan. Semnalul este un reper de structură, nu o recomandare de tranzacționare.','Current structural context: temporarily unavailable. The signal is a structural reference, not a trading recommendation.');
       return;
     }
 
@@ -129,17 +145,24 @@
     var events=whole(h30.events!=null?h30.events:h7.events);
     var samples=whole(structural.similar_context_samples||
       (state.model_price_components&&state.model_price_components.similar_context_samples));
-    var threshold=structural.threshold_label||'deviații ample față de reperul coeziv';
     var regime=structural.regime||(state.model_price_context&&state.model_price_context.regime);
-    var label=structural.context_label||contextLabel(regime);
+    var label=structural.context_label&& !en()?structural.context_label:contextLabel(regime);
+    var threshold=en()?'wide deviations from the cohesive reference':'deviații ample față de reperul coeziv';
 
     main.textContent=(p7&&p30)
-      ? 'În contexte istorice similare, mecanismul a confirmat direcția structurală în '+p7+' din cazuri pe 7 zile și '+p30+' din cazuri pe 30 zile.'
-      : 'Confirmarea structurală se actualizează după următorul backtest al mecanismului.';
+      ? txt('În contexte istorice similare, mecanismul a confirmat direcția structurală în '+p7+' din cazuri pe 7 zile și '+p30+' din cazuri pe 30 zile.',
+            'In similar historical contexts, the mechanism confirmed the structural direction in '+p7+' of cases over 7 days and '+p30+' of cases over 30 days.')
+      : txt('Confirmarea structurală se actualizează după următorul backtest al mecanismului.',
+            'Structural confirmation will update after the next mechanism backtest.');
     base.textContent=events
-      ? 'Bază statistică: '+events+' evenimente istorice cu '+threshold+'.'
-      : 'Bază statistică: evenimentele istorice se actualizează.';
-    ctx.textContent='Context structural curent: '+label+'. '+(samples?'Analiza folosește '+samples+' contexte istorice similare.':'Analiza folosește contexte istorice similare.')+' Semnalul este un reper de structură, nu o recomandare de tranzacționare.';
+      ? txt('Bază statistică: '+events+' evenimente istorice cu '+threshold+'.',
+            'Statistical base: '+events+' historical events with '+threshold+'.')
+      : txt('Bază statistică: evenimentele istorice se actualizează.',
+            'Statistical base: historical events are updating.');
+    ctx.textContent=txt(
+      'Context structural curent: '+label+'. '+(samples?'Analiza folosește '+samples+' contexte istorice similare.':'Analiza folosește contexte istorice similare.')+' Semnalul este un reper de structură, nu o recomandare de tranzacționare.',
+      'Current structural context: '+label+'. '+(samples?'The analysis uses '+samples+' similar historical contexts.':'The analysis uses similar historical contexts.')+' The signal is a structural reference, not a trading recommendation.'
+    );
   }
 
   function fetchStructural(){
