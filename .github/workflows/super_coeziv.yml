@@ -42,6 +42,7 @@ jobs:
       - name: Update BTC state and UI
         run: |
           python coeziv_state_v2.py
+          python inject_structural_confirmation.py
           python patch_standard_regime_ui.py
           python patch_mecanism_model_price_ui.py
 
