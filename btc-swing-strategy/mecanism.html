@@ -2705,28 +2705,14 @@ body.light-mode .card:first-of-type {
         LIQ_REGIME = liqRegime;
         LIQ_STRENGTH = liqStrength;
 
-        const prob = state.signal_probability;
-        const probSamples = state.signal_prob_samples || 0;
-        const probHorizon = state.signal_prob_horizon_hours || 24;
-        const probSource = state.signal_prob_source || "unknown";
-        const probBreakdown = state.signal_prob_breakdown || null;
+        const structuralForMM = state.structural_confirmation || null;
+        const h30ForMM = structuralForMM && structuralForMM.horizon_30d;
+        const probMM = h30ForMM ? Number(h30ForMM.directional_hit_rate) : NaN;
+        const samplesMM = h30ForMM ? Number(h30ForMM.events) : NaN;
 
-        STATE_PROB = (typeof prob === "number" && Number.isFinite(prob)) ? prob : null;
-        STATE_PROB_SAMPLES = probSamples;
-        STATE_PROB_HORIZON = probHorizon;
+        STATE_PROB = Number.isFinite(probMM) ? probMM : null;
+        STATE_PROB_SAMPLES = Number.isFinite(samplesMM) ? samplesMM : 0;
 
-        STATE_PROB_IN_DIR = null;
-        STATE_PROB_OPPOSITE = null;
-        STATE_PROB_FLAT = null;
-
-        if (probBreakdown && typeof probBreakdown === "object") {
-          const pIn = probBreakdown.in_direction;
-          const pOpp = probBreakdown.opposite;
-          const pFlat = probBreakdown.flat;
-          STATE_PROB_IN_DIR = (typeof pIn === "number" && Number.isFinite(pIn)) ? pIn : null;
-          STATE_PROB_OPPOSITE = (typeof pOpp === "number" && Number.isFinite(pOpp)) ? pOpp : null;
-          STATE_PROB_FLAT = (typeof pFlat === "number" && Number.isFinite(pFlat)) ? pFlat : null;
-        }
 
         LAST_SIGNAL_RAW = (signal || "").toLowerCase();
         LAST_SNAPSHOT_TIME = ts ? new Date(ts) : null;
@@ -3028,4 +3014,32 @@ body.light-mode .card:first-of-type {
     async function fetchOHLC() {
       try {
         const rLocal = await fetch("/api/ohlc");
-        if (rLocal.ok
+        if (rLocal.ok) {
+          return await rLocal.json();
+        }
+      } catch (_) {}
+
+      const r = await fetch(
+        "https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=5m&limit=288",
+        { cache: "no-store" }
+      );
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return r.json();
+    }
+
+    async function loadOHLC() {
+      try {
+        CHART_LOADER_EL.style.display = "flex";
+
+        const rows = await fetchOHLC();
+
+        oTimes = [];
+        oOpen = [];
+        oHigh = [];
+        oLow = [];
+        oClose = [];
+        oVolume = [];
+
+        rows.forEach(k => {
+          oTimes.push(new Date(k[0]));
+          oOpen.push(parseF
