@@ -1,23 +1,23 @@
 {
-  "as_of": "2026-06-21",
-  "close": 63541.8,
-  "ic_struct": 59.56,
-  "ic_dir": 17.78,
-  "vol30_ann_pct": 42.84,
-  "vol30_index": 24.11,
-  "regime_code": "bear_struct",
-  "regime_label": "Bear structural",
-  "regime_short": "Trend descendent în formare / structură în răcire.",
-  "regime_color": "red",
-  "prob_up": 0.3018,
-  "prob_down": 0.6982,
+  "as_of": "2026-06-22",
+  "close": 64112.4,
+  "ic_struct": 60.27,
+  "ic_dir": 19.29,
+  "vol30_ann_pct": 42.82,
+  "vol30_index": 24.02,
+  "regime_code": "bear_late",
+  "regime_label": "Bear târziu / capitulare",
+  "regime_short": "Structură descendentă avansată, cu risc de mișcări extreme.",
+  "regime_color": "orange",
+  "prob_up": 0.3135,
+  "prob_down": 0.6865,
   "bias_label": "bias bear pronunțat",
   "confidence_label": "mediu",
-  "confidence_score": 61.5,
+  "confidence_score": 60.7,
   "context_short": {
     "trend": {
-      "text": "Trend: zonă de tranziție (IC 60), bias direcțional bear (ICD 18).",
-      "color": "orange"
+      "text": "Trend: structură ridicată (IC 60), bias bear (ICD 19).",
+      "color": "red"
     },
     "volatility": {
       "text": "Volatilitate relativă: scăzută (vol30 ~ 42.8%).",
@@ -28,21 +28,21 @@
       "color": "grey"
     }
   },
-  "signal_probability": 0.38266666666666665,
+  "signal_probability": 0.3893333333333333,
   "signal_prob_horizon_hours": 72,
   "signal_prob_samples": 750,
   "signal_prob_source": "historical_72h_ic_similarity",
   "signal_prob_breakdown": {
-    "in_direction": 0.38266666666666665,
-    "opposite": 0.43733333333333335,
-    "flat": 0.18
+    "in_direction": 0.3893333333333333,
+    "opposite": 0.43333333333333335,
+    "flat": 0.17733333333333334
   },
   "signal_expected_drift": {
     "horizon_hours": 72,
     "p10": -0.05561233585805625,
-    "p50": 0.0021739389998421954,
-    "p90": 0.057961211137470575,
-    "mean": 0.0017018045216805025
+    "p50": 0.0021409597415611437,
+    "p90": 0.05673578909157517,
+    "mean": 0.001275845242984615
   },
   "signal_context_direction": "down",
   "signal_stat_window": {

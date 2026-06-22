@@ -2914,53 +2914,7 @@ body.light-mode .card:first-of-type {
           );
         }
 
-        // actualizăm textul probabilității istorice
-        if (SIGNAL_PROB_EL) {
-          if (STATE_PROB !== null && Number.isFinite(STATE_PROB) && STATE_PROB >= 0 && STATE_PROB <= 1) {
-            const pct = (STATE_PROB * 100).toFixed(0);
-            let qual;
-            if (STATE_PROB >= 0.8) qual = "foarte puternic";
-            else if (STATE_PROB >= 0.65) qual = "puternic";
-            else if (STATE_PROB >= 0.5) qual = "echilibrat";
-            else qual = "slab";
-
-            SIGNAL_PROB_EL.textContent =
-              `Probabilitate istorică: ~${pct}% ca prețul să se miște în direcția contextului structural ` +
-              `în următoarele ${STATE_PROB_HORIZON}h (bazat pe ${STATE_PROB_SAMPLES} situații similare, semnal ${qual}).`;
-          } else if (STATE_PROB_SAMPLES > 0) {
-            SIGNAL_PROB_EL.textContent =
-              `Probabilitate istorică: nu poate fi estimată robust, dar există ${STATE_PROB_SAMPLES} situații similare în istoric.`;
-          } else {
-            SIGNAL_PROB_EL.textContent =
-              "Probabilitate istorică: insuficiente date pentru situații similare. Mecanismul adună memorie.";
-          }
-        }
-
-        // actualizăm descompunerea probabilității (în direcție / contra / flat)
-        if (SIGNAL_PROB_BREAKDOWN_EL) {
-          if (
-            STATE_PROB_IN_DIR !== null &&
-            STATE_PROB_OPPOSITE !== null &&
-            STATE_PROB_FLAT !== null &&
-            Number.isFinite(STATE_PROB_IN_DIR) &&
-            Number.isFinite(STATE_PROB_OPPOSITE) &&
-            Number.isFinite(STATE_PROB_FLAT)
-          ) {
-            const pctIn = (STATE_PROB_IN_DIR * 100).toFixed(0);
-            const pctOpp = (STATE_PROB_OPPOSITE * 100).toFixed(0);
-            const pctFlat = (STATE_PROB_FLAT * 100).toFixed(0);
-
-            SIGNAL_PROB_BREAKDOWN_EL.textContent =
-              `Distribuție istorică (în ${STATE_PROB_HORIZON}h): ~${pctIn}% în direcția contextului structural, ` +
-              `~${pctOpp}% în sens opus contextului structural și ~${pctFlat}% mișcare neutră / zgomot.`;
-          } else if (STATE_PROB_SAMPLES > 0) {
-            SIGNAL_PROB_BREAKDOWN_EL.textContent =
-              "Distribuție istorică: mecanismul nu are încă o descompunere robustă pe direcție / contra / flat pentru acest context.";
-          } else {
-            SIGNAL_PROB_BREAKDOWN_EL.textContent =
-              "Distribuție istorică: insuficiente date pentru a construi o descompunere relevantă.";
-          }
-        }
+        // Confirmarea structurală 7/30 zile înlocuiește vechiul bloc tactic 72h.
 
         updateStructuralConfirmation(state, structuralConfirmationSummary);
         updateFGCard(fgBlock);
