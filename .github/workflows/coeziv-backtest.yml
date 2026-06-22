@@ -26,6 +26,10 @@ jobs:
         uses: actions/checkout@v4
         with:
           persist-credentials: true
+          fetch-depth: 0
+
+      - name: Pull latest main
+        run: git pull --rebase origin main
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -41,64 +45,22 @@ jobs:
         run: |
           python backtest_coeziv.py
 
-      - name: Patch mecanism HTML with risk window card
-        run: |
-          python patch_mecanism_risk_card.py
-
-      - name: Restore mecanism core JS
-        run: |
-          python patch_mecanism_core_js.py
-
-      - name: Patch mecanism HTML state fallback
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-          p = Path('btc-swing-strategy/mecanism.html')
-          s = p.read_text(encoding='utf-8')
-          helper = '''
-              const STATE_URLS = ["coeziv_state.json", "./coeziv_state.json", "/btc-swing-strategy/coeziv_state.json", "/coeziv_state.json"];
-              async function fetchJsonFallback(urls) {
-                let lastError = null;
-                for (const url of urls) {
-                  try {
-                    const res = await fetch(url + "?t=" + Date.now(), { cache: "no-store" });
-                    if (!res.ok) { lastError = new Error("HTTP " + res.status + " " + url); continue; }
-                    return await res.json();
-                  } catch (e) { lastError = e; }
-                }
-                throw lastError || new Error("state routes failed");
-              }
-          '''
-          if 'const STATE_URLS = [' not in s:
-              s = s.replace('    const STATE_URL = "coeziv_state.json";', '    const STATE_URL = "coeziv_state.json";\n' + helper)
-          old = '''        const res = await fetch(STATE_URL + "?t=" + Date.now(), { cache: "no-store" });
-                  if (!res.ok) throw new Error("HTTP " + res.status);
-                  const state = await res.json();'''
-          old2 = '''        const res = await fetch(STATE_URL + "?t=" + Date.now(), { cache: "no-store" });
-          if (!res.ok) throw new Error("HTTP " + res.status);
-          const state = await res.json();'''
-          new = '''        const state = await fetchJsonFallback(STATE_URLS);'''
-          if old in s:
-              s = s.replace(old, new)
-          if old2 in s:
-              s = s.replace(old2, new)
-          p.write_text(s, encoding='utf-8')
-          PY
-
       - name: Show risk window
         run: |
           cat btc-swing-strategy/risk_window.json
 
-      - name: Commit risk window and HTML card if changed
+      - name: Commit risk window data if changed
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add btc-swing-strategy/risk_window.json btc-swing-strategy/mecanism.html
+          git add btc-swing-strategy/risk_window.json data/coeziv_backtest_results.csv data/coeziv_backtest_summary.json
           if git diff --cached --quiet; then
-            echo "No risk_window.json or mecanism.html changes to commit."
+            echo "No backtest or risk_window data changes to commit."
           else
-            git commit -m "Update coeziv risk window card"
-            git push
+            git commit -m "Update coeziv risk window data"
+            git fetch origin main
+            git rebase origin/main
+            git push origin HEAD:main
           fi
 
       - name: Upload backtest artifacts
@@ -109,5 +71,4 @@ jobs:
             data/coeziv_backtest_results.csv
             data/coeziv_backtest_summary.json
             btc-swing-strategy/risk_window.json
-            btc-swing-strategy/mecanism.html
           if-no-files-found: error
