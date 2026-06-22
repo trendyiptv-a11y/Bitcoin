@@ -1,6 +1,6 @@
 {
   "title": "COEZIUNE_PARTICIPATIVA",
-  "score": 65.1,
+  "score": 64.38,
   "label": "participare tensionată",
   "level": "tense",
   "signal": "flat",
@@ -8,15 +8,15 @@
   "components": {
     "liquidity_component": 70.64,
     "flow_component": 66.67,
-    "production_component": 36.34,
+    "production_component": 36.32,
     "persistence_component": 90.0,
-    "probability_component": 64.76
+    "probability_component": 57.57
   },
   "inputs": {
     "flow_score": 0.01389126103045832,
     "liquidity_score": 0.02293004161441466,
-    "deviation_from_production": 0.22281442085275227,
-    "signal_probability": 0.20629660314830156,
+    "deviation_from_production": 0.22289066091889434,
+    "signal_probability": 0.1464492953854656,
     "recent_days": 14,
     "recent_short_days": 2,
     "recent_long_days": 0,
@@ -36,6 +36,6 @@
     }
   },
   "footer": "Indicator experimental derivat din flux, lichiditate, persistență și tensiune față de model. Nu măsoară încă direct utilizarea peer-to-peer on-chain.",
-  "generated_at": "2026-06-22T05:39:53.843965+00:00",
+  "generated_at": "2026-06-22T06:02:24.460185+00:00",
   "source_timestamp": "2026-06-22T00:00:00+00:00"
 }
