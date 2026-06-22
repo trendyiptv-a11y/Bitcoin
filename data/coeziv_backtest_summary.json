@@ -1,0 +1,4427 @@
+{
+  "meta": {
+    "rows": 5621,
+    "from": "2011-02-01T00:00:00+00:00",
+    "to": "2026-06-22T00:00:00+00:00",
+    "horizons_days": [
+      1,
+      7,
+      30,
+      90
+    ],
+    "move_threshold": 0.005,
+    "fee_assumption": 0.001
+  },
+  "signals": {
+    "long": {
+      "count": 524,
+      "horizons": {
+        "1d": {
+          "samples": 524,
+          "correct": 253,
+          "wrong": 197,
+          "flat": 74,
+          "accuracy": 0.48282442748091603,
+          "wrong_rate": 0.37595419847328243,
+          "flat_rate": 0.14122137404580154,
+          "mean_return": 0.014862295005612796,
+          "median_return": 0.0026618977414967215,
+          "p10_return": -0.06482219057406623,
+          "p90_return": 0.10914991644795015
+        },
+        "7d": {
+          "samples": 524,
+          "correct": 329,
+          "wrong": 182,
+          "flat": 13,
+          "accuracy": 0.6278625954198473,
+          "wrong_rate": 0.3473282442748092,
+          "flat_rate": 0.02480916030534351,
+          "mean_return": 0.09975681958249845,
+          "median_return": 0.045430424704809624,
+          "p10_return": -0.15885877208237423,
+          "p90_return": 0.3803926207602011
+        },
+        "30d": {
+          "samples": 524,
+          "correct": 284,
+          "wrong": 229,
+          "flat": 11,
+          "accuracy": 0.5419847328244275,
+          "wrong_rate": 0.43702290076335876,
+          "flat_rate": 0.02099236641221374,
+          "mean_return": 0.28225009757738395,
+          "median_return": 0.04082725081957128,
+          "p10_return": -0.2941679207937311,
+          "p90_return": 0.9737457710977089
+        },
+        "90d": {
+          "samples": 524,
+          "correct": 254,
+          "wrong": 268,
+          "flat": 2,
+          "accuracy": 0.4847328244274809,
+          "wrong_rate": 0.5114503816793893,
+          "flat_rate": 0.003816793893129771,
+          "mean_return": 1.269464777452746,
+          "median_return": -0.03294186574565594,
+          "p10_return": -0.5840515892638846,
+          "p90_return": 3.67377613032931
+        }
+      }
+    },
+    "short": {
+      "count": 1475,
+      "horizons": {
+        "1d": {
+          "samples": 1475,
+          "correct": 549,
+          "wrong": 569,
+          "flat": 357,
+          "accuracy": 0.3722033898305085,
+          "wrong_rate": 0.3857627118644068,
+          "flat_rate": 0.24203389830508473,
+          "mean_return": -0.001282566839377552,
+          "median_return": -2.5295992116980415e-05,
+          "p10_return": -0.033802411257171205,
+          "p90_return": 0.03082165712112691
+        },
+        "7d": {
+          "samples": 1475,
+          "correct": 659,
+          "wrong": 690,
+          "flat": 126,
+          "accuracy": 0.44677966101694916,
+          "wrong_rate": 0.46779661016949153,
+          "flat_rate": 0.08542372881355932,
+          "mean_return": -0.0018966508880774748,
+          "median_return": 0.0008929078343631325,
+          "p10_return": -0.10301973695361918,
+          "p90_return": 0.0936373804529572
+        },
+        "30d": {
+          "samples": 1466,
+          "correct": 669,
+          "wrong": 755,
+          "flat": 42,
+          "accuracy": 0.456343792633015,
+          "wrong_rate": 0.515006821282401,
+          "flat_rate": 0.0286493860845839,
+          "mean_return": 0.01065489474495606,
+          "median_return": 0.009395361550677106,
+          "p10_return": -0.21702473108790776,
+          "p90_return": 0.25825072934901716
+        },
+        "90d": {
+          "samples": 1466,
+          "correct": 708,
+          "wrong": 731,
+          "flat": 27,
+          "accuracy": 0.4829467939972715,
+          "wrong_rate": 0.49863574351978174,
+          "flat_rate": 0.018417462482946793,
+          "mean_return": 0.1280817912940741,
+          "median_return": 0.003970343018103062,
+          "p10_return": -0.32099894510932314,
+          "p90_return": 0.6634163766382446
+        }
+      }
+    },
+    "flat": {
+      "count": 3622,
+      "horizons": {
+        "1d": {
+          "samples": 3621,
+          "correct": 747,
+          "wrong": 2874,
+          "flat": 0,
+          "accuracy": 0.20629660314830156,
+          "wrong_rate": 0.7937033968516984,
+          "flat_rate": 0.0,
+          "mean_return": 0.003891941204847173,
+          "median_return": 0.0015802365087309589,
+          "p10_return": -0.03556974666246182,
+          "p90_return": 0.04346231432239134
+        },
+        "7d": {
+          "samples": 3615,
+          "correct": 215,
+          "wrong": 3400,
+          "flat": 0,
+          "accuracy": 0.059474412171507604,
+          "wrong_rate": 0.9405255878284924,
+          "flat_rate": 0.0,
+          "mean_return": 0.02455507083896573,
+          "median_return": 0.00874442087730487,
+          "p10_return": -0.09569062453117401,
+          "p90_return": 0.14974113089744953
+        },
+        "30d": {
+          "samples": 3601,
+          "correct": 82,
+          "wrong": 3519,
+          "flat": 0,
+          "accuracy": 0.022771452374340462,
+          "wrong_rate": 0.9772285476256596,
+          "flat_rate": 0.0,
+          "mean_return": 0.14974721375440414,
+          "median_return": 0.039171935415275305,
+          "p10_return": -0.17879982930803884,
+          "p90_return": 0.4955796642727728
+        },
+        "90d": {
+          "samples": 3541,
+          "correct": 39,
+          "wrong": 3502,
+          "flat": 0,
+          "accuracy": 0.011013837898898616,
+          "wrong_rate": 0.9889861621011014,
+          "flat_rate": 0.0,
+          "mean_return": 0.6327804351737009,
+          "median_return": 0.1717546145126636,
+          "p10_return": -0.2698906837040024,
+          "p90_return": 1.3164788869515966
+        }
+      }
+    }
+  },
+  "equity_simulation": {
+    "final_equity_coeziv": 824.0072655739164,
+    "final_equity_buy_hold": 90592.62399321746,
+    "max_drawdown": -0.7027826086956521,
+    "position_changes": 209,
+    "note": "Simulare orientativă: poziția din ziua precedentă aplicată pe randamentul zilei curente; cost la schimbare poziție."
+  },
+  "structural_degradation_events": {
+    "definition": {
+      "degradation_regimes": [
+        "accum_bear",
+        "bear_late",
+        "bear_struct"
+      ],
+      "major_drawdown_threshold": -0.2,
+      "windows_days": [
+        30,
+        60,
+        90,
+        180
+      ],
+      "cooldown_days": 30,
+      "interpretation": "Confirmat dacă minimul din fereastră scade cu cel puțin 20% față de prețul din ziua evenimentului."
+    },
+    "event_count": 107,
+    "windows": {
+      "30d": {
+        "available_events": 107,
+        "confirmed_events": 28,
+        "confirmation_rate": 0.2616822429906542,
+        "avg_min_drawdown": -0.12715544465479975,
+        "median_min_drawdown": -0.07067612496703535,
+        "avg_days_to_threshold": 13.25,
+        "median_days_to_threshold": 12.5
+      },
+      "60d": {
+        "available_events": 107,
+        "confirmed_events": 37,
+        "confirmation_rate": 0.34579439252336447,
+        "avg_min_drawdown": -0.16647238196534325,
+        "median_min_drawdown": -0.1151925965011974,
+        "avg_days_to_threshold": 20.64864864864865,
+        "median_days_to_threshold": 15.0
+      },
+      "90d": {
+        "available_events": 107,
+        "confirmed_events": 45,
+        "confirmation_rate": 0.4205607476635514,
+        "avg_min_drawdown": -0.19590488846532225,
+        "median_min_drawdown": -0.16105219766760204,
+        "avg_days_to_threshold": 30.2,
+        "median_days_to_threshold": 24.0
+      },
+      "180d": {
+        "available_events": 107,
+        "confirmed_events": 53,
+        "confirmation_rate": 0.4953271028037383,
+        "avg_min_drawdown": -0.24969407792985082,
+        "median_min_drawdown": -0.19723364752564,
+        "avg_days_to_threshold": 44.22641509433962,
+        "median_days_to_threshold": 27.0
+      }
+    },
+    "events": [
+      {
+        "date": "2011-04-04T00:00:00+00:00",
+        "regime": "bear_late",
+        "signal": "flat",
+        "entry_price": 0.68,
+        "ic_struct": 64.88169364881693,
+        "ic_dir": 37.27430555555556,
+        "ic_flux": 32.46977547495682,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": 0.04411764705882337,
+            "days_to_threshold": null,
+            "min_price": 0.71
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": 0.04411764705882337,
+            "days_to_threshold": null,
+            "min_price": 0.71
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": 0.04411764705882337,
+            "days_to_threshold": null,
+            "min_price": 0.71
+          },
+          "180d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": 0.04411764705882337,
+            "days_to_threshold": null,
+            "min_price": 0.71
+          }
+        }
+      },
+      {
+        "date": "2011-08-02T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "short",
+        "entry_price": 12.05,
+        "ic_struct": 49.86657178438001,
+        "ic_dir": 20.95486111111111,
+        "ic_flux": 30.22452504317789,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.4564315352697096,
+            "days_to_threshold": 1,
+            "min_price": 6.55
+          },
+          "60d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.6041493775933611,
+            "days_to_threshold": 1,
+            "min_price": 4.77
+          },
+          "90d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.8116182572614108,
+            "days_to_threshold": 1,
+            "min_price": 2.27
+          },
+          "180d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.8298755186721992,
+            "days_to_threshold": 1,
+            "min_price": 2.05
+          }
+        }
+      },
+      {
+        "date": "2011-09-01T00:00:00+00:00",
+        "regime": "accum_bear",
+        "signal": "flat",
+        "entry_price": 8.21,
+        "ic_struct": 19.249243906778155,
+        "ic_dir": 2.482638888888889,
+        "ic_flux": 3.0742659758203814,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.4190012180267967,
+            "days_to_threshold": 7,
+            "min_price": 4.77
+          },
+          "60d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.7235079171741778,
+            "days_to_threshold": 7,
+            "min_price": 2.27
+          },
+          "90d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.7503045066991474,
+            "days_to_threshold": 7,
+            "min_price": 2.05
+          },
+          "180d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.7503045066991474,
+            "days_to_threshold": 7,
+            "min_price": 2.05
+          }
+        }
+      },
+      {
+        "date": "2011-10-01T00:00:00+00:00",
+        "regime": "accum_bear",
+        "signal": "flat",
+        "entry_price": 5.032,
+        "ic_struct": 8.557196228429104,
+        "ic_dir": 1.0763888888888888,
+        "ic_flux": 7.512953367875653,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.5488871224165341,
+            "days_to_threshold": 7,
+            "min_price": 2.27
+          },
+          "60d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.5926073131955485,
+            "days_to_threshold": 7,
+            "min_price": 2.05
+          },
+          "90d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.5926073131955485,
+            "days_to_threshold": 7,
+            "min_price": 2.05
+          },
+          "180d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.5926073131955485,
+            "days_to_threshold": 7,
+            "min_price": 2.05
+          }
+        }
+      },
+      {
+        "date": "2011-10-31T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "flat",
+        "entry_price": 3.248,
+        "ic_struct": 24.355096957836682,
+        "ic_dir": 0.8159722222222222,
+        "ic_flux": 4.974093264248708,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.3688423645320198,
+            "days_to_threshold": 14,
+            "min_price": 2.05
+          },
+          "60d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.3688423645320198,
+            "days_to_threshold": 14,
+            "min_price": 2.05
+          },
+          "90d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.3688423645320198,
+            "days_to_threshold": 14,
+            "min_price": 2.05
+          },
+          "180d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.3688423645320198,
+            "days_to_threshold": 14,
+            "min_price": 2.05
+          }
+        }
+      },
+      {
+        "date": "2011-11-30T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "flat",
+        "entry_price": 2.97,
+        "ic_struct": 27.62853584771393,
+        "ic_dir": 3.8194444444444446,
+        "ic_flux": 9.481865284974091,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.059259259259259345,
+            "days_to_threshold": null,
+            "min_price": 2.794
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.059259259259259345,
+            "days_to_threshold": null,
+            "min_price": 2.794
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.059259259259259345,
+            "days_to_threshold": null,
+            "min_price": 2.794
+          },
+          "180d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.059259259259259345,
+            "days_to_threshold": null,
+            "min_price": 2.794
+          }
+        }
+      },
+      {
+        "date": "2012-02-29T00:00:00+00:00",
+        "regime": "accum_bear",
+        "signal": "flat",
+        "entry_price": 4.86,
+        "ic_struct": 6.938267212239815,
+        "ic_dir": 43.298611111111114,
+        "ic_flux": 19.101899827288435,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.06378600823045277,
+            "days_to_threshold": null,
+            "min_price": 4.55
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.06378600823045277,
+            "days_to_threshold": null,
+            "min_price": 4.55
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.06378600823045277,
+            "days_to_threshold": null,
+            "min_price": 4.55
+          },
+          "180d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.06378600823045277,
+            "days_to_threshold": null,
+            "min_price": 4.55
+          }
+        }
+      },
+      {
+        "date": "2012-03-30T00:00:00+00:00",
+        "regime": "accum_bear",
+        "signal": "short",
+        "entry_price": 4.86,
+        "ic_struct": 14.00106742572496,
+        "ic_dir": 25.694444444444443,
+        "ic_flux": 47.37478411053541,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.034979423868312765,
+            "days_to_threshold": null,
+            "min_price": 4.69
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.034979423868312765,
+            "days_to_threshold": null,
+            "min_price": 4.69
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.034979423868312765,
+            "days_to_threshold": null,
+            "min_price": 4.69
+          },
+          "180d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.034979423868312765,
+            "days_to_threshold": null,
+            "min_price": 4.69
+          }
+        }
+      },
+      {
+        "date": "2012-04-29T00:00:00+00:00",
+        "regime": "accum_bear",
+        "signal": "short",
+        "entry_price": 4.904,
+        "ic_struct": 8.486034513431774,
+        "ic_dir": 40.989583333333336,
+        "ic_flux": 80.51813471502591,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.011011419249592258,
+            "days_to_threshold": null,
+            "min_price": 4.85
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.011011419249592258,
+            "days_to_threshold": null,
+            "min_price": 4.85
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.011011419249592258,
+            "days_to_threshold": null,
+            "min_price": 4.85
+          },
+          "180d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.011011419249592258,
+            "days_to_threshold": null,
+            "min_price": 4.85
+          }
+        }
+      },
+      {
+        "date": "2012-05-30T00:00:00+00:00",
+        "regime": "accum_bear",
+        "signal": "short",
+        "entry_price": 5.135,
+        "ic_struct": 4.412026329834549,
+        "ic_dir": 44.87847222222222,
+        "ic_flux": 98.67012089810018,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": 0.008763388510223846,
+            "days_to_threshold": null,
+            "min_price": 5.18
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": 0.008763388510223846,
+            "days_to_threshold": null,
+            "min_price": 5.18
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": 0.008763388510223846,
+            "days_to_threshold": null,
+            "min_price": 5.18
+          },
+          "180d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": 0.008763388510223846,
+            "days_to_threshold": null,
+            "min_price": 5.18
+          }
+        }
+      },
+      {
+        "date": "2012-10-09T00:00:00+00:00",
+        "regime": "bear_late",
+        "signal": "flat",
+        "entry_price": 11.9,
+        "ic_struct": 67.6214196762142,
+        "ic_dir": 44.77430555555556,
+        "ic_flux": 88.04835924006909,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.14369747899159668,
+            "days_to_threshold": null,
+            "min_price": 10.19
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.14369747899159668,
+            "days_to_threshold": null,
+            "min_price": 10.19
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.14369747899159668,
+            "days_to_threshold": null,
+            "min_price": 10.19
+          },
+          "180d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.14369747899159668,
+            "days_to_threshold": null,
+            "min_price": 10.19
+          }
+        }
+      },
+      {
+        "date": "2012-11-08T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "short",
+        "entry_price": 10.93,
+        "ic_struct": 41.647393702188225,
+        "ic_dir": 39.392361111111114,
+        "ic_flux": 70.03454231433506,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.010064043915827936,
+            "days_to_threshold": null,
+            "min_price": 10.82
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.010064043915827936,
+            "days_to_threshold": null,
+            "min_price": 10.82
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.010064043915827936,
+            "days_to_threshold": null,
+            "min_price": 10.82
+          },
+          "180d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.010064043915827936,
+            "days_to_threshold": null,
+            "min_price": 10.82
+          }
+        }
+      },
+      {
+        "date": "2013-06-02T00:00:00+00:00",
+        "regime": "bear_late",
+        "signal": "flat",
+        "entry_price": 122.5,
+        "ic_struct": 61.57267390144102,
+        "ic_dir": 28.385416666666668,
+        "ic_flux": 37.685664939550946,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.2812244897959184,
+            "days_to_threshold": 26,
+            "min_price": 88.05
+          },
+          "60d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.4408163265306122,
+            "days_to_threshold": 26,
+            "min_price": 68.5
+          },
+          "90d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.4408163265306122,
+            "days_to_threshold": 26,
+            "min_price": 68.5
+          },
+          "180d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.4408163265306122,
+            "days_to_threshold": 26,
+            "min_price": 68.5
+          }
+        }
+      },
+      {
+        "date": "2013-07-02T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "short",
+        "entry_price": 90.51,
+        "ic_struct": 34.15762319871909,
+        "ic_dir": 30.538194444444443,
+        "ic_flux": 36.63212435233161,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.2431775494420506,
+            "days_to_threshold": 3,
+            "min_price": 68.5
+          },
+          "60d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.2431775494420506,
+            "days_to_threshold": 3,
+            "min_price": 68.5
+          },
+          "90d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.2431775494420506,
+            "days_to_threshold": 3,
+            "min_price": 68.5
+          },
+          "180d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.2431775494420506,
+            "days_to_threshold": 3,
+            "min_price": 68.5
+          }
+        }
+      },
+      {
+        "date": "2013-08-01T00:00:00+00:00",
+        "regime": "accum_bear",
+        "signal": "flat",
+        "entry_price": 104.0,
+        "ic_struct": 19.694004625511475,
+        "ic_dir": 21.42361111111111,
+        "ic_flux": 14.507772020725383,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.011538461538461608,
+            "days_to_threshold": null,
+            "min_price": 102.8
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.011538461538461608,
+            "days_to_threshold": null,
+            "min_price": 102.8
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.011538461538461608,
+            "days_to_threshold": null,
+            "min_price": 102.8
+          },
+          "180d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.011538461538461608,
+            "days_to_threshold": null,
+            "min_price": 102.8
+          }
+        }
+      },
+      {
+        "date": "2014-01-25T00:00:00+00:00",
+        "regime": "bear_late",
+        "signal": "flat",
+        "entry_price": 961.05,
+        "ic_struct": 64.18786692759295,
+        "ic_dir": 39.25347222222222,
+        "ic_flux": 26.373056994818654,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.8839186306643775,
+            "days_to_threshold": 13,
+            "min_price": 111.56
+          },
+          "60d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.8839186306643775,
+            "days_to_threshold": 13,
+            "min_price": 111.56
+          },
+          "90d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.8839186306643775,
+            "days_to_threshold": 13,
+            "min_price": 111.56
+          },
+          "180d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.8839186306643775,
+            "days_to_threshold": 13,
+            "min_price": 111.56
+          }
+        }
+      },
+      {
+        "date": "2014-02-24T00:00:00+00:00",
+        "regime": "accum_bear",
+        "signal": "flat",
+        "entry_price": 174.0,
+        "ic_struct": 13.912115281978295,
+        "ic_dir": 0.12152777777777778,
+        "ic_flux": 0.5354058721934365,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.21965517241379307,
+            "days_to_threshold": 1,
+            "min_price": 135.78
+          },
+          "60d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.21965517241379307,
+            "days_to_threshold": 1,
+            "min_price": 135.78
+          },
+          "90d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.21965517241379307,
+            "days_to_threshold": 1,
+            "min_price": 135.78
+          },
+          "180d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.21965517241379307,
+            "days_to_threshold": 1,
+            "min_price": 135.78
+          }
+        }
+      },
+      {
+        "date": "2014-03-26T00:00:00+00:00",
+        "regime": "accum_bear",
+        "signal": "flat",
+        "entry_price": 562.45,
+        "ic_struct": 8.913004803415763,
+        "ic_dir": 3.6805555555555554,
+        "ic_flux": 0.48359240069085274,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.3161525468930573,
+            "days_to_threshold": 4,
+            "min_price": 384.63
+          },
+          "60d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.3161525468930573,
+            "days_to_threshold": 4,
+            "min_price": 384.63
+          },
+          "90d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.3161525468930573,
+            "days_to_threshold": 4,
+            "min_price": 384.63
+          },
+          "180d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.3161525468930573,
+            "days_to_threshold": 4,
+            "min_price": 384.63
+          }
+        }
+      },
+      {
+        "date": "2014-04-27T00:00:00+00:00",
+        "regime": "accum_bear",
+        "signal": "flat",
+        "entry_price": 443.18,
+        "ic_struct": 4.785625333570539,
+        "ic_dir": 11.944444444444445,
+        "ic_flux": 14.697754749568219,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.027776524211381437,
+            "days_to_threshold": null,
+            "min_price": 430.87
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.027776524211381437,
+            "days_to_threshold": null,
+            "min_price": 430.87
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.027776524211381437,
+            "days_to_threshold": null,
+            "min_price": 430.87
+          },
+          "180d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.2714923958662394,
+            "days_to_threshold": 160,
+            "min_price": 322.86
+          }
+        }
+      },
+      {
+        "date": "2014-07-25T00:00:00+00:00",
+        "regime": "accum_bear",
+        "signal": "short",
+        "entry_price": 600.5,
+        "ic_struct": 16.527308308130227,
+        "ic_dir": 43.50694444444444,
+        "ic_flux": 87.75474956822107,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.23034138218151534,
+            "days_to_threshold": 24,
+            "min_price": 462.18
+          },
+          "60d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.33776852622814324,
+            "days_to_threshold": 24,
+            "min_price": 397.67
+          },
+          "90d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.4623480432972523,
+            "days_to_threshold": 24,
+            "min_price": 322.86
+          },
+          "180d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.7253621981681933,
+            "days_to_threshold": 24,
+            "min_price": 164.92
+          }
+        }
+      },
+      {
+        "date": "2014-08-24T00:00:00+00:00",
+        "regime": "accum_bear",
+        "signal": "short",
+        "entry_price": 509.71,
+        "ic_struct": 2.383917452410603,
+        "ic_dir": 27.291666666666668,
+        "ic_flux": 48.998272884283246,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.219811265229248,
+            "days_to_threshold": 26,
+            "min_price": 397.67
+          },
+          "60d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.3665809970375311,
+            "days_to_threshold": 26,
+            "min_price": 322.86
+          },
+          "90d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.3671891860077299,
+            "days_to_threshold": 26,
+            "min_price": 322.55
+          },
+          "180d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.6764434678542701,
+            "days_to_threshold": 26,
+            "min_price": 164.92
+          }
+        }
+      },
+      {
+        "date": "2014-09-23T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "short",
+        "entry_price": 436.86,
+        "ic_struct": 36.13236078989504,
+        "ic_dir": 10.434027777777779,
+        "ic_flux": 59.27461139896373,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.2609531657739321,
+            "days_to_threshold": 11,
+            "min_price": 322.86
+          },
+          "60d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.26166277525980863,
+            "days_to_threshold": 11,
+            "min_price": 322.55
+          },
+          "90d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.2896122327519114,
+            "days_to_threshold": 11,
+            "min_price": 310.34
+          },
+          "180d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.6224877535137116,
+            "days_to_threshold": 11,
+            "min_price": 164.92
+          }
+        }
+      },
+      {
+        "date": "2014-10-23T00:00:00+00:00",
+        "regime": "bear_late",
+        "signal": "flat",
+        "entry_price": 355.78,
+        "ic_struct": 62.35545276641167,
+        "ic_dir": 8.92361111111111,
+        "ic_flux": 51.58894645941278,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.09340041598740789,
+            "days_to_threshold": null,
+            "min_price": 322.55
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.12771937714317838,
+            "days_to_threshold": null,
+            "min_price": 310.34
+          },
+          "90d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.5364551127101018,
+            "days_to_threshold": 73,
+            "min_price": 164.92
+          },
+          "180d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.5364551127101018,
+            "days_to_threshold": 73,
+            "min_price": 164.92
+          }
+        }
+      },
+      {
+        "date": "2014-11-22T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "short",
+        "entry_price": 352.01,
+        "ic_struct": 49.95552392812667,
+        "ic_dir": 17.239583333333332,
+        "ic_flux": 28.445595854922274,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.11837731882616975,
+            "days_to_threshold": null,
+            "min_price": 310.34
+          },
+          "60d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.5314905826539019,
+            "days_to_threshold": 43,
+            "min_price": 164.92
+          },
+          "90d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.5314905826539019,
+            "days_to_threshold": 43,
+            "min_price": 164.92
+          },
+          "180d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.5314905826539019,
+            "days_to_threshold": 43,
+            "min_price": 164.92
+          }
+        }
+      },
+      {
+        "date": "2014-12-22T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "short",
+        "entry_price": 330.84,
+        "ic_struct": 42.75040028464686,
+        "ic_dir": 31.28472222222222,
+        "ic_flux": 74.16234887737478,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.5015113045580946,
+            "days_to_threshold": 22,
+            "min_price": 164.92
+          },
+          "60d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.5015113045580946,
+            "days_to_threshold": 22,
+            "min_price": 164.92
+          },
+          "90d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.5015113045580946,
+            "days_to_threshold": 22,
+            "min_price": 164.92
+          },
+          "180d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.5015113045580946,
+            "days_to_threshold": 22,
+            "min_price": 164.92
+          }
+        }
+      },
+      {
+        "date": "2015-01-21T00:00:00+00:00",
+        "regime": "bear_late",
+        "signal": "flat",
+        "entry_price": 228.17,
+        "ic_struct": 60.07827788649706,
+        "ic_dir": 6.440972222222222,
+        "ic_flux": 7.012089810017272,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.05105842135250027,
+            "days_to_threshold": null,
+            "min_price": 216.52
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.05105842135250027,
+            "days_to_threshold": null,
+            "min_price": 216.52
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.05105842135250027,
+            "days_to_threshold": null,
+            "min_price": 216.52
+          },
+          "180d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.05105842135250027,
+            "days_to_threshold": null,
+            "min_price": 216.52
+          }
+        }
+      },
+      {
+        "date": "2015-02-20T00:00:00+00:00",
+        "regime": "bear_late",
+        "signal": "flat",
+        "entry_price": 244.52,
+        "ic_struct": 71.80217043230742,
+        "ic_dir": 11.26736111111111,
+        "ic_flux": 23.95509499136442,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.03594797971536079,
+            "days_to_threshold": null,
+            "min_price": 235.73
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.10849828234909209,
+            "days_to_threshold": null,
+            "min_price": 217.99
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.10849828234909209,
+            "days_to_threshold": null,
+            "min_price": 217.99
+          },
+          "180d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.10849828234909209,
+            "days_to_threshold": null,
+            "min_price": 217.99
+          }
+        }
+      },
+      {
+        "date": "2015-03-25T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "flat",
+        "entry_price": 246.37,
+        "ic_struct": 59.33107987902508,
+        "ic_dir": 39.53125,
+        "ic_flux": 43.5405872193437,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.1151925965011974,
+            "days_to_threshold": null,
+            "min_price": 217.99
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.1151925965011974,
+            "days_to_threshold": null,
+            "min_price": 217.99
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.1151925965011974,
+            "days_to_threshold": null,
+            "min_price": 217.99
+          },
+          "180d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.14181921500182648,
+            "days_to_threshold": null,
+            "min_price": 211.43
+          }
+        }
+      },
+      {
+        "date": "2015-04-24T00:00:00+00:00",
+        "regime": "bear_late",
+        "signal": "flat",
+        "entry_price": 231.09,
+        "ic_struct": 69.79185198363281,
+        "ic_dir": 36.05902777777778,
+        "ic_flux": 77.39205526770294,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.05361547449045834,
+            "days_to_threshold": null,
+            "min_price": 218.7
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.05361547449045834,
+            "days_to_threshold": null,
+            "min_price": 218.7
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.05361547449045834,
+            "days_to_threshold": null,
+            "min_price": 218.7
+          },
+          "180d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.08507507897356004,
+            "days_to_threshold": null,
+            "min_price": 211.43
+          }
+        }
+      },
+      {
+        "date": "2015-05-24T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "flat",
+        "entry_price": 240.98,
+        "ic_struct": 56.733677281622484,
+        "ic_dir": 37.5,
+        "ic_flux": 83.93782383419689,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.07403103992032534,
+            "days_to_threshold": null,
+            "min_price": 223.14
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.07403103992032534,
+            "days_to_threshold": null,
+            "min_price": 223.14
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.07403103992032534,
+            "days_to_threshold": null,
+            "min_price": 223.14
+          },
+          "180d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.12262428417296034,
+            "days_to_threshold": null,
+            "min_price": 211.43
+          }
+        }
+      },
+      {
+        "date": "2015-08-15T00:00:00+00:00",
+        "regime": "accum_bear",
+        "signal": "short",
+        "entry_price": 260.52,
+        "ic_struct": 9.073118662159757,
+        "ic_dir": 44.548611111111114,
+        "ic_flux": 83.78238341968913,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.18843083064639943,
+            "days_to_threshold": null,
+            "min_price": 211.43
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.18843083064639943,
+            "days_to_threshold": null,
+            "min_price": 211.43
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.18843083064639943,
+            "days_to_threshold": null,
+            "min_price": 211.43
+          },
+          "180d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.18843083064639943,
+            "days_to_threshold": null,
+            "min_price": 211.43
+          }
+        }
+      },
+      {
+        "date": "2015-09-14T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "flat",
+        "entry_price": 229.91,
+        "ic_struct": 56.98274328411315,
+        "ic_dir": 19.583333333333332,
+        "ic_flux": 60.1727115716753,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.015571310512809244,
+            "days_to_threshold": null,
+            "min_price": 226.33
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.015571310512809244,
+            "days_to_threshold": null,
+            "min_price": 226.33
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.015571310512809244,
+            "days_to_threshold": null,
+            "min_price": 226.33
+          },
+          "180d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.015571310512809244,
+            "days_to_threshold": null,
+            "min_price": 226.33
+          }
+        }
+      },
+      {
+        "date": "2015-10-14T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "flat",
+        "entry_price": 252.33,
+        "ic_struct": 50.36470378936132,
+        "ic_dir": 36.197916666666664,
+        "ic_flux": 98.5146804835924,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": 0.008362065549082587,
+            "days_to_threshold": null,
+            "min_price": 254.44
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": 0.008362065549082587,
+            "days_to_threshold": null,
+            "min_price": 254.44
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": 0.008362065549082587,
+            "days_to_threshold": null,
+            "min_price": 254.44
+          },
+          "180d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": 0.008362065549082587,
+            "days_to_threshold": null,
+            "min_price": 254.44
+          }
+        }
+      },
+      {
+        "date": "2016-01-28T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "flat",
+        "entry_price": 379.69,
+        "ic_struct": 51.41433908557196,
+        "ic_dir": 42.69097222222222,
+        "ic_flux": 35.28497409326425,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.03073560009481424,
+            "days_to_threshold": null,
+            "min_price": 368.02
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.03073560009481424,
+            "days_to_threshold": null,
+            "min_price": 368.02
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.03073560009481424,
+            "days_to_threshold": null,
+            "min_price": 368.02
+          },
+          "180d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.03073560009481424,
+            "days_to_threshold": null,
+            "min_price": 368.02
+          }
+        }
+      },
+      {
+        "date": "2016-02-27T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "short",
+        "entry_price": 431.3,
+        "ic_struct": 37.53780466109233,
+        "ic_dir": 40.052083333333336,
+        "ic_flux": 80.9153713298791,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.07488986784140972,
+            "days_to_threshold": null,
+            "min_price": 399.0
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.07488986784140972,
+            "days_to_threshold": null,
+            "min_price": 399.0
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.07488986784140972,
+            "days_to_threshold": null,
+            "min_price": 399.0
+          },
+          "180d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.07488986784140972,
+            "days_to_threshold": null,
+            "min_price": 399.0
+          }
+        }
+      },
+      {
+        "date": "2016-04-14T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "short",
+        "entry_price": 424.02,
+        "ic_struct": 36.18573207614303,
+        "ic_dir": 44.861111111111114,
+        "ic_flux": 99.89637305699482,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": 0.005282769680675425,
+            "days_to_threshold": null,
+            "min_price": 426.26
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": 0.005282769680675425,
+            "days_to_threshold": null,
+            "min_price": 426.26
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": 0.005282769680675425,
+            "days_to_threshold": null,
+            "min_price": 426.26
+          },
+          "180d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": 0.005282769680675425,
+            "days_to_threshold": null,
+            "min_price": 426.26
+          }
+        }
+      },
+      {
+        "date": "2016-08-02T00:00:00+00:00",
+        "regime": "bear_late",
+        "signal": "flat",
+        "entry_price": 513.43,
+        "ic_struct": 71.3574097135741,
+        "ic_dir": 28.177083333333332,
+        "ic_flux": 39.119170984455955,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": 0.10324679118867253,
+            "days_to_threshold": null,
+            "min_price": 566.44
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": 0.10324679118867253,
+            "days_to_threshold": null,
+            "min_price": 566.44
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": 0.10324679118867253,
+            "days_to_threshold": null,
+            "min_price": 566.44
+          },
+          "180d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": 0.10324679118867253,
+            "days_to_threshold": null,
+            "min_price": 566.44
+          }
+        }
+      },
+      {
+        "date": "2016-09-01T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "short",
+        "entry_price": 571.99,
+        "ic_struct": 35.794342643657714,
+        "ic_dir": 23.14236111111111,
+        "ic_flux": 80.53540587219344,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": 0.005769331631671815,
+            "days_to_threshold": null,
+            "min_price": 575.29
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": 0.005769331631671815,
+            "days_to_threshold": null,
+            "min_price": 575.29
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": 0.005769331631671815,
+            "days_to_threshold": null,
+            "min_price": 575.29
+          },
+          "180d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": 0.005769331631671815,
+            "days_to_threshold": null,
+            "min_price": 575.29
+          }
+        }
+      },
+      {
+        "date": "2016-10-05T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "short",
+        "entry_price": 611.82,
+        "ic_struct": 30.688489592599183,
+        "ic_dir": 44.61805555555556,
+        "ic_flux": 99.37823834196891,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.0013892975058024115,
+            "days_to_threshold": null,
+            "min_price": 610.97
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.0013892975058024115,
+            "days_to_threshold": null,
+            "min_price": 610.97
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.0013892975058024115,
+            "days_to_threshold": null,
+            "min_price": 610.97
+          },
+          "180d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.0013892975058024115,
+            "days_to_threshold": null,
+            "min_price": 610.97
+          }
+        }
+      },
+      {
+        "date": "2017-03-24T00:00:00+00:00",
+        "regime": "bear_late",
+        "signal": "flat",
+        "entry_price": 939.7,
+        "ic_struct": 72.7094822985234,
+        "ic_dir": 42.1875,
+        "ic_flux": 22.366148531951637,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": 0.028306906459508285,
+            "days_to_threshold": null,
+            "min_price": 966.3
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": 0.028306906459508285,
+            "days_to_threshold": null,
+            "min_price": 966.3
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": 0.028306906459508285,
+            "days_to_threshold": null,
+            "min_price": 966.3
+          },
+          "180d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": 0.028306906459508285,
+            "days_to_threshold": null,
+            "min_price": 966.3
+          }
+        }
+      },
+      {
+        "date": "2018-01-30T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "flat",
+        "entry_price": 10107.26,
+        "ic_struct": 52.23269880804127,
+        "ic_dir": 31.37152777777778,
+        "ic_flux": 11.744386873920547,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.3136537498788,
+            "days_to_threshold": 6,
+            "min_price": 6937.08
+          },
+          "60d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.32189732924650205,
+            "days_to_threshold": 6,
+            "min_price": 6853.76
+          },
+          "90d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.3435550287615041,
+            "days_to_threshold": 6,
+            "min_price": 6634.86
+          },
+          "180d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.41910270439268416,
+            "days_to_threshold": 6,
+            "min_price": 5871.28
+          }
+        }
+      },
+      {
+        "date": "2018-03-01T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "flat",
+        "entry_price": 10929.37,
+        "ic_struct": 22.255826365415405,
+        "ic_dir": 15.590277777777779,
+        "ic_flux": 10.345423143350601,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.37290438515669255,
+            "days_to_threshold": 13,
+            "min_price": 6853.76
+          },
+          "60d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.39293298698827117,
+            "days_to_threshold": 13,
+            "min_price": 6634.86
+          },
+          "90d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.39293298698827117,
+            "days_to_threshold": 13,
+            "min_price": 6634.86
+          },
+          "180d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.4627979471826831,
+            "days_to_threshold": 13,
+            "min_price": 5871.28
+          }
+        }
+      },
+      {
+        "date": "2018-03-31T00:00:00+00:00",
+        "regime": "accum_bear",
+        "signal": "short",
+        "entry_price": 6943.77,
+        "ic_struct": 3.380181462373243,
+        "ic_dir": 8.315972222222221,
+        "ic_flux": 24.628670120898107,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.044487360612462834,
+            "days_to_threshold": null,
+            "min_price": 6634.86
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.044487360612462834,
+            "days_to_threshold": null,
+            "min_price": 6634.86
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.15445356052979875,
+            "days_to_threshold": null,
+            "min_price": 5871.28
+          },
+          "180d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.15445356052979875,
+            "days_to_threshold": null,
+            "min_price": 5871.28
+          }
+        }
+      },
+      {
+        "date": "2018-04-30T00:00:00+00:00",
+        "regime": "accum_bear",
+        "signal": "short",
+        "entry_price": 9248.45,
+        "ic_struct": 2.899839886141256,
+        "ic_dir": 21.180555555555557,
+        "ic_flux": 26.096718480138165,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.23026236828874036,
+            "days_to_threshold": 26,
+            "min_price": 7118.88
+          },
+          "60d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.36516064854110697,
+            "days_to_threshold": 26,
+            "min_price": 5871.28
+          },
+          "90d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.36516064854110697,
+            "days_to_threshold": 26,
+            "min_price": 5871.28
+          },
+          "180d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.36516064854110697,
+            "days_to_threshold": 26,
+            "min_price": 5871.28
+          }
+        }
+      },
+      {
+        "date": "2018-06-02T00:00:00+00:00",
+        "regime": "accum_bear",
+        "signal": "short",
+        "entry_price": 7643.26,
+        "ic_struct": 8.432663227183776,
+        "ic_dir": 43.177083333333336,
+        "ic_flux": 62.10708117443869,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.23183563034621357,
+            "days_to_threshold": 20,
+            "min_price": 5871.28
+          },
+          "60d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.23183563034621357,
+            "days_to_threshold": 20,
+            "min_price": 5871.28
+          },
+          "90d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.23183563034621357,
+            "days_to_threshold": 20,
+            "min_price": 5871.28
+          },
+          "180d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.504846099700913,
+            "days_to_threshold": 20,
+            "min_price": 3784.59
+          }
+        }
+      },
+      {
+        "date": "2018-07-02T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "short",
+        "entry_price": 6615.66,
+        "ic_struct": 21.579790072940757,
+        "ic_dir": 7.96875,
+        "ic_flux": 35.69948186528498,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.05832071176571951,
+            "days_to_threshold": null,
+            "min_price": 6229.83
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.06987209137108008,
+            "days_to_threshold": null,
+            "min_price": 6153.41
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.06987209137108008,
+            "days_to_threshold": null,
+            "min_price": 6153.41
+          },
+          "180d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.5113851074571547,
+            "days_to_threshold": 140,
+            "min_price": 3232.51
+          }
+        }
+      },
+      {
+        "date": "2018-08-01T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "short",
+        "entry_price": 7610.9,
+        "ic_struct": 21.935598647927414,
+        "ic_dir": 39.80902777777778,
+        "ic_flux": 48.49740932642487,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.19150034818484019,
+            "days_to_threshold": null,
+            "min_price": 6153.41
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.19150034818484019,
+            "days_to_threshold": null,
+            "min_price": 6153.41
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.19150034818484019,
+            "days_to_threshold": null,
+            "min_price": 6153.41
+          },
+          "180d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.575278876348395,
+            "days_to_threshold": 105,
+            "min_price": 3232.51
+          }
+        }
+      },
+      {
+        "date": "2018-09-05T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "short",
+        "entry_price": 6705.03,
+        "ic_struct": 29.460950008895214,
+        "ic_dir": 39.427083333333336,
+        "ic_flux": 48.652849740932645,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.0752972022496543,
+            "days_to_threshold": null,
+            "min_price": 6200.16
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.0752972022496543,
+            "days_to_threshold": null,
+            "min_price": 6200.16
+          },
+          "90d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.4355595724403917,
+            "days_to_threshold": 75,
+            "min_price": 3784.59
+          },
+          "180d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.5178977573552989,
+            "days_to_threshold": 75,
+            "min_price": 3232.51
+          }
+        }
+      },
+      {
+        "date": "2018-10-05T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "short",
+        "entry_price": 6632.87,
+        "ic_struct": 42.109944849670875,
+        "ic_dir": 34.30555555555556,
+        "ic_flux": 87.20207253886011,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.06383360445779873,
+            "days_to_threshold": null,
+            "min_price": 6209.47
+          },
+          "60d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.42941893931284647,
+            "days_to_threshold": 45,
+            "min_price": 3784.59
+          },
+          "90d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.512652893845349,
+            "days_to_threshold": 45,
+            "min_price": 3232.51
+          },
+          "180d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.512652893845349,
+            "days_to_threshold": 45,
+            "min_price": 3232.51
+          }
+        }
+      },
+      {
+        "date": "2018-11-04T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "short",
+        "entry_price": 6467.05,
+        "ic_struct": 36.87955879736702,
+        "ic_dir": 35.55555555555556,
+        "ic_flux": 90.91537132987911,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.41478881406514556,
+            "days_to_threshold": 15,
+            "min_price": 3784.59
+          },
+          "60d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.5001569494591815,
+            "days_to_threshold": 15,
+            "min_price": 3232.51
+          },
+          "90d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.5001569494591815,
+            "days_to_threshold": 15,
+            "min_price": 3232.51
+          },
+          "180d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.5001569494591815,
+            "days_to_threshold": 15,
+            "min_price": 3232.51
+          }
+        }
+      },
+      {
+        "date": "2018-12-04T00:00:00+00:00",
+        "regime": "bear_late",
+        "signal": "flat",
+        "entry_price": 3948.44,
+        "ic_struct": 94.0935776552215,
+        "ic_dir": 4.010416666666667,
+        "ic_flux": 17.979274611398964,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.1813197110757666,
+            "days_to_threshold": null,
+            "min_price": 3232.51
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.1813197110757666,
+            "days_to_threshold": null,
+            "min_price": 3232.51
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.1813197110757666,
+            "days_to_threshold": null,
+            "min_price": 3232.51
+          },
+          "180d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.1813197110757666,
+            "days_to_threshold": null,
+            "min_price": 3232.51
+          }
+        }
+      },
+      {
+        "date": "2019-01-03T00:00:00+00:00",
+        "regime": "bear_late",
+        "signal": "flat",
+        "entry_price": 3835.86,
+        "ic_struct": 87.61786159046433,
+        "ic_dir": 3.923611111111111,
+        "ic_flux": 24.905008635578582,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.10886997961343747,
+            "days_to_threshold": null,
+            "min_price": 3418.25
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.12005912624548343,
+            "days_to_threshold": null,
+            "min_price": 3375.33
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.12005912624548343,
+            "days_to_threshold": null,
+            "min_price": 3375.33
+          },
+          "180d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.12005912624548343,
+            "days_to_threshold": null,
+            "min_price": 3375.33
+          }
+        }
+      },
+      {
+        "date": "2019-02-02T00:00:00+00:00",
+        "regime": "bear_late",
+        "signal": "flat",
+        "entry_price": 3508.68,
+        "ic_struct": 68.9734922611635,
+        "ic_dir": 26.11111111111111,
+        "ic_flux": 62.314335060449054,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.03800574575053861,
+            "days_to_threshold": null,
+            "min_price": 3375.33
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.03800574575053861,
+            "days_to_threshold": null,
+            "min_price": 3375.33
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.03800574575053861,
+            "days_to_threshold": null,
+            "min_price": 3375.33
+          },
+          "180d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.03800574575053861,
+            "days_to_threshold": null,
+            "min_price": 3375.33
+          }
+        }
+      },
+      {
+        "date": "2019-03-04T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "flat",
+        "entry_price": 3731.28,
+        "ic_struct": 50.06226650062266,
+        "ic_dir": 36.857638888888886,
+        "ic_flux": 58.10017271157167,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": 0.03664694153212822,
+            "days_to_threshold": null,
+            "min_price": 3868.02
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": 0.03664694153212822,
+            "days_to_threshold": null,
+            "min_price": 3868.02
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": 0.03664694153212822,
+            "days_to_threshold": null,
+            "min_price": 3868.02
+          },
+          "180d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": 0.03664694153212822,
+            "days_to_threshold": null,
+            "min_price": 3868.02
+          }
+        }
+      },
+      {
+        "date": "2019-08-21T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "short",
+        "entry_price": 10131.67,
+        "ic_struct": 49.79541006938267,
+        "ic_dir": 33.576388888888886,
+        "ic_flux": 40.89810017271157,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.06305574500551248,
+            "days_to_threshold": null,
+            "min_price": 9492.81
+          },
+          "60d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.22339456377872546,
+            "days_to_threshold": 36,
+            "min_price": 7868.31
+          },
+          "90d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.2652543953760831,
+            "days_to_threshold": 36,
+            "min_price": 7444.2
+          },
+          "180d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.34503986016125676,
+            "days_to_threshold": 36,
+            "min_price": 6635.84
+          }
+        }
+      },
+      {
+        "date": "2019-09-20T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "short",
+        "entry_price": 10176.38,
+        "ic_struct": 36.77281622487102,
+        "ic_dir": 38.50694444444444,
+        "ic_flux": 81.22625215889465,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.22680658544590504,
+            "days_to_threshold": 6,
+            "min_price": 7868.31
+          },
+          "60d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.2684825055668125,
+            "days_to_threshold": 6,
+            "min_price": 7444.2
+          },
+          "90d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.3479174323285883,
+            "days_to_threshold": 6,
+            "min_price": 6635.84
+          },
+          "180d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.5168439071654164,
+            "days_to_threshold": 6,
+            "min_price": 4916.78
+          }
+        }
+      },
+      {
+        "date": "2019-10-20T00:00:00+00:00",
+        "regime": "accum_bear",
+        "signal": "short",
+        "entry_price": 8247.25,
+        "ic_struct": 8.076854652197119,
+        "ic_dir": 17.93402777777778,
+        "ic_flux": 49.70639032815198,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.09737185122313496,
+            "days_to_threshold": null,
+            "min_price": 7444.2
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.19538755342689984,
+            "days_to_threshold": null,
+            "min_price": 6635.84
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.19538755342689984,
+            "days_to_threshold": null,
+            "min_price": 6635.84
+          },
+          "180d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.4038279426475492,
+            "days_to_threshold": 144,
+            "min_price": 4916.78
+          }
+        }
+      },
+      {
+        "date": "2019-11-19T00:00:00+00:00",
+        "regime": "accum_bear",
+        "signal": "short",
+        "entry_price": 8133.57,
+        "ic_struct": 5.47945205479452,
+        "ic_dir": 16.59722222222222,
+        "ic_flux": 33.6614853195164,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.1841417729238206,
+            "days_to_threshold": null,
+            "min_price": 6635.84
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.1841417729238206,
+            "days_to_threshold": null,
+            "min_price": 6635.84
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.1841417729238206,
+            "days_to_threshold": null,
+            "min_price": 6635.84
+          },
+          "180d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.3954954589436127,
+            "days_to_threshold": 114,
+            "min_price": 4916.78
+          }
+        }
+      },
+      {
+        "date": "2019-12-19T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "short",
+        "entry_price": 7159.26,
+        "ic_struct": 24.693115104074007,
+        "ic_dir": 23.663194444444443,
+        "ic_flux": 49.30915371329879,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.02703352022415728,
+            "days_to_threshold": null,
+            "min_price": 6965.72
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.02703352022415728,
+            "days_to_threshold": null,
+            "min_price": 6965.72
+          },
+          "90d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.3132279034425346,
+            "days_to_threshold": 84,
+            "min_price": 4916.78
+          },
+          "180d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.3132279034425346,
+            "days_to_threshold": 84,
+            "min_price": 4916.78
+          }
+        }
+      },
+      {
+        "date": "2020-03-08T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "short",
+        "entry_price": 8057.67,
+        "ic_struct": 24.052659669098027,
+        "ic_dir": 40.3125,
+        "ic_flux": 46.13126079447323,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.3898012700942084,
+            "days_to_threshold": 4,
+            "min_price": 4916.78
+          },
+          "60d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.3898012700942084,
+            "days_to_threshold": 4,
+            "min_price": 4916.78
+          },
+          "90d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.3898012700942084,
+            "days_to_threshold": 4,
+            "min_price": 4916.78
+          },
+          "180d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.3898012700942084,
+            "days_to_threshold": 4,
+            "min_price": 4916.78
+          }
+        }
+      },
+      {
+        "date": "2020-04-07T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "flat",
+        "entry_price": 7201.57,
+        "ic_struct": 44.9386230208148,
+        "ic_dir": 10.833333333333334,
+        "ic_flux": 4.162348877374782,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.07943129067689403,
+            "days_to_threshold": null,
+            "min_price": 6629.54
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.07943129067689403,
+            "days_to_threshold": null,
+            "min_price": 6629.54
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.07943129067689403,
+            "days_to_threshold": null,
+            "min_price": 6629.54
+          },
+          "180d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.07943129067689403,
+            "days_to_threshold": null,
+            "min_price": 6629.54
+          }
+        }
+      },
+      {
+        "date": "2020-06-28T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "short",
+        "entry_price": 9120.39,
+        "ic_struct": 30.29710016011386,
+        "ic_dir": 44.09722222222222,
+        "ic_flux": 61.26079447322971,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.005913124329113173,
+            "days_to_threshold": null,
+            "min_price": 9066.46
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.005913124329113173,
+            "days_to_threshold": null,
+            "min_price": 9066.46
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.005913124329113173,
+            "days_to_threshold": null,
+            "min_price": 9066.46
+          },
+          "180d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.005913124329113173,
+            "days_to_threshold": null,
+            "min_price": 9066.46
+          }
+        }
+      },
+      {
+        "date": "2020-09-25T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "short",
+        "entry_price": 10694.12,
+        "ic_struct": 34.06867105497243,
+        "ic_dir": 36.16319444444444,
+        "ic_flux": 54.09326424870466,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.013285805657688554,
+            "days_to_threshold": null,
+            "min_price": 10552.04
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.013285805657688554,
+            "days_to_threshold": null,
+            "min_price": 10552.04
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.013285805657688554,
+            "days_to_threshold": null,
+            "min_price": 10552.04
+          },
+          "180d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.013285805657688554,
+            "days_to_threshold": null,
+            "min_price": 10552.04
+          }
+        }
+      },
+      {
+        "date": "2021-04-20T00:00:00+00:00",
+        "regime": "bear_late",
+        "signal": "flat",
+        "entry_price": 56496.06,
+        "ic_struct": 69.43604340864614,
+        "ic_dir": 41.05902777777778,
+        "ic_flux": 53.005181347150256,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.34912505403031635,
+            "days_to_threshold": 27,
+            "min_price": 36771.87
+          },
+          "60d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.40864230178175254,
+            "days_to_threshold": 27,
+            "min_price": 33409.38
+          },
+          "90d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.4539875878070081,
+            "days_to_threshold": 27,
+            "min_price": 30847.55
+          },
+          "180d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.4726083553437178,
+            "days_to_threshold": 27,
+            "min_price": 29795.55
+          }
+        }
+      },
+      {
+        "date": "2021-05-20T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "flat",
+        "entry_price": 40597.4,
+        "ic_struct": 42.12773527842021,
+        "ic_dir": 9.340277777777779,
+        "ic_flux": 15.440414507772019,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.177056166158424,
+            "days_to_threshold": null,
+            "min_price": 33409.38
+          },
+          "60d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.24015946834033708,
+            "days_to_threshold": 32,
+            "min_price": 30847.55
+          },
+          "90d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.26607245784212785,
+            "days_to_threshold": 32,
+            "min_price": 29795.55
+          },
+          "180d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.26607245784212785,
+            "days_to_threshold": 32,
+            "min_price": 29795.55
+          }
+        }
+      },
+      {
+        "date": "2021-06-19T00:00:00+00:00",
+        "regime": "accum_bear",
+        "signal": "flat",
+        "entry_price": 35515.38,
+        "ic_struct": 4.287493328589219,
+        "ic_dir": 5.572916666666667,
+        "ic_flux": 18.203799654576855,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.13143122782298822,
+            "days_to_threshold": null,
+            "min_price": 30847.55
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.16105219766760204,
+            "days_to_threshold": null,
+            "min_price": 29795.55
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.16105219766760204,
+            "days_to_threshold": null,
+            "min_price": 29795.55
+          },
+          "180d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.16105219766760204,
+            "days_to_threshold": null,
+            "min_price": 29795.55
+          }
+        }
+      },
+      {
+        "date": "2021-07-19T00:00:00+00:00",
+        "regime": "accum_bear",
+        "signal": "short",
+        "entry_price": 30847.55,
+        "ic_struct": 18.43088418430884,
+        "ic_dir": 13.229166666666666,
+        "ic_flux": 34.59412780656304,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.03410319458109312,
+            "days_to_threshold": null,
+            "min_price": 29795.55
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.03410319458109312,
+            "days_to_threshold": null,
+            "min_price": 29795.55
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.03410319458109312,
+            "days_to_threshold": null,
+            "min_price": 29795.55
+          },
+          "180d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.03410319458109312,
+            "days_to_threshold": null,
+            "min_price": 29795.55
+          }
+        }
+      },
+      {
+        "date": "2021-09-28T00:00:00+00:00",
+        "regime": "accum_bear",
+        "signal": "short",
+        "entry_price": 41056.79,
+        "ic_struct": 18.768902330546165,
+        "ic_dir": 36.78819444444444,
+        "ic_flux": 33.402417962003454,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": 0.01175542462038548,
+            "days_to_threshold": null,
+            "min_price": 41539.43
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": 0.01175542462038548,
+            "days_to_threshold": null,
+            "min_price": 41539.43
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": 0.01175542462038548,
+            "days_to_threshold": null,
+            "min_price": 41539.43
+          },
+          "180d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.14567310303606307,
+            "days_to_threshold": null,
+            "min_price": 35075.92
+          }
+        }
+      },
+      {
+        "date": "2021-12-04T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "short",
+        "entry_price": 49243.39,
+        "ic_struct": 47.144636185732075,
+        "ic_dir": 34.46180555555556,
+        "ic_flux": 38.877374784110536,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.06253123515663728,
+            "days_to_threshold": null,
+            "min_price": 46164.14
+          },
+          "60d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.287702979019113,
+            "days_to_threshold": 48,
+            "min_price": 35075.92
+          },
+          "90d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.287702979019113,
+            "days_to_threshold": 48,
+            "min_price": 35075.92
+          },
+          "180d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.4192656110799845,
+            "days_to_threshold": 48,
+            "min_price": 28597.33
+          }
+        }
+      },
+      {
+        "date": "2022-01-03T00:00:00+00:00",
+        "regime": "accum_bear",
+        "signal": "short",
+        "entry_price": 46450.79,
+        "ic_struct": 9.695783668386408,
+        "ic_dir": 12.864583333333334,
+        "ic_flux": 56.4594127806563,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.24488001172854112,
+            "days_to_threshold": 18,
+            "min_price": 35075.92
+          },
+          "60d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.24488001172854112,
+            "days_to_threshold": 18,
+            "min_price": 35075.92
+          },
+          "90d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.24488001172854112,
+            "days_to_threshold": 18,
+            "min_price": 35075.92
+          },
+          "180d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.5919498893344979,
+            "days_to_threshold": 18,
+            "min_price": 18954.25
+          }
+        }
+      },
+      {
+        "date": "2022-02-02T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "short",
+        "entry_price": 36918.19,
+        "ic_struct": 29.8879202988792,
+        "ic_dir": 12.1875,
+        "ic_flux": 57.70293609671848,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": 0.0032287606732614993,
+            "days_to_threshold": null,
+            "min_price": 37037.39
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": 0.0032287606732614993,
+            "days_to_threshold": null,
+            "min_price": 37037.39
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": 0.0032287606732614993,
+            "days_to_threshold": null,
+            "min_price": 37037.39
+          },
+          "180d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.48658777691972444,
+            "days_to_threshold": 98,
+            "min_price": 18954.25
+          }
+        }
+      },
+      {
+        "date": "2022-03-04T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "short",
+        "entry_price": 39154.4,
+        "ic_struct": 30.154776730119195,
+        "ic_dir": 20.885416666666668,
+        "ic_flux": 25.872193436960274,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.034685501501746985,
+            "days_to_threshold": null,
+            "min_price": 37796.31
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.038418926097705586,
+            "days_to_threshold": null,
+            "min_price": 37650.13
+          },
+          "90d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.26962665754040416,
+            "days_to_threshold": 66,
+            "min_price": 28597.33
+          },
+          "180d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.5159100892875386,
+            "days_to_threshold": 66,
+            "min_price": 18954.25
+          }
+        }
+      },
+      {
+        "date": "2022-04-06T00:00:00+00:00",
+        "regime": "accum_bear",
+        "signal": "short",
+        "entry_price": 43177.78,
+        "ic_struct": 13.538516278242305,
+        "ic_dir": 44.513888888888886,
+        "ic_flux": 54.40414507772021,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.16600876654612629,
+            "days_to_threshold": null,
+            "min_price": 36009.89
+          },
+          "60d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.3376841051114716,
+            "days_to_threshold": 32,
+            "min_price": 28597.33
+          },
+          "90d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.5610184219753771,
+            "days_to_threshold": 32,
+            "min_price": 18954.25
+          },
+          "180d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.5722788434236313,
+            "days_to_threshold": 32,
+            "min_price": 18468.05
+          }
+        }
+      },
+      {
+        "date": "2022-05-06T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "short",
+        "entry_price": 36009.89,
+        "ic_struct": 21.09944849670877,
+        "ic_dir": 33.489583333333336,
+        "ic_flux": 55.682210708117445,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.20584789345371501,
+            "days_to_threshold": 12,
+            "min_price": 28597.33
+          },
+          "60d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.4736376589875726,
+            "days_to_threshold": 12,
+            "min_price": 18954.25
+          },
+          "90d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.4736376589875726,
+            "days_to_threshold": 12,
+            "min_price": 18954.25
+          },
+          "180d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.487139505285909,
+            "days_to_threshold": 12,
+            "min_price": 18468.05
+          }
+        }
+      },
+      {
+        "date": "2022-06-05T00:00:00+00:00",
+        "regime": "bear_late",
+        "signal": "flat",
+        "entry_price": 29897.9,
+        "ic_struct": 66.02028108877424,
+        "ic_dir": 8.59375,
+        "ic_flux": 31.20898100172711,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.36603406928245796,
+            "days_to_threshold": 8,
+            "min_price": 18954.25
+          },
+          "60d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.36603406928245796,
+            "days_to_threshold": 8,
+            "min_price": 18954.25
+          },
+          "90d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.36603406928245796,
+            "days_to_threshold": 8,
+            "min_price": 18954.25
+          },
+          "180d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.47286632171490306,
+            "days_to_threshold": 8,
+            "min_price": 15760.19
+          }
+        }
+      },
+      {
+        "date": "2022-07-05T00:00:00+00:00",
+        "regime": "bear_late",
+        "signal": "flat",
+        "entry_price": 20158.69,
+        "ic_struct": 88.15157445294432,
+        "ic_dir": 3.107638888888889,
+        "ic_flux": 22.953367875647672,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.04211483980357844,
+            "days_to_threshold": null,
+            "min_price": 19309.71
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.04211483980357844,
+            "days_to_threshold": null,
+            "min_price": 19309.71
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.08386656077354226,
+            "days_to_threshold": null,
+            "min_price": 18468.05
+          },
+          "180d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.21819374175603667,
+            "days_to_threshold": 127,
+            "min_price": 15760.19
+          }
+        }
+      },
+      {
+        "date": "2022-08-04T00:00:00+00:00",
+        "regime": "bear_late",
+        "signal": "flat",
+        "entry_price": 22622.99,
+        "ic_struct": 71.99786514855008,
+        "ic_dir": 12.98611111111111,
+        "ic_flux": 49.913644214162346,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.13565448245346878,
+            "days_to_threshold": null,
+            "min_price": 19554.08
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.183660073226395,
+            "days_to_threshold": null,
+            "min_price": 18468.05
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.183660073226395,
+            "days_to_threshold": null,
+            "min_price": 18468.05
+          },
+          "180d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.303355126798005,
+            "days_to_threshold": 97,
+            "min_price": 15760.19
+          }
+        }
+      },
+      {
+        "date": "2022-09-03T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "flat",
+        "entry_price": 19834.79,
+        "ic_struct": 53.157801103006584,
+        "ic_dir": 38.35069444444444,
+        "ic_flux": 58.92918825561313,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.0689061996623106,
+            "days_to_threshold": null,
+            "min_price": 18468.05
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.0689061996623106,
+            "days_to_threshold": null,
+            "min_price": 18468.05
+          },
+          "90d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.2054269291482289,
+            "days_to_threshold": 67,
+            "min_price": 15760.19
+          },
+          "180d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.2054269291482289,
+            "days_to_threshold": 67,
+            "min_price": 15760.19
+          }
+        }
+      },
+      {
+        "date": "2022-10-03T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "short",
+        "entry_price": 19632.35,
+        "ic_struct": 47.57160647571607,
+        "ic_dir": 23.62847222222222,
+        "ic_flux": 43.47150259067357,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.029991824717876203,
+            "days_to_threshold": null,
+            "min_price": 19043.54
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.19723364752564,
+            "days_to_threshold": null,
+            "min_price": 15760.19
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.19723364752564,
+            "days_to_threshold": null,
+            "min_price": 15760.19
+          },
+          "180d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.19723364752564,
+            "days_to_threshold": null,
+            "min_price": 15760.19
+          }
+        }
+      },
+      {
+        "date": "2022-11-02T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "flat",
+        "entry_price": 20150.33,
+        "ic_struct": 52.30386052303861,
+        "ic_dir": 41.892361111111114,
+        "ic_flux": 90.43177892918825,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.217869384769381,
+            "days_to_threshold": 7,
+            "min_price": 15760.19
+          },
+          "60d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.217869384769381,
+            "days_to_threshold": 7,
+            "min_price": 15760.19
+          },
+          "90d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.217869384769381,
+            "days_to_threshold": 7,
+            "min_price": 15760.19
+          },
+          "180d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.217869384769381,
+            "days_to_threshold": 7,
+            "min_price": 15760.19
+          }
+        }
+      },
+      {
+        "date": "2022-12-02T00:00:00+00:00",
+        "regime": "bear_late",
+        "signal": "flat",
+        "entry_price": 17094.49,
+        "ic_struct": 92.3145347802882,
+        "ic_dir": 24.010416666666668,
+        "ic_flux": 26.459412780656308,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.03812339531626863,
+            "days_to_threshold": null,
+            "min_price": 16442.79
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.03812339531626863,
+            "days_to_threshold": null,
+            "min_price": 16442.79
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.03812339531626863,
+            "days_to_threshold": null,
+            "min_price": 16442.79
+          },
+          "180d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.03812339531626863,
+            "days_to_threshold": null,
+            "min_price": 16442.79
+          }
+        }
+      },
+      {
+        "date": "2023-01-01T00:00:00+00:00",
+        "regime": "bear_late",
+        "signal": "flat",
+        "entry_price": 16613.87,
+        "ic_struct": 99.92883828500267,
+        "ic_dir": 18.975694444444443,
+        "ic_flux": 93.03972366148533,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": 0.0033833176737270154,
+            "days_to_threshold": null,
+            "min_price": 16670.08
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": 0.0033833176737270154,
+            "days_to_threshold": null,
+            "min_price": 16670.08
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": 0.0033833176737270154,
+            "days_to_threshold": null,
+            "min_price": 16670.08
+          },
+          "180d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": 0.0033833176737270154,
+            "days_to_threshold": null,
+            "min_price": 16670.08
+          }
+        }
+      },
+      {
+        "date": "2023-05-16T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "short",
+        "entry_price": 27036.57,
+        "ic_struct": 39.70823696851094,
+        "ic_dir": 38.489583333333336,
+        "ic_flux": 78.48013816925734,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.07067612496703535,
+            "days_to_threshold": null,
+            "min_price": 25125.73
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.07067612496703535,
+            "days_to_threshold": null,
+            "min_price": 25125.73
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.07067612496703535,
+            "days_to_threshold": null,
+            "min_price": 25125.73
+          },
+          "180d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.07067612496703535,
+            "days_to_threshold": null,
+            "min_price": 25125.73
+          }
+        }
+      },
+      {
+        "date": "2023-06-15T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "short",
+        "entry_price": 25574.36,
+        "ic_struct": 21.686532645436756,
+        "ic_dir": 20.97222222222222,
+        "ic_flux": 76.6321243523316,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": 0.0295698504283195,
+            "days_to_threshold": null,
+            "min_price": 26330.59
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": 0.0295698504283195,
+            "days_to_threshold": null,
+            "min_price": 26330.59
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.016316732852747817,
+            "days_to_threshold": null,
+            "min_price": 25157.07
+          },
+          "180d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.016316732852747817,
+            "days_to_threshold": null,
+            "min_price": 25157.07
+          }
+        }
+      },
+      {
+        "date": "2023-07-27T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "flat",
+        "entry_price": 29217.05,
+        "ic_struct": 50.329122931862656,
+        "ic_dir": 44.322916666666664,
+        "ic_flux": 94.30051813471502,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.109754407101333,
+            "days_to_threshold": null,
+            "min_price": 26010.35
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.1389592720688776,
+            "days_to_threshold": null,
+            "min_price": 25157.07
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.1389592720688776,
+            "days_to_threshold": null,
+            "min_price": 25157.07
+          },
+          "180d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.1389592720688776,
+            "days_to_threshold": null,
+            "min_price": 25157.07
+          }
+        }
+      },
+      {
+        "date": "2023-08-26T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "short",
+        "entry_price": 26010.35,
+        "ic_struct": 25.297989681551325,
+        "ic_dir": 21.28472222222222,
+        "ic_flux": 90.56994818652849,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.032805402464788025,
+            "days_to_threshold": null,
+            "min_price": 25157.07
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.032805402464788025,
+            "days_to_threshold": null,
+            "min_price": 25157.07
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.032805402464788025,
+            "days_to_threshold": null,
+            "min_price": 25157.07
+          },
+          "180d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.032805402464788025,
+            "days_to_threshold": null,
+            "min_price": 25157.07
+          }
+        }
+      },
+      {
+        "date": "2023-09-25T00:00:00+00:00",
+        "regime": "accum_bear",
+        "signal": "short",
+        "entry_price": 26297.93,
+        "ic_struct": 1.2809108699519658,
+        "ic_dir": 27.708333333333332,
+        "ic_flux": 85.42314335060449,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.003245122334723738,
+            "days_to_threshold": null,
+            "min_price": 26212.59
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.003245122334723738,
+            "days_to_threshold": null,
+            "min_price": 26212.59
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.003245122334723738,
+            "days_to_threshold": null,
+            "min_price": 26212.59
+          },
+          "180d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.003245122334723738,
+            "days_to_threshold": null,
+            "min_price": 26212.59
+          }
+        }
+      },
+      {
+        "date": "2024-02-02T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "flat",
+        "entry_price": 43181.71,
+        "ic_struct": 57.85447429283046,
+        "ic_dir": 43.21180555555556,
+        "ic_flux": 63.350604490500864,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.01416108810883121,
+            "days_to_threshold": null,
+            "min_price": 42570.21
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.01416108810883121,
+            "days_to_threshold": null,
+            "min_price": 42570.21
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.01416108810883121,
+            "days_to_threshold": null,
+            "min_price": 42570.21
+          },
+          "180d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.01416108810883121,
+            "days_to_threshold": null,
+            "min_price": 42570.21
+          }
+        }
+      },
+      {
+        "date": "2024-04-28T00:00:00+00:00",
+        "regime": "bear_late",
+        "signal": "flat",
+        "entry_price": 63111.34,
+        "ic_struct": 69.40046255114748,
+        "ic_dir": 41.02430555555556,
+        "ic_flux": 63.73056994818653,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.07659320813026615,
+            "days_to_threshold": null,
+            "min_price": 58277.44
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.07659320813026615,
+            "days_to_threshold": null,
+            "min_price": 58277.44
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.11512891344091247,
+            "days_to_threshold": null,
+            "min_price": 55845.4
+          },
+          "180d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.14518848752062619,
+            "days_to_threshold": null,
+            "min_price": 53948.3
+          }
+        }
+      },
+      {
+        "date": "2024-05-28T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "flat",
+        "entry_price": 68330.84,
+        "ic_struct": 56.75146771037182,
+        "ic_dir": 37.43055555555556,
+        "ic_flux": 54.12780656303973,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.117572680212917,
+            "days_to_threshold": null,
+            "min_price": 60297.0
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.1827204231647086,
+            "days_to_threshold": null,
+            "min_price": 55845.4
+          },
+          "90d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.2096321368213825,
+            "days_to_threshold": 69,
+            "min_price": 54006.5
+          },
+          "180d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.21048387521652,
+            "days_to_threshold": 69,
+            "min_price": 53948.3
+          }
+        }
+      },
+      {
+        "date": "2024-06-27T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "short",
+        "entry_price": 61617.1,
+        "ic_struct": 44.52944315958015,
+        "ic_dir": 37.239583333333336,
+        "ic_flux": 90.81174438687393,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.09367042590449726,
+            "days_to_threshold": null,
+            "min_price": 55845.4
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.12351441401818652,
+            "days_to_threshold": null,
+            "min_price": 54006.5
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.1244589570103104,
+            "days_to_threshold": null,
+            "min_price": 53948.3
+          },
+          "180d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.1244589570103104,
+            "days_to_threshold": null,
+            "min_price": 53948.3
+          }
+        }
+      },
+      {
+        "date": "2024-07-27T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "short",
+        "entry_price": 67900.8,
+        "ic_struct": 31.257783312577832,
+        "ic_dir": 39.583333333333336,
+        "ic_flux": 69.29188255613126,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.2046264550638579,
+            "days_to_threshold": 9,
+            "min_price": 54006.5
+          },
+          "60d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.20548358782223475,
+            "days_to_threshold": 9,
+            "min_price": 53948.3
+          },
+          "90d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.20548358782223475,
+            "days_to_threshold": 9,
+            "min_price": 53948.3
+          },
+          "180d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.20548358782223475,
+            "days_to_threshold": 9,
+            "min_price": 53948.3
+          }
+        }
+      },
+      {
+        "date": "2024-08-26T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "short",
+        "entry_price": 62854.7,
+        "ic_struct": 23.038605230386054,
+        "ic_dir": 42.27430555555556,
+        "ic_flux": 40.362694300518136,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.14169823418137373,
+            "days_to_threshold": null,
+            "min_price": 53948.3
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.14169823418137373,
+            "days_to_threshold": null,
+            "min_price": 53948.3
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.14169823418137373,
+            "days_to_threshold": null,
+            "min_price": 53948.3
+          },
+          "180d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.14169823418137373,
+            "days_to_threshold": null,
+            "min_price": 53948.3
+          }
+        }
+      },
+      {
+        "date": "2024-09-25T00:00:00+00:00",
+        "regime": "accum_bear",
+        "signal": "short",
+        "entry_price": 63139.2,
+        "ic_struct": 14.339085571962285,
+        "ic_dir": 31.25,
+        "ic_flux": 73.93782383419689,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.045291989762302975,
+            "days_to_threshold": null,
+            "min_price": 60279.5
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.045291989762302975,
+            "days_to_threshold": null,
+            "min_price": 60279.5
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.045291989762302975,
+            "days_to_threshold": null,
+            "min_price": 60279.5
+          },
+          "180d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.045291989762302975,
+            "days_to_threshold": null,
+            "min_price": 60279.5
+          }
+        }
+      },
+      {
+        "date": "2025-01-12T00:00:00+00:00",
+        "regime": "bear_late",
+        "signal": "flat",
+        "entry_price": 94449.9,
+        "ic_struct": 69.34709126489949,
+        "ic_dir": 44.6875,
+        "ic_flux": 72.08981001727116,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": 0.00039385960175719603,
+            "days_to_threshold": null,
+            "min_price": 94487.1
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.16824898702910207,
+            "days_to_threshold": null,
+            "min_price": 78558.8
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.19241312060679783,
+            "days_to_threshold": null,
+            "min_price": 76276.5
+          },
+          "180d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.19241312060679783,
+            "days_to_threshold": null,
+            "min_price": 76276.5
+          }
+        }
+      },
+      {
+        "date": "2025-02-11T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "flat",
+        "entry_price": 95767.1,
+        "ic_struct": 51.25422522682797,
+        "ic_dir": 33.03819444444444,
+        "ic_flux": 79.70639032815198,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.1796890581420968,
+            "days_to_threshold": null,
+            "min_price": 78558.8
+          },
+          "60d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.20352083335508753,
+            "days_to_threshold": 56,
+            "min_price": 76276.5
+          },
+          "90d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.20352083335508753,
+            "days_to_threshold": 56,
+            "min_price": 76276.5
+          },
+          "180d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.20352083335508753,
+            "days_to_threshold": 56,
+            "min_price": 76276.5
+          }
+        }
+      },
+      {
+        "date": "2025-03-13T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "short",
+        "entry_price": 81112.3,
+        "ic_struct": 20.974915495463442,
+        "ic_dir": 22.53472222222222,
+        "ic_flux": 41.105354058721936,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.05961857819344296,
+            "days_to_threshold": null,
+            "min_price": 76276.5
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.05961857819344296,
+            "days_to_threshold": null,
+            "min_price": 76276.5
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.05961857819344296,
+            "days_to_threshold": null,
+            "min_price": 76276.5
+          },
+          "180d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.05961857819344296,
+            "days_to_threshold": null,
+            "min_price": 76276.5
+          }
+        }
+      },
+      {
+        "date": "2025-04-12T00:00:00+00:00",
+        "regime": "accum_bear",
+        "signal": "short",
+        "entry_price": 85284.1,
+        "ic_struct": 2.73972602739726,
+        "ic_dir": 26.493055555555557,
+        "ic_flux": 54.55958549222798,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.019354135178773157,
+            "days_to_threshold": null,
+            "min_price": 83633.5
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.019354135178773157,
+            "days_to_threshold": null,
+            "min_price": 83633.5
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.019354135178773157,
+            "days_to_threshold": null,
+            "min_price": 83633.5
+          },
+          "180d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.019354135178773157,
+            "days_to_threshold": null,
+            "min_price": 83633.5
+          }
+        }
+      },
+      {
+        "date": "2025-08-25T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "flat",
+        "entry_price": 110144.9,
+        "ic_struct": 59.099804305283755,
+        "ic_dir": 43.35069444444444,
+        "ic_flux": 86.73575129533678,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.017203701669346372,
+            "days_to_threshold": null,
+            "min_price": 108250.0
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.03353673206839347,
+            "days_to_threshold": null,
+            "min_price": 106451.0
+          },
+          "90d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.23119545253570528,
+            "days_to_threshold": 87,
+            "min_price": 84679.9
+          },
+          "180d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.4293144757496715,
+            "days_to_threshold": 87,
+            "min_price": 62858.1
+          }
+        }
+      },
+      {
+        "date": "2025-09-24T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "short",
+        "entry_price": 113300.0,
+        "ic_struct": 39.58370396726561,
+        "ic_dir": 34.96527777777778,
+        "ic_flux": 97.8238341968912,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.06045013239188002,
+            "days_to_threshold": null,
+            "min_price": 106451.0
+          },
+          "60d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.2526045895851722,
+            "days_to_threshold": 57,
+            "min_price": 84679.9
+          },
+          "90d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.2526045895851722,
+            "days_to_threshold": 57,
+            "min_price": 84679.9
+          },
+          "180d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.4452065313327449,
+            "days_to_threshold": 57,
+            "min_price": 62858.1
+          }
+        }
+      },
+      {
+        "date": "2025-10-24T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "short",
+        "entry_price": 111000.0,
+        "ic_struct": 33.74844333748443,
+        "ic_dir": 40.85069444444444,
+        "ic_flux": 72.52158894645942,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.23711801801801802,
+            "days_to_threshold": 27,
+            "min_price": 84679.9
+          },
+          "60d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.23711801801801802,
+            "days_to_threshold": 27,
+            "min_price": 84679.9
+          },
+          "90d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.23711801801801802,
+            "days_to_threshold": 27,
+            "min_price": 84679.9
+          },
+          "180d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.43371081081081087,
+            "days_to_threshold": 27,
+            "min_price": 62858.1
+          }
+        }
+      },
+      {
+        "date": "2025-11-23T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "short",
+        "entry_price": 86777.4,
+        "ic_struct": 27.735278420209927,
+        "ic_dir": 13.836805555555555,
+        "ic_flux": 74.40414507772022,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.015152562764037536,
+            "days_to_threshold": null,
+            "min_price": 85462.5
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.015152562764037536,
+            "days_to_threshold": null,
+            "min_price": 85462.5
+          },
+          "90d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.2756397403010461,
+            "days_to_threshold": 74,
+            "min_price": 62858.1
+          },
+          "180d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.2756397403010461,
+            "days_to_threshold": 74,
+            "min_price": 62858.1
+          }
+        }
+      },
+      {
+        "date": "2025-12-23T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "flat",
+        "entry_price": 87416.4,
+        "ic_struct": 54.13627468421989,
+        "ic_dir": 15.45138888888889,
+        "ic_flux": 79.77547495682211,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.0032179316466931507,
+            "days_to_threshold": null,
+            "min_price": 87135.1
+          },
+          "60d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.28093469875217925,
+            "days_to_threshold": 44,
+            "min_price": 62858.1
+          },
+          "90d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.28093469875217925,
+            "days_to_threshold": 44,
+            "min_price": 62858.1
+          },
+          "180d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.3038411556641546,
+            "days_to_threshold": 44,
+            "min_price": 60855.7
+          }
+        }
+      },
+      {
+        "date": "2026-01-22T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "short",
+        "entry_price": 89454.2,
+        "ic_struct": 37.34210994484967,
+        "ic_dir": 43.420138888888886,
+        "ic_flux": 90.31088082901555,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.2973152741850019,
+            "days_to_threshold": 14,
+            "min_price": 62858.1
+          },
+          "60d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.2973152741850019,
+            "days_to_threshold": 14,
+            "min_price": 62858.1
+          },
+          "90d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.2973152741850019,
+            "days_to_threshold": 14,
+            "min_price": 62858.1
+          },
+          "180d": {
+            "available": true,
+            "confirmed": true,
+            "min_drawdown": -0.3196999134752756,
+            "days_to_threshold": 14,
+            "min_price": 60855.7
+          }
+        }
+      },
+      {
+        "date": "2026-02-21T00:00:00+00:00",
+        "regime": "bear_late",
+        "signal": "flat",
+        "entry_price": 67966.6,
+        "ic_struct": 63.40508806262231,
+        "ic_dir": 14.6875,
+        "ic_flux": 30.50086355785838,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.05745027704784411,
+            "days_to_threshold": null,
+            "min_price": 64061.9
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.05745027704784411,
+            "days_to_threshold": null,
+            "min_price": 64061.9
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.05745027704784411,
+            "days_to_threshold": null,
+            "min_price": 64061.9
+          },
+          "180d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.10462344739916385,
+            "days_to_threshold": null,
+            "min_price": 60855.7
+          }
+        }
+      },
+      {
+        "date": "2026-03-23T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "flat",
+        "entry_price": 70887.2,
+        "ic_struct": 55.292652552926526,
+        "ic_dir": 15.92013888888889,
+        "ic_flux": 59.55094991364422,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.06964444920944812,
+            "days_to_threshold": null,
+            "min_price": 65950.3
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.06964444920944812,
+            "days_to_threshold": null,
+            "min_price": 65950.3
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.14151355957069822,
+            "days_to_threshold": null,
+            "min_price": 60855.7
+          },
+          "180d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.14151355957069822,
+            "days_to_threshold": null,
+            "min_price": 60855.7
+          }
+        }
+      },
+      {
+        "date": "2026-06-02T00:00:00+00:00",
+        "regime": "bear_struct",
+        "signal": "short",
+        "entry_price": 66669.7,
+        "ic_struct": 34.56680305995374,
+        "ic_dir": 39.826388888888886,
+        "ic_flux": 85.87219343696027,
+        "windows": {
+          "30d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.08720603212553835,
+            "days_to_threshold": null,
+            "min_price": 60855.7
+          },
+          "60d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.08720603212553835,
+            "days_to_threshold": null,
+            "min_price": 60855.7
+          },
+          "90d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.08720603212553835,
+            "days_to_threshold": null,
+            "min_price": 60855.7
+          },
+          "180d": {
+            "available": true,
+            "confirmed": false,
+            "min_drawdown": -0.08720603212553835,
+            "days_to_threshold": null,
+            "min_price": 60855.7
+          }
+        }
+      }
+    ]
+  }
+}
