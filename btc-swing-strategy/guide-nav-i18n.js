@@ -47,31 +47,37 @@
     var style=document.createElement('style');
     style.id='structural-confirmation-style';
     style.textContent='\n'+
-      '.structural-confirmation-card{margin-top:18px;}\n'+
-      '.structural-confirmation-title{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--text-soft);margin-bottom:10px;}\n'+
-      '.structural-confirmation-main{padding:12px 13px;border-radius:16px;border:1px solid rgba(56,189,248,.24);background:rgba(56,189,248,.07);font-size:13px;line-height:1.58;font-weight:650;color:var(--text-main);}\n'+
-      '.structural-confirmation-base{margin-top:10px;font-size:11px;line-height:1.45;color:var(--text-soft);}\n'+
-      '.structural-confirmation-context{margin-top:10px;font-size:13px;line-height:1.58;color:var(--text-main);}\n'+
-      'body.light-mode .structural-confirmation-main{background:rgba(14,165,233,.08);border-color:rgba(14,165,233,.26);}\n';
+      '#structural-confirmation-card{margin:12px auto 12px;padding:12px 12px 13px;border-radius:18px;border:1px solid rgba(56,189,248,.23);background:radial-gradient(circle at 50% -18%,rgba(56,189,248,.10),transparent 55%),linear-gradient(180deg,rgba(15,23,42,.68),rgba(15,23,42,.42));box-shadow:inset 0 1px 0 rgba(255,255,255,.035);text-align:left;}\n'+
+      '#structural-confirmation-card .structural-confirmation-title{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--text-soft);margin-bottom:8px;}\n'+
+      '#structural-confirmation-card .structural-confirmation-main{padding:10px 11px;border-radius:14px;border:1px solid rgba(56,189,248,.25);background:rgba(56,189,248,.065);font-size:12.5px;line-height:1.55;font-weight:600;color:var(--text-main);}\n'+
+      '#structural-confirmation-card .structural-confirmation-base{margin-top:9px;font-size:10.5px;line-height:1.42;color:var(--text-soft);}\n'+
+      '#structural-confirmation-card .structural-confirmation-context{margin-top:9px;font-size:12.5px;line-height:1.55;color:var(--text-main);}\n'+
+      'body.light-mode #structural-confirmation-card{background:linear-gradient(180deg,rgba(255,255,255,.88),rgba(248,250,252,.72));border-color:rgba(14,165,233,.25);}\n'+
+      'body.light-mode #structural-confirmation-card .structural-confirmation-main{background:rgba(14,165,233,.075);border-color:rgba(14,165,233,.26);}\n';
     document.head.appendChild(style);
   }
 
   function createStructuralCard(){
-    if(document.getElementById('structural-confirmation-card'))return document.getElementById('structural-confirmation-card');
-    var anchor=document.getElementById('risk-window-card')||document.getElementById('daily-ai-card')||document.querySelector('.card.card-secondary');
-    if(!anchor||!anchor.parentNode)return null;
+    var card=document.getElementById('structural-confirmation-card');
+    var radar=document.getElementById('coeziv-mini-radar');
+    var energy=document.getElementById('prod-cost-line');
+    var anchor=radar||energy;
 
-    var card=document.createElement('div');
-    card.className='card card-secondary structural-confirmation-card';
-    card.id='structural-confirmation-card';
-    card.innerHTML=''+
-      '<div class="card-inner">'+
+    if(!anchor||!anchor.parentNode)return card||null;
+
+    if(!card){
+      card=document.createElement('div');
+      card.id='structural-confirmation-card';
+      card.innerHTML=''+
         '<div class="structural-confirmation-title">Confirmare structurală</div>'+
         '<div id="structural-confirmation-main" class="structural-confirmation-main">Se încarcă confirmarea structurală...</div>'+
         '<div id="structural-confirmation-base" class="structural-confirmation-base">Bază statistică: se actualizează.</div>'+
-        '<div id="structural-confirmation-context" class="structural-confirmation-context">Context structural curent: se actualizează.</div>'+
-      '</div>';
-    anchor.parentNode.insertBefore(card, anchor.nextSibling);
+        '<div id="structural-confirmation-context" class="structural-confirmation-context">Context structural curent: se actualizează.</div>';
+    }
+
+    if(card.parentNode!==anchor.parentNode||card.nextSibling!==anchor){
+      anchor.parentNode.insertBefore(card, anchor);
+    }
     return card;
   }
 
@@ -144,6 +150,8 @@
       .then(function(r){return r.json();})
       .then(renderStructural)
       .catch(function(){renderStructural(null);});
+    setTimeout(createStructuralCard,400);
+    setTimeout(createStructuralCard,1200);
   }
 
   if(document.readyState==='loading'){
