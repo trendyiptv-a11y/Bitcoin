@@ -2197,6 +2197,14 @@ body.light-mode .card:first-of-type {
 
     const STATE_URLS = ["coeziv_state.json", "./coeziv_state.json", "/btc-swing-strategy/coeziv_state.json", "/coeziv_state.json"];
 
+    // STRUCTURAL_CONFIRMATION_URLS_START
+    const STRUCTURAL_CONFIRMATION_URLS = [
+      "comparative_backtest_summary.json",
+      "./comparative_backtest_summary.json",
+      "/btc-swing-strategy/comparative_backtest_summary.json"
+    ];
+    // STRUCTURAL_CONFIRMATION_URLS_END
+
     async function fetchJsonFallback(urls) {
       let lastError = null;
       for (const url of urls) {
@@ -2680,6 +2688,12 @@ body.light-mode .card:first-of-type {
         MSG_EL.textContent = "Se încarcă mesajul coeziv...";
 
         const state = await fetchJsonFallback(STATE_URLS);
+        let structuralConfirmationSummary = null;
+        try {
+          structuralConfirmationSummary = await fetchJsonFallback(STRUCTURAL_CONFIRMATION_URLS);
+        } catch (_) {
+          structuralConfirmationSummary = null;
+        }
 
         const modelPrice = state.model_price_usd;
         const fallbackPrice = state.price_usd;
@@ -2898,6 +2912,7 @@ body.light-mode .card:first-of-type {
         // Confirmarea structurală 7/30 zile înlocuiește vechiul bloc tactic 72h.
 
         updateStructuralConfirmation(state);
+        updateStructuralConfirmation(state, structuralConfirmationSummary);
         updateFGCard(fgBlock);
         
         refreshMMRecommendation();
