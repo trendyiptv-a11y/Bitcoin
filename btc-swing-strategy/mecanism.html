@@ -2197,13 +2197,6 @@ body.light-mode .card:first-of-type {
 
     const STATE_URLS = ["coeziv_state.json", "./coeziv_state.json", "/btc-swing-strategy/coeziv_state.json", "/coeziv_state.json"];
 
-    // STRUCTURAL_CONFIRMATION_URLS_START
-    const STRUCTURAL_CONFIRMATION_URLS = [
-      "comparative_backtest_summary.json",
-      "./comparative_backtest_summary.json",
-      "/btc-swing-strategy/comparative_backtest_summary.json"
-    ];
-    // STRUCTURAL_CONFIRMATION_URLS_END
     async function fetchJsonFallback(urls) {
       let lastError = null;
       for (const url of urls) {
@@ -2438,70 +2431,64 @@ body.light-mode .card:first-of-type {
 
 
     // STRUCTURAL_CONFIRMATION_JS_START
-    function pctDisplay(value, digits = 0) {
-      const n = Number(value);
-      if (!Number.isFinite(n)) return null;
-      return `~${(n * 100).toFixed(digits)}%`;
-    }
-
-    function currentRegimeFromState(state) {
-      const ctxRegime = state && state.model_price_context && state.model_price_context.regime;
-      if (ctxRegime) return String(ctxRegime);
-      const market = state && state.market_regime;
-      if (market && typeof market.code === "string") return market.code;
-      if (market && typeof market.label === "string") return market.label;
-      return "n/a";
-    }
-
-    function confirmationStats(summary, horizonDays, thresholdName = "threshold_10pct") {
-      const model = summary && summary.models && summary.models.cohesive_v2;
-      const horizon = model && model[`horizon_${horizonDays}d`];
-      const block = horizon && horizon[thresholdName];
-      if (!block) return null;
-      const rate = Number(block.directional_hit_rate);
-      const events = Number(block.events);
-      if (!Number.isFinite(rate) || !Number.isFinite(events)) return null;
-      return { rate, events };
-    }
-
-    function updateStructuralConfirmation(state, summary) {
+    function updateStructuralConfirmation(state) {
       if (!SIGNAL_PROB_EL && !SIGNAL_PROB_BREAKDOWN_EL && !DRIFT_EL) return;
 
-      const h7 = confirmationStats(summary, 7);
-      const h30 = confirmationStats(summary, 30);
-      const samples = state && state.model_price_components
-        ? Number(state.model_price_components.similar_context_samples)
-        : null;
-      const regime = currentRegimeFromState(state);
-      const dev = pctDisplay(state && state.model_price_deviation, 1);
+      const structural = (state && state.structural_confirmation) || null;
 
-      if (SIGNAL_PROB_EL) {
-        if (h7 && h30) {
-          SIGNAL_PROB_EL.textContent =
-            `Confirmare istorică: ${pctDisplay(h7.rate, 0)} pe 7 zile și ${pctDisplay(h30.rate, 0)} pe 30 zile în situații similare.`;
-        } else {
+      if (!structural) {
+        if (SIGNAL_PROB_EL) {
           SIGNAL_PROB_EL.textContent =
             "Confirmare istorică: se actualizează după următorul backtest al mecanismului.";
         }
-      }
-
-      if (SIGNAL_PROB_BREAKDOWN_EL) {
-        if (h30) {
-          const sampleText = Number.isFinite(samples) && samples > 0
-            ? ` Contextul curent folosește ${samples.toFixed(0)} contexte istorice similare.`
-            : "";
-          SIGNAL_PROB_BREAKDOWN_EL.textContent =
-            `Bază statistică: ${h30.events.toFixed(0)} evenimente istorice cu deviații ample față de reperul coeziv.${sampleText}`;
-        } else {
+        if (SIGNAL_PROB_BREAKDOWN_EL) {
           SIGNAL_PROB_BREAKDOWN_EL.textContent =
             "Bază statistică: așteptăm fișierul de confirmare istorică.";
         }
+        if (DRIFT_EL) {
+          DRIFT_EL.textContent = "Semnal structural, nu intraday. Regim curent: n/a.";
+        }
+        return;
+      }
+
+      const h7 = structural.horizon_7d;
+      const h30 = structural.horizon_30d;
+
+      const pct7 =
+        h7 && Number.isFinite(Number(h7.directional_hit_rate))
+          ? `~${(Number(h7.directional_hit_rate) * 100).toFixed(0)}%`
+          : "n/a";
+
+      const pct30 =
+        h30 && Number.isFinite(Number(h30.directional_hit_rate))
+          ? `~${(Number(h30.directional_hit_rate) * 100).toFixed(0)}%`
+          : "n/a";
+
+      const events30 =
+        h30 && Number.isFinite(Number(h30.events))
+          ? Number(h30.events).toFixed(0)
+          : "n/a";
+
+      const samples =
+        Number.isFinite(Number(structural.similar_context_samples))
+          ? Number(structural.similar_context_samples).toFixed(0)
+          : "n/a";
+
+      const regime = structural.regime || "n/a";
+
+      if (SIGNAL_PROB_EL) {
+        SIGNAL_PROB_EL.textContent =
+          `Confirmare istorică: ${pct7} pe 7 zile și ${pct30} pe 30 zile în situații similare.`;
+      }
+
+      if (SIGNAL_PROB_BREAKDOWN_EL) {
+        SIGNAL_PROB_BREAKDOWN_EL.textContent =
+          `Bază statistică: ${events30} evenimente istorice cu deviații ample față de reperul coeziv. Contextul curent folosește ${samples} contexte istorice similare.`;
       }
 
       if (DRIFT_EL) {
-        const devText = dev ? ` Deviația curentă este ${dev} față de prețul coeziv.` : "";
         DRIFT_EL.textContent =
-          `Semnal structural, nu intraday. Regim curent: ${regime}.${devText}`;
+          `Semnal structural, nu intraday. Regim curent: ${regime}.`;
       }
     }
     // STRUCTURAL_CONFIRMATION_JS_END
@@ -2693,12 +2680,6 @@ body.light-mode .card:first-of-type {
         MSG_EL.textContent = "Se încarcă mesajul coeziv...";
 
         const state = await fetchJsonFallback(STATE_URLS);
-        let structuralConfirmationSummary = null;
-        try {
-          structuralConfirmationSummary = await fetchJsonFallback(STRUCTURAL_CONFIRMATION_URLS);
-        } catch (_) {
-          structuralConfirmationSummary = null;
-        }
 
         const modelPrice = state.model_price_usd;
         const fallbackPrice = state.price_usd;
@@ -2916,7 +2897,7 @@ body.light-mode .card:first-of-type {
 
         // Confirmarea structurală 7/30 zile înlocuiește vechiul bloc tactic 72h.
 
-        updateStructuralConfirmation(state, structuralConfirmationSummary);
+        updateStructuralConfirmation(state);
         updateFGCard(fgBlock);
         
         refreshMMRecommendation();
@@ -3047,326 +3028,4 @@ body.light-mode .card:first-of-type {
     async function fetchOHLC() {
       try {
         const rLocal = await fetch("/api/ohlc");
-        if (rLocal.ok) {
-          return await rLocal.json();
-        }
-      } catch (_) {}
-
-      const r = await fetch(
-        "https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=5m&limit=288",
-        { cache: "no-store" }
-      );
-      if (!r.ok) throw new Error("HTTP " + r.status);
-      return r.json();
-    }
-
-    async function loadOHLC() {
-      try {
-        CHART_LOADER_EL.style.display = "flex";
-
-        const rows = await fetchOHLC();
-
-        oTimes = [];
-        oOpen = [];
-        oHigh = [];
-        oLow = [];
-        oClose = [];
-        oVolume = [];
-
-        rows.forEach(k => {
-          oTimes.push(new Date(k[0]));
-          oOpen.push(parseFloat(k[1]));
-          oHigh.push(parseFloat(k[2]));
-          oLow.push(parseFloat(k[3]));
-          oClose.push(parseFloat(k[4]));
-          oVolume.push(parseFloat(k[5]));
-        });
-
-        CHART_LOADER_EL.style.display = "none";
-        renderChart();
-      } catch (err) {
-        console.error("Eroare la OHLC", err);
-        CHART_LOADER_EL.textContent =
-          "Nu am putut încărca graficul BTC. Poate fi o limitare temporară sau o extensie de browser.";
-      }
-    }
-
-    // ---------------- RENDER GRAFIC PLOTLY ----------------
-
-    function renderChart() {
-      const el = document.getElementById("btc-chart");
-      if (!el || !window.Plotly) return;
-      if (!oTimes.length) return;
-
-      const candleTrace = {
-        x: oTimes,
-        open: oOpen,
-        high: oHigh,
-        low: oLow,
-        close: oClose,
-        type: "candlestick",
-        name: "BTCUSDT",
-        increasing: { line: { color: "#22c55e" } },
-        decreasing: { line: { color: "#ef4444" } },
-        yaxis: "y"
-      };
-
-      const volColors = oClose.map((c, i) =>
-        c >= oOpen[i] ? "rgba(34,197,94,0.5)" : "rgba(239,68,68,0.5)"
-      );
-
-      const volumeTrace = {
-        x: oTimes,
-        y: oVolume,
-        type: "bar",
-        yaxis: "y2",
-        marker: { color: volColors },
-        name: "Volum"
-      };
-
-      const traces = [candleTrace, volumeTrace];
-
-      if (typeof SNAPSHOT_PRICE === "number" && Number.isFinite(SNAPSHOT_PRICE)) {
-        const lineTrace = {
-          x: [oTimes[0], oTimes[oTimes.length - 1]],
-          y: [SNAPSHOT_PRICE, SNAPSHOT_PRICE],
-          type: "scatter",
-          mode: "lines",
-          line: { color: "#F9FAFB", width: 2, dash: "dot" },
-          name: "Preț mecanism",
-          yaxis: "y"
-        };
-        traces.push(lineTrace);
-      }
-
-      if (typeof LIVE_PRICE === "number" && Number.isFinite(LIVE_PRICE)) {
-        const liveTrace = {
-          x: [oTimes[0], oTimes[oTimes.length - 1]],
-          y: [LIVE_PRICE, LIVE_PRICE],
-          type: "scatter",
-          mode: "lines",
-          line: { color: "#38bdf8", width: 1.5, dash: "dash" },
-          name: "Preț live",
-          yaxis: "y"
-        };
-        traces.push(liveTrace);
-      }
-
-      if (LAST_SIGNAL_RAW === "long" || LAST_SIGNAL_RAW === "short") {
-        const lastIdx = oTimes.length - 1;
-        const price = oClose[lastIdx];
-
-        const markerTrace = {
-          x: [oTimes[lastIdx]],
-          y: [price],
-          type: "scatter",
-          mode: "none",
-          marker: {
-            symbol: "arrow",
-            size: 3,
-            color: LAST_SIGNAL_RAW === "long" ? "#22c55e" : "#f97373",
-            line: { width: 2, color: "#020617" }
-          },
-          text: "none",
-          textposition: "top center",
-          textfont: { color: "#ffffff", size: 10 },
-          name: "Semnal",
-          yaxis: "y"
-        };
-
-        traces.push(markerTrace);
-      }
-
-      const layout = {
-        margin: { l: 40, r: 8, t: 10, b: 25 },
-        paper_bgcolor: "rgba(15,23,42,0)",
-        plot_bgcolor: "rgba(15,23,42,0)",
-        xaxis: {
-          showgrid: false,
-          zeroline: false,
-          tickfont: { color: "#9ca3af", size: 10 },
-          rangeselector: {
-            buttons: [
-              { count: 6,  label: "6h",  step: "hour", stepmode: "backward" },
-              { count: 24, label: "24h", step: "hour", stepmode: "backward" },
-              { count: 3,  label: "3d", step: "day", stepmode: "backward" },
-              { step: "all", label: "All" }
-            ]
-          },
-          rangeslider: { visible: false }
-        },
-        yaxis: {
-          domain: [0.35, 1],
-          showgrid: true,
-          gridcolor: "#111827",
-          tickfont: { color: "#9ca3af", size: 10 }
-        },
-        yaxis2: {
-          domain: [0, 0.28],
-          showgrid: false,
-          tickfont: { color: "#6b7280", size: 9 }
-        },
-        showlegend: false
-      };
-
-      const config = {
-        displayModeBar: true,
-        displaylogo: false,
-        scrollZoom: true,
-        modeBarButtonsToRemove: ["select2d", "lasso2d"],
-        responsive: true
-      };
-
-      Plotly.newPlot(el, traces, layout, config);
-    }
-
-    // ---------------- ISTORIC SEMNALE (CARD 2) ----------------
-
-    function renderHistory() {
-      if (!HISTORY_LIST_EL) return;
-
-      HISTORY_LIST_EL.innerHTML = "";
-
-      if (!Array.isArray(SIGNAL_HISTORY) || SIGNAL_HISTORY.length === 0) {
-        HISTORY_LIST_EL.innerHTML =
-          '<div class="history-empty">Istoricul nu este disponibil încă. Va apărea după următorul update al mecanismului.</div>';
-        if (HISTORY_META_EL) HISTORY_META_EL.textContent = "";
-        return;
-      }
-
-      const maxItems = Math.min(SIGNAL_HISTORY.length, 8);
-      const items = SIGNAL_HISTORY.slice(-maxItems).reverse();
-
-      let countLong = 0;
-      let countShort = 0;
-      let countFlat = 0;
-
-      items.forEach(entry => {
-        if (!entry) return;
-        const sig = String(entry.signal || "").toLowerCase();
-        const ts = entry.timestamp;
-        const price = entry.model_price_usd;
-        const sigMap = mapSignal(sig);
-
-        if (sig === "long") countLong++;
-        else if (sig === "short") countShort++;
-        else countFlat++;
-
-        const row = document.createElement("div");
-        row.className = "history-row";
-
-        const left = document.createElement("div");
-        left.className = "history-left";
-
-        const dateEl = document.createElement("div");
-        dateEl.className = "history-date";
-        dateEl.textContent = formatShortDate(ts);
-
-        const sigChip = document.createElement("div");
-        sigChip.className = "history-signal-chip";
-        if (sig === "long") sigChip.classList.add("history-signal-long");
-        else if (sig === "short") sigChip.classList.add("history-signal-short");
-        else sigChip.classList.add("history-signal-flat");
-
-        const dot = document.createElement("span");
-        dot.className = "history-signal-dot";
-
-        const label = document.createElement("span");
-        label.textContent = sigMap.shortLabel;
-
-        sigChip.appendChild(dot);
-        sigChip.appendChild(label);
-
-        left.appendChild(dateEl);
-        left.appendChild(sigChip);
-
-        const right = document.createElement("div");
-        right.className = "history-right";
-
-        const priceEl = document.createElement("div");
-        priceEl.className = "history-price";
-        if (typeof price === "number" && Number.isFinite(price)) {
-          priceEl.textContent = USD_FORMATTER.format(price) + " USD";
-        } else {
-          priceEl.textContent = "–";
-        }
-
-        const tagEl = document.createElement("div");
-        tagEl.className = "history-tag";
-        tagEl.textContent = "Preț model la snapshot";
-
-        right.appendChild(priceEl);
-        right.appendChild(tagEl);
-
-        row.appendChild(left);
-        row.appendChild(right);
-
-        HISTORY_LIST_EL.appendChild(row);
-      });
-
-      if (HISTORY_META_EL) {
-        const totalLine =
-          `<span>Total contexte: ${SIGNAL_HISTORY.length}</span>` +
-          `<span class="history-meta-dot">•</span>` +
-          `<span>Presiune de creștere: ${countLong}</span>` +
-          `<span class="history-meta-dot">•</span>` +
-          `<span>Risc de scădere: ${countShort}</span>` +
-          `<span class="history-meta-dot">•</span>` +
-          `<span>Context neutru: ${countFlat}</span>`;
-
-        let flowLiqLine = "";
-        if (FLOW_BIAS || LIQ_REGIME) {
-          let flowPart = "";
-          if (FLOW_BIAS === "pozitiv") flowPart = "Flux actual: orientat spre cumpărare";
-          else if (FLOW_BIAS === "negativ") flowPart = "Flux actual: orientat spre vânzare";
-          else if (FLOW_BIAS === "neutru") flowPart = "Flux actual: relativ echilibrat";
-
-          let liqPart = "";
-if (LIQ_REGIME === "ridicată") liqPart = "Lichiditate ridicată";
-else if (LIQ_REGIME === "scăzută") liqPart = "Lichiditate scăzută";
-else if (LIQ_REGIME === "normală" || LIQ_REGIME === "moderată")
-  liqPart = "Lichiditate moderată";
-          const parts = [];
-          if (flowPart) parts.push(flowPart);
-          if (liqPart) parts.push(liqPart);
-
-          if (parts.length > 0) {
-            flowLiqLine = parts.join(", ") + ".";
-          }
-        }
-
-        if (flowLiqLine) {
-          HISTORY_META_EL.innerHTML =
-            `<div>${totalLine}</div><div>${flowLiqLine}</div>`;
-        } else {
-          HISTORY_META_EL.innerHTML = `<div>${totalLine}</div>`;
-        }
-      }
-    }
-
-    // ---------------- START ----------------
-
-    function start() {
-      initThemeToggle();
-    startCompactRegimeChipSync();
-      loadState();
-    loadParticipationCohesion();
-    // DAILY_COHESIV_INTERPRETATION_CALL
-    loadDailyCohesivInterpretation();
-
-    loadRiskWindow();
-      updateLivePrice();
-      loadOHLC();
-
-      setInterval(updateLivePrice, 10 * 1000);
-      setInterval(loadState, 5 * 60 * 1000);
-      setInterval(loadOHLC, 60 * 1000);
-    }
-
-    document.addEventListener("DOMContentLoaded", start);
-  </script>
-      <script src="./i18n-en.js" defer></script>
-<script src="./mecanism-radar-embed.js" defer></script>
-   <script src="./guide-nav-i18n.js" defer></script>
-    </body>
-</html>
+        if (rLocal.ok
