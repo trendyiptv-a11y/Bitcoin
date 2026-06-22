@@ -32,6 +32,9 @@ jobs:
           persist-credentials: true
           fetch-depth: 0
 
+      - name: Pull latest main
+        run: git pull --rebase origin main
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -46,14 +49,6 @@ jobs:
         run: |
           python test_participation_cohesion.py
 
-      - name: Patch mecanism HTML with participation cohesion card
-        run: |
-          python patch_mecanism_participation_card.py
-
-      - name: Restore mecanism core JS
-        run: |
-          python patch_mecanism_core_js.py
-
       - name: Show participation cohesion snapshot
         run: |
           cat data/participation_cohesion_test.json
@@ -66,15 +61,15 @@ jobs:
         run: |
           cat data/participation_cohesion_history_summary.json
 
-      - name: Commit participation cohesion card if changed
+      - name: Commit participation cohesion data if changed
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add btc-swing-strategy/participation_cohesion.json btc-swing-strategy/mecanism.html
+          git add btc-swing-strategy/participation_cohesion.json
           if git diff --cached --quiet; then
-            echo "No participation_cohesion.json or mecanism.html changes to commit."
+            echo "No participation_cohesion.json changes to commit."
           else
-            git commit -m "Update participation cohesion card"
+            git commit -m "Update participation cohesion data"
             git fetch origin main
             git rebase origin/main
             git push origin HEAD:main
@@ -89,5 +84,4 @@ jobs:
             data/participation_cohesion_series.csv
             data/participation_cohesion_history_summary.json
             btc-swing-strategy/participation_cohesion.json
-            btc-swing-strategy/mecanism.html
           if-no-files-found: error
