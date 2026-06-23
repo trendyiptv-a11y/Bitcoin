@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Ghid explicativ al mecanismului CohesivX BTC</title>
   <style>
-    :root { --bg:#020617; --card:rgba(15,23,42,.96); --border:rgba(56,189,248,.24); --text:#e5e7eb; --muted:#94a3b8; --soft:#64748b; --accent:#38bdf8; --yellow:#facc15; }
+    :root { --bg:#020617; --card:rgba(15,23,42,.96); --border:rgba(56,189,248,.24); --text:#e5e7eb; --muted:#94a3b8; --soft:#64748b; --accent:#38bdf8; --yellow:#facc15; --green:#22c55e; --red:#fb7185; }
     *{box-sizing:border-box}
     body{margin:0;min-height:100vh;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(circle at 10% -10%,rgba(56,189,248,.18) 0,transparent 42%),radial-gradient(circle at 90% 110%,rgba(34,197,94,.10) 0,transparent 48%),linear-gradient(180deg,#020617,#000);color:var(--text);padding:16px}
-    .shell{width:100%;max-width:760px;margin:0 auto}.topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:0 0 14px}.back-link,.pill-link{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;color:#bae6fd;border:1px solid rgba(56,189,248,.35);background:rgba(15,23,42,.74);border-radius:999px;padding:8px 12px;font-size:12px;font-weight:800;letter-spacing:.04em}.lang-pill{color:var(--muted);font-size:11px;letter-spacing:.12em;text-transform:uppercase}.hero{border:1px solid var(--border);border-radius:26px;background:radial-gradient(circle at 12% 0%,rgba(56,189,248,.18),transparent 40%),linear-gradient(145deg,rgba(15,23,42,.98),rgba(2,6,23,.96));box-shadow:0 22px 58px rgba(0,0,0,.55);padding:22px 18px;margin-bottom:14px}.kicker{color:var(--accent);font-size:12px;font-weight:850;letter-spacing:.16em;text-transform:uppercase;margin-bottom:8px}h1{margin:0 0 10px;font-size:clamp(25px,6vw,38px);line-height:1.05;letter-spacing:-.04em}.lead{color:#cbd5e1;line-height:1.65;font-size:15px;margin:0}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:16px}.mini{border:1px solid rgba(148,163,184,.16);background:rgba(2,6,23,.40);border-radius:16px;padding:11px}.mini b{display:block;font-size:12px;color:var(--text);margin-bottom:4px}.mini span{color:var(--muted);font-size:12px;line-height:1.45}.card{border:1px solid rgba(148,163,184,.17);border-radius:22px;background:var(--card);padding:18px;margin:12px 0;box-shadow:0 14px 34px rgba(0,0,0,.28)}h2{margin:0 0 9px;font-size:17px;letter-spacing:-.01em}p{margin:8px 0;color:#cbd5e1;line-height:1.65;font-size:14px}ul,ol{margin:8px 0 8px 20px;padding:0;color:#cbd5e1;line-height:1.65;font-size:14px}li{margin:4px 0}.note{border-left:3px solid var(--accent);background:rgba(56,189,248,.08);padding:10px 12px;border-radius:14px;margin:12px 0 4px;color:#dbeafe;font-size:13px;line-height:1.55}.warning{border-left-color:var(--yellow);background:rgba(250,204,21,.08);color:#fef3c7}.example{display:grid;grid-template-columns:1fr;gap:8px;margin:10px 0}.example-row{display:flex;justify-content:space-between;gap:10px;border:1px solid rgba(148,163,184,.15);background:rgba(2,6,23,.34);border-radius:14px;padding:10px 12px;font-size:13px;color:#cbd5e1}.tag{flex:0 0 auto;font-weight:850;color:var(--accent)}.footer{color:var(--soft);text-align:center;font-size:12px;margin:20px 0 8px;line-height:1.55}@media(max-width:640px){body{padding:12px}.hero,.card{border-radius:20px;padding:16px}.grid{grid-template-columns:1fr}.topbar{align-items:flex-start;flex-direction:column}.example-row{flex-direction:column}}
+    .shell{width:100%;max-width:760px;margin:0 auto}.topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:0 0 14px}.back-link,.pill-link{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;color:#bae6fd;border:1px solid rgba(56,189,248,.35);background:rgba(15,23,42,.74);border-radius:999px;padding:8px 12px;font-size:12px;font-weight:800;letter-spacing:.04em}.lang-pill{color:var(--muted);font-size:11px;letter-spacing:.12em;text-transform:uppercase}.hero{border:1px solid var(--border);border-radius:26px;background:radial-gradient(circle at 12% 0%,rgba(56,189,248,.18),transparent 40%),linear-gradient(145deg,rgba(15,23,42,.98),rgba(2,6,23,.96));box-shadow:0 22px 58px rgba(0,0,0,.55);padding:22px 18px;margin-bottom:14px}.kicker{color:var(--accent);font-size:12px;font-weight:850;letter-spacing:.16em;text-transform:uppercase;margin-bottom:8px}h1{margin:0 0 10px;font-size:clamp(25px,6vw,38px);line-height:1.05;letter-spacing:-.04em}.lead{color:#cbd5e1;line-height:1.65;font-size:15px;margin:0}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:16px}.mini{border:1px solid rgba(148,163,184,.16);background:rgba(2,6,23,.40);border-radius:16px;padding:11px}.mini b{display:block;font-size:12px;color:var(--text);margin-bottom:4px}.mini span{color:var(--muted);font-size:12px;line-height:1.45}.card{border:1px solid rgba(148,163,184,.17);border-radius:22px;background:var(--card);padding:18px;margin:12px 0;box-shadow:0 14px 34px rgba(0,0,0,.28)}h2{margin:0 0 9px;font-size:17px;letter-spacing:-.01em}p{margin:8px 0;color:#cbd5e1;line-height:1.65;font-size:14px}ul,ol{margin:8px 0 8px 20px;padding:0;color:#cbd5e1;line-height:1.65;font-size:14px}li{margin:4px 0}.note{border-left:3px solid var(--accent);background:rgba(56,189,248,.08);padding:10px 12px;border-radius:14px;margin:12px 0 4px;color:#dbeafe;font-size:13px;line-height:1.55}.warning{border-left-color:var(--yellow);background:rgba(250,204,21,.08);color:#fef3c7}.success{border-left-color:var(--green);background:rgba(34,197,94,.08);color:#dcfce7}.example{display:grid;grid-template-columns:1fr;gap:8px;margin:10px 0}.example-row{display:flex;justify-content:space-between;gap:10px;border:1px solid rgba(148,163,184,.15);background:rgba(2,6,23,.34);border-radius:14px;padding:10px 12px;font-size:13px;color:#cbd5e1}.tag{flex:0 0 auto;font-weight:850;color:var(--accent)}.footer{color:var(--soft);text-align:center;font-size:12px;margin:20px 0 8px;line-height:1.55}@media(max-width:640px){body{padding:12px}.hero,.card{border-radius:20px;padding:16px}.grid{grid-template-columns:1fr}.topbar{align-items:flex-start;flex-direction:column}.example-row{flex-direction:column}}
   </style>
 </head>
 <body>
@@ -21,40 +21,84 @@
     <section class="hero">
       <div class="kicker" data-g18n="kicker">CohesivX BTC Monitor</div>
       <h1 data-g18n="title">Ghid explicativ al mecanismului</h1>
-      <p class="lead" data-g18n="lead">Acest ghid explică modul corect de citire a mecanismului coeziv BTC: preț live, reper structural, deviație, context, distribuție istorică și risc. Instrumentul nu oferă recomandări de cumpărare sau vânzare.</p>
+      <p class="lead" data-g18n="lead">Acest ghid explică modul corect de citire a mecanismului coeziv BTC: preț live, preț coeziv central, deviație, confirmare structurală 7/30 zile, radar, prag energetic, sentiment coeziv și interpretare zilnică. Instrumentul nu oferă recomandări de cumpărare sau vânzare.</p>
       <div class="grid">
         <div class="mini"><b data-g18n="mini1t">Nu este semnal</b><span data-g18n="mini1">Nu spune „intră” sau „ieși”.</span></div>
         <div class="mini"><b data-g18n="mini2t">Este context</b><span data-g18n="mini2">Arată relația dintre preț și structură.</span></div>
-        <div class="mini"><b data-g18n="mini3t">Este observație</b><span data-g18n="mini3">Ajută la citirea riscului și a deviației.</span></div>
+        <div class="mini"><b data-g18n="mini3t">Este probabilistic</b><span data-g18n="mini3">Folosește contexte istorice similare.</span></div>
       </div>
     </section>
 
     <section class="card">
       <h2 data-g18n="s1t">1. Ce este CohesivX BTC Monitor</h2>
-      <p data-g18n="s1p1">CohesivX BTC Monitor este un instrument de observare structurală a pieței Bitcoin. El compară prețul live al Bitcoin cu un reper coeziv calculat de mecanism.</p>
+      <p data-g18n="s1p1">CohesivX BTC Monitor este un instrument de observare structurală a pieței Bitcoin. El compară prețul live al Bitcoin cu un reper coeziv calculat din costul energetic de producție și din contexte istorice similare.</p>
       <p data-g18n="s1p2">Scopul lui este să arate cât de apropiat sau cât de îndepărtat este prețul față de zona structurală estimată.</p>
       <div class="note" data-g18n="s1n">Mecanismul nu este un ordin de acțiune. El oferă context structural pentru observare.</div>
     </section>
 
     <section class="card">
-      <h2 data-g18n="s2t">2. Ce înseamnă mecanismul</h2>
-      <p data-g18n="s2p1">Mecanismul funcționează ca o axă de comparație între prețul live și zona coezivă. Dacă prețul este deasupra mecanismului, piața este într-o extensie peste reper. Dacă prețul este sub mecanism, piața este într-o presiune sub reper.</p>
-      <p data-g18n="s2p2">Această poziție nu trebuie citită singură. Ea se citește împreună cu deviația procentuală, distribuția istorică, lichiditatea și regimul de piață.</p>
+      <h2 data-g18n="s2t">2. Prețul coeziv central</h2>
+      <p data-g18n="s2p1">Prețul coeziv central este reperul principal al mecanismului. El pornește de la costul energetic estimat de producție și îl ajustează cu multiplicatori observați în contexte istorice asemănătoare.</p>
+      <p data-g18n="s2p2">Exemplu: dacă mecanismul folosește un cost mediu de producție de aproximativ 52.466 USD și un multiplicator median de 1,315×, reperul coeziv central ajunge în jur de 68.992 USD.</p>
+      <div class="note" data-g18n="s2n">Acesta nu este target de preț. Este reper structural de comparație.</div>
     </section>
 
     <section class="card">
-      <h2 data-g18n="s3t">3. Deviația procentuală</h2>
-      <p data-g18n="s3p1">Deviația procentuală arată distanța dintre prețul live și mecanism. Cu cât deviația este mai mare, cu atât piața este mai tensionată față de reperul structural.</p>
-      <ul><li data-g18n="s3l1">Deviație mică: piață apropiată de echilibru.</li><li data-g18n="s3l2">Deviație relevantă: tensiune structurală care merită urmărită.</li><li data-g18n="s3l3">Deviație puternică: zonă de risc unde contextul și lichiditatea devin importante.</li></ul>
+      <h2 data-g18n="s3t">3. Deviația față de mecanism</h2>
+      <p data-g18n="s3p1">Deviația arată distanța dintre prețul live și prețul coeziv central. Când prețul live este mult sub reper, mecanismul vede presiune sub valoarea structurală. Când este mult peste reper, vede extensie peste valoarea structurală.</p>
+      <ul><li data-g18n="s3l1">Deviație mică: piață apropiată de echilibru.</li><li data-g18n="s3l2">Deviație relevantă: tensiune structurală care merită urmărită.</li><li data-g18n="s3l3">Deviație extremă: zonă unde contextul, lichiditatea și riscul devin esențiale.</li></ul>
       <div class="note warning" data-g18n="s3n">O deviație mare nu înseamnă automat cumpărare sau vânzare. Înseamnă doar că prețul este departe de reper.</div>
     </section>
 
-    <section class="card"><h2 data-g18n="s4t">4. Contextul structural</h2><p data-g18n="s4p1">Contextul structural descrie înclinația observată de mecanism: presiune de creștere, risc de scădere sau neutralitate.</p><p data-g18n="s4p2">Un context pozitiv arată o structură favorabilă reacției în sus. Un context negativ arată presiune, extensie sau risc de corecție. Un context neutru arată lipsa unui avantaj structural clar.</p></section>
-    <section class="card"><h2 data-g18n="s5t">5. Distribuția istorică</h2><p data-g18n="s5p1">Distribuția istorică arată cum s-au comportat cazuri similare în trecut, în următoarele 24 de ore. Ea nu este o predicție directă, ci o hartă a comportamentelor istorice asemănătoare.</p><div class="example"><div class="example-row"><span data-g18n="s5e1">Continuare</span><span class="tag" data-g18n="s5e1b">în direcția contextului structural</span></div><div class="example-row"><span data-g18n="s5e2">Reacție opusă</span><span class="tag" data-g18n="s5e2b">în sens opus contextului structural</span></div><div class="example-row"><span data-g18n="s5e3">Neutru / zgomot</span><span class="tag" data-g18n="s5e3b">fără mișcare clară</span></div></div><p data-g18n="s5p2">Exemplu: dacă distribuția arată 42% continuare, 35% sens opus și 23% neutru, continuarea a fost scenariul cel mai frecvent, dar nu dominant absolut.</p></section>
-    <section class="card"><h2 data-g18n="s6t">6. Cum citim procente apropiate</h2><p data-g18n="s6p1">Când procentele sunt apropiate între ele, mecanismul nu indică o direcție structurală puternică.</p><p data-g18n="s6p2">Exemplu: 36% continuare, 34% sens opus, 30% neutru. Aici interpretarea corectă este prudență structurală, nu decizie.</p></section>
-    <section class="card"><h2 data-g18n="s7t">7. Cum citim un scenariu dominant</h2><p data-g18n="s7p1">Dacă un scenariu este mult peste celelalte, mecanismul arată că acel comportament a fost mai frecvent în cazuri istorice similare.</p><p data-g18n="s7p2">Exemplu: 58% continuare, 25% sens opus, 17% neutru. Continuarea este scenariul istoric dominant, dar rămâne observație structurală, nu ordin de acțiune.</p></section>
-    <section class="card"><h2 data-g18n="s8t">8. De ce mecanismul nu este semnal de trading</h2><p data-g18n="s8p1">Un semnal de trading spune: cumpără, vinde, intră sau ieși. CohesivX nu face asta.</p><p data-g18n="s8p2">CohesivX arată unde este prețul față de mecanism, cât de mare este deviația, ce context structural apare, ce au făcut cazurile similare și ce nivel de risc trebuie observat.</p><div class="note" data-g18n="s8n">Principiul central: mecanismul nu spune „intră” sau „ieși”. El spune: observă deviația, contextul, distribuția istorică și riscul.</div></section>
-    <section class="card"><h2 data-g18n="s9t">9. Pașii de citire practică</h2><ol><li data-g18n="s9l1">Observă prețul live.</li><li data-g18n="s9l2">Compară prețul cu mecanismul.</li><li data-g18n="s9l3">Verifică deviația procentuală.</li><li data-g18n="s9l4">Citește contextul structural.</li><li data-g18n="s9l5">Analizează distribuția istorică.</li><li data-g18n="s9l6">Verifică riscul, lichiditatea și regimul de piață.</li></ol></section>
+    <section class="card">
+      <h2 data-g18n="s4t">4. Confirmarea structurală 7/30 zile</h2>
+      <p data-g18n="s4p1">Cardul „Confirmare structurală” arată cât de des, în contexte istorice similare, mecanismul a confirmat direcția structurală pe orizonturi de 7 și 30 de zile.</p>
+      <p data-g18n="s4p2">Când vezi valori de tip ~58% pe 7 zile și ~59% pe 30 zile, interpretarea corectă este probabilistică: în trecut, cazurile asemănătoare au confirmat direcția mecanismului puțin peste jumătate din timp.</p>
+      <div class="example"><div class="example-row"><span data-g18n="s4e1">Bază statistică</span><span class="tag" data-g18n="s4e1b">762 evenimente istorice</span></div><div class="example-row"><span data-g18n="s4e2">Context similar</span><span class="tag" data-g18n="s4e2b">250 contexte apropiate</span></div></div>
+      <div class="note warning" data-g18n="s4n">58–59% nu este certitudine. Este avantaj statistic slab-moderat, suficient pentru context, nu pentru decizie automată.</div>
+    </section>
+
+    <section class="card">
+      <h2 data-g18n="s5t">5. Diferența dintre confirmare și radar</h2>
+      <p data-g18n="s5p1">Confirmarea structurală răspunde la întrebarea: „În cazuri istorice similare, cât de des s-a confirmat direcția mecanismului?”. Radarul răspunde la altă întrebare: „Cât timp persistă degradarea și cât de aproape este prețul de pragul de risc?”.</p>
+      <p data-g18n="s5p2">De aceea cardul de confirmare este așezat deasupra radarului: întâi vezi probabilitatea istorică structurală, apoi vezi starea activă a degradării.</p>
+    </section>
+
+    <section class="card">
+      <h2 data-g18n="s6t">6. Radarul coeziv</h2>
+      <p data-g18n="s6p1">Radarul arată vizual dacă degradarea structurală este activă, persistentă sau în ameliorare. El folosește ziua degradării, pragul de risc și starea curentă a pieței.</p>
+      <p data-g18n="s6p2">Exemplu: „Ziua 22 / ~27” înseamnă că degradarea activă durează de 22 de zile, iar istoricul indică un timp median de aproximativ 27 de zile până la confirmarea sau schimbarea stării.</p>
+    </section>
+
+    <section class="card">
+      <h2 data-g18n="s7t">7. Pragul energetic BTC</h2>
+      <p data-g18n="s7p1">Pragul energetic BTC estimează costul de producție pentru trei tipuri de mineri: eficient, mediu și scump. Mecanismul folosește în principal costul mediu ca ancoră structurală.</p>
+      <p data-g18n="s7p2">Dacă prețul live este mult peste costul de producție, piața se află într-o zonă speculativă. Dacă se apropie de costul de producție, presiunea economică asupra minerilor devine mai importantă.</p>
+    </section>
+
+    <section class="card">
+      <h2 data-g18n="s8t">8. Fear &amp; Greed coeziv</h2>
+      <p data-g18n="s8p1">Indicele Fear &amp; Greed coeziv nu copiază indicatorii clasici de sentiment. El combină structura, tactica pe termen scurt, tensiunea și regimul mecanismului.</p>
+      <p data-g18n="s8p2">Un scor ridicat nu înseamnă automat cumpărare. Un scor scăzut nu înseamnă automat vânzare. Scorul arată intensitatea internă a mecanismului.</p>
+    </section>
+
+    <section class="card">
+      <h2 data-g18n="s9t">9. Interpretarea coezivă zilnică</h2>
+      <p data-g18n="s9p1">Interpretarea zilnică traduce indicatorii tehnici într-o explicație naturală: ce stare structurală observă mecanismul, dacă participarea se îmbunătățește, dacă riscul persistă și ce element trebuie urmărit.</p>
+      <p data-g18n="s9p2">Ea este utilă pentru citire rapidă, dar nu înlocuiește cardurile principale: preț coeziv, confirmare structurală, radar, prag energetic și sentiment coeziv.</p>
+    </section>
+
+    <section class="card">
+      <h2 data-g18n="s10t">10. Cum se citește pagina, pas cu pas</h2>
+      <ol><li data-g18n="s10l1">Observă prețul live.</li><li data-g18n="s10l2">Compară-l cu prețul coeziv central.</li><li data-g18n="s10l3">Verifică deviația procentuală.</li><li data-g18n="s10l4">Citește confirmarea structurală 7/30 zile.</li><li data-g18n="s10l5">Verifică radarul și fereastra de risc.</li><li data-g18n="s10l6">Compară cu pragul energetic BTC.</li><li data-g18n="s10l7">Citește Fear &amp; Greed coeziv și interpretarea zilnică.</li></ol>
+    </section>
+
+    <section class="card">
+      <h2 data-g18n="s11t">11. De ce mecanismul nu este semnal de trading</h2>
+      <p data-g18n="s11p1">Un semnal de trading spune: cumpără, vinde, intră sau ieși. CohesivX nu face asta.</p>
+      <p data-g18n="s11p2">CohesivX arată unde este prețul față de mecanism, cât de mare este deviația, ce confirmare istorică există, ce risc persistă și ce regim structural este activ.</p>
+      <div class="note success" data-g18n="s11n">Principiul central: mecanismul nu decide în locul tău. El organizează contextul.</div>
+    </section>
 
     <p class="footer" data-g18n="footer">CohesivX BTC Monitor — instrument experimental de observare structurală. Nu reprezintă recomandare financiară, investițională sau de tranzacționare.</p>
   </main>
