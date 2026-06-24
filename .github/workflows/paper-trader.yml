@@ -4,6 +4,11 @@ on:
   schedule:
     - cron: "30 12 * * *"
   workflow_dispatch:
+  push:
+    paths:
+      - "paper_trader.py"
+      - ".github/workflows/paper-trader.yml"
+      - "btc-swing-strategy/coeziv_state.json"
 
 permissions:
   contents: write
@@ -41,5 +46,6 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add btc-swing-strategy/paper_trading_state.json || true
           git add btc-swing-strategy/paper_trading_log.csv || true
+          git add btc-swing-strategy/paper_trader_decision.json || true
           git commit -m "Update CohesivX paper trader" || echo "Nothing to commit"
           git push origin main || echo "Push failed; will retry on next run"
