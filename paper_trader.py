@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import csv
 import json
+import math
 import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
@@ -12,13 +13,12 @@ ROOT = Path(__file__).resolve().parent
 STATE_PATH = ROOT / "btc-swing-strategy" / "coeziv_state.json"
 PAPER_STATE_PATH = ROOT / "btc-swing-strategy" / "paper_trading_state.json"
 PAPER_LOG_PATH = ROOT / "btc-swing-strategy" / "paper_trading_log.csv"
+DECISION_PATH = ROOT / "btc-swing-strategy" / "paper_trader_decision.json"
 
 STARTING_BALANCE_USDT = 1000.0
 MAX_ENTRY_FRACTION = 0.10
 MAX_BTC_EXPOSURE_FRACTION = 0.40
-MIN_STRUCTURAL_CONFIRMATION = 0.55
-MAX_CONTEXT_DISTANCE_FOR_ACCUMULATION = 0.60
-STALE_DATA_ACTION = "OBSERVE_STALE_DATA"
+MIN_ENTRY_FRACTION = 0.025
 BINANCE_TICKER_URL = "https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT"
 
 
@@ -26,7 +26,7 @@ def now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
-def utc_today() -> str:
+def today_utc() -> str:
     return datetime.now(timezone.utc).date().isoformat()
 
 
@@ -44,16 +44,17 @@ def save_json(path: Path, data: dict[str, Any]) -> None:
     path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
 
-def as_float(value: Any, default: float = 0.0) -> float:
+def f(value: Any, default: float = 0.0) -> float:
     try:
         if value is None:
             return default
-        return float(value)
+        n = float(value)
+        return n if math.isfinite(n) else default
     except (TypeError, ValueError):
         return default
 
 
-def as_int(value: Any, default: int = 0) -> int:
+def i(value: Any, default: int = 0) -> int:
     try:
         if value is None:
             return default
@@ -62,10 +63,13 @@ def as_int(value: Any, default: int = 0) -> int:
         return default
 
 
+def clamp(x: float, lo: float, hi: float) -> float:
+    return max(lo, min(hi, x))
+
+
 def state_date(state: dict[str, Any]) -> str:
     context = state.get("model_price_context") or {}
-    date_value = context.get("date") or str(state.get("timestamp") or "")[:10]
-    return str(date_value or "")[:10]
+    return str(context.get("date") or str(state.get("timestamp") or "")[:10] or "")[:10]
 
 
 def fetch_live_btc_price() -> tuple[float | None, str]:
@@ -73,7 +77,7 @@ def fetch_live_btc_price() -> tuple[float | None, str]:
         req = urllib.request.Request(BINANCE_TICKER_URL, headers={"User-Agent": "CohesivX-Paper-Trader/1.0"})
         with urllib.request.urlopen(req, timeout=12) as response:
             payload = json.loads(response.read().decode("utf-8"))
-        price = as_float(payload.get("price"))
+        price = f(payload.get("price"))
         if price > 0:
             return price, "binance_live"
     except Exception as exc:
@@ -96,229 +100,270 @@ def initial_paper_state() -> dict[str, Any]:
     }
 
 
-def get_structural_confirmation(state: dict[str, Any]) -> float:
+def structural_confirmation_rate(state: dict[str, Any]) -> float:
     structural = state.get("structural_confirmation") or {}
     h7 = structural.get("horizon_7d") or {}
     h30 = structural.get("horizon_30d") or {}
-    rates = [as_float(h7.get("directional_hit_rate")), as_float(h30.get("directional_hit_rate"))]
-    rates = [r for r in rates if r > 0]
+    rates = [f(h7.get("directional_hit_rate")), f(h30.get("directional_hit_rate"))]
+    rates = [x for x in rates if x > 0]
     return sum(rates) / len(rates) if rates else 0.0
 
 
-def hydrate_cohesivx_state(state: dict[str, Any], paper: dict[str, Any], live_price: float | None, live_source: str) -> dict[str, Any]:
-    context = state.get("model_price_context") or {}
-    market_regime = state.get("market_regime") or {}
-    production_costs = state.get("production_costs_usd") or {}
-    model_bands = state.get("model_price_bands") or {}
-    components = state.get("model_price_components") or {}
-    diagnostics = state.get("model_price_diagnostics") or {}
-    nearest = diagnostics.get("v2a_nearest_contexts") or {}
-    same_regime = diagnostics.get("v2b_same_regime") or {}
-    structural = state.get("structural_confirmation") or {}
+def hydrate(state: dict[str, Any], paper: dict[str, Any], live_price: float | None, live_source: str) -> dict[str, Any]:
+    ctx = state.get("model_price_context") or {}
+    market = state.get("market_regime") or {}
+    costs = state.get("production_costs_usd") or {}
+    bands = state.get("model_price_bands") or {}
+    comps = state.get("model_price_components") or {}
+    diag = state.get("model_price_diagnostics") or {}
+    nearest = diag.get("v2a_nearest_contexts") or {}
+    same = diag.get("v2b_same_regime") or {}
 
-    snapshot_price = as_float(state.get("price_usd"))
+    snapshot_price = f(state.get("price_usd"))
     execution_price = live_price if live_price and live_price > 0 else snapshot_price
-    model_price = as_float(state.get("model_price_usd"))
-    live_deviation = ((execution_price - model_price) / model_price) if model_price > 0 and execution_price > 0 else as_float(state.get("model_price_deviation"))
+    model_price = f(state.get("model_price_usd"))
+    deviation = (execution_price - model_price) / model_price if model_price > 0 and execution_price > 0 else f(state.get("model_price_deviation"))
+    avg_cost = f(costs.get("average"))
+    production_dev = (execution_price - avg_cost) / avg_cost if avg_cost > 0 and execution_price > 0 else f(state.get("deviation_from_production"))
 
-    cash = as_float(paper.get("cash_usdt"), STARTING_BALANCE_USDT)
-    btc = as_float(paper.get("btc_amount"))
+    cash = f(paper.get("cash_usdt"), STARTING_BALANCE_USDT)
+    btc = f(paper.get("btc_amount"))
     portfolio_value = cash + btc * execution_price if execution_price > 0 else cash
-    btc_exposure = (btc * execution_price / portfolio_value) if portfolio_value > 0 and execution_price > 0 else 0.0
+    btc_exposure = btc * execution_price / portfolio_value if portfolio_value > 0 and execution_price > 0 else 0.0
 
     return {
         "state_date": state_date(state),
-        "run_date_utc": utc_today(),
-        "is_fresh_for_today": state_date(state) == utc_today(),
+        "run_date_utc": today_utc(),
+        "is_fresh_for_today": state_date(state) == today_utc(),
         "price": {
             "execution_price_usd": execution_price,
             "execution_price_source": live_source if live_price else "coeziv_state_snapshot_fallback",
             "snapshot_price_usd": snapshot_price,
             "live_price_usd": live_price,
-            "ic_close_usd": as_float(state.get("ic_close_usd")),
             "cohesive_fair_price_usd": model_price,
-            "cohesive_deviation": live_deviation,
-            "cohesive_deviation_pct": live_deviation * 100,
-            "snapshot_model_deviation": as_float(state.get("model_price_deviation")),
-            "model_source": state.get("model_price_source"),
-            "model_method": state.get("model_price_method"),
+            "cohesive_deviation": deviation,
+            "cohesive_deviation_pct": deviation * 100,
+            "snapshot_model_deviation": f(state.get("model_price_deviation")),
         },
         "production": {
-            "reference": state.get("production_cost_reference"),
-            "cheap_usd": as_float(production_costs.get("cheap")),
-            "average_usd": as_float(production_costs.get("average")),
-            "expensive_usd": as_float(production_costs.get("expensive")),
-            "deviation_from_production": ((execution_price - as_float(production_costs.get("average"))) / as_float(production_costs.get("average"))) if as_float(production_costs.get("average")) > 0 and execution_price > 0 else as_float(state.get("deviation_from_production")),
-            "snapshot_deviation_from_production": as_float(state.get("deviation_from_production")),
-            "as_of": state.get("production_cost_as_of"),
+            "cheap_usd": f(costs.get("cheap")),
+            "average_usd": avg_cost,
+            "expensive_usd": f(costs.get("expensive")),
+            "deviation_from_production": production_dev,
+            "snapshot_deviation_from_production": f(state.get("deviation_from_production")),
         },
-        "bands": {"p10": as_float(model_bands.get("p10")), "p50": as_float(model_bands.get("p50")), "p90": as_float(model_bands.get("p90"))},
-        "flow": {"score": as_float(state.get("flow_score")), "bias": str(state.get("flow_bias") or "").lower(), "strength": str(state.get("flow_strength") or "").lower(), "components": state.get("flow_components") or {}},
-        "liquidity": {"score": as_float(state.get("liquidity_score")), "regime": str(state.get("liquidity_regime") or "").lower(), "strength": str(state.get("liquidity_strength") or "").lower(), "components": state.get("liquidity_components") or {}},
-        "regime": {"market_label": market_regime.get("label"), "market_code": str(market_regime.get("code") or "").lower(), "structural_code": str(context.get("regime") or "").lower(), "signal": str(state.get("signal") or "flat").lower()},
-        "ic_vector": {"ic_struct": as_float(context.get("ic_struct")), "ic_dir": as_float(context.get("ic_dir")), "ic_flux": as_float(context.get("ic_flux")), "ic_cycle": as_float(context.get("ic_cycle")), "vol30_index": as_float(context.get("vol30_index"))},
+        "bands": {"p10": f(bands.get("p10")), "p50": f(bands.get("p50")), "p90": f(bands.get("p90"))},
+        "flow": {"score": f(state.get("flow_score")), "bias": str(state.get("flow_bias") or "").lower(), "strength": str(state.get("flow_strength") or "").lower()},
+        "liquidity": {"score": f(state.get("liquidity_score")), "regime": str(state.get("liquidity_regime") or "").lower(), "strength": str(state.get("liquidity_strength") or "").lower()},
+        "regime": {"market_label": market.get("label"), "market_code": str(market.get("code") or "").lower(), "structural_code": str(ctx.get("regime") or "").lower(), "signal": str(state.get("signal") or "flat").lower()},
+        "ic_vector": {"ic_struct": f(ctx.get("ic_struct")), "ic_dir": f(ctx.get("ic_dir")), "ic_flux": f(ctx.get("ic_flux")), "ic_cycle": f(ctx.get("ic_cycle")), "vol30_index": f(ctx.get("vol30_index"))},
         "historical_memory": {
-            "aligned_points": as_int(diagnostics.get("aligned_historical_points")),
-            "similar_context_samples": as_int(components.get("similar_context_samples") or nearest.get("samples")),
-            "similar_context_distance_median": as_float(components.get("similar_context_distance_median") or nearest.get("distance_median")),
-            "similar_multiplier_p10": as_float(nearest.get("multiplier_p10") or components.get("historical_multiplier_p10")),
-            "similar_multiplier_p50": as_float(nearest.get("multiplier_p50") or components.get("historical_multiplier_p50")),
-            "similar_multiplier_p90": as_float(nearest.get("multiplier_p90") or components.get("historical_multiplier_p90")),
-            "same_regime_samples": as_int(components.get("same_regime_samples") or same_regime.get("samples")),
-            "same_regime_price_p50": as_float(components.get("same_regime_price_p50") or same_regime.get("price_p50")),
-            "same_regime_multiplier_p50": as_float(components.get("same_regime_multiplier_p50") or same_regime.get("multiplier_p50")),
-            "same_regime_spot_deviation": as_float(same_regime.get("spot_deviation_from_p50")),
+            "aligned_points": i(diag.get("aligned_historical_points")),
+            "similar_context_samples": i(comps.get("similar_context_samples") or nearest.get("samples")),
+            "similar_context_distance_median": f(comps.get("similar_context_distance_median") or nearest.get("distance_median")),
+            "similar_price_p10": f(nearest.get("price_p10") or bands.get("p10")),
+            "similar_price_p50": f(nearest.get("price_p50") or bands.get("p50")),
+            "similar_price_p90": f(nearest.get("price_p90") or bands.get("p90")),
+            "similar_multiplier_p50": f(nearest.get("multiplier_p50") or comps.get("historical_multiplier_p50")),
+            "same_regime_samples": i(comps.get("same_regime_samples") or same.get("samples")),
+            "same_regime_price_p10": f(same.get("price_p10")),
+            "same_regime_price_p50": f(comps.get("same_regime_price_p50") or same.get("price_p50")),
+            "same_regime_price_p90": f(same.get("price_p90")),
+            "same_regime_spot_deviation": f(same.get("spot_deviation_from_p50")),
         },
-        "structural_confirmation": {"available": bool(structural), "combined_rate": get_structural_confirmation(state), "raw": structural},
+        "structural_confirmation": {"combined_rate": structural_confirmation_rate(state), "raw": state.get("structural_confirmation") or {}},
         "paper_portfolio": {"cash_usdt": cash, "btc_amount": btc, "portfolio_value_usdt": portfolio_value, "btc_exposure": btc_exposure, "btc_exposure_pct": btc_exposure * 100},
     }
 
 
-def score_cohesivx_opportunity(snapshot: dict[str, Any]) -> tuple[int, list[str]]:
-    score = 0
-    reasons: list[str] = []
-    deviation = snapshot["price"]["cohesive_deviation"]
-    production_dev = snapshot["production"]["deviation_from_production"]
-    structural_regime = snapshot["regime"]["structural_code"]
-    market_code = snapshot["regime"]["market_code"]
-    flow_bias = snapshot["flow"]["bias"]
-    flow_strength = snapshot["flow"]["strength"]
-    liquidity_regime = snapshot["liquidity"]["regime"]
-    liquidity_strength = snapshot["liquidity"]["strength"]
-    confirmation = snapshot["structural_confirmation"]["combined_rate"]
-    similar_samples = snapshot["historical_memory"]["similar_context_samples"]
-    same_regime_samples = snapshot["historical_memory"]["same_regime_samples"]
-    context_distance = snapshot["historical_memory"]["similar_context_distance_median"]
-    ic_struct = snapshot["ic_vector"]["ic_struct"]
-    ic_flux = snapshot["ic_vector"]["ic_flux"]
-    btc_exposure = snapshot["paper_portfolio"]["btc_exposure"]
+def estimate_memory_edge(s: dict[str, Any]) -> dict[str, Any]:
+    p = s["price"]["execution_price_usd"]
+    mem = s["historical_memory"]
+    regime = s["regime"]["structural_code"]
+    market_code = s["regime"]["market_code"]
+    flow_bias = s["flow"]["bias"]
+    flow_strength = s["flow"]["strength"]
+    liq_regime = s["liquidity"]["regime"]
+    liq_strength = s["liquidity"]["strength"]
+    ic = s["ic_vector"]
+    confirmation = s["structural_confirmation"]["combined_rate"] or 0.5
 
-    if deviation <= -0.05:
-        score += 2
-        reasons.append(f"Live/execution price is {deviation * 100:.1f}% below the cohesive fair price.")
-    if deviation <= -0.15:
-        score += 1
-        reasons.append("Cohesive discount is deep, but still structural, not automatic buy.")
-    if production_dev >= 0.05:
-        score += 1
-        reasons.append(f"Execution price is {production_dev * 100:.1f}% above average production cost.")
-    elif production_dev < -0.05:
-        score -= 2
-        reasons.append("Execution price is below average production cost; capital protection dominates.")
-    if structural_regime == "bear_late":
-        score += 2
-        reasons.append("Structural regime is bear_late: pressure is mature rather than early panic.")
-    elif structural_regime in {"range", "neutral"}:
-        score += 1
-        reasons.append(f"Structural regime is {structural_regime}: acceptable for observation.")
-    elif structural_regime:
-        score -= 1
-        reasons.append(f"Structural regime is {structural_regime}: not ideal for accumulation.")
+    similar_samples = mem["similar_context_samples"]
+    same_samples = mem["same_regime_samples"]
+    distance = mem["similar_context_distance_median"]
+
+    similar_p10 = mem["similar_price_p10"]
+    similar_p50 = mem["similar_price_p50"]
+    similar_p90 = mem["similar_price_p90"]
+    same_p10 = mem["same_regime_price_p10"] or similar_p10
+    same_p50 = mem["same_regime_price_p50"] or similar_p50
+    same_p90 = mem["same_regime_price_p90"] or similar_p90
+
+    if p <= 0 or similar_p50 <= 0:
+        return {"available": False, "reason": "missing price or memory distribution"}
+
+    sample_conf = clamp(similar_samples / 250.0, 0.0, 1.0)
+    same_regime_conf = clamp(same_samples / max(similar_samples, 1), 0.0, 1.0)
+    distance_conf = clamp(1.0 - max(distance, 0.0) / 0.80, 0.0, 1.0) if distance else 0.50
+    confirmation_conf = clamp(confirmation, 0.35, 0.75)
+
+    context_confidence = clamp(
+        0.35 * sample_conf + 0.20 * same_regime_conf + 0.25 * distance_conf + 0.20 * confirmation_conf,
+        0.0,
+        1.0,
+    )
+
+    weighted_p10 = 0.60 * similar_p10 + 0.40 * same_p10
+    weighted_p50 = 0.60 * similar_p50 + 0.40 * same_p50
+    weighted_p90 = 0.60 * similar_p90 + 0.40 * same_p90
+
+    expected_30d = (weighted_p50 - p) / p
+    expected_7d = expected_30d * 0.35
+    downside_to_p10 = min(0.0, (weighted_p10 - p) / p)
+    upside_to_p90 = max(0.0, (weighted_p90 - p) / p)
+
+    regime_adjust = 0.0
+    if regime == "bear_late":
+        regime_adjust += 0.06
+    elif regime in {"range", "neutral"}:
+        regime_adjust += 0.02
+    elif regime.startswith("bull"):
+        regime_adjust += 0.03
+    elif regime.startswith("bear"):
+        regime_adjust -= 0.04
+
     if "dev_extreme" in market_code:
-        score -= 1
-        reasons.append("Market regime reports extreme deviation; sizing remains conservative.")
-    if "ridic" in liquidity_regime or "putern" in liquidity_strength or "strong" in liquidity_strength:
-        score += 1
-        reasons.append("Liquidity is high/strong, reducing paper-execution fragility.")
+        regime_adjust -= 0.03
     if flow_bias in {"neutru", "neutral"} and flow_strength in {"slab", "weak"}:
-        score += 1
-        reasons.append("Flow is neutral/weak, so no aggressive directional chase.")
+        regime_adjust += 0.02
     elif "neg" in flow_bias or "bear" in flow_bias:
-        score -= 1
-        reasons.append("Flow is negative; confidence is reduced.")
-    if confirmation >= MIN_STRUCTURAL_CONFIRMATION:
-        score += 1
-        reasons.append(f"Structural confirmation is {confirmation * 100:.1f}%, above threshold.")
-    elif snapshot["structural_confirmation"]["available"]:
-        score -= 1
-        reasons.append("Structural confirmation exists but is below threshold.")
+        regime_adjust -= 0.04
+    if "ridic" in liq_regime or "putern" in liq_strength or "strong" in liq_strength:
+        regime_adjust += 0.02
+    if ic["ic_struct"] >= 55 and ic["ic_flux"] >= 50:
+        regime_adjust += 0.03
+
+    raw_edge = context_confidence * expected_30d - (1 - context_confidence) * abs(downside_to_p10)
+    decision_edge = raw_edge + regime_adjust
+    drawdown_risk = abs(downside_to_p10)
+
+    if decision_edge > 0.18 and context_confidence >= 0.58 and drawdown_risk < 0.28:
+        memory_action = "ACCUMULATE_SMALL"
+        fraction = MAX_ENTRY_FRACTION
+        confidence_label = "memory_moderate"
+    elif decision_edge > 0.07 and context_confidence >= 0.45 and drawdown_risk < 0.38:
+        memory_action = "OBSERVE_ACCUMULATE_SMALL"
+        fraction = 0.05
+        confidence_label = "memory_moderate_low"
+    elif expected_30d < -0.08 or decision_edge < -0.06:
+        memory_action = "REDUCE_RISK"
+        fraction = 0.10
+        confidence_label = "memory_defensive"
     else:
-        reasons.append("Structural confirmation is not available; no confirmation bonus is applied.")
-    if similar_samples >= 200:
-        score += 1
-        reasons.append(f"Historical memory is well populated: {similar_samples} similar contexts.")
-    if same_regime_samples >= 50:
-        score += 1
-        reasons.append(f"Same-regime memory has {same_regime_samples} samples.")
-    if context_distance and context_distance > MAX_CONTEXT_DISTANCE_FOR_ACCUMULATION:
-        score -= 1
-        reasons.append(f"Median context distance is {context_distance:.3f}, above preferred threshold.")
-    if ic_struct >= 55 and ic_flux >= 50:
-        score += 1
-        reasons.append(f"IC vector is structurally alive: ic_struct={ic_struct:.1f}, ic_flux={ic_flux:.1f}.")
-    if btc_exposure >= MAX_BTC_EXPOSURE_FRACTION:
-        score -= 4
-        reasons.append("Paper BTC exposure is already at or above max cap.")
-    return score, reasons
+        memory_action = "OBSERVE"
+        fraction = 0.0
+        confidence_label = "memory_low"
+
+    if fraction > 0 and context_confidence < 0.50:
+        fraction = min(fraction, MIN_ENTRY_FRACTION)
+
+    return {
+        "available": True,
+        "weighted_price_p10": weighted_p10,
+        "weighted_price_p50": weighted_p50,
+        "weighted_price_p90": weighted_p90,
+        "expected_7d_return": expected_7d,
+        "expected_30d_return": expected_30d,
+        "historical_drawdown_risk": drawdown_risk,
+        "upside_to_p90": upside_to_p90,
+        "memory_confidence": context_confidence,
+        "sample_confidence": sample_conf,
+        "same_regime_confidence": same_regime_conf,
+        "distance_confidence": distance_conf,
+        "confirmation_confidence": confirmation_conf,
+        "regime_adjustment": regime_adjust,
+        "decision_edge": decision_edge,
+        "memory_action": memory_action,
+        "position_fraction": fraction,
+        "confidence_label": confidence_label,
+        "method": "memory_weighted_distribution_v0.3",
+    }
 
 
-def decide(state: dict[str, Any], paper: dict[str, Any], live_price: float | None, live_source: str) -> tuple[str, str, list[str], float, dict[str, Any], int]:
-    snapshot = hydrate_cohesivx_state(state, paper, live_price, live_source)
-    price = snapshot["price"]["execution_price_usd"]
-    model_price = snapshot["price"]["cohesive_fair_price_usd"]
-    btc = snapshot["paper_portfolio"]["btc_amount"]
-    cash = snapshot["paper_portfolio"]["cash_usdt"]
-    btc_exposure = snapshot["paper_portfolio"]["btc_exposure"]
+def decide(state: dict[str, Any], paper: dict[str, Any], live_price: float | None, live_source: str) -> tuple[str, str, list[str], float, dict[str, Any], dict[str, Any]]:
+    s = hydrate(state, paper, live_price, live_source)
+    if not s["is_fresh_for_today"]:
+        edge = {"available": False, "memory_action": "OBSERVE_STALE_DATA", "position_fraction": 0.0, "decision_edge": 0.0, "reason": "stale state"}
+        return "OBSERVE_STALE_DATA", "none", [f"State date {s['state_date']} is not UTC today {s['run_date_utc']}."], 0.0, s, edge
 
-    if not snapshot["is_fresh_for_today"]:
-        return STALE_DATA_ACTION, "none", [f"State date {snapshot['state_date']} is not UTC today {snapshot['run_date_utc']}.", "Paper trader refuses to act on stale CohesivX state."], 0.0, snapshot, -999
-    if price <= 0 or model_price <= 0:
-        return "OBSERVE", "low", ["Missing valid execution price or cohesive model price."], 0.0, snapshot, -999
+    edge = estimate_memory_edge(s)
+    price_ok = s["price"]["execution_price_usd"] > 0 and s["price"]["cohesive_fair_price_usd"] > 0
+    if not price_ok or not edge.get("available"):
+        return "OBSERVE", "low", ["Missing valid execution price, cohesive price or memory distribution."], 0.0, s, edge
 
-    score, reasons = score_cohesivx_opportunity(snapshot)
-    if score >= 7 and cash > 10 and btc_exposure < MAX_BTC_EXPOSURE_FRACTION:
-        remaining = max(0.0, MAX_BTC_EXPOSURE_FRACTION - btc_exposure)
-        fraction = min(MAX_ENTRY_FRACTION, remaining)
-        reasons.append(f"CohesivX score {score}: small paper accumulation allowed at {fraction * 100:.1f}% portfolio allocation.")
-        return "ACCUMULATE_SMALL", "moderate", reasons, fraction, snapshot, score
-    if score >= 4 and cash > 10 and btc_exposure < MAX_BTC_EXPOSURE_FRACTION:
-        remaining = max(0.0, MAX_BTC_EXPOSURE_FRACTION - btc_exposure)
-        fraction = min(MAX_ENTRY_FRACTION / 2, remaining)
-        reasons.append(f"CohesivX score {score}: half-size paper accumulation allowed.")
-        return "OBSERVE_ACCUMULATE_SMALL", "moderate_low", reasons, fraction, snapshot, score
-    if btc > 0 and snapshot["price"]["cohesive_deviation"] > 0.10:
-        reasons.append("Execution price is more than 10% above cohesive fair price; paper exposure is reduced.")
-        return "REDUCE_RISK", "moderate", reasons, min(MAX_ENTRY_FRACTION, btc_exposure), snapshot, score
-    if btc > 0:
-        reasons.append(f"CohesivX score {score}: existing paper BTC is held.")
-        return "HOLD", "low", reasons, 0.0, snapshot, score
-    reasons.append(f"CohesivX score {score}: no paper entry; conditions are incomplete.")
-    return "OBSERVE", "low", reasons, 0.0, snapshot, score
+    exposure = s["paper_portfolio"]["btc_exposure"]
+    cash = s["paper_portfolio"]["cash_usdt"]
+    btc = s["paper_portfolio"]["btc_amount"]
+
+    action = str(edge["memory_action"])
+    fraction = float(edge["position_fraction"])
+    confidence = str(edge["confidence_label"])
+
+    if action in {"ACCUMULATE_SMALL", "OBSERVE_ACCUMULATE_SMALL"}:
+        if cash <= 10 or exposure >= MAX_BTC_EXPOSURE_FRACTION:
+            action, fraction, confidence = "HOLD" if btc > 0 else "OBSERVE", 0.0, "risk_cap"
+        else:
+            fraction = min(fraction, MAX_BTC_EXPOSURE_FRACTION - exposure, MAX_ENTRY_FRACTION)
+    elif action == "REDUCE_RISK" and btc <= 0:
+        action, fraction = "OBSERVE", 0.0
+
+    reasons = [
+        f"Memory edge: {edge['decision_edge'] * 100:.2f}%.",
+        f"Expected 7d/30d: {edge['expected_7d_return'] * 100:.2f}% / {edge['expected_30d_return'] * 100:.2f}%.",
+        f"Historical drawdown risk to weighted p10: {edge['historical_drawdown_risk'] * 100:.2f}%.",
+        f"Memory confidence: {edge['memory_confidence'] * 100:.1f}%.",
+        f"Weighted memory p50: {edge['weighted_price_p50']:.2f} USD vs execution price {s['price']['execution_price_usd']:.2f} USD.",
+        f"Structural regime: {s['regime']['structural_code']}; market regime: {s['regime']['market_code']}.",
+        f"Flow: {s['flow']['bias']}/{s['flow']['strength']}; liquidity: {s['liquidity']['regime']}/{s['liquidity']['strength']}.",
+    ]
+    return action, confidence, reasons, fraction, s, edge
 
 
-def apply_paper_action(paper: dict[str, Any], execution_price: float, action: str, fraction: float) -> dict[str, Any]:
-    cash = as_float(paper.get("cash_usdt"), STARTING_BALANCE_USDT)
-    btc = as_float(paper.get("btc_amount"))
-    portfolio_before = cash + btc * execution_price if execution_price > 0 else cash
+def apply_action(paper: dict[str, Any], price: float, action: str, fraction: float) -> dict[str, Any]:
+    cash = f(paper.get("cash_usdt"), STARTING_BALANCE_USDT)
+    btc = f(paper.get("btc_amount"))
+    before = cash + btc * price if price > 0 else cash
     executed_usdt = 0.0
     executed_btc = 0.0
-    if execution_price > 0 and action in {"ACCUMULATE_SMALL", "OBSERVE_ACCUMULATE_SMALL"} and fraction > 0:
-        target = min(cash, portfolio_before * fraction)
-        if target >= 5:
-            executed_usdt = target
-            executed_btc = target / execution_price
-            cash -= target
+    if price > 0 and action in {"ACCUMULATE_SMALL", "OBSERVE_ACCUMULATE_SMALL"} and fraction > 0:
+        executed_usdt = min(cash, before * fraction)
+        if executed_usdt >= 5:
+            executed_btc = executed_usdt / price
+            cash -= executed_usdt
             btc += executed_btc
-    elif execution_price > 0 and action == "REDUCE_RISK" and fraction > 0 and btc > 0:
-        target = min(btc * execution_price, portfolio_before * fraction)
-        if target >= 5:
-            executed_usdt = target
-            executed_btc = -(target / execution_price)
-            cash += target
+        else:
+            executed_usdt = 0.0
+    elif price > 0 and action == "REDUCE_RISK" and fraction > 0 and btc > 0:
+        executed_usdt = min(btc * price, before * fraction)
+        if executed_usdt >= 5:
+            executed_btc = -(executed_usdt / price)
+            cash += executed_usdt
             btc += executed_btc
-    portfolio_after = cash + btc * execution_price if execution_price > 0 else cash
-    return {"cash_usdt": cash, "btc_amount": btc, "executed_usdt": executed_usdt, "executed_btc": executed_btc, "portfolio_value_before": portfolio_before, "portfolio_value_after": portfolio_after}
+        else:
+            executed_usdt = 0.0
+    after = cash + btc * price if price > 0 else cash
+    return {"cash_usdt": cash, "btc_amount": btc, "executed_usdt": executed_usdt, "executed_btc": executed_btc, "portfolio_value_before": before, "portfolio_value_after": after}
 
 
 def append_log(row: dict[str, Any]) -> None:
     PAPER_LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
-    fieldnames = ["run_at", "state_timestamp", "state_date", "execution_price_source", "execution_price_usd", "snapshot_price_usd", "model_price_usd", "deviation_pct", "production_deviation_pct", "structural_regime", "market_regime_code", "signal", "flow_bias", "flow_strength", "liquidity_regime", "liquidity_strength", "similar_context_samples", "same_regime_samples", "structural_confirmation_pct", "cohesivx_score", "action", "confidence", "executed_usdt", "executed_btc", "cash_usdt", "btc_amount", "btc_exposure_pct", "portfolio_value_usdt", "reason"]
+    fields = ["run_at", "state_date", "execution_price_source", "execution_price_usd", "snapshot_price_usd", "model_price_usd", "deviation_pct", "expected_7d_return_pct", "expected_30d_return_pct", "historical_drawdown_risk_pct", "memory_confidence_pct", "decision_edge_pct", "structural_regime", "market_regime_code", "action", "confidence", "executed_usdt", "executed_btc", "cash_usdt", "btc_amount", "btc_exposure_pct", "portfolio_value_usdt", "reason"]
     exists = PAPER_LOG_PATH.exists()
     with PAPER_LOG_PATH.open("a", encoding="utf-8", newline="") as fh:
-        writer = csv.DictWriter(fh, fieldnames=fieldnames)
+        writer = csv.DictWriter(fh, fieldnames=fields)
         if not exists:
             writer.writeheader()
-        writer.writerow({k: row.get(k, "") for k in fieldnames})
+        writer.writerow({k: row.get(k, "") for k in fields})
 
 
 def main() -> None:
@@ -327,22 +372,84 @@ def main() -> None:
     state = load_json(STATE_PATH, {})
     paper = load_json(PAPER_STATE_PATH, initial_paper_state()) or initial_paper_state()
     live_price, live_source = fetch_live_btc_price()
-    action, confidence, reasons, fraction, snapshot, score = decide(state, paper, live_price, live_source)
-    execution_price = snapshot["price"]["execution_price_usd"]
-    execution = apply_paper_action(paper, execution_price, action, fraction)
+    action, confidence, reasons, fraction, snapshot, edge = decide(state, paper, live_price, live_source)
+    price = snapshot["price"]["execution_price_usd"]
+    execution = apply_action(paper, price, action, fraction)
     run_at = now_iso()
-    portfolio_after = execution["portfolio_value_after"]
-    btc_exposure_after = (execution["btc_amount"] * execution_price / portfolio_after) if execution_price > 0 and portfolio_after > 0 else 0.0
+    after = execution["portfolio_value_after"]
+    exposure = execution["btc_amount"] * price / after if after > 0 and price > 0 else 0.0
 
-    updated = {**paper, "mode": "paper", "cash_usdt": round(execution["cash_usdt"], 8), "btc_amount": round(execution["btc_amount"], 12), "portfolio_value_usdt": round(portfolio_after, 8), "btc_exposure_pct": round(btc_exposure_after * 100, 4), "last_action": action, "last_confidence": confidence, "last_cohesivx_score": score, "last_reason": reasons, "last_run_at": run_at, "last_execution_price_usd": execution_price, "last_execution_price_source": snapshot["price"]["execution_price_source"], "last_snapshot_price_usd": snapshot["price"]["snapshot_price_usd"], "last_model_price_usd": snapshot["price"]["cohesive_fair_price_usd"], "last_deviation_pct": round(snapshot["price"]["cohesive_deviation_pct"], 4), "decision_snapshot": snapshot, "not_trading_advice": True, "rules": {"starting_balance_usdt": STARTING_BALANCE_USDT, "max_entry_fraction": MAX_ENTRY_FRACTION, "max_btc_exposure_fraction": MAX_BTC_EXPOSURE_FRACTION, "min_structural_confirmation": MIN_STRUCTURAL_CONFIRMATION, "max_context_distance_for_accumulation": MAX_CONTEXT_DISTANCE_FOR_ACCUMULATION, "logic": "CohesivX structural paper trading using live execution price plus cohesive fair price, production cost, regime, flow, liquidity, IC vector, historical memory and structural confirmation. No RSI/MACD/scalping logic."}}
+    updated = {
+        **paper,
+        "mode": "paper",
+        "cash_usdt": round(execution["cash_usdt"], 8),
+        "btc_amount": round(execution["btc_amount"], 12),
+        "portfolio_value_usdt": round(after, 8),
+        "btc_exposure_pct": round(exposure * 100, 4),
+        "last_action": action,
+        "last_confidence": confidence,
+        "last_reason": reasons,
+        "last_run_at": run_at,
+        "last_execution_price_usd": price,
+        "last_execution_price_source": snapshot["price"]["execution_price_source"],
+        "last_snapshot_price_usd": snapshot["price"]["snapshot_price_usd"],
+        "last_model_price_usd": snapshot["price"]["cohesive_fair_price_usd"],
+        "last_deviation_pct": round(snapshot["price"]["cohesive_deviation_pct"], 4),
+        "last_memory_decision": edge,
+        "decision_snapshot": {**snapshot, "memory_weighted_decision": edge},
+        "not_trading_advice": True,
+        "rules": {
+            "logic": "CohesivX memory-weighted paper trading v0.3. Historical memory distribution drives decision; fixed thresholds are safety rails only.",
+            "max_entry_fraction": MAX_ENTRY_FRACTION,
+            "max_btc_exposure_fraction": MAX_BTC_EXPOSURE_FRACTION,
+            "min_entry_fraction": MIN_ENTRY_FRACTION,
+        },
+    }
     save_json(PAPER_STATE_PATH, updated)
 
-    row = {"run_at": run_at, "state_timestamp": state.get("timestamp"), "state_date": snapshot["state_date"], "execution_price_source": snapshot["price"]["execution_price_source"], "execution_price_usd": execution_price, "snapshot_price_usd": snapshot["price"]["snapshot_price_usd"], "model_price_usd": snapshot["price"]["cohesive_fair_price_usd"], "deviation_pct": round(snapshot["price"]["cohesive_deviation_pct"], 4), "production_deviation_pct": round(snapshot["production"]["deviation_from_production"] * 100, 4), "structural_regime": snapshot["regime"]["structural_code"], "market_regime_code": snapshot["regime"]["market_code"], "signal": snapshot["regime"]["signal"], "flow_bias": snapshot["flow"]["bias"], "flow_strength": snapshot["flow"]["strength"], "liquidity_regime": snapshot["liquidity"]["regime"], "liquidity_strength": snapshot["liquidity"]["strength"], "similar_context_samples": snapshot["historical_memory"]["similar_context_samples"], "same_regime_samples": snapshot["historical_memory"]["same_regime_samples"], "structural_confirmation_pct": round(snapshot["structural_confirmation"]["combined_rate"] * 100, 4), "cohesivx_score": score, "action": action, "confidence": confidence, "executed_usdt": round(execution["executed_usdt"], 8), "executed_btc": round(execution["executed_btc"], 12), "cash_usdt": round(updated["cash_usdt"], 8), "btc_amount": round(updated["btc_amount"], 12), "btc_exposure_pct": round(updated["btc_exposure_pct"], 4), "portfolio_value_usdt": round(updated["portfolio_value_usdt"], 8), "reason": " | ".join(reasons)}
+    decision_doc = {
+        "run_at": run_at,
+        "action": action,
+        "confidence": confidence,
+        "position_fraction": fraction,
+        "execution": execution,
+        "memory_weighted_decision": edge,
+        "snapshot": snapshot,
+        "reason": reasons,
+        "not_trading_advice": True,
+    }
+    save_json(DECISION_PATH, decision_doc)
+
+    row = {
+        "run_at": run_at,
+        "state_date": snapshot["state_date"],
+        "execution_price_source": snapshot["price"]["execution_price_source"],
+        "execution_price_usd": round(price, 8),
+        "snapshot_price_usd": snapshot["price"]["snapshot_price_usd"],
+        "model_price_usd": snapshot["price"]["cohesive_fair_price_usd"],
+        "deviation_pct": round(snapshot["price"]["cohesive_deviation_pct"], 4),
+        "expected_7d_return_pct": round(f(edge.get("expected_7d_return")) * 100, 4),
+        "expected_30d_return_pct": round(f(edge.get("expected_30d_return")) * 100, 4),
+        "historical_drawdown_risk_pct": round(f(edge.get("historical_drawdown_risk")) * 100, 4),
+        "memory_confidence_pct": round(f(edge.get("memory_confidence")) * 100, 4),
+        "decision_edge_pct": round(f(edge.get("decision_edge")) * 100, 4),
+        "structural_regime": snapshot["regime"]["structural_code"],
+        "market_regime_code": snapshot["regime"]["market_code"],
+        "action": action,
+        "confidence": confidence,
+        "executed_usdt": round(execution["executed_usdt"], 8),
+        "executed_btc": round(execution["executed_btc"], 12),
+        "cash_usdt": round(updated["cash_usdt"], 8),
+        "btc_amount": round(updated["btc_amount"], 12),
+        "btc_exposure_pct": round(updated["btc_exposure_pct"], 4),
+        "portfolio_value_usdt": round(updated["portfolio_value_usdt"], 8),
+        "reason": " | ".join(reasons),
+    }
     append_log(row)
     print(f"Paper trader action: {action}")
     print(f"Confidence: {confidence}")
-    print(f"CohesivX score: {score}")
-    print(f"Execution price: {execution_price} ({snapshot['price']['execution_price_source']})")
+    print(f"Memory edge: {row['decision_edge_pct']}%")
+    print(f"Expected 7d/30d: {row['expected_7d_return_pct']}% / {row['expected_30d_return_pct']}%")
     print(f"Executed USDT: {row['executed_usdt']}")
     print(f"Portfolio value: {row['portfolio_value_usdt']} USDT")
 
