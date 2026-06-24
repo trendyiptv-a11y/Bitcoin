@@ -5,364 +5,79 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>CohesivX Paper Trader</title>
   <style>
-    :root {
-      --bg: #07140f;
-      --panel: rgba(13, 38, 29, 0.92);
-      --panel2: rgba(18, 54, 41, 0.86);
-      --text: #ecfff6;
-      --muted: #a7c9ba;
-      --line: rgba(120, 255, 190, 0.18);
-      --accent: #6fffc0;
-      --warn: #ffd166;
-      --danger: #ff6b6b;
-      --ok: #7dff9f;
-      --shadow: 0 18px 60px rgba(0,0,0,.35);
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      color: var(--text);
-      background:
-        radial-gradient(circle at 18% 0%, rgba(111,255,192,.16), transparent 32%),
-        radial-gradient(circle at 88% 10%, rgba(88,166,255,.12), transparent 30%),
-        linear-gradient(180deg, #06120d 0%, #07140f 50%, #030806 100%);
-      min-height: 100vh;
-    }
-    .wrap { max-width: 1180px; margin: 0 auto; padding: 22px; }
-    header {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 16px;
-      margin: 8px 0 18px;
-    }
-    h1 { margin: 0; font-size: clamp(26px, 4vw, 42px); letter-spacing: -0.04em; }
-    .sub { color: var(--muted); max-width: 760px; line-height: 1.55; margin-top: 8px; }
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 9px 12px;
-      border: 1px solid var(--line);
-      background: rgba(111,255,192,.08);
-      border-radius: 999px;
-      color: var(--accent);
-      font-weight: 700;
-      white-space: nowrap;
-    }
-    .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 14px; }
-    .card {
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 22px;
-      box-shadow: var(--shadow);
-      padding: 18px;
-      overflow: hidden;
-    }
-    .span-3 { grid-column: span 3; }
-    .span-4 { grid-column: span 4; }
-    .span-5 { grid-column: span 5; }
-    .span-7 { grid-column: span 7; }
-    .span-12 { grid-column: span 12; }
-    .label { color: var(--muted); font-size: 13px; margin-bottom: 7px; }
-    .value { font-size: 28px; font-weight: 800; letter-spacing: -0.03em; }
-    .small { color: var(--muted); font-size: 13px; line-height: 1.5; }
-    .action {
-      font-size: clamp(24px, 4vw, 44px);
-      line-height: 1;
-      font-weight: 900;
-      letter-spacing: -0.05em;
-      margin: 6px 0 8px;
-    }
-    .pill {
-      display: inline-flex;
-      padding: 6px 10px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.07);
-      border: 1px solid var(--line);
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 700;
-      margin: 2px 4px 2px 0;
-    }
-    .pill.ok { color: var(--ok); border-color: rgba(125,255,159,.35); background: rgba(125,255,159,.08); }
-    .pill.warn { color: var(--warn); border-color: rgba(255,209,102,.35); background: rgba(255,209,102,.08); }
-    .pill.danger { color: var(--danger); border-color: rgba(255,107,107,.35); background: rgba(255,107,107,.08); }
-    .bar { height: 12px; background: rgba(255,255,255,.08); border-radius: 999px; overflow: hidden; margin-top: 10px; border: 1px solid var(--line); }
-    .bar > div { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), #9dff7d); border-radius: 999px; transition: width .4s ease; }
-    .reason-list { margin: 10px 0 0; padding-left: 18px; color: var(--muted); line-height: 1.5; }
-    .reason-list li { margin-bottom: 8px; }
-    table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    th, td { padding: 10px 8px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
-    th { color: var(--accent); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
-    td { color: var(--muted); }
-    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
-    .error { color: var(--warn); background: rgba(255,209,102,.08); border: 1px solid rgba(255,209,102,.25); padding: 12px; border-radius: 16px; }
-    .footer { margin: 18px 0 8px; color: var(--muted); font-size: 12px; line-height: 1.5; }
-    a { color: var(--accent); text-decoration: none; }
-    @media (max-width: 860px) {
-      header { flex-direction: column; }
-      .span-3, .span-4, .span-5, .span-7 { grid-column: span 12; }
-      .wrap { padding: 14px; }
-      .value { font-size: 24px; }
-      table { font-size: 12px; }
-      th, td { padding: 8px 6px; }
-    }
+    :root{--bg:#07140f;--panel:rgba(13,38,29,.92);--text:#ecfff6;--muted:#a7c9ba;--line:rgba(120,255,190,.18);--accent:#6fffc0;--warn:#ffd166;--danger:#ff6b6b;--ok:#7dff9f;--shadow:0 18px 60px rgba(0,0,0,.35)}
+    *{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--text);background:radial-gradient(circle at 18% 0%,rgba(111,255,192,.16),transparent 32%),radial-gradient(circle at 88% 10%,rgba(88,166,255,.12),transparent 30%),linear-gradient(180deg,#06120d 0%,#07140f 50%,#030806 100%);min-height:100vh}.wrap{max-width:1180px;margin:0 auto;padding:22px}header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin:8px 0 18px}h1{margin:0;font-size:clamp(26px,4vw,42px);letter-spacing:-.04em}.sub{color:var(--muted);max-width:760px;line-height:1.55;margin-top:8px}.badge{display:inline-flex;align-items:center;gap:8px;padding:9px 12px;border:1px solid var(--line);background:rgba(111,255,192,.08);border-radius:999px;color:var(--accent);font-weight:700;white-space:nowrap}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}.card{background:var(--panel);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:18px;overflow:hidden}.span-3{grid-column:span 3}.span-4{grid-column:span 4}.span-5{grid-column:span 5}.span-7{grid-column:span 7}.span-12{grid-column:span 12}.label{color:var(--muted);font-size:13px;margin-bottom:7px}.value{font-size:28px;font-weight:800;letter-spacing:-.03em}.small{color:var(--muted);font-size:13px;line-height:1.5}.action{font-size:clamp(24px,4vw,44px);line-height:1;font-weight:900;letter-spacing:-.05em;margin:6px 0 8px}.pill{display:inline-flex;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.07);border:1px solid var(--line);color:var(--muted);font-size:12px;font-weight:700;margin:2px 4px 2px 0}.pill.ok{color:var(--ok);border-color:rgba(125,255,159,.35);background:rgba(125,255,159,.08)}.pill.warn{color:var(--warn);border-color:rgba(255,209,102,.35);background:rgba(255,209,102,.08)}.pill.danger{color:var(--danger);border-color:rgba(255,107,107,.35);background:rgba(255,107,107,.08)}.bar{height:12px;background:rgba(255,255,255,.08);border-radius:999px;overflow:hidden;margin-top:10px;border:1px solid var(--line)}.bar>div{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),#9dff7d);border-radius:999px;transition:width .4s ease}.reason-list{margin:10px 0 0;padding-left:18px;color:var(--muted);line-height:1.5}.reason-list li{margin-bottom:8px}table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{color:var(--accent);font-size:12px;text-transform:uppercase;letter-spacing:.04em}td{color:var(--muted)}.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}.error{color:var(--warn);background:rgba(255,209,102,.08);border:1px solid rgba(255,209,102,.25);padding:12px;border-radius:16px}.footer{margin:18px 0 8px;color:var(--muted);font-size:12px;line-height:1.5}a{color:var(--accent);text-decoration:none}@media(max-width:860px){header{flex-direction:column}.span-3,.span-4,.span-5,.span-7{grid-column:span 12}.wrap{padding:14px}.value{font-size:24px}table{font-size:12px}th,td{padding:8px 6px}}
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <div>
-        <h1>CohesivX Paper Trader</h1>
-        <div class="sub">
-          Interfață pentru botul fictiv BTC. Nu folosește bani reali și nu trimite ordine către exchange.
-          Citește motorul CohesivX, portofoliul paper și jurnalul tranzacțiilor simulate.
-        </div>
-      </div>
-      <div class="badge">PAPER ONLY · 1000 USDT</div>
-    </header>
-
-    <div id="status" class="error" style="display:none"></div>
-
-    <section class="grid">
-      <div class="card span-7">
-        <div class="label">Ultima acțiune bot</div>
-        <div id="lastAction" class="action">—</div>
-        <div>
-          <span id="confidence" class="pill">confidence: —</span>
-          <span id="score" class="pill">score: —</span>
-          <span id="freshness" class="pill">state: —</span>
-        </div>
-        <ul id="reasons" class="reason-list"></ul>
-      </div>
-
-      <div class="card span-5">
-        <div class="label">Portofoliu fictiv</div>
-        <div class="grid" style="gap:10px">
-          <div style="grid-column:span 6">
-            <div class="label">Cash</div>
-            <div id="cash" class="value">—</div>
-          </div>
-          <div style="grid-column:span 6">
-            <div class="label">BTC</div>
-            <div id="btc" class="value">—</div>
-          </div>
-          <div style="grid-column:span 12">
-            <div class="label">Valoare totală</div>
-            <div id="portfolio" class="value">—</div>
-            <div class="bar"><div id="exposureBar"></div></div>
-            <div id="exposure" class="small">Expunere BTC: —</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="card span-3">
-        <div class="label">Preț BTC</div>
-        <div id="price" class="value">—</div>
-        <div id="stateDate" class="small">—</div>
-      </div>
-      <div class="card span-3">
-        <div class="label">Preț coeziv</div>
-        <div id="modelPrice" class="value">—</div>
-        <div id="deviation" class="small">Deviație: —</div>
-      </div>
-      <div class="card span-3">
-        <div class="label">Regim structural</div>
-        <div id="regime" class="value">—</div>
-        <div id="marketRegime" class="small">—</div>
-      </div>
-      <div class="card span-3">
-        <div class="label">Flux / Lichiditate</div>
-        <div id="flow" class="value">—</div>
-        <div id="liquidity" class="small">—</div>
-      </div>
-
-      <div class="card span-4">
-        <div class="label">Cost energetic</div>
-        <div id="production" class="value">—</div>
-        <div id="productionDetail" class="small">—</div>
-      </div>
-      <div class="card span-4">
-        <div class="label">Memorie istorică</div>
-        <div id="memory" class="value">—</div>
-        <div id="memoryDetail" class="small">—</div>
-      </div>
-      <div class="card span-4">
-        <div class="label">Vector IC</div>
-        <div id="icVector" class="value">—</div>
-        <div id="icDetail" class="small">—</div>
-      </div>
-
-      <div class="card span-12">
-        <div class="label">Jurnal tranzacții fictive</div>
-        <div style="overflow:auto">
-          <table>
-            <thead>
-              <tr>
-                <th>Data</th>
-                <th>Acțiune</th>
-                <th>Scor</th>
-                <th>Preț</th>
-                <th>USDT executat</th>
-                <th>BTC</th>
-                <th>Valoare portofoliu</th>
-                <th>Motiv</th>
-              </tr>
-            </thead>
-            <tbody id="logRows">
-              <tr><td colspan="8">Aștept prima rulare a botului.</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <div class="footer">
-      CohesivX Paper Trader este un simulator. Nu este recomandare financiară, nu folosește chei API și nu execută ordine reale.
+<div class="wrap">
+  <header>
+    <div>
+      <h1>CohesivX Paper Trader</h1>
+      <div class="sub">Interfață pentru botul fictiv BTC. Prețul de execuție este prețul live Binance, iar prețul coeziv rămâne reperul structural al motorului.</div>
     </div>
-  </div>
+    <div class="badge">PAPER ONLY · 1000 USDT</div>
+  </header>
+  <div id="status" class="error" style="display:none"></div>
 
-  <script>
-    const $ = (id) => document.getElementById(id);
-    const fmtUsd = (v) => Number.isFinite(Number(v)) ? new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 }).format(Number(v)) + ' USD' : '—';
-    const fmtUsdt = (v) => Number.isFinite(Number(v)) ? new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 }).format(Number(v)) + ' USDT' : '—';
-    const fmtBtc = (v) => Number.isFinite(Number(v)) ? Number(v).toFixed(8) + ' BTC' : '—';
-    const fmtPct = (v) => Number.isFinite(Number(v)) ? Number(v).toFixed(2) + '%' : '—';
+  <section class="grid">
+    <div class="card span-7">
+      <div class="label">Ultima acțiune bot</div><div id="lastAction" class="action">—</div>
+      <div><span id="confidence" class="pill">confidence: —</span><span id="score" class="pill">score: —</span><span id="freshness" class="pill">state: —</span></div>
+      <ul id="reasons" class="reason-list"></ul>
+    </div>
+    <div class="card span-5">
+      <div class="label">Portofoliu fictiv</div>
+      <div class="grid" style="gap:10px">
+        <div style="grid-column:span 6"><div class="label">Cash</div><div id="cash" class="value">—</div></div>
+        <div style="grid-column:span 6"><div class="label">BTC</div><div id="btc" class="value">—</div></div>
+        <div style="grid-column:span 12"><div class="label">Valoare totală</div><div id="portfolio" class="value">—</div><div class="bar"><div id="exposureBar"></div></div><div id="exposure" class="small">Expunere BTC: —</div></div>
+      </div>
+    </div>
 
-    async function fetchJson(path) {
-      const res = await fetch(path + '?t=' + Date.now(), { cache: 'no-store' });
-      if (!res.ok) throw new Error(path + ' not found yet');
-      return await res.json();
-    }
+    <div class="card span-3"><div class="label">Preț live / execuție</div><div id="price" class="value">—</div><div id="liveSource" class="small">—</div></div>
+    <div class="card span-3"><div class="label">Preț snapshot motor</div><div id="snapshotPrice" class="value">—</div><div id="stateDate" class="small">—</div></div>
+    <div class="card span-3"><div class="label">Preț coeziv</div><div id="modelPrice" class="value">—</div><div id="deviation" class="small">Deviație live: —</div></div>
+    <div class="card span-3"><div class="label">Regim structural</div><div id="regime" class="value">—</div><div id="marketRegime" class="small">—</div></div>
+    <div class="card span-4"><div class="label">Flux / Lichiditate</div><div id="flow" class="value">—</div><div id="liquidity" class="small">—</div></div>
+    <div class="card span-4"><div class="label">Cost energetic</div><div id="production" class="value">—</div><div id="productionDetail" class="small">—</div></div>
+    <div class="card span-4"><div class="label">Memorie / IC</div><div id="memory" class="value">—</div><div id="memoryDetail" class="small">—</div><div id="icDetail" class="small">—</div></div>
 
-    async function fetchText(path) {
-      const res = await fetch(path + '?t=' + Date.now(), { cache: 'no-store' });
-      if (!res.ok) return '';
-      return await res.text();
-    }
+    <div class="card span-12">
+      <div class="label">Jurnal tranzacții fictive</div>
+      <div style="overflow:auto"><table><thead><tr><th>Data</th><th>Acțiune</th><th>Scor</th><th>Preț execuție</th><th>USDT executat</th><th>BTC</th><th>Valoare</th><th>Motiv</th></tr></thead><tbody id="logRows"><tr><td colspan="8">Aștept prima rulare a botului.</td></tr></tbody></table></div>
+    </div>
+  </section>
+  <div class="footer">Simulator paper. Nu este recomandare financiară, nu folosește chei API și nu execută ordine reale.</div>
+</div>
 
-    function parseCsvLine(line) {
-      const out = [];
-      let cur = '';
-      let quoted = false;
-      for (let i = 0; i < line.length; i++) {
-        const ch = line[i];
-        const next = line[i + 1];
-        if (ch === '"' && quoted && next === '"') { cur += '"'; i++; continue; }
-        if (ch === '"') { quoted = !quoted; continue; }
-        if (ch === ',' && !quoted) { out.push(cur); cur = ''; continue; }
-        cur += ch;
-      }
-      out.push(cur);
-      return out;
-    }
-
-    function parseCsv(csv) {
-      const lines = csv.trim().split(/\r?\n/).filter(Boolean);
-      if (lines.length < 2) return [];
-      const header = parseCsvLine(lines[0]);
-      return lines.slice(1).map(line => {
-        const values = parseCsvLine(line);
-        return Object.fromEntries(header.map((h, i) => [h, values[i] || '']));
-      });
-    }
-
-    function setStatus(msg) {
-      const el = $('status');
-      if (!msg) { el.style.display = 'none'; el.textContent = ''; return; }
-      el.style.display = 'block';
-      el.textContent = msg;
-    }
-
-    function renderState(state, paper) {
-      const snap = paper.decision_snapshot || {};
-      const price = snap.price || {};
-      const production = snap.production || {};
-      const regime = snap.regime || {};
-      const flow = snap.flow || {};
-      const liquidity = snap.liquidity || {};
-      const memory = snap.historical_memory || {};
-      const ic = snap.ic_vector || {};
-      const port = snap.paper_portfolio || {};
-
-      $('lastAction').textContent = paper.last_action || 'INIT';
-      $('confidence').textContent = 'confidence: ' + (paper.last_confidence || '—');
-      $('score').textContent = 'score: ' + (paper.last_cohesivx_score ?? '—');
-      $('freshness').textContent = snap.is_fresh_for_today === false ? 'state: vechi' : 'state: curent';
-      $('freshness').className = 'pill ' + (snap.is_fresh_for_today === false ? 'danger' : 'ok');
-
-      const reasons = paper.last_reason || ['Aștept prima rulare a botului.'];
-      $('reasons').innerHTML = reasons.map(r => '<li>' + String(r).replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c])) + '</li>').join('');
-
-      $('cash').textContent = fmtUsdt(paper.cash_usdt ?? 1000);
-      $('btc').textContent = fmtBtc(paper.btc_amount ?? 0);
-      $('portfolio').textContent = fmtUsdt(paper.portfolio_value_usdt ?? 1000);
-      const exp = Number(paper.btc_exposure_pct ?? port.btc_exposure_pct ?? 0);
-      $('exposure').textContent = 'Expunere BTC: ' + fmtPct(exp) + ' · limită 40%';
-      $('exposureBar').style.width = Math.max(0, Math.min(100, exp / 40 * 100)) + '%';
-
-      $('price').textContent = fmtUsd(price.spot_usd ?? state.price_usd);
-      $('stateDate').textContent = 'State date: ' + (snap.state_date || (state.timestamp || '').slice(0,10) || '—');
-      $('modelPrice').textContent = fmtUsd(price.cohesive_fair_price_usd ?? state.model_price_usd);
-      $('deviation').textContent = 'Deviație coezivă: ' + fmtPct(price.cohesive_deviation_pct ?? ((state.model_price_deviation || 0) * 100));
-      $('regime').textContent = regime.structural_code || state.model_price_context?.regime || '—';
-      $('marketRegime').textContent = regime.market_code || state.market_regime?.code || '—';
-      $('flow').textContent = (flow.bias || state.flow_bias || '—') + ' / ' + (flow.strength || state.flow_strength || '—');
-      $('liquidity').textContent = 'Lichiditate: ' + (liquidity.regime || state.liquidity_regime || '—') + ' / ' + (liquidity.strength || state.liquidity_strength || '—');
-      $('production').textContent = fmtUsd(production.average_usd || state.production_costs_usd?.average);
-      $('productionDetail').textContent = 'cheap ' + fmtUsd(production.cheap_usd || state.production_costs_usd?.cheap) + ' · expensive ' + fmtUsd(production.expensive_usd || state.production_costs_usd?.expensive) + ' · deviație ' + fmtPct((production.deviation_from_production ?? state.deviation_from_production ?? 0) * 100);
-      $('memory').textContent = (memory.similar_context_samples ?? state.model_price_components?.similar_context_samples ?? '—') + ' contexte';
-      $('memoryDetail').textContent = 'same-regime ' + (memory.same_regime_samples ?? state.model_price_components?.same_regime_samples ?? '—') + ' · distanță ' + Number(memory.similar_context_distance_median ?? state.model_price_components?.similar_context_distance_median ?? 0).toFixed(3);
-      $('icVector').textContent = 'IC ' + Number(ic.ic_struct ?? state.model_price_context?.ic_struct ?? 0).toFixed(1);
-      $('icDetail').textContent = 'dir ' + Number(ic.ic_dir ?? state.model_price_context?.ic_dir ?? 0).toFixed(1) + ' · flux ' + Number(ic.ic_flux ?? state.model_price_context?.ic_flux ?? 0).toFixed(1) + ' · cycle ' + Number(ic.ic_cycle ?? state.model_price_context?.ic_cycle ?? 0).toFixed(1);
-    }
-
-    function renderLog(rows) {
-      const body = $('logRows');
-      if (!rows.length) {
-        body.innerHTML = '<tr><td colspan="8">Aștept prima rulare a botului.</td></tr>';
-        return;
-      }
-      body.innerHTML = rows.slice(-20).reverse().map(r => `
-        <tr>
-          <td class="mono">${r.run_at || '—'}</td>
-          <td><b>${r.action || '—'}</b><br><span class="small">${r.confidence || ''}</span></td>
-          <td>${r.cohesivx_score || '—'}</td>
-          <td>${fmtUsd(r.price_usd)}</td>
-          <td>${fmtUsdt(r.executed_usdt)}</td>
-          <td>${fmtBtc(r.btc_amount)}</td>
-          <td>${fmtUsdt(r.portfolio_value_usdt)}</td>
-          <td class="small">${String(r.reason || '').slice(0, 240)}</td>
-        </tr>`).join('');
-    }
-
-    async function init() {
-      try {
-        const state = await fetchJson('coeziv_state.json');
-        let paper = null;
-        try { paper = await fetchJson('paper_trading_state.json'); }
-        catch (err) {
-          paper = {
-            last_action: 'WAITING_FIRST_RUN',
-            last_confidence: 'none',
-            cash_usdt: 1000,
-            btc_amount: 0,
-            portfolio_value_usdt: 1000,
-            last_reason: ['Botul este instalat, dar așteaptă prima rulare pentru a crea portofoliul fictiv.']
-          };
-          setStatus('Botul este instalat. paper_trading_state.json va apărea după prima rulare a workflow-ului CohesivX Paper Trader.');
-        }
-        renderState(state, paper);
-        const csv = await fetchText('paper_trading_log.csv');
-        renderLog(parseCsv(csv));
-      } catch (err) {
-        setStatus('Nu pot încărca datele: ' + err.message);
-      }
-    }
-
-    init();
-  </script>
+<script>
+const $=id=>document.getElementById(id);
+const fmtUsd=v=>Number.isFinite(Number(v))?new Intl.NumberFormat('en-US',{maximumFractionDigits:2}).format(Number(v))+' USD':'—';
+const fmtUsdt=v=>Number.isFinite(Number(v))?new Intl.NumberFormat('en-US',{maximumFractionDigits:2}).format(Number(v))+' USDT':'—';
+const fmtBtc=v=>Number.isFinite(Number(v))?Number(v).toFixed(8)+' BTC':'—';
+const fmtPct=v=>Number.isFinite(Number(v))?Number(v).toFixed(2)+'%':'—';
+async function fetchJson(path){const r=await fetch(path+'?t='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error(path+' not found yet');return r.json();}
+async function fetchText(path){const r=await fetch(path+'?t='+Date.now(),{cache:'no-store'});return r.ok?await r.text():'';}
+async function fetchLivePrice(){try{const r=await fetch('https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT',{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);const d=await r.json();const p=Number(d.price);return Number.isFinite(p)&&p>0?p:null;}catch(e){return null;}}
+function parseCsvLine(line){const out=[];let cur='',q=false;for(let i=0;i<line.length;i++){const ch=line[i],nx=line[i+1];if(ch==='"'&&q&&nx==='"'){cur+='"';i++;continue}if(ch==='"'){q=!q;continue}if(ch===','&&!q){out.push(cur);cur='';continue}cur+=ch}out.push(cur);return out}
+function parseCsv(csv){const lines=csv.trim().split(/\r?\n/).filter(Boolean);if(lines.length<2)return[];const h=parseCsvLine(lines[0]);return lines.slice(1).map(l=>Object.fromEntries(h.map((x,i)=>[x,parseCsvLine(l)[i]||''])))}
+function setStatus(msg){const el=$('status');if(!msg){el.style.display='none';el.textContent='';return}el.style.display='block';el.textContent=msg}
+function safe(s){return String(s).replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]))}
+function renderState(state,paper,livePrice){const snap=paper.decision_snapshot||{};const sp=snap.price||{};const production=snap.production||{};const regime=snap.regime||{};const flow=snap.flow||{};const liquidity=snap.liquidity||{};const memory=snap.historical_memory||{};const ic=snap.ic_vector||{};const port=snap.paper_portfolio||{};
+ const model=Number(sp.cohesive_fair_price_usd??state.model_price_usd);const snapshot=Number(sp.snapshot_price_usd??state.price_usd);const exec=Number(livePrice??sp.execution_price_usd??sp.live_price_usd??state.price_usd);const dev=model>0&&exec>0?((exec-model)/model*100):Number(sp.cohesive_deviation_pct??((state.model_price_deviation||0)*100));
+ $('lastAction').textContent=paper.last_action||'INIT';$('confidence').textContent='confidence: '+(paper.last_confidence||'—');$('score').textContent='score: '+(paper.last_cohesivx_score??'—');$('freshness').textContent=snap.is_fresh_for_today===false?'state: vechi':'state: curent';$('freshness').className='pill '+(snap.is_fresh_for_today===false?'danger':'ok');
+ $('reasons').innerHTML=(paper.last_reason||['Aștept prima rulare a botului.']).map(r=>'<li>'+safe(r)+'</li>').join('');
+ $('cash').textContent=fmtUsdt(paper.cash_usdt??1000);$('btc').textContent=fmtBtc(paper.btc_amount??0);
+ const btc=Number(paper.btc_amount??0), cash=Number(paper.cash_usdt??1000);const portfolio=paper.portfolio_value_usdt??(cash+btc*exec);$('portfolio').textContent=fmtUsdt(portfolio);
+ const exp=Number(paper.btc_exposure_pct??port.btc_exposure_pct??(portfolio>0?btc*exec/portfolio*100:0));$('exposure').textContent='Expunere BTC: '+fmtPct(exp)+' · limită 40%';$('exposureBar').style.width=Math.max(0,Math.min(100,exp/40*100))+'%';
+ $('price').textContent=fmtUsd(exec);$('liveSource').textContent=livePrice?'Binance live · folosit pentru execuție fictivă':(sp.execution_price_source||'fallback snapshot');$('snapshotPrice').textContent=fmtUsd(snapshot);$('stateDate').textContent='State date: '+(snap.state_date||(state.timestamp||'').slice(0,10)||'—');$('modelPrice').textContent=fmtUsd(model);$('deviation').textContent='Deviație live față de coeziv: '+fmtPct(dev);
+ $('regime').textContent=regime.structural_code||state.model_price_context?.regime||'—';$('marketRegime').textContent=regime.market_code||state.market_regime?.code||'—';$('flow').textContent=(flow.bias||state.flow_bias||'—')+' / '+(flow.strength||state.flow_strength||'—');$('liquidity').textContent='Lichiditate: '+(liquidity.regime||state.liquidity_regime||'—')+' / '+(liquidity.strength||state.liquidity_strength||'—');
+ $('production').textContent=fmtUsd(production.average_usd||state.production_costs_usd?.average);const prodAvg=Number(production.average_usd||state.production_costs_usd?.average);const prodDev=prodAvg>0&&exec>0?((exec-prodAvg)/prodAvg*100):Number((production.deviation_from_production??state.deviation_from_production??0)*100);$('productionDetail').textContent='cheap '+fmtUsd(production.cheap_usd||state.production_costs_usd?.cheap)+' · expensive '+fmtUsd(production.expensive_usd||state.production_costs_usd?.expensive)+' · deviație live '+fmtPct(prodDev);
+ $('memory').textContent=(memory.similar_context_samples??state.model_price_components?.similar_context_samples??'—')+' contexte';$('memoryDetail').textContent='same-regime '+(memory.same_regime_samples??state.model_price_components?.same_regime_samples??'—')+' · distanță '+Number(memory.similar_context_distance_median??state.model_price_components?.similar_context_distance_median??0).toFixed(3);$('icDetail').textContent='IC struct '+Number(ic.ic_struct??state.model_price_context?.ic_struct??0).toFixed(1)+' · dir '+Number(ic.ic_dir??state.model_price_context?.ic_dir??0).toFixed(1)+' · flux '+Number(ic.ic_flux??state.model_price_context?.ic_flux??0).toFixed(1)+' · cycle '+Number(ic.ic_cycle??state.model_price_context?.ic_cycle??0).toFixed(1)}
+function renderLog(rows){const b=$('logRows');if(!rows.length){b.innerHTML='<tr><td colspan="8">Aștept prima rulare a botului.</td></tr>';return}b.innerHTML=rows.slice(-20).reverse().map(r=>`<tr><td class="mono">${r.run_at||'—'}</td><td><b>${r.action||'—'}</b><br><span class="small">${r.confidence||''}</span></td><td>${r.cohesivx_score||'—'}</td><td>${fmtUsd(r.execution_price_usd||r.price_usd)}</td><td>${fmtUsdt(r.executed_usdt)}</td><td>${fmtBtc(r.btc_amount)}</td><td>${fmtUsdt(r.portfolio_value_usdt)}</td><td class="small">${safe(r.reason||'').slice(0,240)}</td></tr>`).join('')}
+async function init(){try{const state=await fetchJson('coeziv_state.json');const live=await fetchLivePrice();let paper;try{paper=await fetchJson('paper_trading_state.json')}catch(e){paper={last_action:'WAITING_FIRST_RUN',last_confidence:'none',cash_usdt:1000,btc_amount:0,portfolio_value_usdt:1000,last_reason:['Botul este instalat, dar așteaptă prima rulare pentru a crea portofoliul fictiv.']};setStatus('Botul este instalat. paper_trading_state.json va apărea după prima rulare a workflow-ului CohesivX Paper Trader.')}renderState(state,paper,live);renderLog(parseCsv(await fetchText('paper_trading_log.csv')))}catch(e){setStatus('Nu pot încărca datele: '+e.message)}}
+init();setInterval(init,60000);
+</script>
 </body>
 </html>
