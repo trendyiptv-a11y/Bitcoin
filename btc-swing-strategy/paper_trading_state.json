@@ -1,0 +1,222 @@
+{
+  "mode": "paper",
+  "starting_balance_usdt": 1000.0,
+  "cash_usdt": 900.0,
+  "btc_amount": 0.001677734119,
+  "portfolio_value_usdt": 1000.0,
+  "last_action": "ACCUMULATE_SMALL",
+  "last_confidence": "memory_moderate",
+  "last_reason": [
+    "Memory edge: 18.56%.",
+    "Expected 7d/30d: 8.10% / 23.13%.",
+    "Historical drawdown risk to weighted p10: 25.90%.",
+    "Memory confidence: 70.3%.",
+    "Weighted memory p50: 73392.61 USD vs execution price 59604.20 USD.",
+    "Live source: kraken.",
+    "Structural regime: bear_late; market regime: range_bias_up_dev_extreme.",
+    "Flow: neutru/slab; liquidity: ridicată/puternică."
+  ],
+  "last_run_at": "2026-06-24T17:27:36.795799+00:00",
+  "not_trading_advice": true,
+  "btc_exposure_pct": 10.0,
+  "last_execution_price_usd": 59604.2,
+  "last_execution_price_source": "kraken",
+  "last_snapshot_price_usd": 62600.0,
+  "last_model_price_usd": 68992.1421696913,
+  "last_deviation_pct": -13.6073,
+  "last_live_price_status": {
+    "checked_at": "2026-06-24T17:27:36.637263+00:00",
+    "selected_source": "kraken",
+    "selected_price": 59604.2,
+    "sources": {
+      "binance": {
+        "ok": false,
+        "error_type": "HTTPError",
+        "error": "HTTP Error 451: "
+      },
+      "coinbase": {
+        "ok": true,
+        "price": 59580.165
+      },
+      "kraken": {
+        "ok": true,
+        "price": 59604.2
+      }
+    },
+    "median_price": 59604.2,
+    "dispersion_pct": 0.04032433955995755
+  },
+  "last_memory_decision": {
+    "available": true,
+    "weighted_price_p10": 44167.97859300801,
+    "weighted_price_p50": 73392.60839767121,
+    "weighted_price_p90": 219907.06965671008,
+    "expected_7d_return": 0.08096649127385193,
+    "expected_30d_return": 0.2313328322110055,
+    "historical_drawdown_risk": 0.25897875329241876,
+    "upside_to_p90": 2.6894559386202666,
+    "memory_confidence": 0.7027629098297723,
+    "sample_confidence": 1.0,
+    "same_regime_confidence": 0.444,
+    "distance_confidence": 0.5902348414188268,
+    "confirmation_confidence": 0.5820209973753281,
+    "regime_adjustment": 0.1,
+    "decision_edge": 0.18559404325921688,
+    "memory_action": "ACCUMULATE_SMALL",
+    "position_fraction": 0.1,
+    "confidence_label": "memory_moderate",
+    "method": "memory_weighted_distribution_v0.3"
+  },
+  "decision_snapshot": {
+    "state_date": "2026-06-24",
+    "run_date_utc": "2026-06-24",
+    "is_fresh_for_today": true,
+    "live_price_status": {
+      "checked_at": "2026-06-24T17:27:36.637263+00:00",
+      "selected_source": "kraken",
+      "selected_price": 59604.2,
+      "sources": {
+        "binance": {
+          "ok": false,
+          "error_type": "HTTPError",
+          "error": "HTTP Error 451: "
+        },
+        "coinbase": {
+          "ok": true,
+          "price": 59580.165
+        },
+        "kraken": {
+          "ok": true,
+          "price": 59604.2
+        }
+      },
+      "median_price": 59604.2,
+      "dispersion_pct": 0.04032433955995755
+    },
+    "price": {
+      "execution_price_usd": 59604.2,
+      "execution_price_source": "kraken",
+      "snapshot_price_usd": 62600.0,
+      "live_price_usd": 59604.2,
+      "cohesive_fair_price_usd": 68992.1421696913,
+      "cohesive_deviation": -0.1360726290626107,
+      "cohesive_deviation_pct": -13.60726290626107,
+      "snapshot_model_deviation": -0.09265029275318562
+    },
+    "production": {
+      "cheap_usd": 28617.737263662602,
+      "average_usd": 52465.85165004811,
+      "expensive_usd": 83468.40035234929,
+      "deviation_from_production": 0.13605703758637716,
+      "snapshot_deviation_from_production": 0.1931570351234848
+    },
+    "bands": {
+      "p10": 44107.59614854104,
+      "p50": 68992.1421696913,
+      "p90": 216379.6981714068
+    },
+    "flow": {
+      "score": -0.0008874658221908884,
+      "bias": "neutru",
+      "strength": "slab"
+    },
+    "liquidity": {
+      "score": 0.01037468028443305,
+      "regime": "ridicată",
+      "strength": "puternică"
+    },
+    "regime": {
+      "market_label": "Range cu bias pozitiv cu deviație extremă față de model",
+      "market_code": "range_bias_up_dev_extreme",
+      "structural_code": "bear_late",
+      "signal": "flat"
+    },
+    "ic_vector": {
+      "ic_struct": 61.924239729681666,
+      "ic_dir": 17.303019784796945,
+      "ic_flux": 76.1567679558011,
+      "ic_cycle": 50.0,
+      "vol30_index": 23.843232044198896
+    },
+    "historical_memory": {
+      "aligned_points": 1405,
+      "similar_context_samples": 250,
+      "similar_context_distance_median": 0.32781212686493866,
+      "similar_price_p10": 44107.59614854104,
+      "similar_price_p50": 68992.1421696913,
+      "similar_price_p90": 216379.6981714068,
+      "similar_multiplier_p50": 1.3149913705751888,
+      "same_regime_samples": 111,
+      "same_regime_price_p10": 44258.55225970847,
+      "same_regime_price_p50": 79993.30773964107,
+      "same_regime_price_p90": 225198.12688466493,
+      "same_regime_spot_deviation": -0.21743453585207514
+    },
+    "structural_confirmation": {
+      "combined_rate": 0.5820209973753281,
+      "raw": {
+        "source": "comparative_backtest_summary.json",
+        "model": "cohesive_mechanism",
+        "threshold": 0.1,
+        "threshold_label": "deviații ample față de reperul coeziv",
+        "horizon_7d": {
+          "directional_hit_rate": 0.5774278215223098,
+          "events": 762,
+          "below_model_events": 571,
+          "above_model_events": 191
+        },
+        "horizon_30d": {
+          "directional_hit_rate": 0.5866141732283464,
+          "events": 762,
+          "below_model_events": 571,
+          "above_model_events": 191
+        },
+        "similar_context_samples": 250,
+        "regime": "bear_late",
+        "current_deviation": -0.09265029275318562,
+        "label": "Semnal structural, nu intraday",
+        "generated_at": "2026-06-24T04:45:12.247436+00:00"
+      }
+    },
+    "paper_portfolio": {
+      "cash_usdt": 1000.0,
+      "btc_amount": 0.0,
+      "portfolio_value_usdt": 1000.0,
+      "btc_exposure": 0.0,
+      "btc_exposure_pct": 0.0
+    },
+    "memory_weighted_decision": {
+      "available": true,
+      "weighted_price_p10": 44167.97859300801,
+      "weighted_price_p50": 73392.60839767121,
+      "weighted_price_p90": 219907.06965671008,
+      "expected_7d_return": 0.08096649127385193,
+      "expected_30d_return": 0.2313328322110055,
+      "historical_drawdown_risk": 0.25897875329241876,
+      "upside_to_p90": 2.6894559386202666,
+      "memory_confidence": 0.7027629098297723,
+      "sample_confidence": 1.0,
+      "same_regime_confidence": 0.444,
+      "distance_confidence": 0.5902348414188268,
+      "confirmation_confidence": 0.5820209973753281,
+      "regime_adjustment": 0.1,
+      "decision_edge": 0.18559404325921688,
+      "memory_action": "ACCUMULATE_SMALL",
+      "position_fraction": 0.1,
+      "confidence_label": "memory_moderate",
+      "method": "memory_weighted_distribution_v0.3"
+    }
+  },
+  "rules": {
+    "logic": "CohesivX memory-weighted paper trading v0.3. Historical memory distribution drives decision; fixed thresholds are safety rails only. Live price is mandatory for any paper execution.",
+    "live_price_sources": [
+      "binance",
+      "coinbase",
+      "kraken"
+    ],
+    "max_entry_fraction": 0.1,
+    "max_btc_exposure_fraction": 0.4,
+    "min_entry_fraction": 0.025,
+    "requires_live_price_for_execution": true
+  }
+}
