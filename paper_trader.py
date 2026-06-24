@@ -191,7 +191,6 @@ def estimate_memory_edge(s: dict[str, Any]) -> dict[str, Any]:
     similar_samples = mem["similar_context_samples"]
     same_samples = mem["same_regime_samples"]
     distance = mem["similar_context_distance_median"]
-
     similar_p10 = mem["similar_price_p10"]
     similar_p50 = mem["similar_price_p50"]
     similar_p90 = mem["similar_price_p90"]
@@ -206,95 +205,56 @@ def estimate_memory_edge(s: dict[str, Any]) -> dict[str, Any]:
     same_regime_conf = clamp(same_samples / max(similar_samples, 1), 0.0, 1.0)
     distance_conf = clamp(1.0 - max(distance, 0.0) / 0.80, 0.0, 1.0) if distance else 0.50
     confirmation_conf = clamp(confirmation, 0.35, 0.75)
-
-    context_confidence = clamp(
-        0.35 * sample_conf + 0.20 * same_regime_conf + 0.25 * distance_conf + 0.20 * confirmation_conf,
-        0.0,
-        1.0,
-    )
+    context_confidence = clamp(0.35 * sample_conf + 0.20 * same_regime_conf + 0.25 * distance_conf + 0.20 * confirmation_conf, 0.0, 1.0)
 
     weighted_p10 = 0.60 * similar_p10 + 0.40 * same_p10
     weighted_p50 = 0.60 * similar_p50 + 0.40 * same_p50
     weighted_p90 = 0.60 * similar_p90 + 0.40 * same_p90
-
     expected_30d = (weighted_p50 - p) / p
     expected_7d = expected_30d * 0.35
     downside_to_p10 = min(0.0, (weighted_p10 - p) / p)
     upside_to_p90 = max(0.0, (weighted_p90 - p) / p)
 
     regime_adjust = 0.0
-    if regime == "bear_late":
-        regime_adjust += 0.06
-    elif regime in {"range", "neutral"}:
-        regime_adjust += 0.02
-    elif regime.startswith("bull"):
-        regime_adjust += 0.03
-    elif regime.startswith("bear"):
-        regime_adjust -= 0.04
-
-    if "dev_extreme" in market_code:
-        regime_adjust -= 0.03
-    if flow_bias in {"neutru", "neutral"} and flow_strength in {"slab", "weak"}:
-        regime_adjust += 0.02
-    elif "neg" in flow_bias or "bear" in flow_bias:
-        regime_adjust -= 0.04
-    if "ridic" in liq_regime or "putern" in liq_strength or "strong" in liq_strength:
-        regime_adjust += 0.02
-    if ic["ic_struct"] >= 55 and ic["ic_flux"] >= 50:
-        regime_adjust += 0.03
+    if regime == "bear_late": regime_adjust += 0.06
+    elif regime in {"range", "neutral"}: regime_adjust += 0.02
+    elif regime.startswith("bull"): regime_adjust += 0.03
+    elif regime.startswith("bear"): regime_adjust -= 0.04
+    if "dev_extreme" in market_code: regime_adjust -= 0.03
+    if flow_bias in {"neutru", "neutral"} and flow_strength in {"slab", "weak"}: regime_adjust += 0.02
+    elif "neg" in flow_bias or "bear" in flow_bias: regime_adjust -= 0.04
+    if "ridic" in liq_regime or "putern" in liq_strength or "strong" in liq_strength: regime_adjust += 0.02
+    if ic["ic_struct"] >= 55 and ic["ic_flux"] >= 50: regime_adjust += 0.03
 
     raw_edge = context_confidence * expected_30d - (1 - context_confidence) * abs(downside_to_p10)
     decision_edge = raw_edge + regime_adjust
     drawdown_risk = abs(downside_to_p10)
 
     if decision_edge > 0.18 and context_confidence >= 0.58 and drawdown_risk < 0.28:
-        memory_action = "ACCUMULATE_SMALL"
-        fraction = MAX_ENTRY_FRACTION
-        confidence_label = "memory_moderate"
+        action, fraction, confidence_label = "ACCUMULATE_SMALL", MAX_ENTRY_FRACTION, "memory_moderate"
     elif decision_edge > 0.07 and context_confidence >= 0.45 and drawdown_risk < 0.38:
-        memory_action = "OBSERVE_ACCUMULATE_SMALL"
-        fraction = 0.05
-        confidence_label = "memory_moderate_low"
+        action, fraction, confidence_label = "OBSERVE_ACCUMULATE_SMALL", 0.05, "memory_moderate_low"
     elif expected_30d < -0.08 or decision_edge < -0.06:
-        memory_action = "REDUCE_RISK"
-        fraction = 0.10
-        confidence_label = "memory_defensive"
+        action, fraction, confidence_label = "REDUCE_RISK", 0.10, "memory_defensive"
     else:
-        memory_action = "OBSERVE"
-        fraction = 0.0
-        confidence_label = "memory_low"
+        action, fraction, confidence_label = "OBSERVE", 0.0, "memory_low"
 
     if fraction > 0 and context_confidence < 0.50:
         fraction = min(fraction, MIN_ENTRY_FRACTION)
 
-    return {
-        "available": True,
-        "weighted_price_p10": weighted_p10,
-        "weighted_price_p50": weighted_p50,
-        "weighted_price_p90": weighted_p90,
-        "expected_7d_return": expected_7d,
-        "expected_30d_return": expected_30d,
-        "historical_drawdown_risk": drawdown_risk,
-        "upside_to_p90": upside_to_p90,
-        "memory_confidence": context_confidence,
-        "sample_confidence": sample_conf,
-        "same_regime_confidence": same_regime_conf,
-        "distance_confidence": distance_conf,
-        "confirmation_confidence": confirmation_conf,
-        "regime_adjustment": regime_adjust,
-        "decision_edge": decision_edge,
-        "memory_action": memory_action,
-        "position_fraction": fraction,
-        "confidence_label": confidence_label,
-        "method": "memory_weighted_distribution_v0.3",
-    }
+    return {"available": True, "weighted_price_p10": weighted_p10, "weighted_price_p50": weighted_p50, "weighted_price_p90": weighted_p90, "expected_7d_return": expected_7d, "expected_30d_return": expected_30d, "historical_drawdown_risk": drawdown_risk, "upside_to_p90": upside_to_p90, "memory_confidence": context_confidence, "sample_confidence": sample_conf, "same_regime_confidence": same_regime_conf, "distance_confidence": distance_conf, "confirmation_confidence": confirmation_conf, "regime_adjustment": regime_adjust, "decision_edge": decision_edge, "memory_action": action, "position_fraction": fraction, "confidence_label": confidence_label, "method": "memory_weighted_distribution_v0.3"}
 
 
 def decide(state: dict[str, Any], paper: dict[str, Any], live_price: float | None, live_source: str) -> tuple[str, str, list[str], float, dict[str, Any], dict[str, Any]]:
     s = hydrate(state, paper, live_price, live_source)
     if not s["is_fresh_for_today"]:
         edge = {"available": False, "memory_action": "OBSERVE_STALE_DATA", "position_fraction": 0.0, "decision_edge": 0.0, "reason": "stale state"}
-        return "OBSERVE_STALE_DATA", "none", [f"State date {s['state_date']} is not UTC today {s['run_date_utc']}."], 0.0, s, edge
+        return "OBSERVE_STALE_DATA", "none", [f"State date {s['state_date']} is not UTC today {s['run_date_utc']}.", "No paper execution is allowed on stale data."], 0.0, s, edge
+    if not live_price:
+        edge = estimate_memory_edge(s)
+        edge["execution_blocked"] = True
+        edge["execution_block_reason"] = live_source
+        return "OBSERVE_LIVE_PRICE_UNAVAILABLE", "none", ["Live execution price is unavailable in the runner.", f"Source status: {live_source}.", "Professional safety rule: no paper buy/sell is executed using snapshot fallback."], 0.0, s, edge
 
     edge = estimate_memory_edge(s)
     price_ok = s["price"]["execution_price_usd"] > 0 and s["price"]["cohesive_fair_price_usd"] > 0
@@ -304,7 +264,6 @@ def decide(state: dict[str, Any], paper: dict[str, Any], live_price: float | Non
     exposure = s["paper_portfolio"]["btc_exposure"]
     cash = s["paper_portfolio"]["cash_usdt"]
     btc = s["paper_portfolio"]["btc_amount"]
-
     action = str(edge["memory_action"])
     fraction = float(edge["position_fraction"])
     confidence = str(edge["confidence_label"])
@@ -317,15 +276,7 @@ def decide(state: dict[str, Any], paper: dict[str, Any], live_price: float | Non
     elif action == "REDUCE_RISK" and btc <= 0:
         action, fraction = "OBSERVE", 0.0
 
-    reasons = [
-        f"Memory edge: {edge['decision_edge'] * 100:.2f}%.",
-        f"Expected 7d/30d: {edge['expected_7d_return'] * 100:.2f}% / {edge['expected_30d_return'] * 100:.2f}%.",
-        f"Historical drawdown risk to weighted p10: {edge['historical_drawdown_risk'] * 100:.2f}%.",
-        f"Memory confidence: {edge['memory_confidence'] * 100:.1f}%.",
-        f"Weighted memory p50: {edge['weighted_price_p50']:.2f} USD vs execution price {s['price']['execution_price_usd']:.2f} USD.",
-        f"Structural regime: {s['regime']['structural_code']}; market regime: {s['regime']['market_code']}.",
-        f"Flow: {s['flow']['bias']}/{s['flow']['strength']}; liquidity: {s['liquidity']['regime']}/{s['liquidity']['strength']}.",
-    ]
+    reasons = [f"Memory edge: {edge['decision_edge'] * 100:.2f}%.", f"Expected 7d/30d: {edge['expected_7d_return'] * 100:.2f}% / {edge['expected_30d_return'] * 100:.2f}%.", f"Historical drawdown risk to weighted p10: {edge['historical_drawdown_risk'] * 100:.2f}%.", f"Memory confidence: {edge['memory_confidence'] * 100:.1f}%.", f"Weighted memory p50: {edge['weighted_price_p50']:.2f} USD vs execution price {s['price']['execution_price_usd']:.2f} USD.", f"Structural regime: {s['regime']['structural_code']}; market regime: {s['regime']['market_code']}.", f"Flow: {s['flow']['bias']}/{s['flow']['strength']}; liquidity: {s['liquidity']['regime']}/{s['liquidity']['strength']}."]
     return action, confidence, reasons, fraction, s, edge
 
 
@@ -379,72 +330,11 @@ def main() -> None:
     after = execution["portfolio_value_after"]
     exposure = execution["btc_amount"] * price / after if after > 0 and price > 0 else 0.0
 
-    updated = {
-        **paper,
-        "mode": "paper",
-        "cash_usdt": round(execution["cash_usdt"], 8),
-        "btc_amount": round(execution["btc_amount"], 12),
-        "portfolio_value_usdt": round(after, 8),
-        "btc_exposure_pct": round(exposure * 100, 4),
-        "last_action": action,
-        "last_confidence": confidence,
-        "last_reason": reasons,
-        "last_run_at": run_at,
-        "last_execution_price_usd": price,
-        "last_execution_price_source": snapshot["price"]["execution_price_source"],
-        "last_snapshot_price_usd": snapshot["price"]["snapshot_price_usd"],
-        "last_model_price_usd": snapshot["price"]["cohesive_fair_price_usd"],
-        "last_deviation_pct": round(snapshot["price"]["cohesive_deviation_pct"], 4),
-        "last_memory_decision": edge,
-        "decision_snapshot": {**snapshot, "memory_weighted_decision": edge},
-        "not_trading_advice": True,
-        "rules": {
-            "logic": "CohesivX memory-weighted paper trading v0.3. Historical memory distribution drives decision; fixed thresholds are safety rails only.",
-            "max_entry_fraction": MAX_ENTRY_FRACTION,
-            "max_btc_exposure_fraction": MAX_BTC_EXPOSURE_FRACTION,
-            "min_entry_fraction": MIN_ENTRY_FRACTION,
-        },
-    }
+    updated = {**paper, "mode": "paper", "cash_usdt": round(execution["cash_usdt"], 8), "btc_amount": round(execution["btc_amount"], 12), "portfolio_value_usdt": round(after, 8), "btc_exposure_pct": round(exposure * 100, 4), "last_action": action, "last_confidence": confidence, "last_reason": reasons, "last_run_at": run_at, "last_execution_price_usd": price, "last_execution_price_source": snapshot["price"]["execution_price_source"], "last_snapshot_price_usd": snapshot["price"]["snapshot_price_usd"], "last_model_price_usd": snapshot["price"]["cohesive_fair_price_usd"], "last_deviation_pct": round(snapshot["price"]["cohesive_deviation_pct"], 4), "last_memory_decision": edge, "decision_snapshot": {**snapshot, "memory_weighted_decision": edge}, "not_trading_advice": True, "rules": {"logic": "CohesivX memory-weighted paper trading v0.3. Historical memory distribution drives decision; fixed thresholds are safety rails only. Live price is mandatory for any paper execution.", "max_entry_fraction": MAX_ENTRY_FRACTION, "max_btc_exposure_fraction": MAX_BTC_EXPOSURE_FRACTION, "min_entry_fraction": MIN_ENTRY_FRACTION, "requires_live_price_for_execution": True}}
     save_json(PAPER_STATE_PATH, updated)
-
-    decision_doc = {
-        "run_at": run_at,
-        "action": action,
-        "confidence": confidence,
-        "position_fraction": fraction,
-        "execution": execution,
-        "memory_weighted_decision": edge,
-        "snapshot": snapshot,
-        "reason": reasons,
-        "not_trading_advice": True,
-    }
+    decision_doc = {"run_at": run_at, "action": action, "confidence": confidence, "position_fraction": fraction, "execution": execution, "memory_weighted_decision": edge, "snapshot": snapshot, "reason": reasons, "not_trading_advice": True}
     save_json(DECISION_PATH, decision_doc)
-
-    row = {
-        "run_at": run_at,
-        "state_date": snapshot["state_date"],
-        "execution_price_source": snapshot["price"]["execution_price_source"],
-        "execution_price_usd": round(price, 8),
-        "snapshot_price_usd": snapshot["price"]["snapshot_price_usd"],
-        "model_price_usd": snapshot["price"]["cohesive_fair_price_usd"],
-        "deviation_pct": round(snapshot["price"]["cohesive_deviation_pct"], 4),
-        "expected_7d_return_pct": round(f(edge.get("expected_7d_return")) * 100, 4),
-        "expected_30d_return_pct": round(f(edge.get("expected_30d_return")) * 100, 4),
-        "historical_drawdown_risk_pct": round(f(edge.get("historical_drawdown_risk")) * 100, 4),
-        "memory_confidence_pct": round(f(edge.get("memory_confidence")) * 100, 4),
-        "decision_edge_pct": round(f(edge.get("decision_edge")) * 100, 4),
-        "structural_regime": snapshot["regime"]["structural_code"],
-        "market_regime_code": snapshot["regime"]["market_code"],
-        "action": action,
-        "confidence": confidence,
-        "executed_usdt": round(execution["executed_usdt"], 8),
-        "executed_btc": round(execution["executed_btc"], 12),
-        "cash_usdt": round(updated["cash_usdt"], 8),
-        "btc_amount": round(updated["btc_amount"], 12),
-        "btc_exposure_pct": round(updated["btc_exposure_pct"], 4),
-        "portfolio_value_usdt": round(updated["portfolio_value_usdt"], 8),
-        "reason": " | ".join(reasons),
-    }
+    row = {"run_at": run_at, "state_date": snapshot["state_date"], "execution_price_source": snapshot["price"]["execution_price_source"], "execution_price_usd": round(price, 8), "snapshot_price_usd": snapshot["price"]["snapshot_price_usd"], "model_price_usd": snapshot["price"]["cohesive_fair_price_usd"], "deviation_pct": round(snapshot["price"]["cohesive_deviation_pct"], 4), "expected_7d_return_pct": round(f(edge.get("expected_7d_return")) * 100, 4), "expected_30d_return_pct": round(f(edge.get("expected_30d_return")) * 100, 4), "historical_drawdown_risk_pct": round(f(edge.get("historical_drawdown_risk")) * 100, 4), "memory_confidence_pct": round(f(edge.get("memory_confidence")) * 100, 4), "decision_edge_pct": round(f(edge.get("decision_edge")) * 100, 4), "structural_regime": snapshot["regime"]["structural_code"], "market_regime_code": snapshot["regime"]["market_code"], "action": action, "confidence": confidence, "executed_usdt": round(execution["executed_usdt"], 8), "executed_btc": round(execution["executed_btc"], 12), "cash_usdt": round(updated["cash_usdt"], 8), "btc_amount": round(updated["btc_amount"], 12), "btc_exposure_pct": round(updated["btc_exposure_pct"], 4), "portfolio_value_usdt": round(updated["portfolio_value_usdt"], 8), "reason": " | ".join(reasons)}
     append_log(row)
     print(f"Paper trader action: {action}")
     print(f"Confidence: {confidence}")
