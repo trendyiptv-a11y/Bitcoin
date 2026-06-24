@@ -19,10 +19,10 @@ STARTING_BALANCE_USDT = 1000.0
 MAX_ENTRY_FRACTION = 0.10
 MAX_BTC_EXPOSURE_FRACTION = 0.40
 MIN_ENTRY_FRACTION = 0.025
-TAKE_PROFIT_SMALL_PNL = 0.10
-TAKE_PROFIT_MEDIUM_PNL = 0.20
-TAKE_PROFIT_SMALL_FRACTION = 0.25
-TAKE_PROFIT_MEDIUM_FRACTION = 0.40
+TAKE_PROFIT_SMALL_PNL = 0.06
+TAKE_PROFIT_MEDIUM_PNL = 0.12
+TAKE_PROFIT_SMALL_FRACTION = 0.20
+TAKE_PROFIT_MEDIUM_FRACTION = 0.35
 REDUCE_RISK_FRACTION = 0.25
 
 BINANCE_TICKER_URL = "https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT"
@@ -36,20 +36,6 @@ def now_iso() -> str:
 
 def today_utc() -> str:
     return datetime.now(timezone.utc).date().isoformat()
-
-
-def load_json(path: Path, default: dict[str, Any]) -> dict[str, Any]:
-    if not path.exists():
-        return default
-    try:
-        return json.loads(path.read_text(encoding="utf-8"))
-    except json.JSONDecodeError:
-        return default
-
-
-def save_json(path: Path, data: dict[str, Any]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
 
 def f(value: Any, default: float = 0.0) -> float:
@@ -73,6 +59,20 @@ def i(value: Any, default: int = 0) -> int:
 
 def clamp(x: float, lo: float, hi: float) -> float:
     return max(lo, min(hi, x))
+
+
+def load_json(path: Path, default: dict[str, Any]) -> dict[str, Any]:
+    if not path.exists():
+        return default
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return default
+
+
+def save_json(path: Path, data: dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
 
 def state_date(state: dict[str, Any]) -> str:
@@ -225,7 +225,6 @@ def hydrate(state: dict[str, Any], paper: dict[str, Any], live_price: float | No
     diag = state.get("model_price_diagnostics") or {}
     nearest = diag.get("v2a_nearest_contexts") or {}
     same = diag.get("v2b_same_regime") or {}
-
     snapshot_price = f(state.get("price_usd"))
     execution_price = live_price if live_price and live_price > 0 else snapshot_price
     paper = normalize_paper_state(paper, execution_price)
@@ -234,7 +233,6 @@ def hydrate(state: dict[str, Any], paper: dict[str, Any], live_price: float | No
     avg_cost = f(costs.get("average"))
     production_dev = (execution_price - avg_cost) / avg_cost if avg_cost > 0 and execution_price > 0 else f(state.get("deviation_from_production"))
     acct = accounting_snapshot(paper, execution_price)
-
     return {
         "state_date": state_date(state),
         "run_date_utc": today_utc(),
@@ -250,13 +248,7 @@ def hydrate(state: dict[str, Any], paper: dict[str, Any], live_price: float | No
             "cohesive_deviation_pct": deviation * 100,
             "snapshot_model_deviation": f(state.get("model_price_deviation")),
         },
-        "production": {
-            "cheap_usd": f(costs.get("cheap")),
-            "average_usd": avg_cost,
-            "expensive_usd": f(costs.get("expensive")),
-            "deviation_from_production": production_dev,
-            "snapshot_deviation_from_production": f(state.get("deviation_from_production")),
-        },
+        "production": {"cheap_usd": f(costs.get("cheap")), "average_usd": avg_cost, "expensive_usd": f(costs.get("expensive")), "deviation_from_production": production_dev, "snapshot_deviation_from_production": f(state.get("deviation_from_production"))},
         "bands": {"p10": f(bands.get("p10")), "p50": f(bands.get("p50")), "p90": f(bands.get("p90"))},
         "flow": {"score": f(state.get("flow_score")), "bias": str(state.get("flow_bias") or "").lower(), "strength": str(state.get("flow_strength") or "").lower()},
         "liquidity": {"score": f(state.get("liquidity_score")), "regime": str(state.get("liquidity_regime") or "").lower(), "strength": str(state.get("liquidity_strength") or "").lower()},
@@ -292,7 +284,6 @@ def estimate_memory_edge(s: dict[str, Any]) -> dict[str, Any]:
     liq_strength = s["liquidity"]["strength"]
     ic = s["ic_vector"]
     confirmation = s["structural_confirmation"]["combined_rate"] or 0.5
-
     similar_samples = mem["similar_context_samples"]
     same_samples = mem["same_regime_samples"]
     distance = mem["similar_context_distance_median"]
@@ -304,13 +295,11 @@ def estimate_memory_edge(s: dict[str, Any]) -> dict[str, Any]:
     same_p90 = mem["same_regime_price_p90"] or similar_p90
     if p <= 0 or similar_p50 <= 0:
         return {"available": False, "reason": "missing price or memory distribution"}
-
     sample_conf = clamp(similar_samples / 250.0, 0.0, 1.0)
     same_regime_conf = clamp(same_samples / max(similar_samples, 1), 0.0, 1.0)
     distance_conf = clamp(1.0 - max(distance, 0.0) / 0.80, 0.0, 1.0) if distance else 0.50
     confirmation_conf = clamp(confirmation, 0.35, 0.75)
     context_confidence = clamp(0.35 * sample_conf + 0.20 * same_regime_conf + 0.25 * distance_conf + 0.20 * confirmation_conf, 0.0, 1.0)
-
     weighted_p10 = 0.60 * similar_p10 + 0.40 * same_p10
     weighted_p50 = 0.60 * similar_p50 + 0.40 * same_p50
     weighted_p90 = 0.60 * similar_p90 + 0.40 * same_p90
@@ -318,7 +307,6 @@ def estimate_memory_edge(s: dict[str, Any]) -> dict[str, Any]:
     expected_7d = expected_30d * 0.35
     downside_to_p10 = min(0.0, (weighted_p10 - p) / p)
     upside_to_p90 = max(0.0, (weighted_p90 - p) / p)
-
     regime_adjust = 0.0
     if regime == "bear_late":
         regime_adjust += 0.06
@@ -338,11 +326,9 @@ def estimate_memory_edge(s: dict[str, Any]) -> dict[str, Any]:
         regime_adjust += 0.02
     if ic["ic_struct"] >= 55 and ic["ic_flux"] >= 50:
         regime_adjust += 0.03
-
     raw_edge = context_confidence * expected_30d - (1 - context_confidence) * abs(downside_to_p10)
     decision_edge = raw_edge + regime_adjust
     drawdown_risk = abs(downside_to_p10)
-
     if decision_edge > 0.18 and context_confidence >= 0.58 and drawdown_risk < 0.28:
         action, fraction, confidence_label = "ACCUMULATE_SMALL", MAX_ENTRY_FRACTION, "memory_moderate"
     elif decision_edge > 0.07 and context_confidence >= 0.45 and drawdown_risk < 0.38:
@@ -372,7 +358,7 @@ def estimate_memory_edge(s: dict[str, Any]) -> dict[str, Any]:
         "memory_action": action,
         "position_fraction": fraction,
         "confidence_label": confidence_label,
-        "method": "memory_weighted_distribution_v0.3_pnl",
+        "method": "memory_weighted_distribution_v0.3_pnl_lower_tp",
     }
 
 
@@ -383,7 +369,6 @@ def profit_management_overlay(action: str, confidence: str, fraction: float, edg
     drawdown_risk = f(edge.get("historical_drawdown_risk"))
     expected_30d = f(edge.get("expected_30d_return"))
     notes: list[str] = []
-
     if btc <= 0:
         return action, confidence, fraction, notes
     if decision_edge < -0.06 or expected_30d < -0.08:
@@ -395,7 +380,6 @@ def profit_management_overlay(action: str, confidence: str, fraction: float, edg
     if unrealized_pct >= TAKE_PROFIT_SMALL_PNL and (decision_edge < 0.14 or drawdown_risk > 0.32):
         notes.append(f"Take-profit small: unrealized PnL {unrealized_pct * 100:.2f}% and edge cooled.")
         return "TAKE_PROFIT_SMALL", "profit_protection", TAKE_PROFIT_SMALL_FRACTION, notes
-
     return action, confidence, fraction, notes
 
 
@@ -404,17 +388,14 @@ def decide(state: dict[str, Any], paper: dict[str, Any], live_price: float | Non
     if not s["is_fresh_for_today"]:
         edge = {"available": False, "memory_action": "OBSERVE_STALE_DATA", "position_fraction": 0.0, "decision_edge": 0.0, "reason": "stale state"}
         return "OBSERVE_STALE_DATA", "none", [f"State date {s['state_date']} is not UTC today {s['run_date_utc']}.", "No paper execution is allowed on stale data."], 0.0, s, edge
-
     edge = estimate_memory_edge(s)
     if not live_price:
         edge["execution_blocked"] = True
         edge["execution_block_reason"] = "all_live_sources_failed"
         return "OBSERVE_LIVE_PRICE_UNAVAILABLE", "none", ["Live execution price is unavailable in the runner.", "All live price sources failed or returned invalid data.", "Professional safety rule: no paper buy/sell is executed using snapshot fallback."], 0.0, s, edge
-
     price_ok = s["price"]["execution_price_usd"] > 0 and s["price"]["cohesive_fair_price_usd"] > 0
     if not price_ok or not edge.get("available"):
         return "OBSERVE", "low", ["Missing valid execution price, cohesive price or memory distribution."], 0.0, s, edge
-
     acct = s["paper_portfolio"]
     exposure = acct["btc_exposure"]
     cash = acct["cash_usdt"]
@@ -422,7 +403,6 @@ def decide(state: dict[str, Any], paper: dict[str, Any], live_price: float | Non
     action = str(edge["memory_action"])
     fraction = float(edge["position_fraction"])
     confidence = str(edge["confidence_label"])
-
     action, confidence, fraction, profit_notes = profit_management_overlay(action, confidence, fraction, edge, acct)
     edge["pnl_overlay"] = {
         "avg_entry_price_usd": acct["avg_entry_price_usd"],
@@ -434,7 +414,6 @@ def decide(state: dict[str, Any], paper: dict[str, Any], live_price: float | Non
         "total_pnl_pct": acct["total_pnl_pct"],
         "profit_notes": profit_notes,
     }
-
     if action in {"ACCUMULATE_SMALL", "OBSERVE_ACCUMULATE_SMALL"}:
         if cash <= 10 or exposure >= MAX_BTC_EXPOSURE_FRACTION:
             action, fraction, confidence = "HOLD" if btc > 0 else "OBSERVE", 0.0, "risk_cap"
@@ -442,7 +421,6 @@ def decide(state: dict[str, Any], paper: dict[str, Any], live_price: float | Non
             fraction = min(fraction, MAX_BTC_EXPOSURE_FRACTION - exposure, MAX_ENTRY_FRACTION)
     elif action in {"REDUCE_RISK", "TAKE_PROFIT_SMALL", "TAKE_PROFIT_MEDIUM"} and btc <= 0:
         action, fraction = "OBSERVE", 0.0
-
     edge["final_action"] = action
     edge["final_position_fraction"] = fraction
     reasons = [
@@ -470,7 +448,6 @@ def apply_action(paper: dict[str, Any], price: float, action: str, fraction: flo
     executed_usdt = 0.0
     executed_btc = 0.0
     realized_delta = 0.0
-
     if price > 0 and action in {"ACCUMULATE_SMALL", "OBSERVE_ACCUMULATE_SMALL"} and fraction > 0:
         executed_usdt = min(cash, before * fraction)
         if executed_usdt >= 5:
@@ -493,7 +470,6 @@ def apply_action(paper: dict[str, Any], price: float, action: str, fraction: flo
             executed_btc = -sell_btc
         else:
             executed_usdt = 0.0
-
     after = cash + btc * price if price > 0 else cash
     avg_entry = cost_basis / btc if btc > 0 and cost_basis > 0 else 0.0
     unrealized = (btc * price - cost_basis) if btc > 0 else 0.0
@@ -548,7 +524,6 @@ def main() -> None:
     run_at = now_iso()
     after = execution["portfolio_value_after"]
     exposure = execution["btc_amount"] * price / after if after > 0 and price > 0 else 0.0
-
     updated = {
         **normalize_paper_state(paper, price),
         "mode": "paper",
@@ -577,20 +552,21 @@ def main() -> None:
         "decision_snapshot": {**snapshot, "memory_weighted_decision": edge},
         "not_trading_advice": True,
         "rules": {
-            "logic": "CohesivX memory-weighted paper trading v0.3 + PnL/take-profit overlay. Live price is mandatory for any paper execution.",
+            "logic": "CohesivX memory-weighted paper trading v0.3 + lower PnL/take-profit overlay. Live price is mandatory for any paper execution.",
             "live_price_sources": ["binance", "coinbase", "kraken"],
             "max_entry_fraction": MAX_ENTRY_FRACTION,
             "max_btc_exposure_fraction": MAX_BTC_EXPOSURE_FRACTION,
             "min_entry_fraction": MIN_ENTRY_FRACTION,
             "take_profit_small_pnl": TAKE_PROFIT_SMALL_PNL,
             "take_profit_medium_pnl": TAKE_PROFIT_MEDIUM_PNL,
+            "take_profit_small_fraction": TAKE_PROFIT_SMALL_FRACTION,
+            "take_profit_medium_fraction": TAKE_PROFIT_MEDIUM_FRACTION,
             "requires_live_price_for_execution": True,
         },
     }
     save_json(PAPER_STATE_PATH, updated)
     decision_doc = {"run_at": run_at, "action": action, "confidence": confidence, "position_fraction": fraction, "execution": execution, "live_price_status": live_status, "memory_weighted_decision": edge, "snapshot": snapshot, "reason": reasons, "not_trading_advice": True}
     save_json(DECISION_PATH, decision_doc)
-
     row = {
         "run_at": run_at,
         "state_date": snapshot["state_date"],
