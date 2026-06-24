@@ -3,19 +3,15 @@
   "starting_balance_usdt": 1000.0,
   "cash_usdt": 950.0,
   "btc_amount": 0.000798722045,
-  "portfolio_value_usdt": 1000.0,
-  "last_action": "OBSERVE_ACCUMULATE_SMALL",
-  "last_confidence": "memory_moderate_low",
+  "portfolio_value_usdt": 1000.00000002,
+  "last_action": "OBSERVE_LIVE_PRICE_UNAVAILABLE",
+  "last_confidence": "none",
   "last_reason": [
-    "Memory edge: 13.36%.",
-    "Expected 7d/30d: 6.03% / 17.24%.",
-    "Historical drawdown risk to weighted p10: 29.44%.",
-    "Memory confidence: 70.3%.",
-    "Weighted memory p50: 73392.61 USD vs execution price 62600.00 USD.",
-    "Structural regime: bear_late; market regime: range_bias_up_dev_extreme.",
-    "Flow: neutru/slab; liquidity: ridicată/puternică."
+    "Live execution price is unavailable in the runner.",
+    "Source status: binance_unavailable:HTTPError.",
+    "Professional safety rule: no paper buy/sell is executed using snapshot fallback."
   ],
-  "last_run_at": "2026-06-24T15:59:00.638673+00:00",
+  "last_run_at": "2026-06-24T16:08:13.531133+00:00",
   "not_trading_advice": true,
   "btc_exposure_pct": 5.0,
   "last_execution_price_usd": 62600.0,
@@ -42,7 +38,9 @@
     "memory_action": "OBSERVE_ACCUMULATE_SMALL",
     "position_fraction": 0.05,
     "confidence_label": "memory_moderate_low",
-    "method": "memory_weighted_distribution_v0.3"
+    "method": "memory_weighted_distribution_v0.3",
+    "execution_blocked": true,
+    "execution_block_reason": "binance_unavailable:HTTPError"
   },
   "decision_snapshot": {
     "state_date": "2026-06-24",
@@ -134,11 +132,11 @@
       }
     },
     "paper_portfolio": {
-      "cash_usdt": 1000.0,
-      "btc_amount": 0.0,
-      "portfolio_value_usdt": 1000.0,
-      "btc_exposure": 0.0,
-      "btc_exposure_pct": 0.0
+      "cash_usdt": 950.0,
+      "btc_amount": 0.000798722045,
+      "portfolio_value_usdt": 1000.000000017,
+      "btc_exposure": 0.050000000016149994,
+      "btc_exposure_pct": 5.000000001615
     },
     "memory_weighted_decision": {
       "available": true,
@@ -159,13 +157,16 @@
       "memory_action": "OBSERVE_ACCUMULATE_SMALL",
       "position_fraction": 0.05,
       "confidence_label": "memory_moderate_low",
-      "method": "memory_weighted_distribution_v0.3"
+      "method": "memory_weighted_distribution_v0.3",
+      "execution_blocked": true,
+      "execution_block_reason": "binance_unavailable:HTTPError"
     }
   },
   "rules": {
-    "logic": "CohesivX memory-weighted paper trading v0.3. Historical memory distribution drives decision; fixed thresholds are safety rails only.",
+    "logic": "CohesivX memory-weighted paper trading v0.3. Historical memory distribution drives decision; fixed thresholds are safety rails only. Live price is mandatory for any paper execution.",
     "max_entry_fraction": 0.1,
     "max_btc_exposure_fraction": 0.4,
-    "min_entry_fraction": 0.025
+    "min_entry_fraction": 0.025,
+    "requires_live_price_for_execution": true
   }
 }

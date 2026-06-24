@@ -1,15 +1,15 @@
 {
-  "run_at": "2026-06-24T15:59:00.638673+00:00",
-  "action": "OBSERVE_ACCUMULATE_SMALL",
-  "confidence": "memory_moderate_low",
-  "position_fraction": 0.05,
+  "run_at": "2026-06-24T16:08:13.531133+00:00",
+  "action": "OBSERVE_LIVE_PRICE_UNAVAILABLE",
+  "confidence": "none",
+  "position_fraction": 0.0,
   "execution": {
     "cash_usdt": 950.0,
-    "btc_amount": 0.0007987220447284345,
-    "executed_usdt": 50.0,
-    "executed_btc": 0.0007987220447284345,
-    "portfolio_value_before": 1000.0,
-    "portfolio_value_after": 1000.0
+    "btc_amount": 0.000798722045,
+    "executed_usdt": 0.0,
+    "executed_btc": 0.0,
+    "portfolio_value_before": 1000.000000017,
+    "portfolio_value_after": 1000.000000017
   },
   "memory_weighted_decision": {
     "available": true,
@@ -30,7 +30,9 @@
     "memory_action": "OBSERVE_ACCUMULATE_SMALL",
     "position_fraction": 0.05,
     "confidence_label": "memory_moderate_low",
-    "method": "memory_weighted_distribution_v0.3"
+    "method": "memory_weighted_distribution_v0.3",
+    "execution_blocked": true,
+    "execution_block_reason": "binance_unavailable:HTTPError"
   },
   "snapshot": {
     "state_date": "2026-06-24",
@@ -122,21 +124,17 @@
       }
     },
     "paper_portfolio": {
-      "cash_usdt": 1000.0,
-      "btc_amount": 0.0,
-      "portfolio_value_usdt": 1000.0,
-      "btc_exposure": 0.0,
-      "btc_exposure_pct": 0.0
+      "cash_usdt": 950.0,
+      "btc_amount": 0.000798722045,
+      "portfolio_value_usdt": 1000.000000017,
+      "btc_exposure": 0.050000000016149994,
+      "btc_exposure_pct": 5.000000001615
     }
   },
   "reason": [
-    "Memory edge: 13.36%.",
-    "Expected 7d/30d: 6.03% / 17.24%.",
-    "Historical drawdown risk to weighted p10: 29.44%.",
-    "Memory confidence: 70.3%.",
-    "Weighted memory p50: 73392.61 USD vs execution price 62600.00 USD.",
-    "Structural regime: bear_late; market regime: range_bias_up_dev_extreme.",
-    "Flow: neutru/slab; liquidity: ridicată/puternică."
+    "Live execution price is unavailable in the runner.",
+    "Source status: binance_unavailable:HTTPError.",
+    "Professional safety rule: no paper buy/sell is executed using snapshot fallback."
   ],
   "not_trading_advice": true
 }
