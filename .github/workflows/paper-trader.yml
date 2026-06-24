@@ -2,7 +2,15 @@ name: CohesivX Paper Trader
 
 on:
   schedule:
-    - cron: "30 12 * * *"
+    # Global market-open rhythm, summer UTC schedule:
+    # Tokyo +10 min      09:10 JST  = 00:10 UTC
+    # Shanghai +10 min   09:40 CST  = 01:40 UTC
+    # Euronext +10 min   09:10 CEST = 07:10 UTC
+    # Nasdaq +10 min     09:40 EDT  = 13:40 UTC
+    - cron: "10 0 * * *"
+    - cron: "40 1 * * *"
+    - cron: "10 7 * * *"
+    - cron: "40 13 * * *"
   workflow_dispatch:
   push:
     paths:
