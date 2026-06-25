@@ -85,6 +85,22 @@ def execute_manual_trade(paper: dict[str, Any], price: float, inputs: dict[str, 
             reasons.append("Manual buy blocked: requested amount/cash/exposure corridor leaves less than minimum useful trade size.")
             final_action = "MANUAL_BUY_BLOCKED"
             confidence = "manual_blocked"
+    elif action == "BUY_USDT_FORCE":
+        executed_usdt = min(cash, requested_usdt)
+        if executed_usdt >= MIN_MANUAL_TRADE_USDT:
+            executed_btc = executed_usdt / price
+            cash -= executed_usdt
+            btc += executed_btc
+            cost_basis += executed_usdt
+            reasons.append(f"Manual FORCE buy executed: {executed_usdt:.2f} USDT at {price:.2f} USD.")
+            reasons.append("Operator override: bot exposure corridor was intentionally ignored for this paper trade.")
+            final_action = "MANUAL_BUY_FORCE"
+            confidence = "manual_override"
+        else:
+            executed_usdt = 0.0
+            reasons.append("Manual FORCE buy blocked: available cash/requested amount is below minimum useful trade size.")
+            final_action = "MANUAL_BUY_FORCE_BLOCKED"
+            confidence = "manual_blocked"
     elif action == "SELL_PERCENT":
         sell_btc = min(btc, btc * sell_fraction)
         executed_usdt = sell_btc * price
@@ -124,7 +140,7 @@ def execute_manual_trade(paper: dict[str, Any], price: float, inputs: dict[str, 
             final_action = "MANUAL_SELL_BLOCKED"
             confidence = "manual_blocked"
     else:
-        reasons.append(f"Manual action '{action}' is unknown. Allowed: BUY_USDT, SELL_PERCENT, SELL_ALL.")
+        reasons.append(f"Manual action '{action}' is unknown. Allowed: BUY_USDT, BUY_USDT_FORCE, SELL_PERCENT, SELL_ALL.")
         final_action = "MANUAL_UNKNOWN_ACTION"
         confidence = "manual_blocked"
 
@@ -156,7 +172,7 @@ def main() -> None:
         "realized_pnl_usdt": round(execution["realized_pnl_usdt"], 8),
         "unrealized_pnl_usdt": round(execution["unrealized_pnl_usdt"], 8),
         "unrealized_pnl_pct": round(execution["unrealized_pnl_pct"] * 100, 4),
-        "total_pnl_usdt": round(execution["total_pnl_usdt"], 8),
+        "total_pnl_usdt": round(execution["total_pnl_usdt"] * 100, 4),
         "total_pnl_pct": round(execution["total_pnl_pct"] * 100, 4),
         "portfolio_value_usdt": round(execution["portfolio_value_usdt"], 8),
         "btc_exposure_pct": round(execution["btc_exposure_pct"], 4),
@@ -170,6 +186,8 @@ def main() -> None:
         "last_manual_inputs": inputs,
         "not_trading_advice": True,
     }
+    # Correct total PnL amount in USDT, not percentage-scaled.
+    updated["total_pnl_usdt"] = round(execution["total_pnl_usdt"], 8)
     paper_trader.save_json(paper_trader.PAPER_STATE_PATH, updated)
 
     decision_doc = {
