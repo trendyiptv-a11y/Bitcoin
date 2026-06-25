@@ -1,0 +1,65 @@
+name: CohesivX Extra Paper Sell
+
+on:
+  workflow_dispatch:
+    inputs:
+      sell_action:
+        description: "Extra paper sell action"
+        required: true
+        default: "SELL_PERCENT"
+        type: choice
+        options:
+          - SELL_PERCENT
+          - SELL_ALL
+      sell_fraction:
+        description: "SELL_PERCENT fraction, e.g. 0.10 = 10%"
+        required: false
+        default: "0.10"
+      note:
+        description: "Manual note for journal"
+        required: false
+        default: "Extra manual paper exit from GitHub workflow."
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cohesivx-extra-paper-sell
+  cancel-in-progress: false
+
+jobs:
+  extra-paper-sell:
+    name: Execute extra paper exit
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Pull latest main
+        run: git pull --rebase origin main
+
+      - name: Execute extra manual exit
+        env:
+          MANUAL_ACTION: ${{ inputs.sell_action }}
+          MANUAL_SELL_FRACTION: ${{ inputs.sell_fraction }}
+          MANUAL_NOTE: ${{ inputs.note }}
+        run: python manual_paper_trade.py
+
+      - name: Commit manual paper state
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add btc-swing-strategy/paper_trading_state.json || true
+          git add btc-swing-strategy/paper_trading_log.csv || true
+          git add btc-swing-strategy/paper_trader_decision.json || true
+          git commit -m "Extra manual paper sell update" || echo "Nothing to commit"
+          git push origin main || echo "Push failed; will retry on next manual run"
