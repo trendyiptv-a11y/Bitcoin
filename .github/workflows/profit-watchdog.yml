@@ -1,0 +1,51 @@
+name: CohesivX Profit Watchdog
+
+on:
+  schedule:
+    # Backup monitor for CohesivX Profit Watcher.
+    # If profit_watch_signal.json is stale, this workflow dispatches profit-watcher.yml.
+    - cron: "12,42 * * * *"
+  workflow_dispatch:
+  push:
+    paths:
+      - "profit_watchdog.py"
+      - ".github/workflows/profit-watchdog.yml"
+      - "btc-swing-strategy/profit_watch_signal.json"
+
+permissions:
+  contents: read
+  actions: write
+
+concurrency:
+  group: cohesivx-profit-watchdog
+  cancel-in-progress: false
+
+jobs:
+  profit-watchdog:
+    name: Check profit watcher freshness
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Check watcher freshness
+        id: watchdog
+        env:
+          WATCHDOG_STALE_AFTER_MINUTES: "45"
+        run: python profit_watchdog.py
+
+      - name: Dispatch profit watcher if stale
+        if: steps.watchdog.outputs.trigger_profit_watcher == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          echo "Watchdog reason: ${{ steps.watchdog.outputs.reason }}"
+          gh workflow run profit-watcher.yml --ref main
