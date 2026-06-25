@@ -1,0 +1,57 @@
+name: CohesivX Extra Paper Buy
+
+on:
+  workflow_dispatch:
+    inputs:
+      amount_usdt:
+        description: "Extra paper USDT amount"
+        required: false
+        default: "25"
+      note:
+        description: "Manual note for journal"
+        required: false
+        default: "Extra manual paper entry from GitHub workflow."
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cohesivx-extra-paper-buy
+  cancel-in-progress: false
+
+jobs:
+  extra-paper-buy:
+    name: Execute extra paper entry
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Pull latest main
+        run: git pull --rebase origin main
+
+      - name: Execute extra manual entry
+        env:
+          MANUAL_ACTION: BUY_OVERRIDE
+          MANUAL_AMOUNT_USDT: ${{ inputs.amount_usdt }}
+          MANUAL_NOTE: ${{ inputs.note }}
+        run: python manual_paper_trade.py
+
+      - name: Commit manual paper state
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add btc-swing-strategy/paper_trading_state.json || true
+          git add btc-swing-strategy/paper_trading_log.csv || true
+          git add btc-swing-strategy/paper_trader_decision.json || true
+          git commit -m "Extra manual paper buy update" || echo "Nothing to commit"
+          git push origin main || echo "Push failed; will retry on next manual run"
