@@ -3,7 +3,8 @@ name: CohesivX Profit Watcher
 on:
   schedule:
     # Watch paper position more often for adaptive take-profit opportunities.
-    - cron: "*/30 * * * *"
+    # Use off-peak minutes instead of 00/30 to avoid crowded GitHub schedule slots.
+    - cron: "7,37 * * * *"
   workflow_dispatch:
   push:
     paths:
