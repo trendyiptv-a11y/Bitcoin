@@ -1,28 +1,33 @@
 {
-  "run_at": "2026-06-25T10:18:50.123554+00:00",
-  "action": "OBSERVE_ACCUMULATE_SMALL",
-  "confidence": "memory_moderate_low",
-  "position_fraction": 0.00020433029549282722,
+  "run_at": "2026-06-25T14:54:33.876051+00:00",
+  "action": "MANUAL_BUY",
+  "confidence": "manual_buy",
+  "manual_inputs": {
+    "manual_action": "BUY_USDT",
+    "amount_usdt": 25.0,
+    "sell_fraction": 0.1,
+    "note": "Manual paper action from GitHub workflow."
+  },
   "execution": {
-    "cash_usdt": 606.30208373,
-    "btc_amount": 0.006553200744,
-    "cost_basis_usdt": 393.44122292,
-    "avg_entry_price_usd": 60038.023904613045,
+    "cash_usdt": 597.9742958664767,
+    "btc_amount": 0.006693017873436944,
+    "cost_basis_usdt": 401.76901078352324,
+    "avg_entry_price_usd": 60028.07976623706,
     "realized_pnl_usdt": 0.0,
-    "realized_pnl_delta_usdt": 0.0,
-    "unrealized_pnl_usdt": 10.416155930860043,
-    "unrealized_pnl_pct": 0.026474490531405253,
-    "total_pnl_usdt": 10.416155930860043,
-    "total_pnl_pct": 0.010416155930860043,
-    "executed_usdt": 0.0,
-    "executed_btc": 0.0,
-    "portfolio_value_before": 1010.15946258086,
-    "portfolio_value_after": 1010.15946258086
+    "unrealized_pnl_usdt": -3.11948020587198,
+    "unrealized_pnl_pct": -0.007764362412592304,
+    "total_pnl_usdt": -3.11948020587198,
+    "total_pnl_pct": -0.00311948020587198,
+    "portfolio_value_usdt": 996.623826444128,
+    "btc_exposure_pct": 40.00000000000001,
+    "executed_usdt": 8.32778786352327,
+    "executed_btc": 0.0001398171294369442,
+    "realized_pnl_delta_usdt": 0.0
   },
   "live_price_status": {
-    "checked_at": "2026-06-25T10:18:49.859068+00:00",
+    "checked_at": "2026-06-25T14:54:33.347994+00:00",
     "selected_source": "kraken",
-    "selected_price": 61627.5,
+    "selected_price": 59562.0,
     "sources": {
       "binance": {
         "ok": false,
@@ -31,186 +36,21 @@
       },
       "coinbase": {
         "ok": true,
-        "price": 61624.155
+        "price": 59550.385
       },
       "kraken": {
         "ok": true,
-        "price": 61627.5
+        "price": 59562.0
       }
     },
-    "median_price": 61627.5,
-    "dispersion_pct": 0.005427771692833823
-  },
-  "memory_weighted_decision": {
-    "available": true,
-    "weighted_price_p10": 44167.97859300801,
-    "weighted_price_p50": 73392.60839767121,
-    "weighted_price_p90": 233024.46694266293,
-    "expected_7d_return": 0.06681737761851322,
-    "expected_30d_return": 0.19090679319575207,
-    "historical_drawdown_risk": 0.2833073125957079,
-    "upside_to_p90": 2.7811766977836667,
-    "memory_confidence": 0.6960832687638033,
-    "sample_confidence": 1.0,
-    "same_regime_confidence": 0.444,
-    "distance_confidence": 0.5635162771549507,
-    "confirmation_confidence": 0.5820209973753281,
-    "regime_adjustment": 0.1,
-    "decision_edge": 0.1467851922575156,
-    "memory_action": "OBSERVE_ACCUMULATE_SMALL",
-    "position_fraction": 0.05,
-    "confidence_label": "memory_moderate_low",
-    "method": "memory_weighted_distribution_v0.3_pnl_lower_tp",
-    "pnl_overlay": {
-      "avg_entry_price_usd": 60038.023904613045,
-      "cost_basis_usdt": 393.44122292,
-      "unrealized_pnl_usdt": 10.416155930860043,
-      "unrealized_pnl_pct": 0.026474490531405253,
-      "realized_pnl_usdt": 0.0,
-      "total_pnl_usdt": 10.416155930860043,
-      "total_pnl_pct": 0.010416155930860043,
-      "profit_notes": []
-    },
-    "final_action": "OBSERVE_ACCUMULATE_SMALL",
-    "final_position_fraction": 0.00020433029549282722
-  },
-  "snapshot": {
-    "state_date": "2026-06-25",
-    "run_date_utc": "2026-06-25",
-    "is_fresh_for_today": true,
-    "live_price_status": {
-      "checked_at": "2026-06-25T10:18:49.859068+00:00",
-      "selected_source": "kraken",
-      "selected_price": 61627.5,
-      "sources": {
-        "binance": {
-          "ok": false,
-          "error_type": "HTTPError",
-          "error": "HTTP Error 451: "
-        },
-        "coinbase": {
-          "ok": true,
-          "price": 61624.155
-        },
-        "kraken": {
-          "ok": true,
-          "price": 61627.5
-        }
-      },
-      "median_price": 61627.5,
-      "dispersion_pct": 0.005427771692833823
-    },
-    "price": {
-      "execution_price_usd": 61627.5,
-      "execution_price_source": "kraken",
-      "snapshot_price_usd": 60839.0,
-      "live_price_usd": 61627.5,
-      "cohesive_fair_price_usd": 68992.1421696913,
-      "cohesive_deviation": -0.1067461009049033,
-      "cohesive_deviation_pct": -10.67461009049033,
-      "snapshot_model_deviation": -0.1181749386711032
-    },
-    "production": {
-      "cheap_usd": 28617.737263662602,
-      "average_usd": 52465.85165004811,
-      "expensive_usd": 83468.40035234929,
-      "deviation_from_production": 0.17462116904269268,
-      "snapshot_deviation_from_production": 0.15959234600443598
-    },
-    "bands": {
-      "p10": 44107.59614854104,
-      "p50": 68992.1421696913,
-      "p90": 238242.02698132824
-    },
-    "flow": {
-      "score": -0.0037878601541708272,
-      "bias": "neutru",
-      "strength": "slab"
-    },
-    "liquidity": {
-      "score": 0.007762541294053138,
-      "regime": "ridicată",
-      "strength": "puternică"
-    },
-    "regime": {
-      "market_label": "Range cu bias pozitiv cu deviație extremă față de model",
-      "market_code": "range_bias_up_dev_extreme",
-      "structural_code": "bear_late",
-      "signal": "flat"
-    },
-    "ic_vector": {
-      "ic_struct": 63.65576102418208,
-      "ic_dir": 14.193996182543813,
-      "ic_flux": 75.60849300880373,
-      "ic_cycle": 50.0,
-      "vol30_index": 24.39150699119627
-    },
-    "historical_memory": {
-      "aligned_points": 1405,
-      "similar_context_samples": 250,
-      "similar_context_distance_median": 0.3491869782760395,
-      "similar_price_p10": 44107.59614854104,
-      "similar_price_p50": 68992.1421696913,
-      "similar_price_p90": 238242.02698132824,
-      "similar_multiplier_p50": 1.3149913705751888,
-      "same_regime_samples": 111,
-      "same_regime_price_p10": 44258.55225970847,
-      "same_regime_price_p50": 79993.30773964107,
-      "same_regime_price_p90": 225198.12688466493,
-      "same_regime_spot_deviation": -0.23944887742339296
-    },
-    "structural_confirmation": {
-      "combined_rate": 0.5820209973753281,
-      "raw": {
-        "source": "comparative_backtest_summary.json",
-        "model": "cohesive_mechanism",
-        "threshold": 0.1,
-        "threshold_label": "deviații ample față de reperul coeziv",
-        "horizon_7d": {
-          "directional_hit_rate": 0.5774278215223098,
-          "events": 762,
-          "below_model_events": 571,
-          "above_model_events": 191
-        },
-        "horizon_30d": {
-          "directional_hit_rate": 0.5866141732283464,
-          "events": 762,
-          "below_model_events": 571,
-          "above_model_events": 191
-        },
-        "similar_context_samples": 250,
-        "regime": "bear_late",
-        "current_deviation": -0.1181749386711032,
-        "label": "Semnal structural, nu intraday",
-        "generated_at": "2026-06-25T04:40:59.117881+00:00"
-      }
-    },
-    "paper_portfolio": {
-      "cash_usdt": 606.30208373,
-      "btc_amount": 0.006553200744,
-      "cost_basis_usdt": 393.44122292,
-      "avg_entry_price_usd": 60038.023904613045,
-      "market_value_usdt": 403.85737885086,
-      "portfolio_value_usdt": 1010.15946258086,
-      "btc_exposure": 0.3997956697045072,
-      "btc_exposure_pct": 39.97956697045072,
-      "unrealized_pnl_usdt": 10.416155930860043,
-      "unrealized_pnl_pct": 0.026474490531405253,
-      "realized_pnl_usdt": 0.0,
-      "total_pnl_usdt": 10.416155930860043,
-      "total_pnl_pct": 0.010416155930860043
-    }
+    "median_price": 59562.0,
+    "dispersion_pct": 0.019500688358345862
   },
   "reason": [
-    "Memory edge: 14.68%.",
-    "Expected 7d/30d: 6.68% / 19.09%.",
-    "Historical drawdown risk to weighted p10: 28.33%.",
-    "Memory confidence: 69.6%.",
-    "Weighted memory p50: 73392.61 USD vs execution price 61627.50 USD.",
-    "PnL: unrealized 10.42 USDT (2.65%), realized 0.00 USDT.",
-    "Live source: kraken.",
-    "Structural regime: bear_late; market regime: range_bias_up_dev_extreme.",
-    "Flow: neutru/slab; liquidity: ridicată/puternică."
+    "Manual paper action from GitHub workflow.",
+    "Manual paper mode: no real funds, no exchange order.",
+    "Manual buy executed: 8.33 USDT at 59562.00 USD.",
+    "Hard exposure cap respected: 40.0%."
   ],
   "not_trading_advice": true
 }
