@@ -2,9 +2,10 @@ name: CohesivX Profit Watcher
 
 on:
   schedule:
-    # Watch paper position more often for adaptive take-profit opportunities.
-    # Use off-peak minutes instead of 00/30 to avoid crowded GitHub schedule slots.
-    - cron: "7,37 * * * *"
+    # Redundant schedule: GitHub scheduled runs can be delayed or skipped.
+    # Run every 15 minutes on off-peak minutes; the watcher itself has a cooldown
+    # before triggering any sell/main-bot action, so this improves monitoring without overtrading.
+    - cron: "7,22,37,52 * * * *"
   workflow_dispatch:
   push:
     paths:
