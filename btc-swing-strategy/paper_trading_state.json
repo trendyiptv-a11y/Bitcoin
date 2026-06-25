@@ -1,32 +1,32 @@
 {
   "mode": "paper",
   "starting_balance_usdt": 1000.0,
-  "cash_usdt": 597.97429587,
-  "btc_amount": 0.006693017873,
-  "cost_basis_usdt": 401.76901078,
-  "avg_entry_price_usd": 60028.07976624,
+  "cash_usdt": 497.97429587,
+  "btc_amount": 0.008391019317,
+  "cost_basis_usdt": 501.76901078,
+  "avg_entry_price_usd": 59798.33817981,
   "realized_pnl_usdt": 0.0,
-  "portfolio_value_usdt": 996.62382644,
-  "last_action": "MANUAL_BUY",
-  "last_confidence": "manual_buy",
+  "portfolio_value_usdt": 992.14462461,
+  "last_action": "MANUAL_BUY_OVERRIDE",
+  "last_confidence": "manual_override",
   "last_reason": [
-    "Manual paper action from GitHub workflow.",
+    "Extra manual paper entry from GitHub workflow.",
     "Manual paper mode: no real funds, no exchange order.",
-    "Manual buy executed: 8.33 USDT at 59562.00 USD.",
-    "Hard exposure cap respected: 40.0%."
+    "Manual override buy executed: 100.00 USDT at 58892.76 USD.",
+    "Operator override: bot exposure corridor was intentionally ignored for this paper trade."
   ],
-  "last_run_at": "2026-06-25T14:54:33.876051+00:00",
+  "last_run_at": "2026-06-25T15:15:32.033183+00:00",
   "not_trading_advice": true,
-  "btc_exposure_pct": 40.0,
-  "last_execution_price_usd": 59562.0,
-  "last_execution_price_source": "kraken",
+  "btc_exposure_pct": 49.8083,
+  "last_execution_price_usd": 58892.765,
+  "last_execution_price_source": "coinbase",
   "last_snapshot_price_usd": 60839.0,
   "last_model_price_usd": 68992.1421696913,
   "last_deviation_pct": -10.6746,
   "last_live_price_status": {
-    "checked_at": "2026-06-25T14:54:33.347994+00:00",
-    "selected_source": "kraken",
-    "selected_price": 59562.0,
+    "checked_at": "2026-06-25T15:15:31.869495+00:00",
+    "selected_source": "coinbase",
+    "selected_price": 58892.765,
     "sources": {
       "binance": {
         "ok": false,
@@ -35,15 +35,15 @@
       },
       "coinbase": {
         "ok": true,
-        "price": 59550.385
+        "price": 58892.765
       },
       "kraken": {
         "ok": true,
-        "price": 59562.0
+        "price": 58833.1
       }
     },
-    "median_price": 59562.0,
-    "dispersion_pct": 0.019500688358345862
+    "median_price": 58892.765,
+    "dispersion_pct": 0.10131125614496257
   },
   "last_memory_decision": {
     "available": true,
@@ -254,14 +254,14 @@
     "take_profit_medium_fraction": 0.35,
     "requires_live_price_for_execution": true
   },
-  "unrealized_pnl_usdt": -3.11948021,
-  "unrealized_pnl_pct": -0.7764,
-  "total_pnl_usdt": -3.11948021,
-  "total_pnl_pct": -0.3119,
+  "unrealized_pnl_usdt": -7.59868204,
+  "unrealized_pnl_pct": -1.5144,
+  "total_pnl_usdt": -7.59868204,
+  "total_pnl_pct": -0.7599,
   "last_manual_inputs": {
-    "manual_action": "BUY_USDT",
-    "amount_usdt": 25.0,
+    "manual_action": "BUY_OVERRIDE",
+    "amount_usdt": 100.0,
     "sell_fraction": 0.1,
-    "note": "Manual paper action from GitHub workflow."
+    "note": "Extra manual paper entry from GitHub workflow."
   }
 }
