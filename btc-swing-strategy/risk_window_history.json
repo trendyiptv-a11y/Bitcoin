@@ -1,6 +1,6 @@
 {
   "title": "RISK_WINDOW_HISTORY",
-  "generated_at": "2026-06-24T04:46:05.338335+00:00",
+  "generated_at": "2026-06-25T04:41:53.547881+00:00",
   "regimes": [
     "accum_bear",
     "bear_late",
@@ -12,7 +12,7 @@
     "since": "2025-12-01",
     "events": 4,
     "max_streak_days": 74,
-    "current_streak_days": 23,
+    "current_streak_days": 24,
     "current_is_record": false,
     "matching_or_longer_than_current": 2,
     "top_streaks": [
@@ -33,17 +33,17 @@
         ],
         "window_days": 180,
         "major_drawdown_threshold": -0.2,
-        "min_drawdown": -0.3196999134752756,
+        "min_drawdown": -0.3208446333430962,
         "confirmed_major_drawdown": true,
         "days_to_confirmation": 14
       },
       {
         "start": "2026-06-02",
-        "end": "2026-06-24",
-        "days": 23,
+        "end": "2026-06-25",
+        "days": 24,
         "is_current": true,
         "start_price": 66669.7,
-        "end_price": 62594.7,
+        "end_price": 60753.3,
         "regimes": [
           "bear_late",
           "bear_struct"
@@ -54,7 +54,7 @@
         ],
         "window_days": 180,
         "major_drawdown_threshold": -0.2,
-        "min_drawdown": -0.08720603212553835,
+        "min_drawdown": -0.08874196224071795,
         "confirmed_major_drawdown": false,
         "days_to_confirmation": null
       },
@@ -73,7 +73,7 @@
         ],
         "window_days": 180,
         "major_drawdown_threshold": -0.2,
-        "min_drawdown": -0.15390059089329167,
+        "min_drawdown": -0.1553242961418143,
         "confirmed_major_drawdown": false,
         "days_to_confirmation": null
       },
@@ -92,7 +92,7 @@
         ],
         "window_days": 180,
         "major_drawdown_threshold": -0.2,
-        "min_drawdown": -0.3108847365923866,
+        "min_drawdown": -0.3120442894850973,
         "confirmed_major_drawdown": true,
         "days_to_confirmation": 16
       }
@@ -2013,7 +2013,7 @@
       ],
       "window_days": 180,
       "major_drawdown_threshold": -0.2,
-      "min_drawdown": -0.3108847365923866,
+      "min_drawdown": -0.3120442894850973,
       "confirmed_major_drawdown": true,
       "days_to_confirmation": 16
     },
@@ -2034,7 +2034,7 @@
       ],
       "window_days": 180,
       "major_drawdown_threshold": -0.2,
-      "min_drawdown": -0.3196999134752756,
+      "min_drawdown": -0.3208446333430962,
       "confirmed_major_drawdown": true,
       "days_to_confirmation": 14
     },
@@ -2053,17 +2053,17 @@
       ],
       "window_days": 180,
       "major_drawdown_threshold": -0.2,
-      "min_drawdown": -0.15390059089329167,
+      "min_drawdown": -0.1553242961418143,
       "confirmed_major_drawdown": false,
       "days_to_confirmation": null
     },
     {
       "start": "2026-06-02",
-      "end": "2026-06-24",
-      "days": 23,
+      "end": "2026-06-25",
+      "days": 24,
       "is_current": true,
       "start_price": 66669.7,
-      "end_price": 62594.7,
+      "end_price": 60753.3,
       "regimes": [
         "bear_late",
         "bear_struct"
@@ -2074,7 +2074,7 @@
       ],
       "window_days": 180,
       "major_drawdown_threshold": -0.2,
-      "min_drawdown": -0.08720603212553835,
+      "min_drawdown": -0.08874196224071795,
       "confirmed_major_drawdown": false,
       "days_to_confirmation": null
     }
