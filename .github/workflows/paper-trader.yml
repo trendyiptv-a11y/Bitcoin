@@ -15,6 +15,7 @@ on:
   push:
     paths:
       - "paper_trader.py"
+      - "paper_trader_adaptive.py"
       - ".github/workflows/paper-trader.yml"
       - "btc-swing-strategy/coeziv_state.json"
 
@@ -44,8 +45,8 @@ jobs:
       - name: Pull latest main
         run: git pull --rebase origin main
 
-      - name: Run paper trader
-        run: python paper_trader.py
+      - name: Run adaptive paper trader
+        run: python paper_trader_adaptive.py
 
       - name: Commit paper trader state
         run: |
