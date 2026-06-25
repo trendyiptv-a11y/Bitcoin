@@ -1,28 +1,28 @@
 {
-  "run_at": "2026-06-25T08:16:31.141490+00:00",
+  "run_at": "2026-06-25T10:18:50.123554+00:00",
   "action": "OBSERVE_ACCUMULATE_SMALL",
   "confidence": "memory_moderate_low",
-  "position_fraction": 0.0427102565465729,
+  "position_fraction": 0.00020433029549282722,
   "execution": {
-    "cash_usdt": 606.3020837318204,
-    "btc_amount": 0.006553200744496607,
-    "cost_basis_usdt": 393.4412229181796,
-    "avg_entry_price_usd": 60038.02389978553,
+    "cash_usdt": 606.30208373,
+    "btc_amount": 0.006553200744,
+    "cost_basis_usdt": 393.44122292,
+    "avg_entry_price_usd": 60038.023904613045,
     "realized_pnl_usdt": 0.0,
     "realized_pnl_delta_usdt": 0.0,
-    "unrealized_pnl_usdt": 10.76016623636741,
-    "unrealized_pnl_pct": 0.027348853169371894,
-    "total_pnl_usdt": 10.76016623636741,
-    "total_pnl_pct": 0.010760166236367412,
-    "executed_usdt": 43.15886256817963,
-    "executed_btc": 0.0006997222124966065,
-    "portfolio_value_before": 1010.5034728863675,
-    "portfolio_value_after": 1010.5034728863675
+    "unrealized_pnl_usdt": 10.416155930860043,
+    "unrealized_pnl_pct": 0.026474490531405253,
+    "total_pnl_usdt": 10.416155930860043,
+    "total_pnl_pct": 0.010416155930860043,
+    "executed_usdt": 0.0,
+    "executed_btc": 0.0,
+    "portfolio_value_before": 1010.15946258086,
+    "portfolio_value_after": 1010.15946258086
   },
   "live_price_status": {
-    "checked_at": "2026-06-25T08:16:30.863632+00:00",
-    "selected_source": "coinbase",
-    "selected_price": 61679.995,
+    "checked_at": "2026-06-25T10:18:49.859068+00:00",
+    "selected_source": "kraken",
+    "selected_price": 61627.5,
     "sources": {
       "binance": {
         "ok": false,
@@ -31,57 +31,57 @@
       },
       "coinbase": {
         "ok": true,
-        "price": 61679.995
+        "price": 61624.155
       },
       "kraken": {
         "ok": true,
-        "price": 61679.4
+        "price": 61627.5
       }
     },
-    "median_price": 61679.995,
-    "dispersion_pct": 0.0009646563687321377
+    "median_price": 61627.5,
+    "dispersion_pct": 0.005427771692833823
   },
   "memory_weighted_decision": {
     "available": true,
     "weighted_price_p10": 44167.97859300801,
     "weighted_price_p50": 73392.60839767121,
     "weighted_price_p90": 233024.46694266293,
-    "expected_7d_return": 0.06646263005022816,
-    "expected_30d_return": 0.1898932287149376,
-    "historical_drawdown_risk": 0.28391727993804133,
-    "upside_to_p90": 2.777958590020361,
+    "expected_7d_return": 0.06681737761851322,
+    "expected_30d_return": 0.19090679319575207,
+    "historical_drawdown_risk": 0.2833073125957079,
+    "upside_to_p90": 2.7811766977836667,
     "memory_confidence": 0.6960832687638033,
     "sample_confidence": 1.0,
     "same_regime_confidence": 0.444,
     "distance_confidence": 0.5635162771549507,
     "confirmation_confidence": 0.5820209973753281,
     "regime_adjustment": 0.1,
-    "decision_edge": 0.14589428769976456,
+    "decision_edge": 0.1467851922575156,
     "memory_action": "OBSERVE_ACCUMULATE_SMALL",
     "position_fraction": 0.05,
     "confidence_label": "memory_moderate_low",
     "method": "memory_weighted_distribution_v0.3_pnl_lower_tp",
     "pnl_overlay": {
-      "avg_entry_price_usd": 59841.74340694412,
-      "cost_basis_usdt": 350.28236035,
-      "unrealized_pnl_usdt": 10.76016623636741,
-      "unrealized_pnl_pct": 0.030718550102311514,
+      "avg_entry_price_usd": 60038.023904613045,
+      "cost_basis_usdt": 393.44122292,
+      "unrealized_pnl_usdt": 10.416155930860043,
+      "unrealized_pnl_pct": 0.026474490531405253,
       "realized_pnl_usdt": 0.0,
-      "total_pnl_usdt": 10.76016623636741,
-      "total_pnl_pct": 0.010760166236367412,
+      "total_pnl_usdt": 10.416155930860043,
+      "total_pnl_pct": 0.010416155930860043,
       "profit_notes": []
     },
     "final_action": "OBSERVE_ACCUMULATE_SMALL",
-    "final_position_fraction": 0.0427102565465729
+    "final_position_fraction": 0.00020433029549282722
   },
   "snapshot": {
     "state_date": "2026-06-25",
     "run_date_utc": "2026-06-25",
     "is_fresh_for_today": true,
     "live_price_status": {
-      "checked_at": "2026-06-25T08:16:30.863632+00:00",
-      "selected_source": "coinbase",
-      "selected_price": 61679.995,
+      "checked_at": "2026-06-25T10:18:49.859068+00:00",
+      "selected_source": "kraken",
+      "selected_price": 61627.5,
       "sources": {
         "binance": {
           "ok": false,
@@ -90,31 +90,31 @@
         },
         "coinbase": {
           "ok": true,
-          "price": 61679.995
+          "price": 61624.155
         },
         "kraken": {
           "ok": true,
-          "price": 61679.4
+          "price": 61627.5
         }
       },
-      "median_price": 61679.995,
-      "dispersion_pct": 0.0009646563687321377
+      "median_price": 61627.5,
+      "dispersion_pct": 0.005427771692833823
     },
     "price": {
-      "execution_price_usd": 61679.995,
-      "execution_price_source": "coinbase",
+      "execution_price_usd": 61627.5,
+      "execution_price_source": "kraken",
       "snapshot_price_usd": 60839.0,
-      "live_price_usd": 61679.995,
+      "live_price_usd": 61627.5,
       "cohesive_fair_price_usd": 68992.1421696913,
-      "cohesive_deviation": -0.1059852171527959,
-      "cohesive_deviation_pct": -10.59852171527959,
+      "cohesive_deviation": -0.1067461009049033,
+      "cohesive_deviation_pct": -10.67461009049033,
       "snapshot_model_deviation": -0.1181749386711032
     },
     "production": {
       "cheap_usd": 28617.737263662602,
       "average_usd": 52465.85165004811,
       "expensive_usd": 83468.40035234929,
-      "deviation_from_production": 0.17562172461072478,
+      "deviation_from_production": 0.17462116904269268,
       "snapshot_deviation_from_production": 0.15959234600443598
     },
     "bands": {
@@ -186,29 +186,29 @@
       }
     },
     "paper_portfolio": {
-      "cash_usdt": 649.4609463,
-      "btc_amount": 0.005853478532,
-      "cost_basis_usdt": 350.28236035,
-      "avg_entry_price_usd": 59841.74340694412,
-      "market_value_usdt": 361.0425265863674,
-      "portfolio_value_usdt": 1010.5034728863675,
-      "btc_exposure": 0.3572897434534271,
-      "btc_exposure_pct": 35.72897434534271,
-      "unrealized_pnl_usdt": 10.76016623636741,
-      "unrealized_pnl_pct": 0.030718550102311514,
+      "cash_usdt": 606.30208373,
+      "btc_amount": 0.006553200744,
+      "cost_basis_usdt": 393.44122292,
+      "avg_entry_price_usd": 60038.023904613045,
+      "market_value_usdt": 403.85737885086,
+      "portfolio_value_usdt": 1010.15946258086,
+      "btc_exposure": 0.3997956697045072,
+      "btc_exposure_pct": 39.97956697045072,
+      "unrealized_pnl_usdt": 10.416155930860043,
+      "unrealized_pnl_pct": 0.026474490531405253,
       "realized_pnl_usdt": 0.0,
-      "total_pnl_usdt": 10.76016623636741,
-      "total_pnl_pct": 0.010760166236367412
+      "total_pnl_usdt": 10.416155930860043,
+      "total_pnl_pct": 0.010416155930860043
     }
   },
   "reason": [
-    "Memory edge: 14.59%.",
-    "Expected 7d/30d: 6.65% / 18.99%.",
-    "Historical drawdown risk to weighted p10: 28.39%.",
+    "Memory edge: 14.68%.",
+    "Expected 7d/30d: 6.68% / 19.09%.",
+    "Historical drawdown risk to weighted p10: 28.33%.",
     "Memory confidence: 69.6%.",
-    "Weighted memory p50: 73392.61 USD vs execution price 61680.00 USD.",
-    "PnL: unrealized 10.76 USDT (3.07%), realized 0.00 USDT.",
-    "Live source: coinbase.",
+    "Weighted memory p50: 73392.61 USD vs execution price 61627.50 USD.",
+    "PnL: unrealized 10.42 USDT (2.65%), realized 0.00 USDT.",
+    "Live source: kraken.",
     "Structural regime: bear_late; market regime: range_bias_up_dev_extreme.",
     "Flow: neutru/slab; liquidity: ridicată/puternică."
   ],
