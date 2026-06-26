@@ -1,0 +1,53 @@
+name: Validate CohesivX v0.6.3
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'validate_cohesivx_v063.py'
+      - 'backtest_cohesivx_paper.py'
+      - 'ic_btc_series.json'
+      - 'j-btc-coeziv/ic_btc_series.json'
+      - 'data/ic_btc_series.json'
+      - 'btc-swing-strategy/ic_btc_series.json'
+      - '.github/workflows/validate-cohesivx-v063.yml'
+
+permissions:
+  contents: read
+
+env:
+  PYTHONUNBUFFERED: '1'
+
+jobs:
+  validate:
+    name: Run CohesivX v0.6.3 validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run validation harness
+        run: python validate_cohesivx_v063.py
+
+      - name: Show validation outputs
+        if: always()
+        run: |
+          ls -la btc-swing-strategy || true
+          test -f btc-swing-strategy/validation_report_v063.json && head -n 80 btc-swing-strategy/validation_report_v063.json || true
+
+      - name: Upload validation artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cohesivx-v063-validation
+          path: |
+            btc-swing-strategy/validation_report_v063.json
+            btc-swing-strategy/validation_summary_v063.csv
+          if-no-files-found: error
