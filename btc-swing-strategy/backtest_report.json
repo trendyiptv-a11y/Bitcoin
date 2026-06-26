@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-06-26T07:55:09.652155+00:00",
-  "version": "cohesivx_backtest_v0.3_bull_patient_benchmarks_periods",
+  "generated_at": "2026-06-26T08:37:05.137244+00:00",
+  "version": "cohesivx_backtest_v0.4_structural_allocator_underpriced_no_sell_zone",
   "disclaimer": "Educational paper backtest only. Not financial advice. Uses historical daily close and simplified execution assumptions.",
   "assumptions": {
     "starting_balance_usdt": 1000.0,
@@ -11,7 +11,9 @@
     "uses_slippage": false,
     "uses_full_fair_price_v2_production_cost": true,
     "uses_core_holding": true,
-    "uses_bull_patient_mode": true,
+    "uses_structural_allocator": true,
+    "uses_underpriced_mode": true,
+    "uses_no_sell_zone_below_p50": true,
     "benchmarks": [
       "buy_and_hold",
       "dca_monthly",
@@ -21,7 +23,7 @@
     "hashrate_source": "https://api.blockchain.info/charts/hash-rate?timespan=all&format=json",
     "electricity_usd_per_kwh": 0.05,
     "production_markup": 1.25,
-    "note": "v0.3 adds realistic benchmarks, cycle breakdowns, and a more patient bull mode that avoids profit selling while edge remains positive."
+    "note": "v0.4 changes the strategy from a trader into a structural allocator: it targets BTC exposure by regime/undervaluation and blocks profit selling below contextual p50."
   },
   "period": {
     "start": "2011-02-01",
@@ -29,17 +31,17 @@
     "days": 5625
   },
   "strategy": {
-    "final_portfolio_value_usdt": 80237.23469713,
-    "total_pnl_usdt": 79237.23469713,
-    "total_return_pct": 7923.7235,
-    "max_drawdown_pct": -36.6585,
-    "trades": 673,
-    "buys": 325,
-    "sells": 348,
-    "final_cash_usdt": 14644.76299391,
-    "final_btc_amount": 1.095532215905,
-    "final_btc_exposure_pct": 81.7482,
-    "profitable_days_ratio_pct": 94.6667
+    "final_portfolio_value_usdt": 1004306.37277458,
+    "total_pnl_usdt": 1003306.37277457,
+    "total_return_pct": 100330.6373,
+    "max_drawdown_pct": -55.0069,
+    "trades": 841,
+    "buys": 278,
+    "sells": 563,
+    "final_cash_usdt": 127293.98600935,
+    "final_btc_amount": 14.647951182513,
+    "final_btc_exposure_pct": 87.3252,
+    "profitable_days_ratio_pct": 94.2933
   },
   "buy_and_hold": {
     "final_value_usdt": 84601808.67599265,
@@ -77,11 +79,11 @@
     }
   },
   "comparison": {
-    "strategy_minus_buy_hold_usdt": -84521571.44129552,
-    "strategy_minus_buy_hold_pct_points": -8452157.1441,
-    "strategy_minus_dca_usdt": -2319443.86776767,
-    "strategy_minus_rebalance_40_60_usdt": -546104.28065171,
-    "strategy_minus_rebalance_60_40_usdt": -5200078.5595092
+    "strategy_minus_buy_hold_usdt": -83597502.30321807,
+    "strategy_minus_buy_hold_pct_points": -8359750.2303,
+    "strategy_minus_dca_usdt": -1395374.72969022,
+    "strategy_minus_rebalance_40_60_usdt": 377964.85742574,
+    "strategy_minus_rebalance_60_40_usdt": -4276009.42143175
   },
   "period_breakdown": [
     {
@@ -91,11 +93,11 @@
         "end": "2014-12-31",
         "available": true,
         "strategy_start_value_usdt": 1000.0,
-        "strategy_end_value_usdt": 8314.99067331,
-        "strategy_return_pct": 731.4991,
-        "strategy_max_drawdown_pct": -36.6585,
-        "accumulate_days": 60,
-        "sell_days": 148
+        "strategy_end_value_usdt": 13696.27747167,
+        "strategy_return_pct": 1269.6277,
+        "strategy_max_drawdown_pct": -37.8484,
+        "accumulate_days": 64,
+        "sell_days": 177
       },
       "benchmarks": {
         "label": "2011_2014",
@@ -135,12 +137,12 @@
         "start": "2015-01-01",
         "end": "2018-12-31",
         "available": true,
-        "strategy_start_value_usdt": 8313.12305461,
-        "strategy_end_value_usdt": 13550.00768564,
-        "strategy_return_pct": 62.9954,
-        "strategy_max_drawdown_pct": -35.7914,
-        "accumulate_days": 20,
-        "sell_days": 53
+        "strategy_start_value_usdt": 13685.69497663,
+        "strategy_end_value_usdt": 41528.62265062,
+        "strategy_return_pct": 203.4455,
+        "strategy_max_drawdown_pct": -54.6099,
+        "accumulate_days": 108,
+        "sell_days": 240
       },
       "benchmarks": {
         "label": "2015_2018",
@@ -180,12 +182,12 @@
         "start": "2019-01-01",
         "end": "2022-12-31",
         "available": true,
-        "strategy_start_value_usdt": 13831.3218597,
-        "strategy_end_value_usdt": 31892.97884358,
-        "strategy_return_pct": 130.5852,
-        "strategy_max_drawdown_pct": -33.7544,
-        "accumulate_days": 91,
-        "sell_days": 73
+        "strategy_start_value_usdt": 42744.2434599,
+        "strategy_end_value_usdt": 233694.36214983,
+        "strategy_return_pct": 446.7271,
+        "strategy_max_drawdown_pct": -55.0069,
+        "accumulate_days": 37,
+        "sell_days": 83
       },
       "benchmarks": {
         "label": "2019_2022",
@@ -225,12 +227,12 @@
         "start": "2023-01-01",
         "end": "2026-06-26",
         "available": true,
-        "strategy_start_value_usdt": 31982.46030056,
-        "strategy_end_value_usdt": 80237.23469713,
-        "strategy_return_pct": 150.8789,
-        "strategy_max_drawdown_pct": -27.0939,
-        "accumulate_days": 163,
-        "sell_days": 122
+        "strategy_start_value_usdt": 234700.15921745,
+        "strategy_end_value_usdt": 1004306.37277458,
+        "strategy_return_pct": 327.9104,
+        "strategy_max_drawdown_pct": -31.9054,
+        "accumulate_days": 69,
+        "sell_days": 91
       },
       "benchmarks": {
         "label": "2023_2026",
