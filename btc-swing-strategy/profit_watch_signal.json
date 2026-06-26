@@ -1,18 +1,18 @@
 {
-  "checked_at": "2026-06-26T04:37:51.338298+00:00",
-  "state_date": "2026-06-25",
+  "checked_at": "2026-06-26T05:56:56.625952+00:00",
+  "state_date": "2026-06-26",
   "run_date_utc": "2026-06-26",
-  "state_is_fresh": false,
+  "state_is_fresh": true,
   "regime": "bear_late",
   "profit_profile": "bear_late_defensive",
   "take_profit_small_pnl": 0.045,
   "take_profit_medium_pnl": 0.09,
-  "live_price_source": "coinbase",
-  "live_price_usd": 59835.245,
+  "live_price_source": "kraken",
+  "live_price_usd": 59847.2,
   "live_price_status": {
-    "checked_at": "2026-06-26T04:37:50.720588+00:00",
-    "selected_source": "coinbase",
-    "selected_price": 59835.245,
+    "checked_at": "2026-06-26T05:56:56.359019+00:00",
+    "selected_source": "kraken",
+    "selected_price": 59847.2,
     "sources": {
       "binance": {
         "ok": false,
@@ -21,27 +21,27 @@
       },
       "coinbase": {
         "ok": true,
-        "price": 59835.245
+        "price": 59836.355
       },
       "kraken": {
         "ok": true,
-        "price": 59822.3
+        "price": 59847.2
       }
     },
-    "median_price": 59835.245,
-    "dispersion_pct": 0.02163440627676833
+    "median_price": 59847.2,
+    "dispersion_pct": 0.018121148524899894
   },
-  "last_bot_run_minutes_ago": 0.49478371666666665,
+  "last_bot_run_minutes_ago": 4.153022,
   "trigger_paper_trader": false,
   "trigger_profit_exit": false,
   "trigger_level": "none",
-  "reason": "Cooldown active: last paper/profit run was 0.5 minutes ago.",
+  "reason": "Cooldown active: last paper/profit run was 4.2 minutes ago.",
   "btc_amount": 0.008391019317,
   "cash_usdt": 497.97429587,
   "cost_basis_usdt": 501.76901078,
   "avg_entry_price_usd": 59798.33817846519,
-  "unrealized_pnl_usdt": 0.3096858524277195,
-  "unrealized_pnl_pct": 0.0006171880801213945,
-  "portfolio_value_usdt": 1000.0529925024277,
-  "btc_exposure_pct": 50.20520916357428
+  "unrealized_pnl_usdt": 0.41000048836241376,
+  "unrealized_pnl_pct": 0.0008171100238435769,
+  "portfolio_value_usdt": 1000.1533071383624,
+  "btc_exposure_pct": 50.21020354421428
 }
