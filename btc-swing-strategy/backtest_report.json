@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-06-26T15:34:32.225846+00:00",
-  "version": "cohesivx_backtest_v0.6.2_adaptive_guard",
+  "generated_at": "2026-06-26T16:55:32.325766+00:00",
+  "version": "cohesivx_backtest_v0.6.3_guarded_accumulation",
   "disclaimer": "Educational paper backtest only. Not financial advice. Uses historical daily close and simplified execution assumptions.",
   "assumptions": {
     "starting_balance_usdt": 1000.0,
@@ -21,11 +21,14 @@
     "uses_positive_market_slow_target_down": true,
     "uses_adaptive_drawdown_guard": true,
     "uses_conditional_buy_gate": true,
+    "uses_guarded_accumulation_tuning": true,
     "drawdown_guard": -0.6,
     "drawdown_guard_target_cap": 0.72,
     "drawdown_caution": -0.54,
     "adaptive_buy_lock_dd": -0.58,
-    "max_entry_fraction_guard": 0.07,
+    "max_entry_fraction_guard": 0.08,
+    "guard_confirmed_buy_scale": 0.6,
+    "caution_confirmed_buy_scale": 0.48,
     "guard_risk_reduction_cooldown_days": 9,
     "negative_market_risk_cooldown_days": 10,
     "benchmarks": [
@@ -37,7 +40,7 @@
     "hashrate_source": "https://api.blockchain.info/charts/hash-rate?timespan=all&format=json",
     "electricity_usd_per_kwh": 0.05,
     "production_markup": 1.25,
-    "note": "v0.6.2 replaces the blunt buy-lock with an adaptive guard: buys in drawdown are blocked only when edge, confidence and underpricing do not justify the risk; confirmed underpricing can still accumulate with reduced size."
+    "note": "v0.6.3 keeps the adaptive guard unchanged and allows slightly more confirmed accumulation inside drawdown guard."
   },
   "period": {
     "start": "2011-02-01",
@@ -45,9 +48,9 @@
     "days": 5625
   },
   "strategy": {
-    "final_portfolio_value_usdt": 5176938.76340648,
-    "total_pnl_usdt": 5175938.76340648,
-    "total_return_pct": 517593.8763,
+    "final_portfolio_value_usdt": 5178763.41054641,
+    "total_pnl_usdt": 5177763.41054641,
+    "total_return_pct": 517776.3411,
     "max_drawdown_pct": -67.6288,
     "trades": 208,
     "buys": 117,
@@ -57,8 +60,8 @@
     "drawdown_guard_days": 250,
     "adaptive_lock_days": 267,
     "adaptive_buy_days": 130,
-    "final_cash_usdt": 267234.33613663,
-    "final_btc_amount": 82.002388856187,
+    "final_cash_usdt": 267328.52468886,
+    "final_btc_amount": 82.03129115369,
     "final_btc_exposure_pct": 94.838,
     "profitable_days_ratio_pct": 94.2933
   },
@@ -98,11 +101,11 @@
     }
   },
   "comparison": {
-    "strategy_minus_buy_hold_usdt": -79424869.91258617,
-    "strategy_minus_buy_hold_pct_points": -7942486.9913,
-    "strategy_minus_dca_usdt": 2777257.66094168,
-    "strategy_minus_rebalance_40_60_usdt": 4550597.24805764,
-    "strategy_minus_rebalance_60_40_usdt": -103377.03079985
+    "strategy_minus_buy_hold_usdt": -79423045.26544625,
+    "strategy_minus_buy_hold_pct_points": -7942304.5265,
+    "strategy_minus_dca_usdt": 2779082.30808161,
+    "strategy_minus_rebalance_40_60_usdt": 4552421.89519757,
+    "strategy_minus_rebalance_60_40_usdt": -101552.38365992
   },
   "period_breakdown": [
     {
@@ -161,8 +164,8 @@
         "end": "2018-12-31",
         "available": true,
         "strategy_start_value_usdt": 30778.79864864,
-        "strategy_end_value_usdt": 235144.80817017,
-        "strategy_return_pct": 663.9831,
+        "strategy_end_value_usdt": 235227.68655087,
+        "strategy_return_pct": 664.2523,
         "strategy_max_drawdown_pct": -67.6288,
         "accumulate_days": 40,
         "sell_days": 36,
@@ -209,8 +212,8 @@
         "start": "2019-01-01",
         "end": "2022-12-31",
         "available": true,
-        "strategy_start_value_usdt": 242577.46907171,
-        "strategy_end_value_usdt": 1266514.30108185,
+        "strategy_start_value_usdt": 242662.9671441,
+        "strategy_end_value_usdt": 1266960.69262766,
         "strategy_return_pct": 422.1071,
         "strategy_max_drawdown_pct": -60.7685,
         "accumulate_days": 22,
@@ -258,8 +261,8 @@
         "start": "2023-01-01",
         "end": "2026-06-26",
         "available": true,
-        "strategy_start_value_usdt": 1272305.8895198,
-        "strategy_end_value_usdt": 5176938.76340648,
+        "strategy_start_value_usdt": 1272754.32235019,
+        "strategy_end_value_usdt": 5178763.41054641,
         "strategy_return_pct": 306.8942,
         "strategy_max_drawdown_pct": -41.8861,
         "accumulate_days": 23,
