@@ -4,7 +4,7 @@
   "level": "moderate",
   "current_regime": "bear_late",
   "current_signal": "flat",
-  "consecutive_degradation_days": 24,
+  "consecutive_degradation_days": 25,
   "window_days": 180,
   "major_drawdown_threshold": -0.2,
   "historical_available_events": 107,
@@ -13,8 +13,8 @@
   "median_days_to_confirmation": 27.0,
   "average_days_to_confirmation": 44.22641509433962,
   "median_min_drawdown": -0.19723364752564,
-  "average_min_drawdown": -0.2497467117698093,
+  "average_min_drawdown": -0.25028446102141655,
   "main_text": "Contextul actual aparține unei familii istorice care a generat scăderi importante în aproximativ 50% din cazuri. Când acestea s-au confirmat, confirmarea a apărut în medie după ~27 zile.",
   "footer": "Interpretare statistică a degradării structurale, nu recomandare de tranzacționare.",
-  "generated_at": "2026-06-25T04:41:25.188830+00:00"
+  "generated_at": "2026-06-26T04:48:29.263282+00:00"
 }
