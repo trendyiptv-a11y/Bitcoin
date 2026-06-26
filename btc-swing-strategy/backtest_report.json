@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-06-26T07:17:46.105074+00:00",
-  "version": "cohesivx_backtest_v0.2_production_cost_multiplier_core_holding",
+  "generated_at": "2026-06-26T07:49:18.612872+00:00",
+  "version": "cohesivx_backtest_v0.3_bull_patient_benchmarks_periods",
   "disclaimer": "Educational paper backtest only. Not financial advice. Uses historical daily close and simplified execution assumptions.",
   "assumptions": {
     "starting_balance_usdt": 1000.0,
@@ -11,10 +11,17 @@
     "uses_slippage": false,
     "uses_full_fair_price_v2_production_cost": true,
     "uses_core_holding": true,
+    "uses_bull_patient_mode": true,
+    "benchmarks": [
+      "buy_and_hold",
+      "dca_monthly",
+      "rebalance_40_60_monthly",
+      "rebalance_60_40_monthly"
+    ],
     "hashrate_source": "https://api.blockchain.info/charts/hash-rate?timespan=all&format=json",
     "electricity_usd_per_kwh": 0.05,
     "production_markup": 1.25,
-    "note": "v0.2 uses production-cost historical multiplier similarity and protects a core BTC position by regime/signal."
+    "note": "v0.3 adds realistic benchmarks, cycle breakdowns, and a more patient bull mode that avoids profit selling while edge remains positive."
   },
   "period": {
     "start": "2011-02-01",
@@ -22,16 +29,16 @@
     "days": 5625
   },
   "strategy": {
-    "final_portfolio_value_usdt": 28799.12895319,
-    "total_pnl_usdt": 27799.12895319,
-    "total_return_pct": 2779.9129,
-    "max_drawdown_pct": -29.7847,
-    "trades": 784,
-    "buys": 356,
-    "sells": 428,
-    "final_cash_usdt": 8542.7390423,
-    "final_btc_amount": 0.338324309926,
-    "final_btc_exposure_pct": 70.3368,
+    "final_portfolio_value_usdt": 80237.23469713,
+    "total_pnl_usdt": 79237.23469713,
+    "total_return_pct": 7923.7235,
+    "max_drawdown_pct": -36.6585,
+    "trades": 673,
+    "buys": 325,
+    "sells": 348,
+    "final_cash_usdt": 14644.76299391,
+    "final_btc_amount": 1.095532215905,
+    "final_btc_exposure_pct": 81.7482,
     "profitable_days_ratio_pct": 94.6667
   },
   "buy_and_hold": {
@@ -40,8 +47,222 @@
     "total_return_pct": 8460080.8676,
     "btc_amount": 1413.028119259573
   },
+  "benchmarks": {
+    "buy_and_hold": {
+      "final_value_usdt": 84601808.67599265,
+      "total_return_pct": 8460080.8676,
+      "max_drawdown_pct": -93.0743,
+      "btc_amount": 1413.028119259573
+    },
+    "dca_monthly": {
+      "final_value_usdt": 2399681.1024648,
+      "total_return_pct": 239868.1102,
+      "max_drawdown_pct": -89.5202,
+      "buys": 184,
+      "btc_amount": 40.079630567177
+    },
+    "rebalance_40_60_monthly": {
+      "final_value_usdt": 626341.51534884,
+      "total_return_pct": 62534.1515,
+      "max_drawdown_pct": -66.5368,
+      "trades": 185,
+      "target_btc_exposure_pct": 40.0
+    },
+    "rebalance_60_40_monthly": {
+      "final_value_usdt": 5280315.79420633,
+      "total_return_pct": 527931.5794,
+      "max_drawdown_pct": -79.8812,
+      "trades": 185,
+      "target_btc_exposure_pct": 60.0
+    }
+  },
   "comparison": {
-    "strategy_minus_buy_hold_usdt": -84573009.54703946,
-    "strategy_minus_buy_hold_pct_points": -8457300.9547
-  }
+    "strategy_minus_buy_hold_usdt": -84521571.44129552,
+    "strategy_minus_buy_hold_pct_points": -8452157.1441,
+    "strategy_minus_dca_usdt": -2319443.86776767,
+    "strategy_minus_rebalance_40_60_usdt": -546104.28065171,
+    "strategy_minus_rebalance_60_40_usdt": -5200078.5595092
+  },
+  "period_breakdown": [
+    {
+      "strategy": {
+        "label": "2011_2014",
+        "start": "2011-02-01",
+        "end": "2014-12-31",
+        "available": true,
+        "strategy_start_value_usdt": 1000.0,
+        "strategy_end_value_usdt": 8314.99067331,
+        "strategy_return_pct": 731.4991,
+        "strategy_max_drawdown_pct": -36.6585,
+        "accumulate_days": 60,
+        "sell_days": 148
+      },
+      "benchmarks": {
+        "label": "2011_2014",
+        "available": true,
+        "buy_and_hold": {
+          "final_value_usdt": 449682.06867317,
+          "total_return_pct": 44868.2069,
+          "max_drawdown_pct": -93.0743,
+          "btc_amount": 1413.028119259573
+        },
+        "dca_monthly": {
+          "final_value_usdt": 49654.39903788,
+          "total_return_pct": 4865.4399,
+          "max_drawdown_pct": -90.8841,
+          "buys": 46,
+          "btc_amount": 155.961294752827
+        },
+        "rebalance_40_60": {
+          "final_value_usdt": 39037.84716493,
+          "total_return_pct": 3803.7847,
+          "max_drawdown_pct": -66.5368,
+          "trades": 47,
+          "target_btc_exposure_pct": 40.0
+        },
+        "rebalance_60_40": {
+          "final_value_usdt": 116713.91165409,
+          "total_return_pct": 11571.3912,
+          "max_drawdown_pct": -79.8812,
+          "trades": 47,
+          "target_btc_exposure_pct": 60.0
+        }
+      }
+    },
+    {
+      "strategy": {
+        "label": "2015_2018",
+        "start": "2015-01-01",
+        "end": "2018-12-31",
+        "available": true,
+        "strategy_start_value_usdt": 8313.12305461,
+        "strategy_end_value_usdt": 13550.00768564,
+        "strategy_return_pct": 62.9954,
+        "strategy_max_drawdown_pct": -35.7914,
+        "accumulate_days": 20,
+        "sell_days": 53
+      },
+      "benchmarks": {
+        "label": "2015_2018",
+        "available": true,
+        "buy_and_hold": {
+          "final_value_usdt": 11900.63196672,
+          "total_return_pct": 1090.0632,
+          "max_drawdown_pct": -83.2906,
+          "btc_amount": 3.17571215345
+        },
+        "dca_monthly": {
+          "final_value_usdt": 6023.60386837,
+          "total_return_pct": 502.3604,
+          "max_drawdown_pct": -83.0516,
+          "buys": 47,
+          "btc_amount": 1.601853699517
+        },
+        "rebalance_40_60": {
+          "final_value_usdt": 3692.83967542,
+          "total_return_pct": 269.284,
+          "max_drawdown_pct": -47.9806,
+          "trades": 47,
+          "target_btc_exposure_pct": 40.0
+        },
+        "rebalance_60_40": {
+          "final_value_usdt": 6021.71737532,
+          "total_return_pct": 502.1717,
+          "max_drawdown_pct": -63.3942,
+          "trades": 47,
+          "target_btc_exposure_pct": 60.0
+        }
+      }
+    },
+    {
+      "strategy": {
+        "label": "2019_2022",
+        "start": "2019-01-01",
+        "end": "2022-12-31",
+        "available": true,
+        "strategy_start_value_usdt": 13831.3218597,
+        "strategy_end_value_usdt": 31892.97884358,
+        "strategy_return_pct": 130.5852,
+        "strategy_max_drawdown_pct": -33.7544,
+        "accumulate_days": 91,
+        "sell_days": 73
+      },
+      "benchmarks": {
+        "label": "2019_2022",
+        "available": true,
+        "buy_and_hold": {
+          "final_value_usdt": 4260.48219785,
+          "total_return_pct": 326.0482,
+          "max_drawdown_pct": -76.6686,
+          "btc_amount": 0.257721995284
+        },
+        "dca_monthly": {
+          "final_value_usdt": 1362.12245458,
+          "total_return_pct": 36.2122,
+          "max_drawdown_pct": -74.8671,
+          "buys": 47,
+          "btc_amount": 0.08113628752
+        },
+        "rebalance_40_60": {
+          "final_value_usdt": 2311.23758206,
+          "total_return_pct": 131.1238,
+          "max_drawdown_pct": -40.6929,
+          "trades": 47,
+          "target_btc_exposure_pct": 40.0
+        },
+        "rebalance_60_40": {
+          "final_value_usdt": 3080.62611969,
+          "total_return_pct": 208.0626,
+          "max_drawdown_pct": -55.5772,
+          "trades": 48,
+          "target_btc_exposure_pct": 60.0
+        }
+      }
+    },
+    {
+      "strategy": {
+        "label": "2023_2026",
+        "start": "2023-01-01",
+        "end": "2026-06-26",
+        "available": true,
+        "strategy_start_value_usdt": 31982.46030056,
+        "strategy_end_value_usdt": 80237.23469713,
+        "strategy_return_pct": 150.8789,
+        "strategy_max_drawdown_pct": -27.0939,
+        "accumulate_days": 163,
+        "sell_days": 122
+      },
+      "benchmarks": {
+        "label": "2023_2026",
+        "available": true,
+        "buy_and_hold": {
+          "final_value_usdt": 3603.7780481,
+          "total_return_pct": 260.3778,
+          "max_drawdown_pct": -52.1449,
+          "btc_amount": 0.060190672011
+        },
+        "dca_monthly": {
+          "final_value_usdt": 1209.63591636,
+          "total_return_pct": 20.9636,
+          "max_drawdown_pct": -49.767,
+          "buys": 41,
+          "btc_amount": 0.019805794503
+        },
+        "rebalance_40_60": {
+          "final_value_usdt": 1855.86088821,
+          "total_return_pct": 85.5861,
+          "max_drawdown_pct": -24.0445,
+          "trades": 38,
+          "target_btc_exposure_pct": 40.0
+        },
+        "rebalance_60_40": {
+          "final_value_usdt": 2393.6089092,
+          "total_return_pct": 139.3609,
+          "max_drawdown_pct": -34.4282,
+          "trades": 39,
+          "target_btc_exposure_pct": 60.0
+        }
+      }
+    }
+  ]
 }
