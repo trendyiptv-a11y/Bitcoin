@@ -1,21 +1,21 @@
 {
   "title": "COEZIUNE_PARTICIPATIVA",
-  "score": 64.34,
-  "label": "participare tensionată",
-  "level": "tense",
+  "score": 73.58,
+  "label": "participare coezivă",
+  "level": "cohesive",
   "signal": "flat",
-  "main_text": "Participanții rămân activi, dar comportamentul este tensionat. Interesul persistă, însă fluxul dominant poate fi defensiv sau orientat spre ieșire.",
+  "main_text": "Participanții par activi și relativ coezivi. Interesul pentru ecosistem persistă, iar comportamentul observabil nu indică abandon.",
   "components": {
-    "liquidity_component": 56.99,
-    "flow_component": 45.45,
-    "production_component": 54.4,
+    "liquidity_component": 77.93,
+    "flow_component": 53.05,
+    "production_component": 59.71,
     "persistence_component": 100.0,
     "probability_component": 100.0
   },
   "inputs": {
-    "flow_score": -0.0037878601541708272,
-    "liquidity_score": 0.007762541294053138,
-    "deviation_from_production": 0.15959234600443598,
+    "flow_score": 0.0025384663042040175,
+    "liquidity_score": 0.03103083709269837,
+    "deviation_from_production": 0.14102788989884055,
     "signal_probability": 0.5,
     "recent_days": 14,
     "recent_short_days": 0,
@@ -23,19 +23,19 @@
     "recent_flat_days": 14
   },
   "history": {
-    "rows": 5624,
+    "rows": 5625,
     "from": "2011-02-01T00:00:00+00:00",
-    "to": "2026-06-25T00:00:00+00:00",
-    "mean_score": 74.55263335704126,
+    "to": "2026-06-26T00:00:00+00:00",
+    "mean_score": 74.55397333333333,
     "median_score": 77.22,
     "min_score": 56.04,
     "max_score": 97.21,
     "label_counts": {
-      "participare coezivă": 3661,
+      "participare coezivă": 3662,
       "participare tensionată": 1963
     }
   },
   "footer": "Indicator experimental derivat din flux, lichiditate, persistență și tensiune față de model. Nu măsoară încă direct utilizarea peer-to-peer on-chain.",
-  "generated_at": "2026-06-25T04:41:54.358015+00:00",
-  "source_timestamp": "2026-06-25T00:00:00+00:00"
+  "generated_at": "2026-06-26T04:48:55.115012+00:00",
+  "source_timestamp": "2026-06-26T00:00:00+00:00"
 }
