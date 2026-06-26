@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-26T11:20:33.389950+00:00",
+  "generated_at": "2026-06-26T11:27:54.357114+00:00",
   "version": "cohesivx_backtest_v0.6_selective_boost_drawdown_guard",
   "disclaimer": "Educational paper backtest only. Not financial advice. Uses historical daily close and simplified execution assumptions.",
   "assumptions": {
