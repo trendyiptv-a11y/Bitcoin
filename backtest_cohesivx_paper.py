@@ -95,7 +95,7 @@ def estimate_cost_usd_per_btc_from_difficulty(difficulty: float, when: datetime)
 
 
 def fetch_json(url: str) -> Any:
-    req = urllib.request.Request(url, headers={"User-Agent": "CohesivX-Backtest/0.3"})
+    req = urllib.request.Request(url, headers={"User-Agent": "CohesivX-Backtest/0.4"})
     with urllib.request.urlopen(req, timeout=90) as response:
         return json.loads(response.read().decode("utf-8"))
 
@@ -156,7 +156,7 @@ def load_ic_series() -> list[dict[str, Any]]:
 
 def attach_production_cost(rows: list[dict[str, Any]], hashrate: list[dict[str, Any]]) -> list[dict[str, Any]]:
     if not hashrate:
-        raise ValueError("Hashrate history is empty; cannot run V3 backtest.")
+        raise ValueError("Hashrate history is empty; cannot run V4 backtest.")
     h_idx = 0
     out: list[dict[str, Any]] = []
     for row in rows:
@@ -196,33 +196,6 @@ def quantile(values: list[float], q: float) -> float:
     return xs[lo] * (hi - pos) + xs[hi] * (pos - lo)
 
 
-def active_rules(regime: str, edge: float, confidence: float, risk: float) -> dict[str, float | str]:
-    r = (regime or "").lower()
-    if r == "bear_late":
-        profile, max_exp, core = "bear_late_core", 0.38, 0.12
-        tp_small, tp_medium = 0.045, 0.10
-    elif r.startswith("bear"):
-        profile, max_exp, core = "bear_core_defensive", 0.30, 0.06
-        tp_small, tp_medium = 0.04, 0.08
-    elif r.startswith("bull"):
-        profile, max_exp, core = "bull_patient_core", 0.75, 0.45
-        tp_small, tp_medium = 0.12, 0.24
-    else:
-        profile, max_exp, core = "range_core_neutral", 0.45, 0.15
-        tp_small, tp_medium = 0.065, 0.13
-
-    if edge >= 0.18 and confidence >= 0.58 and risk < 0.28:
-        max_exp = max(max_exp, 0.55 if not r.startswith("bull") else 0.85)
-        core = max(core, 0.22 if not r.startswith("bull") else 0.60)
-        profile += "_strong"
-    elif edge >= 0.12 and confidence >= 0.52 and risk < 0.32:
-        max_exp = min(max(max_exp, max_exp + 0.08), 0.75)
-        core = max(core, 0.18 if not r.startswith("bull") else 0.50)
-        profile += "_moderate"
-
-    return {"profile": profile, "tp_small": tp_small, "tp_medium": tp_medium, "max_exposure": max_exp, "core_exposure": core}
-
-
 def memory_signal(history: list[dict[str, Any]], current: dict[str, Any]) -> dict[str, Any]:
     if len(history) < SAMPLES:
         return {"available": False, "reason": "not enough history"}
@@ -253,6 +226,8 @@ def memory_signal(history: list[dict[str, Any]], current: dict[str, Any]) -> dic
     expected_30d = (weighted_p50 - price) / price
     downside = abs(min(0.0, (weighted_p10 - price) / price))
     upside = max(0.0, (weighted_p90 - price) / price)
+    underpriced_pct = max(0.0, (weighted_p50 - price) / weighted_p50) if weighted_p50 > 0 else 0.0
+    over_p50_pct = max(0.0, (price - weighted_p50) / weighted_p50) if weighted_p50 > 0 else 0.0
     distance_median = statistics.median([context_distance(r, current) for r in nearest])
     sample_conf = clamp(len(nearest) / SAMPLES, 0.0, 1.0)
     same_conf = clamp(len(same) / max(len(nearest), 1), 0.0, 1.0)
@@ -281,11 +256,66 @@ def memory_signal(history: list[dict[str, Any]], current: dict[str, Any]) -> dic
         "expected_30d": expected_30d,
         "downside_risk": downside,
         "upside_to_p90": upside,
+        "underpriced_pct": underpriced_pct,
+        "over_p50_pct": over_p50_pct,
         "confidence": confidence,
         "decision_edge": edge,
         "distance_median": distance_median,
         "samples": len(nearest),
         "same_regime_samples": len(same),
+    }
+
+
+def target_exposure(regime: str, sig: dict[str, Any]) -> dict[str, Any]:
+    r = (regime or "").lower()
+    edge = f(sig.get("decision_edge"))
+    confidence = f(sig.get("confidence"))
+    risk = f(sig.get("downside_risk"))
+    underpriced = f(sig.get("underpriced_pct"))
+    expected = f(sig.get("expected_30d"))
+
+    if r == "bear_late":
+        low, high, core = 0.30, 0.55, 0.20
+        profile = "bear_late_allocator"
+    elif r.startswith("bear"):
+        low, high, core = 0.15, 0.35, 0.08
+        profile = "bear_allocator_defensive"
+    elif r.startswith("bull"):
+        low, high, core = 0.60, 0.90, 0.50
+        profile = "bull_allocator_patient"
+    else:
+        low, high, core = 0.35, 0.60, 0.20
+        profile = "range_allocator"
+
+    strength = 0.0
+    if edge > 0:
+        strength += clamp(edge / 0.25, 0.0, 1.0) * 0.35
+    strength += clamp(confidence, 0.0, 1.0) * 0.20
+    strength += clamp(underpriced / 0.35, 0.0, 1.0) * 0.35
+    if expected > 0:
+        strength += clamp(expected / 0.50, 0.0, 1.0) * 0.10
+    strength *= clamp(1.0 - max(0.0, risk - 0.25), 0.35, 1.0)
+
+    target = low + (high - low) * clamp(strength, 0.0, 1.0)
+    underpriced_mode = underpriced >= 0.08 and edge > 0 and confidence >= 0.42
+    deep_underpriced_mode = underpriced >= 0.18 and edge > 0.05 and confidence >= 0.45
+    if underpriced_mode:
+        target = max(target, min(high, low + (high - low) * 0.65))
+        core = max(core, min(target, low + (high - low) * 0.40))
+        profile += "_underpriced"
+    if deep_underpriced_mode:
+        target = max(target, high)
+        core = max(core, min(target, low + (high - low) * 0.60))
+        profile += "_deep"
+
+    no_sell_zone = underpriced_mode or (edge > 0.08 and confidence >= 0.45 and f(sig.get("weighted_price_p50")) > 0)
+    return {
+        "profile": profile,
+        "target_exposure": clamp(target, 0.0, 0.95),
+        "core_exposure": clamp(core, 0.0, 0.90),
+        "underpriced_mode": underpriced_mode,
+        "deep_underpriced_mode": deep_underpriced_mode,
+        "no_sell_zone": no_sell_zone,
     }
 
 
@@ -327,7 +357,7 @@ def run_backtest(rows: list[dict[str, Any]]) -> tuple[dict[str, Any], list[dict[
     trades = buys = sells = 0
     equity_curve: list[dict[str, Any]] = []
     peak = STARTING_BALANCE_USDT
-    max_drawdown = 0.0
+    max_dd = 0.0
     first_price = f(rows[0].get("close"))
     bh_btc = STARTING_BALANCE_USDT / first_price if first_price > 0 else 0.0
 
@@ -337,44 +367,43 @@ def run_backtest(rows: list[dict[str, Any]]) -> tuple[dict[str, Any], list[dict[
             continue
         hist = rows[:idx]
         sig = memory_signal(hist, row)
+        alloc = target_exposure(str(row.get("regime") or ""), sig) if sig.get("available") else {"profile": "observe", "target_exposure": 0.0, "core_exposure": 0.0, "no_sell_zone": False, "underpriced_mode": False, "deep_underpriced_mode": False}
         action = "OBSERVE"
         executed_usdt = executed_btc = 0.0
         before = account(cash, btc, cost_basis, realized, price)
-        rules = active_rules(str(row.get("regime") or ""), f(sig.get("decision_edge")), f(sig.get("confidence")), f(sig.get("downside_risk")))
 
         if sig.get("available"):
             edge = f(sig.get("decision_edge"))
-            conf = f(sig.get("confidence"))
-            risk = f(sig.get("downside_risk"))
             expected = f(sig.get("expected_30d"))
-            regime = str(row.get("regime") or "")
-            max_exp = float(rules["max_exposure"])
-            core_exp = float(rules["core_exposure"])
-            core_btc = before["value"] * core_exp / price if price > 0 else 0.0
+            risk = f(sig.get("downside_risk"))
+            target = float(alloc["target_exposure"])
+            core = float(alloc["core_exposure"])
+            no_sell_zone = bool(alloc["no_sell_zone"])
+            target_gap = target - before["exposure"]
+            core_btc = before["value"] * core / price if price > 0 else 0.0
             sellable_btc = max(0.0, btc - core_btc)
-            bull_patient = regime.startswith("bull") and edge > 0.08 and conf >= 0.45
 
-            if edge > 0.18 and conf >= 0.58 and risk < 0.28 and before["exposure"] < max_exp:
-                action = "ACCUMULATE_STRONG"
-                buy_fraction = min(MAX_ENTRY_FRACTION, max(0.0, max_exp - before["exposure"]))
+            if target_gap > 0.025 and edge > 0 and expected > -0.05:
+                if bool(alloc["deep_underpriced_mode"]):
+                    action = "ALLOCATE_DEEP_UNDERPRICED"
+                    buy_fraction = min(0.18, target_gap)
+                elif bool(alloc["underpriced_mode"]):
+                    action = "ALLOCATE_UNDERPRICED"
+                    buy_fraction = min(0.14, target_gap)
+                else:
+                    action = "ALLOCATE_TO_TARGET"
+                    buy_fraction = min(MAX_ENTRY_FRACTION, target_gap)
                 cash, btc, cost_basis, executed_usdt, executed_btc = execute_buy(cash, btc, cost_basis, price, before["value"] * buy_fraction)
-            elif edge > 0.07 and conf >= 0.45 and risk < 0.38 and before["exposure"] < max_exp:
-                action = "ACCUMULATE_SMALL"
-                target_exp = min(max_exp, max(core_exp, before["exposure"] + 0.05))
-                buy_fraction = min(0.05, max(0.0, target_exp - before["exposure"]))
-                cash, btc, cost_basis, executed_usdt, executed_btc = execute_buy(cash, btc, cost_basis, price, before["value"] * buy_fraction)
-            elif btc > 0 and before["unrealized_pct"] >= float(rules["tp_medium"]) and sellable_btc > 0 and not bull_patient:
-                action = "TAKE_PROFIT_MEDIUM_CORE_PROTECTED"
-                fraction = 0.18 if regime.startswith("bull") else 0.35
-                cash, btc, cost_basis, realized, executed_usdt, executed_btc = execute_sell(cash, btc, cost_basis, realized, price, min(sellable_btc, btc * fraction))
-            elif btc > 0 and before["unrealized_pct"] >= float(rules["tp_small"]) and (edge < 0.10 or risk > 0.36) and sellable_btc > 0 and not bull_patient:
-                action = "TAKE_PROFIT_SMALL_CORE_PROTECTED"
-                fraction = 0.10 if regime.startswith("bull") else 0.20
-                cash, btc, cost_basis, realized, executed_usdt, executed_btc = execute_sell(cash, btc, cost_basis, realized, price, min(sellable_btc, btc * fraction))
-            elif btc > 0 and (edge < -0.06 or expected < -0.08) and sellable_btc > 0:
-                action = "REDUCE_RISK_CORE_PROTECTED"
-                fraction = 0.15 if regime.startswith("bull") else 0.25
-                cash, btc, cost_basis, realized, executed_usdt, executed_btc = execute_sell(cash, btc, cost_basis, realized, price, min(sellable_btc, btc * fraction))
+            elif btc > 0 and not no_sell_zone and sellable_btc > 0:
+                if edge < -0.06 or expected < -0.08:
+                    action = "REDUCE_RISK_ALLOCATOR"
+                    cash, btc, cost_basis, realized, executed_usdt, executed_btc = execute_sell(cash, btc, cost_basis, realized, price, min(sellable_btc, btc * 0.25))
+                elif before["exposure"] > target + 0.10 and risk > 0.30:
+                    action = "TRIM_ABOVE_TARGET_RISK"
+                    cash, btc, cost_basis, realized, executed_usdt, executed_btc = execute_sell(cash, btc, cost_basis, realized, price, min(sellable_btc, btc * 0.18))
+                elif before["unrealized_pct"] > 0.30 and f(sig.get("over_p50_pct")) > 0.20 and edge < 0.08:
+                    action = "TAKE_PROFIT_OVERVALUED_ONLY"
+                    cash, btc, cost_basis, realized, executed_usdt, executed_btc = execute_sell(cash, btc, cost_basis, realized, price, min(sellable_btc, btc * 0.12))
 
             if executed_usdt >= MIN_TRADE_USDT:
                 trades += 1
@@ -384,7 +413,7 @@ def run_backtest(rows: list[dict[str, Any]]) -> tuple[dict[str, Any], list[dict[
         after = account(cash, btc, cost_basis, realized, price)
         peak = max(peak, after["value"])
         dd = (after["value"] - peak) / peak if peak > 0 else 0.0
-        max_drawdown = min(max_drawdown, dd)
+        max_dd = min(max_dd, dd)
         equity_curve.append({
             "date": row["date"],
             "close": round(price, 8),
@@ -397,12 +426,18 @@ def run_backtest(rows: list[dict[str, Any]]) -> tuple[dict[str, Any], list[dict[
             "btc_amount": round(btc, 12),
             "portfolio_value_usdt": round(after["value"], 8),
             "btc_exposure_pct": round(after["exposure"] * 100, 4),
+            "target_exposure_pct": round(float(alloc.get("target_exposure", 0.0)) * 100, 4),
+            "core_exposure_pct": round(float(alloc.get("core_exposure", 0.0)) * 100, 4),
             "total_pnl_usdt": round(after["total_pnl"], 8),
             "total_pnl_pct": round(after["total_pnl_pct"] * 100, 4),
             "drawdown_pct": round(dd * 100, 4),
             "regime": row.get("regime", ""),
-            "rule_profile": rules.get("profile", ""),
+            "rule_profile": alloc.get("profile", ""),
+            "underpriced_mode": bool(alloc.get("underpriced_mode", False)),
+            "deep_underpriced_mode": bool(alloc.get("deep_underpriced_mode", False)),
+            "no_sell_zone": bool(alloc.get("no_sell_zone", False)),
             "weighted_price_p50": round(f(sig.get("weighted_price_p50")), 8) if sig.get("available") else "",
+            "underpriced_pct": round(f(sig.get("underpriced_pct")) * 100, 4) if sig.get("available") else "",
             "decision_edge_pct": round(f(sig.get("decision_edge")) * 100, 4) if sig.get("available") else "",
             "memory_confidence_pct": round(f(sig.get("confidence")) * 100, 4) if sig.get("available") else "",
         })
@@ -416,7 +451,7 @@ def run_backtest(rows: list[dict[str, Any]]) -> tuple[dict[str, Any], list[dict[
         "final_portfolio_value_usdt": round(final["value"], 8),
         "total_pnl_usdt": round(final["total_pnl"], 8),
         "total_return_pct": round(final["total_pnl_pct"] * 100, 4),
-        "max_drawdown_pct": round(max_drawdown * 100, 4),
+        "max_drawdown_pct": round(max_dd * 100, 4),
         "trades": trades,
         "buys": buys,
         "sells": sells,
@@ -440,7 +475,7 @@ def max_drawdown(values: list[float]) -> float:
 
 
 def benchmark_buy_hold(rows: list[dict[str, Any]]) -> dict[str, Any]:
-    first, last = f(rows[0]["close"]), f(rows[-1]["close"])
+    first = f(rows[0]["close"])
     btc = STARTING_BALANCE_USDT / first if first > 0 else 0.0
     values = [btc * f(r["close"]) for r in rows]
     final = values[-1]
@@ -515,8 +550,8 @@ def summarize_curve_period(curve: list[dict[str, Any]], label: str, start: str, 
         "strategy_end_value_usdt": round(end_v, 8),
         "strategy_return_pct": round((end_v / start_v - 1) * 100, 4) if start_v > 0 else None,
         "strategy_max_drawdown_pct": round(max_drawdown(values) * 100, 4),
-        "accumulate_days": sum(1 for a in actions if a.startswith("ACCUMULATE")),
-        "sell_days": sum(1 for a in actions if "PROTECTED" in a),
+        "accumulate_days": sum(1 for a in actions if a.startswith("ALLOCATE")),
+        "sell_days": sum(1 for a in actions if a in {"REDUCE_RISK_ALLOCATOR", "TRIM_ABOVE_TARGET_RISK", "TAKE_PROFIT_OVERVALUED_ONLY"}),
     }
 
 
@@ -549,7 +584,7 @@ def main() -> None:
     hashrate = fetch_hashrate_history()
     rows = attach_production_cost(ic_rows, hashrate)
     if len(rows) < 400:
-        raise ValueError(f"Not enough aligned historical rows for v0.3 backtest: {len(rows)}. Need at least 400.")
+        raise ValueError(f"Not enough aligned historical rows for v0.4 backtest: {len(rows)}. Need at least 400.")
 
     strategy_result, curve = run_backtest(rows)
     benchmarks = {
@@ -569,7 +604,7 @@ def main() -> None:
     bh = strategy_result["buy_and_hold"]
     summary = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
-        "version": "cohesivx_backtest_v0.3_bull_patient_benchmarks_periods",
+        "version": "cohesivx_backtest_v0.4_structural_allocator_underpriced_no_sell_zone",
         "disclaimer": "Educational paper backtest only. Not financial advice. Uses historical daily close and simplified execution assumptions.",
         "assumptions": {
             "starting_balance_usdt": STARTING_BALANCE_USDT,
@@ -580,12 +615,14 @@ def main() -> None:
             "uses_slippage": False,
             "uses_full_fair_price_v2_production_cost": True,
             "uses_core_holding": True,
-            "uses_bull_patient_mode": True,
+            "uses_structural_allocator": True,
+            "uses_underpriced_mode": True,
+            "uses_no_sell_zone_below_p50": True,
             "benchmarks": ["buy_and_hold", "dca_monthly", "rebalance_40_60_monthly", "rebalance_60_40_monthly"],
             "hashrate_source": BLOCKCHAIN_HASHRATE_URL,
             "electricity_usd_per_kwh": ELECTRICITY_USD_PER_KWH_BASE,
             "production_markup": PRODUCTION_MARKUP,
-            "note": "v0.3 adds realistic benchmarks, cycle breakdowns, and a more patient bull mode that avoids profit selling while edge remains positive.",
+            "note": "v0.4 changes the strategy from a trader into a structural allocator: it targets BTC exposure by regime/undervaluation and blocks profit selling below contextual p50.",
         },
         "period": {"start": rows[0]["date"], "end": rows[-1]["date"], "days": len(rows)},
         "strategy": strategy,
