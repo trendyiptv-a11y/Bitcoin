@@ -1,0 +1,65 @@
+name: Paper Trader v0.6.3 Adapter
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  PYTHONUNBUFFERED: '1'
+
+jobs:
+  run-paper-trader-v063-adapter:
+    name: Run v0.6.3 paper adapter
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run CohesivX v0.6.3 paper adapter
+        run: python paper_trader_v063_adapter.py
+
+      - name: Show paper trader outputs
+        if: always()
+        run: |
+          echo "--- paper_trader_decision.json ---"
+          test -f btc-swing-strategy/paper_trader_decision.json && cat btc-swing-strategy/paper_trader_decision.json || true
+          echo "--- paper_trading_state.json ---"
+          test -f btc-swing-strategy/paper_trading_state.json && cat btc-swing-strategy/paper_trading_state.json || true
+          echo "--- paper_trading_log.csv tail ---"
+          test -f btc-swing-strategy/paper_trading_log.csv && tail -n 20 btc-swing-strategy/paper_trading_log.csv || true
+
+      - name: Upload paper adapter artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cohesivx-paper-trader-v063-adapter
+          path: |
+            btc-swing-strategy/paper_trader_decision.json
+            btc-swing-strategy/paper_trading_state.json
+            btc-swing-strategy/paper_trading_log.csv
+            btc-swing-strategy/profit_watch_signal.json
+          if-no-files-found: warn
+
+      - name: Commit paper state outputs
+        if: success()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add btc-swing-strategy/paper_trader_decision.json btc-swing-strategy/paper_trading_state.json btc-swing-strategy/paper_trading_log.csv btc-swing-strategy/profit_watch_signal.json 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "No paper state changes to commit."
+          else
+            git commit -m "Update CohesivX v0.6.3 paper adapter state"
+            git push
+          fi
