@@ -17,18 +17,24 @@ RESULT_CSV = OUT_DIR / "backtest_equity_curve.csv"
 
 STARTING_BALANCE_USDT = 1000.0
 MAX_ENTRY_FRACTION = 0.10
+MAX_ENTRY_FRACTION_UNDERPRICED = 0.16
+MAX_ENTRY_FRACTION_DEEP = 0.22
 MIN_TRADE_USDT = 5.0
 FEE_RATE = 0.001
 SAMPLES = 250
 BLOCKCHAIN_HASHRATE_URL = "https://api.blockchain.info/charts/hash-rate?timespan=all&format=json"
 ELECTRICITY_USD_PER_KWH_BASE = 0.05
 PRODUCTION_MARKUP = 1.25
-TARGET_UP_STEP = 0.08
-TARGET_DOWN_STEP = 0.025
-SELL_HYSTERESIS = 0.18
+TARGET_UP_STEP = 0.10
+TARGET_UP_STEP_DEEP = 0.16
+TARGET_DOWN_STEP = 0.015
+TARGET_DOWN_STEP_POSITIVE = 0.005
+SELL_HYSTERESIS = 0.20
 SEVERE_SELL_HYSTERESIS = 0.12
 RISK_REDUCTION_COOLDOWN_DAYS = 21
 TRIM_COOLDOWN_DAYS = 14
+DRAWDOWN_GUARD = -0.65
+DRAWDOWN_GUARD_TARGET_CAP = 0.75
 PERIODS = [
     ("2011_2014", "2011-01-01", "2014-12-31"),
     ("2015_2018", "2015-01-01", "2018-12-31"),
@@ -100,7 +106,7 @@ def estimate_cost_usd_per_btc_from_difficulty(difficulty: float, when: datetime)
 
 
 def fetch_json(url: str) -> Any:
-    req = urllib.request.Request(url, headers={"User-Agent": "CohesivX-Backtest/0.5"})
+    req = urllib.request.Request(url, headers={"User-Agent": "CohesivX-Backtest/0.6"})
     with urllib.request.urlopen(req, timeout=90) as response:
         return json.loads(response.read().decode("utf-8"))
 
@@ -161,7 +167,7 @@ def load_ic_series() -> list[dict[str, Any]]:
 
 def attach_production_cost(rows: list[dict[str, Any]], hashrate: list[dict[str, Any]]) -> list[dict[str, Any]]:
     if not hashrate:
-        raise ValueError("Hashrate history is empty; cannot run V5 backtest.")
+        raise ValueError("Hashrate history is empty; cannot run V6 backtest.")
     h_idx = 0
     out: list[dict[str, Any]] = []
     for row in rows:
@@ -274,52 +280,60 @@ def raw_target_exposure(regime: str, sig: dict[str, Any]) -> dict[str, Any]:
     edge, conf, risk = f(sig.get("decision_edge")), f(sig.get("confidence")), f(sig.get("downside_risk"))
     underpriced, expected = f(sig.get("underpriced_pct")), f(sig.get("expected_30d"))
     if r == "bear_late":
-        low, high, core, profile = 0.30, 0.55, 0.20, "bear_late_allocator"
+        low, high, core, profile = 0.32, 0.62, 0.22, "bear_late_allocator_v6"
     elif r.startswith("bear"):
-        low, high, core, profile = 0.15, 0.35, 0.08, "bear_allocator_defensive"
+        low, high, core, profile = 0.18, 0.42, 0.10, "bear_allocator_defensive_v6"
     elif r.startswith("bull"):
-        low, high, core, profile = 0.60, 0.90, 0.50, "bull_allocator_patient"
+        low, high, core, profile = 0.65, 0.94, 0.55, "bull_allocator_patient_v6"
     else:
-        low, high, core, profile = 0.35, 0.60, 0.20, "range_allocator"
+        low, high, core, profile = 0.38, 0.68, 0.25, "range_allocator_v6"
 
     strength = 0.0
     if edge > 0:
-        strength += clamp(edge / 0.25, 0.0, 1.0) * 0.35
-    strength += clamp(conf, 0.0, 1.0) * 0.20
-    strength += clamp(underpriced / 0.35, 0.0, 1.0) * 0.35
+        strength += clamp(edge / 0.25, 0.0, 1.0) * 0.32
+    strength += clamp(conf, 0.0, 1.0) * 0.18
+    strength += clamp(underpriced / 0.35, 0.0, 1.0) * 0.38
     if expected > 0:
-        strength += clamp(expected / 0.50, 0.0, 1.0) * 0.10
-    strength *= clamp(1.0 - max(0.0, risk - 0.25), 0.35, 1.0)
+        strength += clamp(expected / 0.50, 0.0, 1.0) * 0.12
+    strength *= clamp(1.0 - max(0.0, risk - 0.27), 0.35, 1.0)
     target = low + (high - low) * clamp(strength, 0.0, 1.0)
 
     underpriced_mode = underpriced >= 0.08 and edge > 0 and conf >= 0.42
     deep_underpriced_mode = underpriced >= 0.18 and edge > 0.05 and conf >= 0.45
+    extreme_underpriced_mode = underpriced >= 0.28 and edge > 0.07 and conf >= 0.48 and risk < 0.42
     if underpriced_mode:
-        target = max(target, min(high, low + (high - low) * 0.65))
-        core = max(core, min(target, low + (high - low) * 0.40))
+        target = max(target, min(high, low + (high - low) * 0.68))
+        core = max(core, min(target, low + (high - low) * 0.45))
         profile += "_underpriced"
     if deep_underpriced_mode:
         target = max(target, high)
-        core = max(core, min(target, low + (high - low) * 0.60))
+        core = max(core, min(target, low + (high - low) * 0.70))
         profile += "_deep"
+    if extreme_underpriced_mode:
+        target = max(target, min(0.96, high + 0.03))
+        core = max(core, min(target, 0.72))
+        profile += "_extreme"
     no_sell_zone = underpriced_mode or (edge > 0.08 and conf >= 0.45 and f(sig.get("weighted_price_p50")) > 0)
     return {
         "profile": profile,
-        "raw_target_exposure": clamp(target, 0.0, 0.95),
-        "raw_core_exposure": clamp(core, 0.0, 0.90),
+        "raw_target_exposure": clamp(target, 0.0, 0.96),
+        "raw_core_exposure": clamp(core, 0.0, 0.92),
         "underpriced_mode": underpriced_mode,
         "deep_underpriced_mode": deep_underpriced_mode,
+        "extreme_underpriced_mode": extreme_underpriced_mode,
         "no_sell_zone": no_sell_zone,
     }
 
 
-def smooth_target(previous: float | None, raw: float) -> float:
-    raw = clamp(raw, 0.0, 0.95)
+def smooth_target(previous: float | None, raw: float, positive_market: bool, deep_mode: bool) -> float:
+    raw = clamp(raw, 0.0, 0.96)
     if previous is None:
         return raw
     if raw > previous:
-        return min(raw, previous + TARGET_UP_STEP)
-    return max(raw, previous - TARGET_DOWN_STEP)
+        step = TARGET_UP_STEP_DEEP if deep_mode else TARGET_UP_STEP
+        return min(raw, previous + step)
+    step_down = TARGET_DOWN_STEP_POSITIVE if positive_market else TARGET_DOWN_STEP
+    return max(raw, previous - step_down)
 
 
 def account(cash: float, btc: float, cost_basis: float, realized: float, price: float) -> dict[str, float]:
@@ -355,6 +369,7 @@ def run_backtest(rows: list[dict[str, Any]]) -> tuple[dict[str, Any], list[dict[
     trades = buys = sells = 0
     blocked_sells_by_cooldown = 0
     blocked_sells_by_hysteresis = 0
+    drawdown_guard_days = 0
     curve: list[dict[str, Any]] = []
     peak, max_dd = STARTING_BALANCE_USDT, 0.0
     smoothed_target: float | None = None
@@ -366,65 +381,69 @@ def run_backtest(rows: list[dict[str, Any]]) -> tuple[dict[str, Any], list[dict[
         price = f(row.get("close"))
         if price <= 0:
             continue
+        before = account(cash, btc, cost_basis, realized, price)
+        current_dd = (before["value"] - peak) / peak if peak > 0 else 0.0
         sig = memory_signal(rows[:idx], row)
-        raw_alloc = raw_target_exposure(str(row.get("regime") or ""), sig) if sig.get("available") else {"profile": "observe", "raw_target_exposure": 0.0, "raw_core_exposure": 0.0, "no_sell_zone": False, "underpriced_mode": False, "deep_underpriced_mode": False}
+        raw_alloc = raw_target_exposure(str(row.get("regime") or ""), sig) if sig.get("available") else {"profile": "observe", "raw_target_exposure": 0.0, "raw_core_exposure": 0.0, "no_sell_zone": False, "underpriced_mode": False, "deep_underpriced_mode": False, "extreme_underpriced_mode": False}
+        edge = f(sig.get("decision_edge")) if sig.get("available") else 0.0
+        expected = f(sig.get("expected_30d")) if sig.get("available") else 0.0
+        risk = f(sig.get("downside_risk")) if sig.get("available") else 0.0
+        regime = str(row.get("regime") or "")
+        positive_market = regime.startswith("bull") or (edge > 0.06 and expected > 0)
+        deep_mode = bool(raw_alloc.get("deep_underpriced_mode", False)) or bool(raw_alloc.get("extreme_underpriced_mode", False))
         if sig.get("available"):
-            smoothed_target = smooth_target(smoothed_target, float(raw_alloc["raw_target_exposure"]))
+            smoothed_target = smooth_target(smoothed_target, float(raw_alloc["raw_target_exposure"]), positive_market, deep_mode)
         target = float(smoothed_target or 0.0)
+        drawdown_guard_active = current_dd <= DRAWDOWN_GUARD
+        if drawdown_guard_active:
+            drawdown_guard_days += 1
+            target = min(target, DRAWDOWN_GUARD_TARGET_CAP)
         core = min(float(raw_alloc.get("raw_core_exposure", 0.0)), target)
         action = "OBSERVE"
         executed_usdt = executed_btc = 0.0
-        before = account(cash, btc, cost_basis, realized, price)
 
         if sig.get("available"):
-            edge = f(sig.get("decision_edge"))
-            expected = f(sig.get("expected_30d"))
-            risk = f(sig.get("downside_risk"))
-            regime = str(row.get("regime") or "")
             gap = target - before["exposure"]
             core_btc = before["value"] * core / price if price > 0 else 0.0
             sellable_btc = max(0.0, btc - core_btc)
             days_since_sell = idx - last_sell_idx
             allow_reduce = days_since_sell >= RISK_REDUCTION_COOLDOWN_DAYS
             allow_trim = days_since_sell >= TRIM_COOLDOWN_DAYS
-            positive_market = regime.startswith("bull") or (edge > 0.06 and expected > 0)
-
-            if gap > 0.025 and edge > 0 and expected > -0.05:
-                if bool(raw_alloc["deep_underpriced_mode"]):
-                    action = "ALLOCATE_DEEP_UNDERPRICED"
-                    buy_fraction = min(0.18, gap)
-                elif bool(raw_alloc["underpriced_mode"]):
-                    action = "ALLOCATE_UNDERPRICED"
-                    buy_fraction = min(0.14, gap)
+            if gap > 0.025 and edge > 0 and expected > -0.05 and not drawdown_guard_active:
+                if bool(raw_alloc.get("extreme_underpriced_mode", False)):
+                    action, buy_fraction = "ALLOCATE_EXTREME_UNDERPRICED", min(MAX_ENTRY_FRACTION_DEEP, gap)
+                elif bool(raw_alloc.get("deep_underpriced_mode", False)):
+                    action, buy_fraction = "ALLOCATE_DEEP_UNDERPRICED", min(MAX_ENTRY_FRACTION_DEEP, gap)
+                elif bool(raw_alloc.get("underpriced_mode", False)):
+                    action, buy_fraction = "ALLOCATE_UNDERPRICED", min(MAX_ENTRY_FRACTION_UNDERPRICED, gap)
                 else:
-                    action = "ALLOCATE_TO_SMOOTHED_TARGET"
-                    buy_fraction = min(MAX_ENTRY_FRACTION, gap)
+                    action, buy_fraction = "ALLOCATE_TO_SMOOTHED_TARGET", min(MAX_ENTRY_FRACTION, gap)
                 cash, btc, cost_basis, executed_usdt, executed_btc = execute_buy(cash, btc, cost_basis, price, before["value"] * buy_fraction)
-            elif btc > 0 and not bool(raw_alloc["no_sell_zone"]) and sellable_btc > 0:
+            elif btc > 0 and not bool(raw_alloc.get("no_sell_zone", False)) and sellable_btc > 0:
                 excess = before["exposure"] - target
-                severe = edge < -0.10 or expected < -0.12 or risk > 0.48
-                if (edge < -0.06 or expected < -0.08) and excess > SEVERE_SELL_HYSTERESIS:
-                    if allow_reduce:
-                        action = "REDUCE_RISK_HYSTERESIS"
-                        fraction = 0.12 if positive_market else (0.22 if severe else 0.18)
+                severe = edge < -0.10 or expected < -0.12 or risk > 0.48 or drawdown_guard_active
+                if (edge < -0.06 or expected < -0.08 or drawdown_guard_active) and excess > SEVERE_SELL_HYSTERESIS:
+                    if allow_reduce or drawdown_guard_active:
+                        action = "REDUCE_RISK_V6_GUARD" if drawdown_guard_active else "REDUCE_RISK_HYSTERESIS_V6"
+                        fraction = 0.10 if positive_market and not drawdown_guard_active else (0.22 if severe else 0.16)
                         cash, btc, cost_basis, realized, executed_usdt, executed_btc = execute_sell(cash, btc, cost_basis, realized, price, min(sellable_btc, btc * fraction))
                         last_sell_idx = idx if executed_btc < 0 else last_sell_idx
                     else:
                         action = "HOLD_SELL_COOLDOWN"
                         blocked_sells_by_cooldown += 1
-                elif excess > SELL_HYSTERESIS and risk > 0.30:
+                elif excess > SELL_HYSTERESIS and risk > 0.32:
                     if allow_trim:
-                        action = "TRIM_ABOVE_SMOOTHED_TARGET"
-                        fraction = 0.08 if positive_market else 0.12
+                        action = "TRIM_ABOVE_SMOOTHED_TARGET_V6"
+                        fraction = 0.06 if positive_market else 0.10
                         cash, btc, cost_basis, realized, executed_usdt, executed_btc = execute_sell(cash, btc, cost_basis, realized, price, min(sellable_btc, btc * fraction))
                         last_sell_idx = idx if executed_btc < 0 else last_sell_idx
                     else:
                         action = "HOLD_TRIM_COOLDOWN"
                         blocked_sells_by_cooldown += 1
-                elif before["unrealized_pct"] > 0.45 and f(sig.get("over_p50_pct")) > 0.28 and edge < 0.04 and excess > SELL_HYSTERESIS:
+                elif before["unrealized_pct"] > 0.55 and f(sig.get("over_p50_pct")) > 0.34 and edge < 0.03 and excess > SELL_HYSTERESIS:
                     if allow_trim:
-                        action = "TAKE_PROFIT_OVERVALUED_HYSTERESIS"
-                        cash, btc, cost_basis, realized, executed_usdt, executed_btc = execute_sell(cash, btc, cost_basis, realized, price, min(sellable_btc, btc * 0.08))
+                        action = "TAKE_PROFIT_OVERVALUED_V6"
+                        cash, btc, cost_basis, realized, executed_usdt, executed_btc = execute_sell(cash, btc, cost_basis, realized, price, min(sellable_btc, btc * 0.06))
                         last_sell_idx = idx if executed_btc < 0 else last_sell_idx
                     else:
                         action = "HOLD_PROFIT_COOLDOWN"
@@ -459,14 +478,16 @@ def run_backtest(rows: list[dict[str, Any]]) -> tuple[dict[str, Any], list[dict[
             "total_pnl_usdt": round(after["total_pnl"], 8),
             "total_pnl_pct": round(after["total_pnl_pct"] * 100, 4),
             "drawdown_pct": round(dd * 100, 4),
+            "drawdown_guard_active": drawdown_guard_active,
             "regime": row.get("regime", ""),
             "rule_profile": raw_alloc.get("profile", ""),
             "underpriced_mode": bool(raw_alloc.get("underpriced_mode", False)),
             "deep_underpriced_mode": bool(raw_alloc.get("deep_underpriced_mode", False)),
+            "extreme_underpriced_mode": bool(raw_alloc.get("extreme_underpriced_mode", False)),
             "no_sell_zone": bool(raw_alloc.get("no_sell_zone", False)),
             "weighted_price_p50": round(f(sig.get("weighted_price_p50")), 8) if sig.get("available") else "",
             "underpriced_pct": round(f(sig.get("underpriced_pct")) * 100, 4) if sig.get("available") else "",
-            "decision_edge_pct": round(f(sig.get("decision_edge")) * 100, 4) if sig.get("available") else "",
+            "decision_edge_pct": round(edge * 100, 4) if sig.get("available") else "",
             "memory_confidence_pct": round(f(sig.get("confidence")) * 100, 4) if sig.get("available") else "",
         })
 
@@ -485,6 +506,7 @@ def run_backtest(rows: list[dict[str, Any]]) -> tuple[dict[str, Any], list[dict[
         "sells": sells,
         "blocked_sells_by_cooldown": blocked_sells_by_cooldown,
         "blocked_sells_by_hysteresis": blocked_sells_by_hysteresis,
+        "drawdown_guard_days": drawdown_guard_days,
         "final_cash_usdt": round(cash, 8),
         "final_btc_amount": round(btc, 12),
         "final_btc_exposure_pct": round(final["exposure"] * 100, 4),
@@ -580,8 +602,9 @@ def summarize_curve_period(curve: list[dict[str, Any]], label: str, start: str, 
         "strategy_return_pct": round((end_v / start_v - 1) * 100, 4) if start_v > 0 else None,
         "strategy_max_drawdown_pct": round(max_drawdown(values) * 100, 4),
         "accumulate_days": sum(1 for a in actions if a.startswith("ALLOCATE")),
-        "sell_days": sum(1 for a in actions if a in {"REDUCE_RISK_HYSTERESIS", "TRIM_ABOVE_SMOOTHED_TARGET", "TAKE_PROFIT_OVERVALUED_HYSTERESIS"}),
+        "sell_days": sum(1 for a in actions if a in {"REDUCE_RISK_V6_GUARD", "REDUCE_RISK_HYSTERESIS_V6", "TRIM_ABOVE_SMOOTHED_TARGET_V6", "TAKE_PROFIT_OVERVALUED_V6"}),
         "cooldown_hold_days": sum(1 for a in actions if "COOLDOWN" in a),
+        "drawdown_guard_days": sum(1 for r in part if bool(r.get("drawdown_guard_active"))),
     }
 
 
@@ -607,7 +630,7 @@ def main() -> None:
     hashrate = fetch_hashrate_history()
     rows = attach_production_cost(ic_rows, hashrate)
     if len(rows) < 400:
-        raise ValueError(f"Not enough aligned historical rows for v0.5 backtest: {len(rows)}. Need at least 400.")
+        raise ValueError(f"Not enough aligned historical rows for v0.6 backtest: {len(rows)}. Need at least 400.")
 
     strategy_result, curve = run_backtest(rows)
     benchmarks = {"buy_and_hold": benchmark_buy_hold(rows), "dca_monthly": benchmark_dca_monthly(rows), "rebalance_40_60_monthly": benchmark_rebalanced(rows, 0.40), "rebalance_60_40_monthly": benchmark_rebalanced(rows, 0.60)}
@@ -619,7 +642,7 @@ def main() -> None:
     bh = strategy_result["buy_and_hold"]
     summary = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
-        "version": "cohesivx_backtest_v0.5_allocator_smoothing_hysteresis_cooldown",
+        "version": "cohesivx_backtest_v0.6_selective_boost_drawdown_guard",
         "disclaimer": "Educational paper backtest only. Not financial advice. Uses historical daily close and simplified execution assumptions.",
         "assumptions": {
             "starting_balance_usdt": STARTING_BALANCE_USDT,
@@ -636,16 +659,23 @@ def main() -> None:
             "uses_target_smoothing": True,
             "uses_sell_hysteresis": True,
             "uses_risk_reduction_cooldown": True,
+            "uses_selective_deep_underpriced_boost": True,
+            "uses_positive_market_slow_target_down": True,
+            "uses_drawdown_guard": True,
             "target_up_step": TARGET_UP_STEP,
+            "target_up_step_deep": TARGET_UP_STEP_DEEP,
             "target_down_step": TARGET_DOWN_STEP,
+            "target_down_step_positive": TARGET_DOWN_STEP_POSITIVE,
             "sell_hysteresis": SELL_HYSTERESIS,
+            "drawdown_guard": DRAWDOWN_GUARD,
+            "drawdown_guard_target_cap": DRAWDOWN_GUARD_TARGET_CAP,
             "risk_reduction_cooldown_days": RISK_REDUCTION_COOLDOWN_DAYS,
             "trim_cooldown_days": TRIM_COOLDOWN_DAYS,
             "benchmarks": ["buy_and_hold", "dca_monthly", "rebalance_40_60_monthly", "rebalance_60_40_monthly"],
             "hashrate_source": BLOCKCHAIN_HASHRATE_URL,
             "electricity_usd_per_kwh": ELECTRICITY_USD_PER_KWH_BASE,
             "production_markup": PRODUCTION_MARKUP,
-            "note": "v0.5 keeps the structural allocator but adds smoothed target exposure, sell hysteresis, cooldowns, and smaller reductions in positive regimes.",
+            "note": "v0.6 keeps v0.5's maturity, adds selective deep-underpriced accumulation, slows target reduction in positive regimes, and activates a drawdown guard near -65%.",
         },
         "period": {"start": rows[0]["date"], "end": rows[-1]["date"], "days": len(rows)},
         "strategy": strategy,
