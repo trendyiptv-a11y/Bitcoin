@@ -1,15 +1,20 @@
 {
-  "generated_at": "2026-06-26T06:14:07.340163+00:00",
-  "version": "cohesivx_backtest_v0.1_simple_memory_price_context",
-  "disclaimer": "Educational paper backtest only. Not financial advice. Uses historical close data and simplified execution assumptions.",
+  "generated_at": "2026-06-26T06:28:53.109669+00:00",
+  "version": "cohesivx_backtest_v0.2_production_cost_multiplier_core_holding",
+  "disclaimer": "Educational paper backtest only. Not financial advice. Uses historical daily close and simplified execution assumptions.",
   "assumptions": {
     "starting_balance_usdt": 1000.0,
     "fee_rate": 0.001,
     "min_trade_usdt": 5.0,
+    "samples": 250,
     "uses_daily_close": true,
     "uses_slippage": false,
-    "uses_full_fair_price_v2_production_cost": false,
-    "note": "v0.1 uses IC context similarity over historical close prices, not the full production-cost V2 model. It is meant as a first sanity check."
+    "uses_full_fair_price_v2_production_cost": true,
+    "uses_core_holding": true,
+    "hashrate_source": "https://api.blockchain.info/charts/hash-rate?timespan=all&format=json",
+    "electricity_usd_per_kwh": 0.05,
+    "production_markup": 1.25,
+    "note": "v0.2 uses production-cost historical multiplier similarity and protects a core BTC position by regime/signal."
   },
   "period": {
     "start": "2011-02-01",
@@ -17,17 +22,17 @@
     "days": 5625
   },
   "strategy": {
-    "final_portfolio_value_usdt": 1128.58726135,
-    "total_pnl_usdt": 128.58726135,
-    "total_return_pct": 12.8587,
-    "max_drawdown_pct": -0.8996,
-    "trades": 29,
-    "buys": 1,
-    "sells": 28,
-    "final_cash_usdt": 1121.94425031,
-    "final_btc_amount": 0.000110952254,
-    "final_btc_exposure_pct": 0.5886,
-    "profitable_days_ratio_pct": 94.2933
+    "final_portfolio_value_usdt": 28799.12895319,
+    "total_pnl_usdt": 27799.12895319,
+    "total_return_pct": 2779.9129,
+    "max_drawdown_pct": -29.7847,
+    "trades": 784,
+    "buys": 356,
+    "sells": 428,
+    "final_cash_usdt": 8542.7390423,
+    "final_btc_amount": 0.338324309926,
+    "final_btc_exposure_pct": 70.3368,
+    "profitable_days_ratio_pct": 94.6667
   },
   "buy_and_hold": {
     "final_value_usdt": 84601808.67599265,
@@ -36,7 +41,7 @@
     "btc_amount": 1413.028119259573
   },
   "comparison": {
-    "strategy_minus_buy_hold_usdt": -84600680.0887313,
-    "strategy_minus_buy_hold_pct_points": -8460068.0089
+    "strategy_minus_buy_hold_usdt": -84573009.54703946,
+    "strategy_minus_buy_hold_pct_points": -8457300.9547
   }
 }
