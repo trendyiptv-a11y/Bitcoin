@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-26T10:29:36.656172+00:00",
+  "generated_at": "2026-06-26T10:39:57.523465+00:00",
   "version": "cohesivx_backtest_v0.5_allocator_smoothing_hysteresis_cooldown",
   "disclaimer": "Educational paper backtest only. Not financial advice. Uses historical daily close and simplified execution assumptions.",
   "assumptions": {
