@@ -1,0 +1,42 @@
+{
+  "generated_at": "2026-06-26T06:08:03.311633+00:00",
+  "version": "cohesivx_backtest_v0.1_simple_memory_price_context",
+  "disclaimer": "Educational paper backtest only. Not financial advice. Uses historical close data and simplified execution assumptions.",
+  "assumptions": {
+    "starting_balance_usdt": 1000.0,
+    "fee_rate": 0.001,
+    "min_trade_usdt": 5.0,
+    "uses_daily_close": true,
+    "uses_slippage": false,
+    "uses_full_fair_price_v2_production_cost": false,
+    "note": "v0.1 uses IC context similarity over historical close prices, not the full production-cost V2 model. It is meant as a first sanity check."
+  },
+  "period": {
+    "start": "2011-02-01",
+    "end": "2026-06-26",
+    "days": 5625
+  },
+  "strategy": {
+    "final_portfolio_value_usdt": 1128.58726135,
+    "total_pnl_usdt": 128.58726135,
+    "total_return_pct": 12.8587,
+    "max_drawdown_pct": -0.8996,
+    "trades": 29,
+    "buys": 1,
+    "sells": 28,
+    "final_cash_usdt": 1121.94425031,
+    "final_btc_amount": 0.000110952254,
+    "final_btc_exposure_pct": 0.5886,
+    "profitable_days_ratio_pct": 94.2933
+  },
+  "buy_and_hold": {
+    "final_value_usdt": 84601808.67599265,
+    "total_pnl_usdt": 84600808.67599265,
+    "total_return_pct": 8460080.8676,
+    "btc_amount": 1413.028119259573
+  },
+  "comparison": {
+    "strategy_minus_buy_hold_usdt": -84600680.0887313,
+    "strategy_minus_buy_hold_pct_points": -8460068.0089
+  }
+}
