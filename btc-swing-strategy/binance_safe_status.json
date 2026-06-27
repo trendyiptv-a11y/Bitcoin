@@ -1,0 +1,26 @@
+{
+  "checked_at": "2026-06-27T09:43:13.892501+00:00",
+  "mode": "safe_read_only",
+  "symbol": "BTCUSDT",
+  "binance_base_url": "https://api.binance.com",
+  "trading_enabled": false,
+  "orders_enabled": false,
+  "withdrawals_enabled": false,
+  "credentials_present": false,
+  "rules": {
+    "this_client_can_place_orders": false,
+    "this_client_can_withdraw": false,
+    "required_next_step_before_trading": "dry_run_executor_with_live_trade_guard",
+    "recommended_api_permissions": "read-only first; later spot trading only; never withdrawal"
+  },
+  "public_price": {
+    "ok": false,
+    "error_type": "HTTPError",
+    "error": "HTTP Error 451: "
+  },
+  "account": {
+    "ok": false,
+    "available": false,
+    "reason": "BINANCE_API_KEY/BINANCE_API_SECRET not configured. Public price check only."
+  }
+}
