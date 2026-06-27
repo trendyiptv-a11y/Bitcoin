@@ -1,0 +1,66 @@
+name: Binance Safe Check
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  PYTHONUNBUFFERED: '1'
+  BINANCE_SYMBOL: BTCUSDT
+
+jobs:
+  binance-safe-check:
+    name: Run Binance safe read-only check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run Binance safe client without credentials
+        if: ${{ secrets.BINANCE_API_KEY == '' || secrets.BINANCE_API_SECRET == '' }}
+        run: python binance_safe_client.py
+
+      - name: Run Binance safe client with read-only credentials
+        if: ${{ secrets.BINANCE_API_KEY != '' && secrets.BINANCE_API_SECRET != '' }}
+        env:
+          BINANCE_API_KEY: ${{ secrets.BINANCE_API_KEY }}
+          BINANCE_API_SECRET: ${{ secrets.BINANCE_API_SECRET }}
+        run: python binance_safe_client.py
+
+      - name: Show Binance safe report
+        if: always()
+        run: |
+          echo "--- binance_safe_status.json ---"
+          test -f btc-swing-strategy/binance_safe_status.json && cat btc-swing-strategy/binance_safe_status.json || true
+
+      - name: Upload Binance safe artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cohesivx-binance-safe-check
+          path: btc-swing-strategy/binance_safe_status.json
+          if-no-files-found: warn
+
+      - name: Commit Binance safe report
+        if: success()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add btc-swing-strategy/binance_safe_status.json 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "No Binance safe report changes to commit."
+          else
+            git commit -m "Update Binance safe status"
+            git push
+          fi
