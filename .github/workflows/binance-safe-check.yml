@@ -27,12 +27,7 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Run Binance safe client without credentials
-        if: ${{ secrets.BINANCE_API_KEY == '' || secrets.BINANCE_API_SECRET == '' }}
-        run: python binance_safe_client.py
-
-      - name: Run Binance safe client with read-only credentials
-        if: ${{ secrets.BINANCE_API_KEY != '' && secrets.BINANCE_API_SECRET != '' }}
+      - name: Run Binance safe client
         env:
           BINANCE_API_KEY: ${{ secrets.BINANCE_API_KEY }}
           BINANCE_API_SECRET: ${{ secrets.BINANCE_API_SECRET }}
