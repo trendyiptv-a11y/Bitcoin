@@ -1,0 +1,26 @@
+{
+  "action": "HOLD_CASH_CORRIDOR",
+  "audit": "PASS",
+  "available_btc": 0.0,
+  "available_usdt": 31.04900065006936,
+  "bitget_account_available": true,
+  "bot": "CohesivX Micro-Live",
+  "cooldown_seconds": null,
+  "last_price": 60395.9,
+  "live_mode": "ARMED",
+  "max_usdt": 5.0,
+  "min_seconds_between_real_orders": 840,
+  "mode": "PUBLIC_STATUS_SAFE",
+  "real_order_sent": false,
+  "result": "NO_ACTION_HOLD",
+  "security": {
+    "api_keys_exposed": false,
+    "passphrase_exposed": false,
+    "raw_headers_exposed": false,
+    "secret_exposed": false,
+    "signature_exposed": false
+  },
+  "status": "PASS",
+  "symbol": "BTCUSDT",
+  "timestamp_utc": "2026-06-28T08:55:43.162053+00:00"
+}

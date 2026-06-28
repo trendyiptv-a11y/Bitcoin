@@ -1,2 +1,6 @@
 node_modules/
 .env
+btc-swing-strategy/*.json
+btc-swing-strategy/*.log
+btc-swing-strategy/*.pid
+public/

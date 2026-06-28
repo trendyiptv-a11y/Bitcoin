@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CohesivX Micro-Live Dashboard</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #061b14;
+      color: #e8fff3;
+      padding: 18px;
+    }
+
+    h1 {
+      font-size: 24px;
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      color: #9dcbb5;
+      margin-bottom: 20px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    .card {
+      background: #0d2a20;
+      border: 1px solid #1f5f46;
+      border-radius: 18px;
+      padding: 16px;
+      box-shadow: 0 0 18px rgba(0,0,0,0.25);
+    }
+
+    .label {
+      color: #9dcbb5;
+      font-size: 13px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .value {
+      font-size: 24px;
+      font-weight: bold;
+      word-break: break-word;
+    }
+
+    .small {
+      font-size: 13px;
+      color: #b9ddcc;
+      margin-top: 6px;
+    }
+
+    .ok {
+      color: #7dffad;
+    }
+
+    .warn {
+      color: #ffd166;
+    }
+
+    .danger {
+      color: #ff6b6b;
+    }
+
+    .neutral {
+      color: #d9fff0;
+    }
+
+    .footer {
+      margin-top: 18px;
+      font-size: 12px;
+      color: #8cb9a4;
+      text-align: center;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 16px;
+      padding: 14px;
+      border-radius: 14px;
+      border: none;
+      background: #1f8f5f;
+      color: white;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    pre {
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-size: 12px;
+      color: #b9ddcc;
+    }
+  </style>
+</head>
+<body>
+  <h1>CohesivX Micro-Live</h1>
+  <div class="subtitle">Dashboard local pentru botul coeziv BTCUSDT</div>
+
+  <div class="grid">
+    <div class="card">
+      <div class="label">Live Mode</div>
+      <div id="liveMode" class="value neutral">Loading...</div>
+      <div id="liveModeSub" class="small"></div>
+    </div>
+
+    <div class="card">
+      <div class="label">Ultima decizie</div>
+      <div id="action" class="value neutral">Loading...</div>
+      <div id="result" class="small"></div>
+    </div>
+
+    <div class="card">
+      <div class="label">Ordin real</div>
+      <div id="realOrder" class="value neutral">Loading...</div>
+      <div id="realOrderSub" class="small"></div>
+    </div>
+
+    <div class="card">
+      <div class="label">BTC Price</div>
+      <div id="btcPrice" class="value neutral">Loading...</div>
+      <div class="small">Ultimul preț citit din Bitget</div>
+    </div>
+
+    <div class="card">
+      <div class="label">Sold disponibil</div>
+      <div id="balances" class="value neutral">Loading...</div>
+      <div class="small">USDT / BTC disponibile în contul Spot</div>
+    </div>
+
+    <div class="card">
+      <div class="label">Audit</div>
+      <div id="audit" class="value neutral">Loading...</div>
+      <div id="auditSub" class="small"></div>
+    </div>
+
+    <div class="card">
+      <div class="label">Cooldown</div>
+      <div id="cooldown" class="value neutral">Loading...</div>
+      <div id="cooldownSub" class="small"></div>
+    </div>
+
+    <div class="card">
+      <div class="label">Ultima actualizare</div>
+      <div id="updated" class="value neutral">Loading...</div>
+      <div class="small">Pagina se reîncarcă automat la 15 secunde</div>
+    </div>
+
+    <div class="card">
+      <div class="label">Raport brut executor</div>
+      <pre id="rawReport">Loading...</pre>
+    </div>
+  </div>
+
+  <button onclick="loadDashboard()">Refresh acum</button>
+
+  <div class="footer">
+    CohesivX Micro-Live · BTCUSDT Spot · max 5 USDT · local dashboard
+  </div>
+  
+<script>
+  const publicStatusPath = "cohesivx-public-status.json";
+
+  function setText(id, text, cls = "neutral") {
+    const el = document.getElementById(id);
+    el.textContent = text;
+    el.className = el.className.replace(/\bok\b|\bwarn\b|\bdanger\b|\bneutral\b/g, "");
+    el.classList.add(cls);
+  }
+
+  async function readJson(path) {
+    const response = await fetch(path + "?t=" + Date.now());
+    if (!response.ok) throw new Error("Cannot load " + path);
+    return await response.json();
+  }
+
+  function fmtNumber(value, decimals = 4) {
+    const n = Number(value);
+    if (!Number.isFinite(n)) return "0";
+    return n.toFixed(decimals);
+  }
+
+  async function loadDashboard() {
+    try {
+      const status = await readJson(publicStatusPath);
+
+      const liveArmed = status.live_mode === "ARMED";
+      const realOrderSent = status.real_order_sent === true;
+      const action = status.action || "UNKNOWN";
+      const result = status.result || "UNKNOWN";
+      const botStatus = status.status || "UNKNOWN";
+
+      if (liveArmed) {
+        setText("liveMode", "ARMAT", "ok");
+        document.getElementById("liveModeSub").textContent =
+          "Executorul micro-live este armat local. Cheile NU sunt publice.";
+      } else {
+        setText("liveMode", "NEARMAT", "warn");
+        document.getElementById("liveModeSub").textContent =
+          "Executorul nu este armat sau statusul public nu a fost actualizat.";
+      }
+
+      let actionClass = "neutral";
+      if (action.includes("HOLD") || action.includes("OBSERVE")) actionClass = "warn";
+      if (action.includes("ACCUMULATE")) actionClass = "ok";
+      if (action.includes("REDUCE") || action.includes("TAKE_PROFIT")) actionClass = "danger";
+
+      setText("action", action, actionClass);
+      document.getElementById("result").textContent =
+        "Result: " + result + " · Status: " + botStatus;
+
+      if (realOrderSent) {
+        setText("realOrder", "DA", "danger");
+        document.getElementById("realOrderSub").textContent =
+          "Ultima rulare a raportat ordin real trimis. Verifică Bitget Order History.";
+      } else {
+        setText("realOrder", "NU", "ok");
+        document.getElementById("realOrderSub").textContent =
+          "Niciun ordin real trimis la ultima stare publicată.";
+      }
+
+      setText("btcPrice", fmtNumber(status.last_price, 2) + " USDT", "neutral");
+
+      setText(
+        "balances",
+        fmtNumber(status.available_usdt, 4) + " USDT / " +
+        fmtNumber(status.available_btc, 8) + " BTC",
+        "neutral"
+      );
+
+      const auditStatus = status.audit || "UNKNOWN";
+      if (auditStatus === "PASS") {
+        setText("audit", "PASS", "ok");
+      } else {
+        setText("audit", auditStatus, "danger");
+      }
+      document.getElementById("auditSub").textContent =
+        "Audit status: " + auditStatus;
+
+      const age = status.cooldown_seconds;
+      const min = status.min_seconds_between_real_orders || 840;
+
+      if (age === null || age === undefined) {
+        setText("cooldown", "FĂRĂ ORDIN ANTERIOR", "neutral");
+        document.getElementById("cooldownSub").textContent =
+          "Nu există încă ordin real salvat.";
+      } else if (age < min) {
+        setText("cooldown", "ACTIV", "warn");
+        document.getElementById("cooldownSub").textContent =
+          Math.round(min - age) + " secunde rămase.";
+      } else {
+        setText("cooldown", "LIBER", "ok");
+        document.getElementById("cooldownSub").textContent =
+          "Poate executa dacă apare semnal permis.";
+      }
+
+      const updateText = status.timestamp_utc
+        ? new Date(status.timestamp_utc).toLocaleString()
+        : new Date().toLocaleString();
+
+      setText("updated", updateText, "neutral");
+
+      document.getElementById("rawReport").textContent =
+        JSON.stringify(status, null, 2);
+
+    } catch (e) {
+      setText("liveMode", "EROARE", "danger");
+      document.getElementById("liveModeSub").textContent = e.message;
+      document.getElementById("rawReport").textContent = e.stack || e.message;
+    }
+  }
+
+  loadDashboard();
+  setInterval(loadDashboard, 15000);
+</script>        
+
+</body>
+</html>
