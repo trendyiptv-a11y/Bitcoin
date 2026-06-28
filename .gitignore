@@ -4,3 +4,4 @@ btc-swing-strategy/*.json
 btc-swing-strategy/*.log
 btc-swing-strategy/*.pid
 public/
+btc-swing-strategy/last_public_status_push_epoch.txt
