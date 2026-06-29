@@ -6,13 +6,13 @@
   "bitget_account_available": true,
   "bot": "CohesivX Micro-Live",
   "cooldown_seconds": null,
-  "last_price": 59931.03,
-  "live_mode": "ARMED",
+  "last_price": 60483.92,
+  "live_mode": "NOT_ARMED",
   "max_usdt": 5.0,
   "min_seconds_between_real_orders": 840,
   "mode": "PUBLIC_STATUS_SAFE",
   "real_order_sent": false,
-  "result": "NO_ACTION_HOLD",
+  "result": "LIVE_NOT_ARMED",
   "security": {
     "api_keys_exposed": false,
     "passphrase_exposed": false,
@@ -20,7 +20,7 @@
     "secret_exposed": false,
     "signature_exposed": false
   },
-  "status": "PASS",
+  "status": "BLOCKED",
   "symbol": "BTCUSDT",
-  "timestamp_utc": "2026-06-29T21:40:47.487754+00:00"
+  "timestamp_utc": "2026-06-29T21:59:08.298480+00:00"
 }
