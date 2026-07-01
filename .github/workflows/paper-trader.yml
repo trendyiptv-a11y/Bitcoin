@@ -11,11 +11,14 @@ on:
     - cron: "40 1 * * *"
     - cron: "10 7 * * *"
     - cron: "40 13 * * *"
+
   workflow_dispatch:
+
   push:
     paths:
       - "paper_trader.py"
       - "paper_trader_adaptive.py"
+      - "paper_trader_v063_adapter.py"
       - ".github/workflows/paper-trader.yml"
       - "btc-swing-strategy/coeziv_state.json"
 
@@ -28,7 +31,7 @@ concurrency:
 
 jobs:
   paper-trader:
-    name: Run CohesivX paper trader
+    name: Run CohesivX paper trader v0.6.3
     runs-on: ubuntu-latest
 
     steps:
@@ -45,16 +48,56 @@ jobs:
       - name: Pull latest main
         run: git pull --rebase origin main
 
-      - name: Run adaptive paper trader
-        run: python paper_trader_adaptive.py
+      - name: Run v0.6.3 paper trader adapter with stale-data retry
+        run: |
+          set -euo pipefail
+
+          for attempt in 1 2 3 4; do
+            echo "Paper Trader v0.6.3 attempt $attempt..."
+
+            git pull --rebase origin main || true
+
+            python paper_trader_v063_adapter.py
+
+            if [ -f btc-swing-strategy/paper_trader_decision.json ]; then
+              ACTION=$(python - <<'PY'
+import json
+
+p = "btc-swing-strategy/paper_trader_decision.json"
+
+try:
+    d = json.load(open(p, encoding="utf-8"))
+    print(d.get("action") or d.get("final_action") or "")
+except Exception:
+    print("")
+PY
+)
+
+              echo "Paper Trader action: $ACTION"
+
+              if [ "$ACTION" != "OBSERVE_STALE_DATA" ]; then
+                echo "Fresh v0.6.3 paper trader decision obtained."
+                exit 0
+              fi
+            fi
+
+            echo "Structural data still stale. Waiting 5 minutes before retry..."
+            sleep 300
+          done
+
+          echo "Still stale after retries. Keeping final OBSERVE_STALE_DATA result."
 
       - name: Commit paper trader state
         run: |
           set -euo pipefail
+
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+
           git add btc-swing-strategy/paper_trading_state.json || true
           git add btc-swing-strategy/paper_trading_log.csv || true
           git add btc-swing-strategy/paper_trader_decision.json || true
-          git commit -m "Update CohesivX paper trader" || echo "Nothing to commit"
+          git add btc-swing-strategy/paper-trader.html || true
+
+          git commit -m "Update CohesivX paper trader v0.6.3" || echo "Nothing to commit"
           git push origin main || echo "Push failed; will retry on next run"
