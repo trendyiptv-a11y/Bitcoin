@@ -60,19 +60,7 @@ jobs:
             python paper_trader_v063_adapter.py
 
             if [ -f btc-swing-strategy/paper_trader_decision.json ]; then
-              ACTION=$(python - <<'PY'
-import json
-
-p = "btc-swing-strategy/paper_trader_decision.json"
-
-try:
-    d = json.load(open(p, encoding="utf-8"))
-    print(d.get("action") or d.get("final_action") or "")
-except Exception:
-    print("")
-PY
-)
-
+              ACTION=$(python -c 'import json; p="btc-swing-strategy/paper_trader_decision.json"; d=json.load(open(p, encoding="utf-8")); print(d.get("action") or d.get("final_action") or "")')
               echo "Paper Trader action: $ACTION"
 
               if [ "$ACTION" != "OBSERVE_STALE_DATA" ]; then
