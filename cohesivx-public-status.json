@@ -1,12 +1,12 @@
 {
-  "action": "OBSERVE_STALE_DATA",
+  "action": "HOLD_CASH_CORRIDOR",
   "audit": "PASS",
   "available_btc": 0.00050949,
   "available_usdt": 1.244390700069359,
   "bitget_account_available": true,
   "bot": "CohesivX Micro-Live",
-  "cooldown_seconds": 41540.277918338776,
-  "last_price": 59139.9,
+  "cooldown_seconds": 45154.68173980713,
+  "last_price": 58765.99,
   "live_mode": "ARMED",
   "max_usdt": 5.0,
   "min_seconds_between_real_orders": 840,
@@ -22,5 +22,5 @@
   },
   "status": "PASS",
   "symbol": "BTCUSDT",
-  "timestamp_utc": "2026-07-01T06:08:49.296454+00:00"
+  "timestamp_utc": "2026-07-01T07:08:53.148386+00:00"
 }
