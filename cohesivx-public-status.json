@@ -1,18 +1,18 @@
 {
-  "action": "ACCUMULATE_SMALL",
+  "action": "OBSERVE_STALE_DATA",
   "audit": "PASS",
   "available_btc": 0.00050949,
   "available_usdt": 1.244390700069359,
   "bitget_account_available": true,
   "bot": "CohesivX Micro-Live",
-  "cooldown_seconds": 37928.06910991669,
-  "last_price": 59348.48,
+  "cooldown_seconds": 41540.277918338776,
+  "last_price": 59139.9,
   "live_mode": "ARMED",
   "max_usdt": 5.0,
   "min_seconds_between_real_orders": 840,
   "mode": "PUBLIC_STATUS_SAFE",
   "real_order_sent": false,
-  "result": "INSUFFICIENT_USDT",
+  "result": "NO_ACTION_HOLD",
   "security": {
     "api_keys_exposed": false,
     "passphrase_exposed": false,
@@ -20,7 +20,7 @@
     "secret_exposed": false,
     "signature_exposed": false
   },
-  "status": "BLOCKED",
+  "status": "PASS",
   "symbol": "BTCUSDT",
-  "timestamp_utc": "2026-07-01T05:08:44.827919+00:00"
+  "timestamp_utc": "2026-07-01T06:08:49.296454+00:00"
 }
