@@ -1,22 +1,22 @@
 {
   "bot": "CohesivX Daily Scalp Paper v0.2-4x2",
   "indicators": {
-    "dist_ema21": 0.0036640323092686977,
-    "ema21": 60468.79039827831,
-    "ema50": 60372.27272783004,
-    "ema9": 60521.72599642166,
+    "dist_ema21": 0.00837037578630492,
+    "ema21": 60737.226589230195,
+    "ema50": 60512.82109303252,
+    "ema9": 60968.72154504668,
     "fee_rate": 0.001,
     "momentum_1": 0.0,
-    "momentum_2": 0.003710349617967098,
-    "range_pct": 0.011362761954742402,
-    "recent_high": 60829.6,
+    "momentum_2": 0.0010117070357932053,
+    "range_pct": 0.01805239297112193,
+    "recent_high": 61245.62,
     "recent_low": 60139.99,
-    "rsi14": 75.98570709365293,
-    "samples": 277
+    "rsi14": 93.23898594665069,
+    "samples": 282
   },
   "last_trade": null,
   "mode": "PAPER_ONLY",
-  "price": 60690.35,
+  "price": 61245.62,
   "real_order_sent": false,
   "reason": "No valid cohesive scalp setup.",
   "scalp_action": "HOLD_SCALP",
@@ -41,7 +41,7 @@
     "wins": 2
   },
   "status": "PASS",
-  "timestamp_utc": "2026-07-02T09:46:55.686788+00:00",
+  "timestamp_utc": "2026-07-02T10:46:58.729253+00:00",
   "v063_action": "HOLD",
   "v063_result": "NO_ACTION_HOLD"
 }
