@@ -28,14 +28,14 @@
     "min_useful_trade_usdt": 5.0,
     "cooldown_minutes": 120
   },
-  "last_checked_at": "2026-07-02T19:02:02.755023+00:00",
-  "last_live_price_usd": 61660.705,
+  "last_checked_at": "2026-07-02T19:54:15.466399+00:00",
+  "last_live_price_usd": 61593.325,
   "last_live_price_source": "coinbase",
   "last_report": {
     "action": "EXP_HOLD",
-    "reason": "Cooldown active: last experimental action was 45.7 minutes ago.",
-    "shadow_portfolio_value_usdt": 1012.2320800865779,
-    "base_portfolio_value_usdt": 1012.4038024761385,
-    "overlay_edge_usdt": -0.17172238956061392
+    "reason": "Cooldown active: last experimental action was 97.9 minutes ago.",
+    "shadow_portfolio_value_usdt": 1011.9752302946156,
+    "base_portfolio_value_usdt": 1011.9471806237613,
+    "overlay_edge_usdt": 0.028049670854329634
   }
 }
