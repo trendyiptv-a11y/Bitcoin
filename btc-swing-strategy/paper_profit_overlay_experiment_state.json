@@ -1,0 +1,41 @@
+{
+  "version": "paper_profit_overlay_experiment_v0.1",
+  "mode": "paper_shadow_only",
+  "created_at": "2026-07-02T16:02:22.723078+00:00",
+  "created_from": "paper_trading_state.json",
+  "cash_usdt": 698.73427235,
+  "btc_amount": 0.005082611892,
+  "cost_basis_usdt": 303.90892316,
+  "realized_pnl_usdt": 2.89988885,
+  "last_action": "EXP_TAKE_PROFIT_25",
+  "last_action_at": "2026-07-02T16:02:22.723275+00:00",
+  "last_sell_price_usd": 61500.1,
+  "last_buyback_price_usd": null,
+  "trade_count": 1,
+  "sell_count": 1,
+  "rebuy_count": 0,
+  "baseline_base_portfolio_value_usdt": 1011.61833563,
+  "baseline_shadow_portfolio_value_usdt": 1011.3154119655856,
+  "rules": {
+    "version": "paper_profit_overlay_experiment_v0.1",
+    "paper_only": true,
+    "modifies_official_paper_trader": false,
+    "early_take_profit_pct": 0.025,
+    "early_take_profit_fraction": 0.25,
+    "rebuy_pullback_pct": 0.015,
+    "rebuy_fraction_of_cash": 0.25,
+    "max_shadow_exposure": 0.4,
+    "min_useful_trade_usdt": 5.0,
+    "cooldown_minutes": 120
+  },
+  "last_checked_at": "2026-07-02T16:02:22.723327+00:00",
+  "last_live_price_usd": 61500.1,
+  "last_live_price_source": "kraken",
+  "last_report": {
+    "action": "EXP_TAKE_PROFIT_25",
+    "reason": "Experimental early harvest: 2.85% >= 2.50%.",
+    "shadow_portfolio_value_usdt": 1011.3154119691892,
+    "base_portfolio_value_usdt": 1011.3154119655856,
+    "overlay_edge_usdt": 3.603645382099785e-09
+  }
+}
