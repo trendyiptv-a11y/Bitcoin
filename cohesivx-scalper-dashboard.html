@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>CohesivX Paper Scalper Dashboard v2</title>
+  <title>CohesivX Paper Scalper Dashboard v3 Live Price</title>
   <style>
     :root {
       --bg:#090b10; --panel:#121723; --panel2:#171d2a; --text:#eef2ff; --muted:#9aa4b2;
@@ -43,15 +43,15 @@
 <body>
 <header>
   <h1>CohesivX Paper Scalper</h1>
-  <div class="subtitle">Dashboard online static pentru botul paper. Separă clar statistica activă v0.2-4x2 de istoricul v0.1.</div>
+  <div class="subtitle">Dashboard static pentru botul paper. Prețul BTC live vine din API public; decizia scalperului vine din ultimul JSON publicat de bot.</div>
 </header>
 
 <main>
   <div class="grid">
     <section class="card">
       <div class="notice">
-        <b>Atenție:</b> statistica „Legacy / toate versiunile” poate include rana v0.1. Pentru evaluarea modelului activ, urmărește cardul
-        <b>v0.2-4x2 activ</b> și trade-urile unde <code>bot</code> este versiunea curentă.
+        <b>Atenție:</b> prețul live online și decizia botului nu sunt același lucru. Botul decide doar când rulează local și publică
+        <code>cohesivx_scalp_report.json</code>. Statistica „Legacy / toate versiunile” poate include rana v0.1.
       </div>
     </section>
 
@@ -63,9 +63,16 @@
     </section>
 
     <section class="card span4">
-      <div class="label">Preț BTC</div>
+      <div class="label">BTC live online</div>
+      <div class="kpi" id="livePrice">—</div>
+      <div class="small" id="liveSource">Se încarcă din API public…</div>
+    </section>
+
+    <section class="card span4">
+      <div class="label">BTC la ultima decizie bot</div>
       <div class="kpi" id="price">—</div>
       <div class="small" id="v063">—</div>
+      <div class="small" id="priceDelta">—</div>
     </section>
 
     <section class="card span4">
@@ -147,13 +154,71 @@
 </main>
 
 <footer>
-  CohesivX Paper Scalper · PAPER_ONLY · v0.2 activ separat de legacy · static dashboard
+  CohesivX Paper Scalper · PAPER_ONLY · live BTC separat de ultima decizie bot · static dashboard
 </footer>
 
 <script>
 const REPORT_URL = "btc-swing-strategy/cohesivx_scalp_report.json";
 const TRADES_URL = "btc-swing-strategy/cohesivx_scalp_trades.jsonl";
 const SERIES_URL = "btc-swing-strategy/cohesivx_scalp_price_series.jsonl";
+
+let latestBotPrice = null;
+let latestLivePrice = null;
+
+async function fetchLiveBtcPrice(){
+  const sources = [
+    {
+      name: "Bitget public",
+      url: "https://api.bitget.com/api/v2/spot/market/tickers?symbol=BTCUSDT",
+      parse: d => {
+        const data = d && d.data;
+        const row = Array.isArray(data) ? data[0] : data;
+        return Number(row && (row.lastPr || row.close || row.last));
+      }
+    },
+    {
+      name: "Binance public",
+      url: "https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT",
+      parse: d => Number(d && d.price)
+    },
+    {
+      name: "CoinGecko public",
+      url: "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd",
+      parse: d => Number(d && d.bitcoin && d.bitcoin.usd)
+    }
+  ];
+
+  for (const s of sources) {
+    try {
+      const r = await fetch(s.url + (s.url.includes("?") ? "&" : "?") + "t=" + Date.now(), {cache:"no-store"});
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      const d = await r.json();
+      const p = s.parse(d);
+      if (Number.isFinite(p) && p > 0) {
+        latestLivePrice = p;
+        document.getElementById("livePrice").textContent = fmt(p, 2);
+        document.getElementById("liveSource").textContent = "Sursă: " + s.name + " · actualizat browser: " + new Date().toLocaleTimeString();
+        updatePriceDelta();
+        return;
+      }
+    } catch(e) {}
+  }
+  document.getElementById("liveSource").textContent = "Preț live indisponibil temporar.";
+}
+
+function updatePriceDelta(){
+  const el = document.getElementById("priceDelta");
+  if (!el) return;
+  if (!Number.isFinite(latestBotPrice) || !Number.isFinite(latestLivePrice)) {
+    el.textContent = "—";
+    return;
+  }
+  const diff = latestLivePrice - latestBotPrice;
+  const diffPct = diff / latestBotPrice;
+  const cls = diff >= 0 ? "good" : "bad";
+  el.innerHTML = `Diferență live față de ultima decizie bot: <span class="${cls}">${fmt(diff,2)} USDT (${pct(diffPct)})</span>`;
+}
+
 
 function fmt(n, digits=2){
   if(n === null || n === undefined || Number.isNaN(Number(n))) return "—";
@@ -224,7 +289,7 @@ function drawChart(rows){
   ctx.font = "13px system-ui";
   ctx.fillText("min " + fmt(min,2), pad+4, pad+h-8);
   ctx.fillText("max " + fmt(max,2), pad+4, pad+14);
-  document.getElementById("chartInfo").textContent = `${vals.length} puncte · min ${fmt(min,2)} · max ${fmt(max,2)}`;
+  document.getElementById("chartInfo").textContent = `${vals.length} puncte · min ${fmt(min,2)} · max ${fmt(max,2)} · grafic publicat de bot, nu API live`;
 }
 async function refresh(){
   try{
@@ -234,8 +299,10 @@ async function refresh(){
     document.getElementById("statusPill").innerHTML = `<span class="dot ${color}"></span><span>${report.status || "UNKNOWN"}</span>`;
     document.getElementById("updated").textContent = "Actualizat UTC: " + (report.timestamp_utc || "—");
     document.getElementById("botName").textContent = "Bot activ: " + (report.bot || "—");
+    latestBotPrice = Number(report.price);
     document.getElementById("price").textContent = fmt(report.price,2);
-    document.getElementById("v063").textContent = `v0.6.3: ${report.v063_action || "—"} / ${report.v063_result || "—"}`;
+    document.getElementById("v063").textContent = `Ultima decizie bot · v0.6.3: ${report.v063_action || "—"} / ${report.v063_result || "—"}`;
+    updatePriceDelta();
     document.getElementById("scalpAction").textContent = report.scalp_action || "—";
     document.getElementById("reason").textContent = report.reason || "—";
 
@@ -293,7 +360,9 @@ async function refresh(){
     document.getElementById("raw").textContent = String(e.stack || e);
   }
 }
+fetchLiveBtcPrice();
 refresh();
+setInterval(fetchLiveBtcPrice, 30000);
 setInterval(refresh, 60000);
 </script>
 </body>
