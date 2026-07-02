@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>CohesivX Paper Scalper Dashboard</title>
+  <title>CohesivX Paper Scalper Dashboard v2</title>
   <style>
     :root {
       --bg:#090b10; --panel:#121723; --panel2:#171d2a; --text:#eef2ff; --muted:#9aa4b2;
@@ -30,6 +30,7 @@
     .row{display:flex;justify-content:space-between;gap:14px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.06)}
     .row:last-child{border-bottom:0}
     .row span:first-child{color:var(--muted)}
+    .notice{border:1px solid rgba(245,196,81,.35);background:rgba(245,196,81,.08);border-radius:14px;padding:12px;color:#ffe6a3;line-height:1.45}
     pre{white-space:pre-wrap;word-break:break-word;background:#080b12;border:1px solid var(--line);border-radius:14px;padding:12px;overflow:auto}
     canvas{width:100%;height:220px;background:#080b12;border:1px solid var(--line);border-radius:14px}
     table{width:100%;border-collapse:collapse;font-size:14px}
@@ -42,15 +43,23 @@
 <body>
 <header>
   <h1>CohesivX Paper Scalper</h1>
-  <div class="subtitle">Dashboard online static pentru botul paper. Nu trimite ordine reale. Citește doar fișiere JSON/JSONL publicate de Termux/GitHub.</div>
+  <div class="subtitle">Dashboard online static pentru botul paper. Separă clar statistica activă v0.2-4x2 de istoricul v0.1.</div>
 </header>
 
 <main>
   <div class="grid">
+    <section class="card">
+      <div class="notice">
+        <b>Atenție:</b> statistica „Legacy / toate versiunile” poate include rana v0.1. Pentru evaluarea modelului activ, urmărește cardul
+        <b>v0.2-4x2 activ</b> și trade-urile unde <code>bot</code> este versiunea curentă.
+      </div>
+    </section>
+
     <section class="card span4">
       <div class="label">Status</div>
       <div style="margin-top:10px"><span id="statusPill" class="pill"><span class="dot"></span><span>Loading</span></span></div>
       <div class="small" style="margin-top:12px" id="updated">—</div>
+      <div class="small" style="margin-top:8px" id="botName">—</div>
     </section>
 
     <section class="card span4">
@@ -72,12 +81,32 @@
     </section>
 
     <section class="card span4">
-      <div class="label">Performanță paper</div>
+      <div class="label">v0.2-4x2 activ</div>
+      <div class="row"><span>Trade-uri v0.2</span><b id="v2Trades">—</b></div>
+      <div class="row"><span>Wins v0.2</span><b id="v2Wins">—</b></div>
+      <div class="row"><span>Losses v0.2</span><b id="v2Losses">—</b></div>
+      <div class="row"><span>PnL v0.2</span><b id="v2Pnl">—</b></div>
+      <div class="row"><span>Win rate v0.2</span><b id="v2Winrate">—</b></div>
+      <div class="small" style="margin-top:10px">Aceasta este statistica relevantă pentru versiunea instalată acum.</div>
+    </section>
+
+    <section class="card span4">
+      <div class="label">Legacy / toate versiunile</div>
       <div class="row"><span>Total paper</span><b id="totalValue">—</b></div>
+      <div class="row"><span>PnL total</span><b id="pnl">—</b></div>
+      <div class="row"><span>Trade-uri total</span><b id="totalTrades">—</b></div>
+      <div class="row"><span>Wins total</span><b id="totalWins">—</b></div>
+      <div class="row"><span>Losses total</span><b id="totalLosses">—</b></div>
+      <div class="row"><span>Win rate total</span><b id="winrate">—</b></div>
+      <div class="small" style="margin-top:10px">Include v0.1, deci nu evalua v0.2 după această rană istorică.</div>
+    </section>
+
+    <section class="card span4">
+      <div class="label">Poziție paper curentă</div>
       <div class="row"><span>Cash</span><b id="cash">—</b></div>
       <div class="row"><span>BTC paper</span><b id="btc">—</b></div>
-      <div class="row"><span>PnL realizat</span><b id="pnl">—</b></div>
-      <div class="row"><span>Win rate</span><b id="winrate">—</b></div>
+      <div class="row"><span>Poziție deschisă</span><b id="openPos">—</b></div>
+      <div class="row"><span>PnL poziție</span><b id="openPnl">—</b></div>
     </section>
 
     <section class="card span6">
@@ -91,11 +120,21 @@
     </section>
 
     <section class="card">
-      <div class="label">Ultimele trade-uri paper</div>
+      <div class="label">Ultimele trade-uri v0.2-4x2</div>
       <div style="overflow:auto;margin-top:10px">
         <table>
           <thead><tr><th>Timp</th><th>Tip</th><th>Motiv</th><th>Entry</th><th>Exit</th><th>Net PnL</th><th>Outcome</th></tr></thead>
-          <tbody id="trades"><tr><td colspan="7">Loading…</td></tr></tbody>
+          <tbody id="tradesV2"><tr><td colspan="7">Loading…</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="label">Ultimele trade-uri legacy / toate versiunile</div>
+      <div style="overflow:auto;margin-top:10px">
+        <table>
+          <thead><tr><th>Timp</th><th>Bot</th><th>Tip</th><th>Motiv</th><th>Entry</th><th>Exit</th><th>Net PnL</th><th>Outcome</th></tr></thead>
+          <tbody id="tradesAll"><tr><td colspan="8">Loading…</td></tr></tbody>
         </table>
       </div>
     </section>
@@ -108,7 +147,7 @@
 </main>
 
 <footer>
-  CohesivX Paper Scalper · PAPER_ONLY · laborator pentru recoltare rapidă · static dashboard
+  CohesivX Paper Scalper · PAPER_ONLY · v0.2 activ separat de legacy · static dashboard
 </footer>
 
 <script>
@@ -120,7 +159,7 @@ function fmt(n, digits=2){
   if(n === null || n === undefined || Number.isNaN(Number(n))) return "—";
   return Number(n).toLocaleString("en-US",{maximumFractionDigits:digits, minimumFractionDigits: digits});
 }
-function pct(n){ return (n===null || n===undefined) ? "—" : (Number(n)*100).toFixed(2)+"%"; }
+function pct(n){ return (n===null || n===undefined || Number.isNaN(Number(n))) ? "—" : (Number(n)*100).toFixed(2)+"%"; }
 function clsByStatus(status, action){
   if(status === "BLOCKED" || String(action||"").includes("SL")) return "bad";
   if(String(action||"").includes("BUY") || String(action||"").includes("TP")) return "good";
@@ -143,6 +182,23 @@ function kv(container, obj, fields){
     div.innerHTML = `<span>${label}</span><b>${out}</b>`;
     container.appendChild(div);
   });
+}
+function rowTrade(r, includeBot=false){
+  return `<tr>
+    <td>${r.timestamp_utc || "—"}</td>
+    ${includeBot ? `<td>${r.bot || "—"}</td>` : ""}
+    <td>${r.type || "—"}</td><td>${r.reason || "—"}</td>
+    <td>${fmt(r.entry_price,2)}</td><td>${fmt(r.exit_price,2)}</td>
+    <td class="${Number(r.net_pnl_usdt||0)>=0?'good':'bad'}">${r.net_pnl_usdt===undefined?'—':fmt(r.net_pnl_usdt,6)}</td>
+    <td>${r.outcome || "—"}</td>
+  </tr>`;
+}
+function computeVersionStats(rows, botName){
+  const exits = rows.filter(r => r.bot === botName && r.type === "PAPER_SCALP_EXIT");
+  const wins = exits.filter(r => r.outcome === "WIN" || Number(r.net_pnl_usdt) >= 0).length;
+  const losses = exits.filter(r => r.outcome === "LOSS" || Number(r.net_pnl_usdt) < 0).length;
+  const pnl = exits.reduce((a,r)=>a + (Number(r.net_pnl_usdt)||0), 0);
+  return {trades: exits.length, wins, losses, pnl, winrate: exits.length ? wins/exits.length : null};
 }
 function drawChart(rows){
   const c = document.getElementById("chart");
@@ -177,6 +233,7 @@ async function refresh(){
     const color = clsByStatus(report.status, report.scalp_action);
     document.getElementById("statusPill").innerHTML = `<span class="dot ${color}"></span><span>${report.status || "UNKNOWN"}</span>`;
     document.getElementById("updated").textContent = "Actualizat UTC: " + (report.timestamp_utc || "—");
+    document.getElementById("botName").textContent = "Bot activ: " + (report.bot || "—");
     document.getElementById("price").textContent = fmt(report.price,2);
     document.getElementById("v063").textContent = `v0.6.3: ${report.v063_action || "—"} / ${report.v063_result || "—"}`;
     document.getElementById("scalpAction").textContent = report.scalp_action || "—";
@@ -189,6 +246,11 @@ async function refresh(){
     document.getElementById("pnl").textContent = fmt(s.total_realized_pnl_usdt,6) + " USDT";
     document.getElementById("pnl").className = Number(s.total_realized_pnl_usdt) >= 0 ? "good" : "bad";
     document.getElementById("winrate").textContent = s.win_rate == null ? "—" : pct(s.win_rate);
+    document.getElementById("totalTrades").textContent = s.total_trades ?? "—";
+    document.getElementById("totalWins").textContent = s.wins ?? "—";
+    document.getElementById("totalLosses").textContent = s.losses ?? "—";
+    document.getElementById("openPos").textContent = s.open_position ? "DA" : "NU";
+    document.getElementById("openPnl").textContent = s.open_position_pnl?.net_pnl_usdt === undefined ? "—" : fmt(s.open_position_pnl.net_pnl_usdt,6) + " USDT";
 
     kv(document.getElementById("indicators"), report.indicators || {}, [
       ["Samples","samples","raw"],["RSI14","rsi14","num2"],["EMA9","ema9","num2"],["EMA21","ema21","num2"],
@@ -202,15 +264,23 @@ async function refresh(){
 
     try{
       const t = await fetchText(TRADES_URL);
-      const rows = t.trim() ? t.trim().split("\n").map(x=>JSON.parse(x)).slice(-12).reverse() : [];
-      document.getElementById("trades").innerHTML = rows.length ? rows.map(r=>`
-        <tr>
-          <td>${r.timestamp_utc || "—"}</td><td>${r.type || "—"}</td><td>${r.reason || "—"}</td>
-          <td>${fmt(r.entry_price,2)}</td><td>${fmt(r.exit_price,2)}</td>
-          <td class="${Number(r.net_pnl_usdt||0)>=0?'good':'bad'}">${r.net_pnl_usdt===undefined?'—':fmt(r.net_pnl_usdt,6)}</td>
-          <td>${r.outcome || "—"}</td>
-        </tr>`).join("") : `<tr><td colspan="7">Nu există trade-uri încă.</td></tr>`;
-    }catch(e){ document.getElementById("trades").innerHTML = `<tr><td colspan="7">Trade log indisponibil: ${e.message}</td></tr>`; }
+      const rows = t.trim() ? t.trim().split("\n").map(x=>JSON.parse(x)) : [];
+      const botName = report.bot;
+      const v2Rows = rows.filter(r => r.bot === botName);
+      const stats = computeVersionStats(rows, botName);
+      document.getElementById("v2Trades").textContent = stats.trades;
+      document.getElementById("v2Wins").textContent = stats.wins;
+      document.getElementById("v2Losses").textContent = stats.losses;
+      document.getElementById("v2Pnl").textContent = fmt(stats.pnl,6) + " USDT";
+      document.getElementById("v2Pnl").className = stats.pnl >= 0 ? "good" : "bad";
+      document.getElementById("v2Winrate").textContent = stats.winrate == null ? "—" : pct(stats.winrate);
+
+      document.getElementById("tradesV2").innerHTML = v2Rows.length ? v2Rows.slice(-12).reverse().map(r=>rowTrade(r,false)).join("") : `<tr><td colspan="7">Încă nu există trade-uri v0.2-4x2. Asta înseamnă că rana afișată la legacy vine din versiuni vechi.</td></tr>`;
+      document.getElementById("tradesAll").innerHTML = rows.length ? rows.slice(-12).reverse().map(r=>rowTrade(r,true)).join("") : `<tr><td colspan="8">Nu există trade-uri încă.</td></tr>`;
+    }catch(e){
+      document.getElementById("tradesV2").innerHTML = `<tr><td colspan="7">Trade log indisponibil: ${e.message}</td></tr>`;
+      document.getElementById("tradesAll").innerHTML = `<tr><td colspan="8">Trade log indisponibil: ${e.message}</td></tr>`;
+    }
 
     try{
       const ser = await fetchText(SERIES_URL);
