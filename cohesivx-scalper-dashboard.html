@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="ro">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CohesivX Paper Scalper Dashboard</title>
+  <style>
+    :root {
+      --bg:#090b10; --panel:#121723; --panel2:#171d2a; --text:#eef2ff; --muted:#9aa4b2;
+      --good:#51d88a; --warn:#f5c451; --bad:#ff6b6b; --line:#263044; --blue:#7ab7ff;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:radial-gradient(circle at top,#111827 0,#090b10 52%,#050608 100%);color:var(--text);
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+    header{padding:22px 16px 10px;max-width:1120px;margin:auto}
+    h1{margin:0;font-size:clamp(24px,4vw,42px);letter-spacing:-.03em}
+    .subtitle{color:var(--muted);margin-top:6px;line-height:1.45}
+    main{max-width:1120px;margin:auto;padding:14px 16px 28px}
+    .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
+    .card{grid-column:span 12;background:linear-gradient(180deg,var(--panel),#0f1420);border:1px solid var(--line);
+      border-radius:18px;padding:16px;box-shadow:0 12px 30px rgba(0,0,0,.25)}
+    @media(min-width:760px){.span4{grid-column:span 4}.span6{grid-column:span 6}.span8{grid-column:span 8}}
+    .kpi{font-size:30px;font-weight:800;letter-spacing:-.03em;margin-top:6px}
+    .label{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+    .pill{display:inline-flex;gap:8px;align-items:center;padding:7px 10px;border-radius:999px;background:var(--panel2);
+      border:1px solid var(--line);font-weight:700;font-size:13px}
+    .dot{width:9px;height:9px;border-radius:50%;background:var(--muted)}
+    .good{color:var(--good)} .warn{color:var(--warn)} .bad{color:var(--bad)} .blue{color:var(--blue)}
+    .dot.good{background:var(--good)} .dot.warn{background:var(--warn)} .dot.bad{background:var(--bad)}
+    .row{display:flex;justify-content:space-between;gap:14px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.06)}
+    .row:last-child{border-bottom:0}
+    .row span:first-child{color:var(--muted)}
+    pre{white-space:pre-wrap;word-break:break-word;background:#080b12;border:1px solid var(--line);border-radius:14px;padding:12px;overflow:auto}
+    canvas{width:100%;height:220px;background:#080b12;border:1px solid var(--line);border-radius:14px}
+    table{width:100%;border-collapse:collapse;font-size:14px}
+    th,td{padding:9px;border-bottom:1px solid rgba(255,255,255,.07);text-align:left;vertical-align:top}
+    th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.08em}
+    footer{max-width:1120px;margin:auto;padding:0 16px 26px;color:var(--muted);font-size:13px}
+    .small{font-size:13px;color:var(--muted);line-height:1.45}
+  </style>
+</head>
+<body>
+<header>
+  <h1>CohesivX Paper Scalper</h1>
+  <div class="subtitle">Dashboard online static pentru botul paper. Nu trimite ordine reale. Citește doar fișiere JSON/JSONL publicate de Termux/GitHub.</div>
+</header>
+
+<main>
+  <div class="grid">
+    <section class="card span4">
+      <div class="label">Status</div>
+      <div style="margin-top:10px"><span id="statusPill" class="pill"><span class="dot"></span><span>Loading</span></span></div>
+      <div class="small" style="margin-top:12px" id="updated">—</div>
+    </section>
+
+    <section class="card span4">
+      <div class="label">Preț BTC</div>
+      <div class="kpi" id="price">—</div>
+      <div class="small" id="v063">—</div>
+    </section>
+
+    <section class="card span4">
+      <div class="label">Acțiune scalper</div>
+      <div class="kpi" id="scalpAction">—</div>
+      <div class="small" id="reason">—</div>
+    </section>
+
+    <section class="card span8">
+      <div class="label">Grafic preț local</div>
+      <canvas id="chart" width="900" height="260"></canvas>
+      <div class="small" id="chartInfo">Ultimele puncte din cohesivx_scalp_price_series.jsonl</div>
+    </section>
+
+    <section class="card span4">
+      <div class="label">Performanță paper</div>
+      <div class="row"><span>Total paper</span><b id="totalValue">—</b></div>
+      <div class="row"><span>Cash</span><b id="cash">—</b></div>
+      <div class="row"><span>BTC paper</span><b id="btc">—</b></div>
+      <div class="row"><span>PnL realizat</span><b id="pnl">—</b></div>
+      <div class="row"><span>Win rate</span><b id="winrate">—</b></div>
+    </section>
+
+    <section class="card span6">
+      <div class="label">Indicatori intrare</div>
+      <div id="indicators"></div>
+    </section>
+
+    <section class="card span6">
+      <div class="label">Ziua curentă</div>
+      <div id="today"></div>
+    </section>
+
+    <section class="card">
+      <div class="label">Ultimele trade-uri paper</div>
+      <div style="overflow:auto;margin-top:10px">
+        <table>
+          <thead><tr><th>Timp</th><th>Tip</th><th>Motiv</th><th>Entry</th><th>Exit</th><th>Net PnL</th><th>Outcome</th></tr></thead>
+          <tbody id="trades"><tr><td colspan="7">Loading…</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="label">Raw report</div>
+      <pre id="raw">Loading…</pre>
+    </section>
+  </div>
+</main>
+
+<footer>
+  CohesivX Paper Scalper · PAPER_ONLY · laborator pentru recoltare rapidă · static dashboard
+</footer>
+
+<script>
+const REPORT_URL = "btc-swing-strategy/cohesivx_scalp_report.json";
+const TRADES_URL = "btc-swing-strategy/cohesivx_scalp_trades.jsonl";
+const SERIES_URL = "btc-swing-strategy/cohesivx_scalp_price_series.jsonl";
+
+function fmt(n, digits=2){
+  if(n === null || n === undefined || Number.isNaN(Number(n))) return "—";
+  return Number(n).toLocaleString("en-US",{maximumFractionDigits:digits, minimumFractionDigits: digits});
+}
+function pct(n){ return (n===null || n===undefined) ? "—" : (Number(n)*100).toFixed(2)+"%"; }
+function clsByStatus(status, action){
+  if(status === "BLOCKED" || String(action||"").includes("SL")) return "bad";
+  if(String(action||"").includes("BUY") || String(action||"").includes("TP")) return "good";
+  if(String(action||"").includes("LOCK") || String(action||"").includes("MAX")) return "warn";
+  return "blue";
+}
+async function fetchText(url){
+  const r = await fetch(url + "?t=" + Date.now(), {cache:"no-store"});
+  if(!r.ok) throw new Error(url + " HTTP " + r.status);
+  return await r.text();
+}
+async function loadJson(url){ return JSON.parse(await fetchText(url)); }
+function kv(container, obj, fields){
+  container.innerHTML = "";
+  fields.forEach(([label,key,type])=>{
+    const val = obj ? obj[key] : undefined;
+    let out = type==="pct" ? pct(val) : type==="num4" ? fmt(val,4) : type==="num2" ? fmt(val,2) : (val ?? "—");
+    const div = document.createElement("div");
+    div.className = "row";
+    div.innerHTML = `<span>${label}</span><b>${out}</b>`;
+    container.appendChild(div);
+  });
+}
+function drawChart(rows){
+  const c = document.getElementById("chart");
+  const ctx = c.getContext("2d");
+  ctx.clearRect(0,0,c.width,c.height);
+  const vals = rows.map(r=>Number(r.price)).filter(v=>Number.isFinite(v)).slice(-160);
+  if(vals.length < 2){ document.getElementById("chartInfo").textContent = "Nu sunt suficiente puncte."; return; }
+  const min = Math.min(...vals), max = Math.max(...vals);
+  const pad = 24, w = c.width - pad*2, h = c.height - pad*2;
+  ctx.strokeStyle = "rgba(255,255,255,.15)";
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(pad,pad); ctx.lineTo(pad,pad+h); ctx.lineTo(pad+w,pad+h); ctx.stroke();
+  ctx.strokeStyle = "#7ab7ff";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  vals.forEach((v,i)=>{
+    const x = pad + (i/(vals.length-1))*w;
+    const y = pad + (1-(v-min)/(max-min || 1))*h;
+    if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  });
+  ctx.stroke();
+  ctx.fillStyle = "rgba(255,255,255,.7)";
+  ctx.font = "13px system-ui";
+  ctx.fillText("min " + fmt(min,2), pad+4, pad+h-8);
+  ctx.fillText("max " + fmt(max,2), pad+4, pad+14);
+  document.getElementById("chartInfo").textContent = `${vals.length} puncte · min ${fmt(min,2)} · max ${fmt(max,2)}`;
+}
+async function refresh(){
+  try{
+    const report = await loadJson(REPORT_URL);
+    document.getElementById("raw").textContent = JSON.stringify(report,null,2);
+    const color = clsByStatus(report.status, report.scalp_action);
+    document.getElementById("statusPill").innerHTML = `<span class="dot ${color}"></span><span>${report.status || "UNKNOWN"}</span>`;
+    document.getElementById("updated").textContent = "Actualizat UTC: " + (report.timestamp_utc || "—");
+    document.getElementById("price").textContent = fmt(report.price,2);
+    document.getElementById("v063").textContent = `v0.6.3: ${report.v063_action || "—"} / ${report.v063_result || "—"}`;
+    document.getElementById("scalpAction").textContent = report.scalp_action || "—";
+    document.getElementById("reason").textContent = report.reason || "—";
+
+    const s = report.state_summary || {};
+    document.getElementById("totalValue").textContent = fmt(s.paper_total_value_usdt,4) + " USDT";
+    document.getElementById("cash").textContent = fmt(s.paper_cash_usdt,4) + " USDT";
+    document.getElementById("btc").textContent = fmt(s.paper_btc,8);
+    document.getElementById("pnl").textContent = fmt(s.total_realized_pnl_usdt,6) + " USDT";
+    document.getElementById("pnl").className = Number(s.total_realized_pnl_usdt) >= 0 ? "good" : "bad";
+    document.getElementById("winrate").textContent = s.win_rate == null ? "—" : pct(s.win_rate);
+
+    kv(document.getElementById("indicators"), report.indicators || {}, [
+      ["Samples","samples","raw"],["RSI14","rsi14","num2"],["EMA9","ema9","num2"],["EMA21","ema21","num2"],
+      ["EMA50","ema50","num2"],["Momentum 1","momentum_1","pct"],["Momentum 2","momentum_2","pct"],
+      ["Dist EMA21","dist_ema21","pct"],["Range","range_pct","pct"]
+    ]);
+    kv(document.getElementById("today"), s.today || {}, [
+      ["Trades","trades","raw"],["Wins","wins","raw"],["Losses","losses","raw"],["PnL azi","realized_pnl_usdt","num4"],
+      ["Locked","locked","raw"],["Lock reason","lock_reason","raw"]
+    ]);
+
+    try{
+      const t = await fetchText(TRADES_URL);
+      const rows = t.trim() ? t.trim().split("\n").map(x=>JSON.parse(x)).slice(-12).reverse() : [];
+      document.getElementById("trades").innerHTML = rows.length ? rows.map(r=>`
+        <tr>
+          <td>${r.timestamp_utc || "—"}</td><td>${r.type || "—"}</td><td>${r.reason || "—"}</td>
+          <td>${fmt(r.entry_price,2)}</td><td>${fmt(r.exit_price,2)}</td>
+          <td class="${Number(r.net_pnl_usdt||0)>=0?'good':'bad'}">${r.net_pnl_usdt===undefined?'—':fmt(r.net_pnl_usdt,6)}</td>
+          <td>${r.outcome || "—"}</td>
+        </tr>`).join("") : `<tr><td colspan="7">Nu există trade-uri încă.</td></tr>`;
+    }catch(e){ document.getElementById("trades").innerHTML = `<tr><td colspan="7">Trade log indisponibil: ${e.message}</td></tr>`; }
+
+    try{
+      const ser = await fetchText(SERIES_URL);
+      const rows = ser.trim() ? ser.trim().split("\n").map(x=>JSON.parse(x)) : [];
+      drawChart(rows);
+    }catch(e){ document.getElementById("chartInfo").textContent = "Price series indisponibil: " + e.message; }
+  }catch(e){
+    document.getElementById("statusPill").innerHTML = `<span class="dot bad"></span><span>ERROR</span>`;
+    document.getElementById("reason").textContent = e.message;
+    document.getElementById("raw").textContent = String(e.stack || e);
+  }
+}
+refresh();
+setInterval(refresh, 60000);
+</script>
+</body>
+</html>
