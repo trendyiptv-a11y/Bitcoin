@@ -1,21 +1,21 @@
 {
   "title": "COEZIUNE_PARTICIPATIVA",
-  "score": 80.5,
+  "score": 78.23,
   "label": "participare coezivă",
   "level": "cohesive",
   "signal": "flat",
   "main_text": "Participanții par activi și relativ coezivi. Interesul pentru ecosistem persistă, iar comportamentul observabil nu indică abandon.",
   "components": {
-    "liquidity_component": 74.57,
-    "flow_component": 64.8,
-    "production_component": 84.65,
+    "liquidity_component": 72.3,
+    "flow_component": 64.36,
+    "production_component": 77.26,
     "persistence_component": 100.0,
     "probability_component": 100.0
   },
   "inputs": {
-    "flow_score": 0.012330028582704424,
-    "liquidity_score": 0.02729623179013598,
-    "deviation_from_production": 0.053737019130663206,
+    "flow_score": 0.011963785118812263,
+    "liquidity_score": 0.02477682728071231,
+    "deviation_from_production": 0.07958239200029274,
     "signal_probability": 0.5,
     "recent_days": 14,
     "recent_short_days": 0,
@@ -23,19 +23,19 @@
     "recent_flat_days": 14
   },
   "history": {
-    "rows": 5630,
+    "rows": 5631,
     "from": "2011-02-01T00:00:00+00:00",
-    "to": "2026-07-01T00:00:00+00:00",
-    "mean_score": 74.55341563055062,
+    "to": "2026-07-02T00:00:00+00:00",
+    "mean_score": 74.55335819570236,
     "median_score": 77.22,
     "min_score": 56.04,
     "max_score": 97.21,
     "label_counts": {
       "participare coezivă": 3667,
-      "participare tensionată": 1963
+      "participare tensionată": 1964
     }
   },
   "footer": "Indicator experimental derivat din flux, lichiditate, persistență și tensiune față de model. Nu măsoară încă direct utilizarea peer-to-peer on-chain.",
-  "generated_at": "2026-07-01T05:02:50.508471+00:00",
-  "source_timestamp": "2026-07-01T00:00:00+00:00"
+  "generated_at": "2026-07-02T04:38:54.032353+00:00",
+  "source_timestamp": "2026-07-02T00:00:00+00:00"
 }
