@@ -12,10 +12,10 @@
       "rsi_min": 55.0
     },
     "breakout_signal": false,
-    "dist_ema21": 0.0015370214259388213,
-    "ema21": 61547.45025025346,
-    "ema50": 61176.61445482786,
-    "ema9": 61675.20955253213,
+    "dist_ema21": 0.001385510579879109,
+    "ema21": 61556.76245435639,
+    "ema50": 61195.572160590236,
+    "ema9": 61668.930034037294,
     "fee_rate": 0.001,
     "momentum_1": 0.0,
     "momentum_2": 0.0,
@@ -24,8 +24,8 @@
     "recent_high": 61914.52,
     "recent_low": 61241.01,
     "reversion_signal": false,
-    "rsi14": 69.72084546485054,
-    "samples": 306,
+    "rsi14": 63.95613408471595,
+    "samples": 307,
     "trend_stack_positive": true
   },
   "last_trade": null,
@@ -55,7 +55,7 @@
     "wins": 2
   },
   "status": "PASS",
-  "timestamp_utc": "2026-07-02T21:03:57.666189+00:00",
+  "timestamp_utc": "2026-07-02T22:03:59.677652+00:00",
   "v063_action": "HOLD",
   "v063_result": "NO_ACTION_HOLD"
 }
