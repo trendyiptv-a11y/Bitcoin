@@ -258,8 +258,13 @@ function rowTrade(r, includeBot=false){
     <td>${r.outcome || "—"}</td>
   </tr>`;
 }
-function computeVersionStats(rows, botName){
-  const exits = rows.filter(r => r.bot === botName && r.type === "PAPER_SCALP_EXIT");
+function isV2Family(r){
+      const b = String(r.bot || "");
+      return b.includes("v0.2") || b.includes("4x2");
+    }
+
+    function computeVersionStats(rows, botName){
+  const exits = rows.filter(r => isV2Family(r) && r.type === "PAPER_SCALP_EXIT");
   const wins = exits.filter(r => r.outcome === "WIN" || Number(r.net_pnl_usdt) >= 0).length;
   const losses = exits.filter(r => r.outcome === "LOSS" || Number(r.net_pnl_usdt) < 0).length;
   const pnl = exits.reduce((a,r)=>a + (Number(r.net_pnl_usdt)||0), 0);
@@ -333,8 +338,8 @@ async function refresh(){
       const t = await fetchText(TRADES_URL);
       const rows = t.trim() ? t.trim().split("\n").map(x=>JSON.parse(x)) : [];
       const botName = report.bot;
-      const v2Rows = rows.filter(r => r.bot === botName);
-      const stats = computeVersionStats(rows, botName);
+      const v2Rows = rows.filter(isV2Family);
+      const stats = computeVersionStats(rows);
       document.getElementById("v2Trades").textContent = stats.trades;
       document.getElementById("v2Wins").textContent = stats.wins;
       document.getElementById("v2Losses").textContent = stats.losses;
