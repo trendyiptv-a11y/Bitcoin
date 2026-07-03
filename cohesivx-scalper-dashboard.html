@@ -261,7 +261,6 @@ function rowTrade(r, includeBot=false){
 function isV2Family(r){
   const b = String(r.bot || "");
   const reason = String(r.reason || "");
-  const type = String(r.type || "");
 
   return (
     b.includes("v0.2") ||
@@ -269,8 +268,7 @@ function isV2Family(r){
     b.includes("Guarded Paper Exit") ||
     reason.startsWith("GUARDED_GUARD_EXIT_") ||
     reason.includes("GUARD_EXIT_") ||
-    reason.includes("COHESIVE_BREAKOUT_SCALP_V021") ||
-    type === "PAPER_SCALP_EXIT"
+    reason.includes("COHESIVE_BREAKOUT_SCALP_V021")
   );
 }
 
@@ -303,6 +301,42 @@ function computeVersionStats(rows){
     winRate: exits.length ? (wins / exits.length) * 100 : 0
   };
 }
+
+function computeTodayFromTrades(rows){
+  rows = Array.isArray(rows) ? rows : [];
+  const todayKey = new Date().toISOString().slice(0,10);
+
+  const exits = rows.filter(r =>
+    isV2Family(r) &&
+    String(r.type || "") === "PAPER_SCALP_EXIT" &&
+    String(r.timestamp_utc || "").startsWith(todayKey)
+  );
+
+  const wins = exits.filter(r =>
+    String(r.outcome || "").toUpperCase() === "WIN" ||
+    Number(r.net_pnl_usdt || 0) >= 0
+  ).length;
+
+  const losses = exits.filter(r =>
+    String(r.outcome || "").toUpperCase() === "LOSS" ||
+    Number(r.net_pnl_usdt || 0) < 0
+  ).length;
+
+  const pnl = exits.reduce((a,r) => a + (Number(r.net_pnl_usdt) || 0), 0);
+
+  return {
+    trades: exits.length,
+    wins,
+    losses,
+    pnl
+  };
+}
+
+function setTxt(id, value){
+  const el = document.getElementById(id);
+  if(el) el.textContent = value;
+}
+
 
 function drawChart(rows){
   const c = document.getElementById("chart");
@@ -374,6 +408,13 @@ async function refresh(){
       const botName = report.bot;
       const v2Rows = rows.filter(isV2Family);
       const stats = computeVersionStats(rows);
+        const todayFromTrades = computeTodayFromTrades(rows);
+
+        setTxt("todayTrades", todayFromTrades.trades);
+        setTxt("todayWins", todayFromTrades.wins);
+        setTxt("todayLosses", todayFromTrades.losses);
+        setTxt("todayPnl", fmt(todayFromTrades.pnl, 6));
+
       document.getElementById("v2Trades").textContent = stats.trades;
       document.getElementById("v2Wins").textContent = stats.wins;
       document.getElementById("v2Losses").textContent = stats.losses;
