@@ -10,7 +10,7 @@
   "model_price_explanation": "Prețul coeziv central este ~76,377 USD, calculat din costul de producție actual (~56,219 USD) și din 250 contexte istorice similare, unde multiplicatorul median preț/cost este 1.359×. Prețul live este −19.7% sub acest reper coeziv. Banda statistică a modelului este ~46,098 USD – ~244,457 USD; banda superioară nu este target, ci limită statistică a multiplicatorului istoric.",
   "signal": "flat",
   "message": "Prețul de tranzacționare la actualizarea sistemului: în jur de ~61,310 USD. Mecanismul vede un neutru. Fluxul actual de piață este relativ echilibrat (slab). Lichiditatea este ridicată, iar mișcările de preț tind să fie mai stabile. Prețul este într-o zonă de echilibru față de costul estimat de producție al rețelei. Nu este o recomandare de tranzacționare, ci o interpretare structurată a riscului. Prețul coeziv central este ~76,377 USD, calculat din costul de producție actual (~56,219 USD) și din 250 contexte istorice similare, unde multiplicatorul median preț/cost este 1.359×. Prețul live este −19.7% sub acest reper coeziv. Banda statistică a modelului este ~46,098 USD – ~244,457 USD; banda superioară nu este target, ci limită statistică a multiplicatorului istoric.",
-  "generated_at": "2026-07-03T04:10:45.731834+00:00",
+  "generated_at": "2026-07-03T04:23:34.445085+00:00",
   "signal_history": [
     {
       "timestamp": "2026-06-04T00:00:00+00:00",
@@ -173,7 +173,7 @@
     "expensive": 89439.2555584764
   },
   "production_cost_reference": "average",
-  "production_cost_as_of": "2026-07-03T04:10:45.120642+00:00",
+  "production_cost_as_of": "2026-07-03T04:23:34.095476+00:00",
   "deviation_from_production": 0.09055733698347335,
   "flow_score": -0.003394351421903034,
   "flow_bias": "neutru",
@@ -290,6 +290,6 @@
     "regime": "bear_late",
     "current_deviation": -0.1972766474595099,
     "label": "Semnal structural, nu intraday",
-    "generated_at": "2026-07-03T04:10:45.815623+00:00"
+    "generated_at": "2026-07-03T04:23:34.534514+00:00"
   }
 }
