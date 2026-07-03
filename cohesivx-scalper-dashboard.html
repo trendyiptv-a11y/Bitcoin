@@ -308,20 +308,25 @@ function updateTodayCardFromTrades(rows){
 
   const t = computeTodayFromTrades(rows);
 
-  const cards = document.querySelectorAll(".card");
-  cards.forEach(card => {
-    if (!card.textContent.includes("ZIUA CURENTĂ")) return;
+  const blocks = Array.from(document.querySelectorAll("div,section,article"));
+  const card = blocks.find(el =>
+    el.textContent &&
+    el.textContent.includes("ZIUA CURENTĂ") &&
+    el.textContent.includes("PnL azi") &&
+    el.querySelectorAll(".row").length >= 4
+  );
 
-    card.querySelectorAll(".row").forEach(row => {
-      const label = (row.querySelector("span")?.textContent || "").trim();
-      const value = row.querySelector("b");
-      if (!value) return;
+  if (!card) return;
 
-      if (label === "Trades") value.textContent = t.trades;
-      if (label === "Wins") value.textContent = t.wins;
-      if (label === "Losses") value.textContent = t.losses;
-      if (label === "PnL azi") value.textContent = fmt(t.pnl, 6);
-    });
+  card.querySelectorAll(".row").forEach(row => {
+    const label = (row.querySelector("span")?.textContent || "").trim();
+    const value = row.querySelector("b");
+    if (!value) return;
+
+    if (label === "Trades") value.textContent = t.trades;
+    if (label === "Wins") value.textContent = t.wins;
+    if (label === "Losses") value.textContent = t.losses;
+    if (label === "PnL azi") value.textContent = fmt(t.pnl, 6);
   });
 }
 
