@@ -15,7 +15,7 @@ STATE_PATH = OUT_DIR / "cohesivx_scalp_state.json"
 TRADES_PATH = OUT_DIR / "cohesivx_scalp_trades.jsonl"
 REPORT_PATH = OUT_DIR / "cohesivx_scalp_report.json"
 
-BOT_NAME = "CohesivX Daily Scalp Paper v0.2.2-4x2-breakout-liveprice"
+BOT_NAME = "CohesivX Daily Scalp Paper v0.2.3-4x2-report-signals"
 
 PAPER_START_USDT = 100.0
 MAX_TRADE_USDT = 5.0
@@ -468,6 +468,47 @@ def main():
         },
     }
 
+    # v0.2.3 reporting fix:
+    # calculate these every run, even when an open position exits.
+    # This makes the dashboard transparent after SL/TP/TIME exits.
+    near_recent_high = (recent_high - last) / last if last else 1.0
+    trend_stack_positive = (
+        ema9 is not None
+        and ema21 is not None
+        and ema50 is not None
+        and ema9 > ema21 > ema50
+    )
+    reversion_signal = (
+        ema21 is not None
+        and rsi14 is not None
+        and dist_ema21 <= -0.0015
+        and RSI_ENTRY_MIN <= rsi14 <= RSI_ENTRY_MAX
+        and momentum_1 > MIN_MOMENTUM_1_FOR_ENTRY
+        and momentum_2 > MIN_MOMENTUM_2_FOR_ENTRY
+        and range_pct < MAX_RANGE_PCT_FOR_ENTRY
+        and action in SOFT_ALLOW_ACTIONS
+        and int(daily.get("losses", 0)) < MAX_DAILY_LOSSES
+        and not daily.get("locked", False)
+    )
+    breakout_signal = (
+        trend_stack_positive
+        and rsi14 is not None
+        and BREAKOUT_RSI_MIN <= rsi14 <= BREAKOUT_RSI_MAX
+        and 0 <= near_recent_high <= BREAKOUT_NEAR_HIGH_PCT
+        and BREAKOUT_MIN_DIST_EMA21 <= dist_ema21 <= BREAKOUT_MAX_DIST_EMA21
+        and momentum_1 >= BREAKOUT_MIN_MOMENTUM_1
+        and momentum_2 >= BREAKOUT_MIN_MOMENTUM_2
+        and range_pct < BREAKOUT_MAX_RANGE_PCT
+        and action in SOFT_ALLOW_ACTIONS
+        and int(daily.get("losses", 0)) < MAX_DAILY_LOSSES
+        and not daily.get("locked", False)
+    )
+
+    report["indicators"]["near_recent_high_pct"] = near_recent_high
+    report["indicators"]["trend_stack_positive"] = trend_stack_positive
+    report["indicators"]["reversion_signal"] = reversion_signal
+    report["indicators"]["breakout_signal"] = breakout_signal
+
     # Dacă există poziție, verificăm exit.
     if state["open_position"]:
         pos = state["open_position"]
@@ -520,47 +561,8 @@ def main():
             report["reason"] = f"v0.6.3 action blocks long scalp: {action}"
 
         else:
-            # Intrare paper coezivă simplă:
-            # preț sub EMA21, RSI nu foarte jos, impuls scurt pozitiv.
-            buy_signal = (
-                ema21 is not None
-                and rsi14 is not None
-                and dist_ema21 <= -0.0015
-                and RSI_ENTRY_MIN <= rsi14 <= RSI_ENTRY_MAX
-                and momentum_1 > MIN_MOMENTUM_1_FOR_ENTRY
-                and momentum_2 > MIN_MOMENTUM_2_FOR_ENTRY
-                and range_pct < MAX_RANGE_PCT_FOR_ENTRY
-                and action in SOFT_ALLOW_ACTIONS
-                and int(daily.get("losses", 0)) < MAX_DAILY_LOSSES
-            )
-
-            # v0.2.1 breakout/momentum branch.
-            # This exists because the bot is paper-only and should also test
-            # controlled momentum continuation, not only mean reversion.
-            near_recent_high = (recent_high - last) / last if last else 1.0
-            trend_stack_positive = (
-                ema9 is not None
-                and ema21 is not None
-                and ema50 is not None
-                and ema9 > ema21 > ema50
-            )
-            breakout_signal = (
-                trend_stack_positive
-                and rsi14 is not None
-                and BREAKOUT_RSI_MIN <= rsi14 <= BREAKOUT_RSI_MAX
-                and 0 <= near_recent_high <= BREAKOUT_NEAR_HIGH_PCT
-                and BREAKOUT_MIN_DIST_EMA21 <= dist_ema21 <= BREAKOUT_MAX_DIST_EMA21
-                and momentum_1 >= BREAKOUT_MIN_MOMENTUM_1
-                and momentum_2 >= BREAKOUT_MIN_MOMENTUM_2
-                and range_pct < BREAKOUT_MAX_RANGE_PCT
-                and action in SOFT_ALLOW_ACTIONS
-                and int(daily.get("losses", 0)) < MAX_DAILY_LOSSES
-            )
-
-            report["indicators"]["near_recent_high_pct"] = near_recent_high
-            report["indicators"]["trend_stack_positive"] = trend_stack_positive
-            report["indicators"]["reversion_signal"] = buy_signal
-            report["indicators"]["breakout_signal"] = breakout_signal
+            # Signals were calculated above for reporting transparency.
+            buy_signal = reversion_signal
 
             if buy_signal:
                 trade = open_position(state, daily, price, "COHESIVE_REVERSION_SCALP_V02")
