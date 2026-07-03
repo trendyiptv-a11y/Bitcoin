@@ -10,3 +10,9 @@ btc-swing-strategy/last_public_status_push_epoch.txt
 *.bak*
 __pycache__/
 btc-swing-strategy/*guard_log.jsonl
+cohesivx_cohesive_backtest_lab_v*.py
+cohesivx_guarded_paper_exit_v0323.py
+cohesivx_repair_duplicate_guarded_exits_v0326.py
+btc-swing-strategy/cohesivx_cohesive_backtest_*.json
+btc-swing-strategy/cohesivx_cohesive_backtest_*.jsonl
+btc-swing-strategy/cohesivx_guarded_paper_loop_events.jsonl
