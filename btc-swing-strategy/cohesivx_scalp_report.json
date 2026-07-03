@@ -1,5 +1,5 @@
 {
-  "bot": "CohesivX Daily Scalp Paper v0.2.1-4x2-breakout",
+  "bot": "CohesivX Daily Scalp Paper v0.2.2-4x2-breakout-liveprice",
   "indicators": {
     "breakout_config": {
       "max_dist_ema21": 0.009,
@@ -12,25 +12,32 @@
       "rsi_min": 55.0
     },
     "breakout_signal": false,
-    "dist_ema21": 0.0007149302271871589,
-    "ema21": 61598.01171948711,
-    "ema50": 61312.70287929345,
-    "ema9": 61647.82800637072,
+    "data_quality": {
+      "stale_price_warning": false,
+      "trailing_same_price_count": 1,
+      "unique_prices_last30": 15
+    },
+    "dist_ema21": 0.0016679631408305974,
+    "ema21": 61608.78881111185,
+    "ema50": 61331.46546215387,
+    "ema9": 61660.61433412571,
     "fee_rate": 0.001,
-    "momentum_1": 0.0,
-    "momentum_2": 0.0,
-    "near_recent_high_pct": 0.004420196927259782,
-    "range_pct": 0.01017795482142465,
+    "momentum_1": 0.0011274771036978814,
+    "momentum_2": 0.0011274771036978814,
+    "near_recent_high_pct": 0.0032890115383586035,
+    "price_source": "bitget_public_live",
+    "range_pct": 0.01016649233409304,
     "recent_high": 61914.52,
     "recent_low": 61287.13,
     "reversion_signal": false,
-    "rsi14": 0.0,
-    "samples": 314,
+    "rsi14": 50.56752037252801,
+    "samples": 315,
     "trend_stack_positive": true
   },
   "last_trade": null,
   "mode": "PAPER_ONLY",
-  "price": 61642.05,
+  "price": 61711.55,
+  "price_source": "bitget_public_live",
   "real_order_sent": false,
   "reason": "No valid cohesive scalp setup.",
   "scalp_action": "HOLD_SCALP",
@@ -55,7 +62,7 @@
     "wins": 2
   },
   "status": "PASS",
-  "timestamp_utc": "2026-07-03T05:04:09.459918+00:00",
+  "timestamp_utc": "2026-07-03T05:40:38.242873+00:00",
   "v063_action": "HOLD",
   "v063_result": "NO_ACTION_HOLD"
 }

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import json
+import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -14,7 +15,7 @@ STATE_PATH = OUT_DIR / "cohesivx_scalp_state.json"
 TRADES_PATH = OUT_DIR / "cohesivx_scalp_trades.jsonl"
 REPORT_PATH = OUT_DIR / "cohesivx_scalp_report.json"
 
-BOT_NAME = "CohesivX Daily Scalp Paper v0.2.1-4x2-breakout"
+BOT_NAME = "CohesivX Daily Scalp Paper v0.2.2-4x2-breakout-liveprice"
 
 PAPER_START_USDT = 100.0
 MAX_TRADE_USDT = 5.0
@@ -125,6 +126,40 @@ def extract_price(bitget_safe):
     return None
 
 
+def fetch_live_bitget_price(timeout=8):
+    """Fetch a fresh public BTCUSDT spot price. No API keys; paper-only.
+    This prevents the scalper from reusing a stale bitget_safe_status.json snapshot.
+    """
+    url = "https://api.bitget.com/api/v2/spot/market/tickers?symbol=BTCUSDT"
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": "cohesivx-scalper-paper/0.2.2"})
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            payload = json.loads(resp.read().decode("utf-8"))
+        data = payload.get("data")
+        if isinstance(data, list) and data:
+            price = float(data[0].get("lastPr"))
+        elif isinstance(data, dict):
+            price = float(data.get("lastPr"))
+        else:
+            return None
+        return price if price > 0 else None
+    except Exception:
+        return None
+
+
+def trailing_same_price_count(prices):
+    if not prices:
+        return 0
+    last = prices[-1]
+    count = 0
+    for p in reversed(prices):
+        if p == last:
+            count += 1
+        else:
+            break
+    return count
+
+
 def ema(values, period):
     if not values:
         return None
@@ -155,8 +190,15 @@ def rsi(values, period=14):
     avg_gain = sum(gains) / period
     avg_loss = sum(losses) / period
 
+    # Flat market: no gains and no losses. Neutral RSI is clearer than a fake 0/100.
+    if avg_gain == 0 and avg_loss == 0:
+        return 50.0
+
     if avg_loss == 0:
         return 100.0
+
+    if avg_gain == 0:
+        return 0.0
 
     rs = avg_gain / avg_loss
     return 100 - (100 / (1 + rs))
@@ -305,7 +347,15 @@ def main():
     bitget_safe = load_json(BITGET_SAFE)
     real_exec = load_json(REAL_EXECUTOR)
 
-    price = extract_price(bitget_safe)
+    safe_price = extract_price(bitget_safe)
+    live_price = fetch_live_bitget_price()
+    if live_price is not None:
+        price = live_price
+        price_source = "bitget_public_live"
+    else:
+        price = safe_price
+        price_source = "bitget_safe_status_fallback"
+
     action = real_exec.get("action") or "UNKNOWN"
     result = real_exec.get("result") or "UNKNOWN"
 
@@ -315,6 +365,7 @@ def main():
         "mode": "PAPER_ONLY",
         "real_order_sent": False,
         "price": price,
+        "price_source": price_source,
         "v063_action": action,
         "v063_result": result,
         "status": "UNKNOWN",
@@ -336,6 +387,7 @@ def main():
     append_jsonl(PRICE_SERIES, {
         "timestamp_utc": now_iso(),
         "price": price,
+        "price_source": price_source,
         "v063_action": action,
     })
 
@@ -398,6 +450,12 @@ def main():
         "range_pct": range_pct,
         "dist_ema21": dist_ema21,
         "fee_rate": FEE_RATE,
+        "price_source": price_source,
+        "data_quality": {
+            "unique_prices_last30": len(set(prices[-30:])),
+            "trailing_same_price_count": trailing_same_price_count(prices),
+            "stale_price_warning": trailing_same_price_count(prices) >= 6,
+        },
         "breakout_config": {
             "rsi_min": BREAKOUT_RSI_MIN,
             "rsi_max": BREAKOUT_RSI_MAX,
