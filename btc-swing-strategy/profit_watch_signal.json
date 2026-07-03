@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-07-03T22:39:58.722306+00:00",
+  "checked_at": "2026-07-03T22:44:46.054156+00:00",
   "state_date": "2026-07-03",
   "run_date_utc": "2026-07-03",
   "state_is_fresh": true,
@@ -8,11 +8,11 @@
   "take_profit_small_pnl": 0.045,
   "take_profit_medium_pnl": 0.09,
   "live_price_source": "coinbase",
-  "live_price_usd": 62552.275,
+  "live_price_usd": 62547.665,
   "live_price_status": {
-    "checked_at": "2026-07-03T22:39:58.464319+00:00",
+    "checked_at": "2026-07-03T22:44:45.846897+00:00",
     "selected_source": "coinbase",
-    "selected_price": 62552.275,
+    "selected_price": 62547.665,
     "sources": {
       "binance": {
         "ok": false,
@@ -21,28 +21,27 @@
       },
       "coinbase": {
         "ok": true,
-        "price": 62552.275
+        "price": 62547.665
       },
       "kraken": {
         "ok": true,
-        "price": 62534.1
+        "price": 62538.3
       }
     },
-    "median_price": 62552.275,
-    "dispersion_pct": 0.02905569781435273
+    "median_price": 62547.665,
+    "dispersion_pct": 0.014972581310586036
   },
-  "last_bot_run_minutes_ago": 52.24171115,
-  "trigger_paper_trader": true,
+  "last_bot_run_minutes_ago": 4.574257733333334,
+  "trigger_paper_trader": false,
   "trigger_profit_exit": false,
-  "trigger_level": "small",
-  "reason": "Small adaptive take-profit threshold reached: 4.61% >= 4.50%.",
+  "trigger_level": "none",
+  "reason": "Cooldown active: last paper/profit run was 4.6 minutes ago.",
   "btc_amount": 0.006776815856,
   "cash_usdt": 594.54055914,
   "cost_basis_usdt": 405.21189754,
   "avg_entry_price_usd": 59793.84804756601,
-  "unrealized_pnl_usdt": 18.69335150887241,
-  "unrealized_pnl_pct": 0.04613228689077946,
-  "portfolio_value_usdt": 1018.4458081888724,
-  "btc_exposure_pct": 41.62275946745892,
-  "execution_path": "main_paper_trader"
+  "unrealized_pnl_usdt": 18.662110387776295,
+  "unrealized_pnl_pct": 0.04605518865826018,
+  "portfolio_value_usdt": 1018.4145670677763,
+  "btc_exposure_pct": 41.62096867370978
 }
