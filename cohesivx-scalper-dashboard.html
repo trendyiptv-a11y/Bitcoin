@@ -302,6 +302,29 @@ function computeVersionStats(rows){
   };
 }
 
+
+function updateTodayCardFromTrades(rows){
+  if (typeof computeTodayFromTrades !== "function") return;
+
+  const t = computeTodayFromTrades(rows);
+
+  const cards = document.querySelectorAll(".card");
+  cards.forEach(card => {
+    if (!card.textContent.includes("ZIUA CURENTĂ")) return;
+
+    card.querySelectorAll(".row").forEach(row => {
+      const label = (row.querySelector("span")?.textContent || "").trim();
+      const value = row.querySelector("b");
+      if (!value) return;
+
+      if (label === "Trades") value.textContent = t.trades;
+      if (label === "Wins") value.textContent = t.wins;
+      if (label === "Losses") value.textContent = t.losses;
+      if (label === "PnL azi") value.textContent = fmt(t.pnl, 6);
+    });
+  });
+}
+
 function computeTodayFromTrades(rows){
   rows = Array.isArray(rows) ? rows : [];
   const todayKey = new Date().toISOString().slice(0,10);
@@ -408,6 +431,7 @@ async function refresh(){
       const botName = report.bot;
       const v2Rows = rows.filter(isV2Family);
       const stats = computeVersionStats(rows);
+        updateTodayCardFromTrades(rows);
 
         // Final authoritative today stats from trade log, including guarded exits.
         if (typeof computeTodayFromTrades === "function") {
