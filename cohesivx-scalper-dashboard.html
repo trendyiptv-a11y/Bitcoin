@@ -273,6 +273,37 @@ function isV2Family(r){
     type === "PAPER_SCALP_EXIT"
   );
 }
+
+function computeVersionStats(rows){
+  rows = Array.isArray(rows) ? rows : [];
+
+  const exits = rows.filter(r =>
+    isV2Family(r) &&
+    String(r.type || "") === "PAPER_SCALP_EXIT"
+  );
+
+  const wins = exits.filter(r =>
+    String(r.outcome || "").toUpperCase() === "WIN" ||
+    Number(r.net_pnl_usdt || 0) >= 0
+  ).length;
+
+  const losses = exits.filter(r =>
+    String(r.outcome || "").toUpperCase() === "LOSS" ||
+    Number(r.net_pnl_usdt || 0) < 0
+  ).length;
+
+  const pnl = exits.reduce((a,r) => a + (Number(r.net_pnl_usdt) || 0), 0);
+
+  return {
+    exits,
+    trades: exits.length,
+    wins,
+    losses,
+    pnl,
+    winRate: exits.length ? (wins / exits.length) * 100 : 0
+  };
+}
+
 function drawChart(rows){
   const c = document.getElementById("chart");
   const ctx = c.getContext("2d");
