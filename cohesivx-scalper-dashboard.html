@@ -259,16 +259,19 @@ function rowTrade(r, includeBot=false){
   </tr>`;
 }
 function isV2Family(r){
-      const b = String(r.bot || "");
-      return b.includes("v0.2") || b.includes("4x2");
-    }
+  const b = String(r.bot || "");
+  const reason = String(r.reason || "");
+  const type = String(r.type || "");
 
-    function computeVersionStats(rows, botName){
-  const exits = rows.filter(r => isV2Family(r) && r.type === "PAPER_SCALP_EXIT");
-  const wins = exits.filter(r => r.outcome === "WIN" || Number(r.net_pnl_usdt) >= 0).length;
-  const losses = exits.filter(r => r.outcome === "LOSS" || Number(r.net_pnl_usdt) < 0).length;
-  const pnl = exits.reduce((a,r)=>a + (Number(r.net_pnl_usdt)||0), 0);
-  return {trades: exits.length, wins, losses, pnl, winrate: exits.length ? wins/exits.length : null};
+  return (
+    b.includes("v0.2") ||
+    b.includes("4x2") ||
+    b.includes("Guarded Paper Exit") ||
+    reason.startsWith("GUARDED_GUARD_EXIT_") ||
+    reason.includes("GUARD_EXIT_") ||
+    reason.includes("COHESIVE_BREAKOUT_SCALP_V021") ||
+    type === "PAPER_SCALP_EXIT"
+  );
 }
 function drawChart(rows){
   const c = document.getElementById("chart");
