@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-07-03T19:41:55.081190+00:00",
+  "checked_at": "2026-07-03T20:45:47.935464+00:00",
   "state_date": "2026-07-03",
   "run_date_utc": "2026-07-03",
   "state_is_fresh": true,
@@ -7,12 +7,12 @@
   "profit_profile": "bear_late_defensive",
   "take_profit_small_pnl": 0.045,
   "take_profit_medium_pnl": 0.09,
-  "live_price_source": "kraken",
-  "live_price_usd": 62207.9,
+  "live_price_source": "coinbase",
+  "live_price_usd": 62665.685,
   "live_price_status": {
-    "checked_at": "2026-07-03T19:41:54.883947+00:00",
-    "selected_source": "kraken",
-    "selected_price": 62207.9,
+    "checked_at": "2026-07-03T20:45:47.733658+00:00",
+    "selected_source": "coinbase",
+    "selected_price": 62665.685,
     "sources": {
       "binance": {
         "ok": false,
@@ -21,27 +21,28 @@
       },
       "coinbase": {
         "ok": true,
-        "price": 62196.765
+        "price": 62665.685
       },
       "kraken": {
         "ok": true,
-        "price": 62207.9
+        "price": 62657.3
       }
     },
-    "median_price": 62207.9,
-    "dispersion_pct": 0.017899655831497344
+    "median_price": 62665.685,
+    "dispersion_pct": 0.013380528753487275
   },
-  "last_bot_run_minutes_ago": 246.20320321666668,
-  "trigger_paper_trader": false,
+  "last_bot_run_minutes_ago": 310.08410776666665,
+  "trigger_paper_trader": true,
   "trigger_profit_exit": false,
-  "trigger_level": "none",
-  "reason": "No profit trigger.",
+  "trigger_level": "small",
+  "reason": "Small adaptive take-profit threshold reached: 4.80% >= 4.50%.",
   "btc_amount": 0.006776815856,
   "cash_usdt": 594.54055914,
   "cost_basis_usdt": 405.21189754,
   "avg_entry_price_usd": 59793.84804756601,
-  "unrealized_pnl_usdt": 16.359585548462462,
-  "unrealized_pnl_pct": 0.040372915128553316,
-  "portfolio_value_usdt": 1016.1120422284625,
-  "btc_exposure_pct": 41.488680929703655
+  "unrealized_pnl_usdt": 19.46191019510138,
+  "unrealized_pnl_pct": 0.04802897030727046,
+  "portfolio_value_usdt": 1019.2143668751014,
+  "btc_exposure_pct": 41.66677997653683,
+  "execution_path": "main_paper_trader"
 }
