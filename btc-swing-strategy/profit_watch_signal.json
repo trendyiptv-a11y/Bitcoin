@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-07-03T08:17:00.277365+00:00",
+  "checked_at": "2026-07-03T11:01:29.310464+00:00",
   "state_date": "2026-07-03",
   "run_date_utc": "2026-07-03",
   "state_is_fresh": true,
@@ -8,11 +8,11 @@
   "take_profit_small_pnl": 0.045,
   "take_profit_medium_pnl": 0.09,
   "live_price_source": "coinbase",
-  "live_price_usd": 61705.865,
+  "live_price_usd": 61811.645,
   "live_price_status": {
-    "checked_at": "2026-07-03T08:16:59.658495+00:00",
+    "checked_at": "2026-07-03T11:01:29.124345+00:00",
     "selected_source": "coinbase",
-    "selected_price": 61705.865,
+    "selected_price": 61811.645,
     "sources": {
       "binance": {
         "ok": false,
@@ -21,17 +21,17 @@
       },
       "coinbase": {
         "ok": true,
-        "price": 61705.865
+        "price": 61811.645
       },
       "kraken": {
         "ok": true,
-        "price": 61704.7
+        "price": 61806.2
       }
     },
-    "median_price": 61705.865,
-    "dispersion_pct": 0.001887989091475945
+    "median_price": 61811.645,
+    "dispersion_pct": 0.008809019724357294
   },
-  "last_bot_run_minutes_ago": 163.0063527,
+  "last_bot_run_minutes_ago": 51.03513723333333,
   "trigger_paper_trader": false,
   "trigger_profit_exit": false,
   "trigger_level": "none",
@@ -40,8 +40,8 @@
   "cash_usdt": 594.54055914,
   "cost_basis_usdt": 405.21189754,
   "avg_entry_price_usd": 59793.84804756601,
-  "unrealized_pnl_usdt": 12.957386800195422,
-  "unrealized_pnl_pct": 0.03197681726242095,
-  "portfolio_value_usdt": 1012.7098434801954,
-  "btc_exposure_pct": 41.292112151605956
+  "unrealized_pnl_usdt": 13.674238381443104,
+  "unrealized_pnl_pct": 0.033745895578234514,
+  "portfolio_value_usdt": 1013.4266950614431,
+  "btc_exposure_pct": 41.33363941987402
 }
