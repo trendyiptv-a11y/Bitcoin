@@ -302,6 +302,34 @@ function computeVersionStats(rows){
   };
 }
 
+
+function updateTodayCardFromTrades(rows){
+  if (typeof computeTodayFromTrades !== "function") return;
+
+  const t = computeTodayFromTrades(rows);
+
+  const blocks = Array.from(document.querySelectorAll("div,section,article"));
+  const card = blocks.find(el =>
+    el.textContent &&
+    el.textContent.includes("ZIUA CURENTĂ") &&
+    el.textContent.includes("PnL azi") &&
+    el.querySelectorAll(".row").length >= 4
+  );
+
+  if (!card) return;
+
+  card.querySelectorAll(".row").forEach(row => {
+    const label = (row.querySelector("span")?.textContent || "").trim();
+    const value = row.querySelector("b");
+    if (!value) return;
+
+    if (label === "Trades") value.textContent = t.trades;
+    if (label === "Wins") value.textContent = t.wins;
+    if (label === "Losses") value.textContent = t.losses;
+    if (label === "PnL azi") value.textContent = fmt(t.pnl, 6);
+  });
+}
+
 function computeTodayFromTrades(rows){
   rows = Array.isArray(rows) ? rows : [];
   const todayKey = new Date().toISOString().slice(0,10);
@@ -405,26 +433,19 @@ async function refresh(){
     try{
       const t = await fetchText(TRADES_URL);
       const rows = t.trim() ? t.trim().split("\n").map(x=>JSON.parse(x)) : [];
-        const todayFromTrades = computeTodayFromTrades(rows);
-        kv(document.getElementById("today"), {
-          trades: todayFromTrades.trades,
-          wins: todayFromTrades.wins,
-          losses: todayFromTrades.losses,
-          pnl: todayFromTrades.pnl,
-          locked: report?.state_summary?.today?.locked ?? report?.today?.locked ?? false,
-          lock_reason: report?.state_summary?.today?.lock_reason ?? report?.today?.lock_reason ?? "—"
-        }, [
-          ["Trades","trades","raw"],
-          ["Wins","wins","raw"],
-          ["Losses","losses","raw"],
-          ["PnL azi","pnl","num6"],
-          ["Locked","locked","raw"],
-          ["Lock reason","lock_reason","raw"]
-        ]);
-
       const botName = report.bot;
       const v2Rows = rows.filter(isV2Family);
       const stats = computeVersionStats(rows);
+        updateTodayCardFromTrades(rows);
+
+        // Final authoritative today stats from trade log, including guarded exits.
+        if (typeof computeTodayFromTrades === "function") {
+          const finalTodayFromTrades = computeTodayFromTrades(rows);
+          setTxt("todayTrades", finalTodayFromTrades.trades);
+          setTxt("todayWins", finalTodayFromTrades.wins);
+          setTxt("todayLosses", finalTodayFromTrades.losses);
+          setTxt("todayPnl", fmt(finalTodayFromTrades.pnl, 6));
+        }
 
         const todayFromTrades = computeTodayFromTrades(rows);
 
