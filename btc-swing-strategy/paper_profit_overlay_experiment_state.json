@@ -28,14 +28,14 @@
     "min_useful_trade_usdt": 5.0,
     "cooldown_minutes": 120
   },
-  "last_checked_at": "2026-07-03T20:45:48.127962+00:00",
-  "last_live_price_usd": 62665.685,
+  "last_checked_at": "2026-07-03T21:47:30.821358+00:00",
+  "last_live_price_usd": 62604.585,
   "last_live_price_source": "coinbase",
   "last_report": {
-    "action": "EXP_TAKE_PROFIT_25",
-    "reason": "Experimental early harvest: 4.80% >= 2.50%.",
-    "shadow_portfolio_value_usdt": 1012.3287252849561,
-    "base_portfolio_value_usdt": 1019.2143668751014,
-    "overlay_edge_usdt": -6.885641590145269
+    "action": "EXP_HOLD",
+    "reason": "Cooldown active: last experimental action was 61.7 minutes ago.",
+    "shadow_portfolio_value_usdt": 1012.3112372589032,
+    "base_portfolio_value_usdt": 1018.8003034262998,
+    "overlay_edge_usdt": -6.489066167396572
   }
 }
