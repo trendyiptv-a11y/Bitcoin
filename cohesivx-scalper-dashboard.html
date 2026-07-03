@@ -408,6 +408,16 @@ async function refresh(){
       const botName = report.bot;
       const v2Rows = rows.filter(isV2Family);
       const stats = computeVersionStats(rows);
+
+        // Final authoritative today stats from trade log, including guarded exits.
+        if (typeof computeTodayFromTrades === "function") {
+          const finalTodayFromTrades = computeTodayFromTrades(rows);
+          setTxt("todayTrades", finalTodayFromTrades.trades);
+          setTxt("todayWins", finalTodayFromTrades.wins);
+          setTxt("todayLosses", finalTodayFromTrades.losses);
+          setTxt("todayPnl", fmt(finalTodayFromTrades.pnl, 6));
+        }
+
         const todayFromTrades = computeTodayFromTrades(rows);
 
         setTxt("todayTrades", todayFromTrades.trades);
