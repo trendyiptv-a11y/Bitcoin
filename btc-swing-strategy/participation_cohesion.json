@@ -1,21 +1,21 @@
 {
   "title": "COEZIUNE_PARTICIPATIVA",
-  "score": 78.23,
-  "label": "participare coezivă",
-  "level": "cohesive",
+  "score": 68.4,
+  "label": "participare tensionată",
+  "level": "tense",
   "signal": "flat",
-  "main_text": "Participanții par activi și relativ coezivi. Interesul pentru ecosistem persistă, iar comportamentul observabil nu indică abandon.",
+  "main_text": "Participanții rămân activi, dar comportamentul este tensionat. Interesul persistă, însă fluxul dominant poate fi defensiv sau orientat spre ieșire.",
   "components": {
-    "liquidity_component": 72.3,
-    "flow_component": 64.36,
-    "production_component": 77.26,
+    "liquidity_component": 56.96,
+    "flow_component": 45.93,
+    "production_component": 74.13,
     "persistence_component": 100.0,
     "probability_component": 100.0
   },
   "inputs": {
-    "flow_score": 0.011963785118812263,
-    "liquidity_score": 0.02477682728071231,
-    "deviation_from_production": 0.07958239200029274,
+    "flow_score": -0.003394351421903034,
+    "liquidity_score": 0.007733885155314193,
+    "deviation_from_production": 0.09055733698347335,
     "signal_probability": 0.5,
     "recent_days": 14,
     "recent_short_days": 0,
@@ -23,19 +23,19 @@
     "recent_flat_days": 14
   },
   "history": {
-    "rows": 5631,
+    "rows": 5632,
     "from": "2011-02-01T00:00:00+00:00",
-    "to": "2026-07-02T00:00:00+00:00",
-    "mean_score": 74.55335819570236,
+    "to": "2026-07-03T00:00:00+00:00",
+    "mean_score": 74.5546661931818,
     "median_score": 77.22,
     "min_score": 56.04,
     "max_score": 97.21,
     "label_counts": {
       "participare coezivă": 3667,
-      "participare tensionată": 1964
+      "participare tensionată": 1965
     }
   },
   "footer": "Indicator experimental derivat din flux, lichiditate, persistență și tensiune față de model. Nu măsoară încă direct utilizarea peer-to-peer on-chain.",
-  "generated_at": "2026-07-02T04:38:54.032353+00:00",
-  "source_timestamp": "2026-07-02T00:00:00+00:00"
+  "generated_at": "2026-07-03T04:24:28.232436+00:00",
+  "source_timestamp": "2026-07-03T00:00:00+00:00"
 }
