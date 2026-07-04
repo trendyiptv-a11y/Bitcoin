@@ -341,3 +341,5 @@
 {"price": 62450.0, "price_source": "bitget_public_live", "timestamp_utc": "2026-07-04T09:34:18.020321+00:00", "v063_action": "ACCUMULATE_SMALL"}
 {"price": 62486.92, "price_source": "bitget_public_live", "timestamp_utc": "2026-07-04T10:34:19.879091+00:00", "v063_action": "ACCUMULATE_SMALL"}
 {"price": 62520.58, "price_source": "bitget_public_live", "timestamp_utc": "2026-07-04T11:34:21.978474+00:00", "v063_action": "ACCUMULATE_SMALL"}
+{"price": 62551.97, "price_source": "bitget_public_live", "timestamp_utc": "2026-07-04T12:10:08.174206+00:00", "v063_action": "ACCUMULATE_SMALL"}
+{"price": 62564.8, "price_source": "bitget_public_live", "timestamp_utc": "2026-07-04T12:10:54.357849+00:00", "v063_action": "ACCUMULATE_SMALL"}
