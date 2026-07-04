@@ -153,6 +153,17 @@ def ensure_today(state):
 def update_state_after_exit(state, open_position, pnl, live_price, guard_action, ts):
     current_value_after_exit_fee = pnl["current_value_usdt"] - pnl["exit_fee_usdt"]
 
+    # Return closed paper position value back to paper cash.
+    # BUY already removed entry_usdt + entry_fee from cash; guarded EXIT must restore
+    # the remaining position value after exit fee. Without this, paper_cash_usdt
+    # keeps losing ~5 USDT on every guarded close even though paper_btc becomes 0.
+    if "paper_cash_usdt" in state:
+        state["paper_cash_usdt"] = float(state.get("paper_cash_usdt") or 0.0) + current_value_after_exit_fee
+    elif "cash" in state:
+        state["cash"] = float(state.get("cash") or 0.0) + current_value_after_exit_fee
+    else:
+        state["paper_cash_usdt"] = current_value_after_exit_fee
+
     # Keep existing wallet schema if present.
     for cash_key in ["paper_usdt", "usdt", "cash_usdt", "balance_usdt"]:
         if cash_key in state:
