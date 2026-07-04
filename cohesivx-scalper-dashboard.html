@@ -69,7 +69,7 @@
     </section>
 
     <section class="card span4">
-      <div class="label">BTC la ultima decizie bot</div>
+      <div class="label">BTC la ultima decizie scalper</div>
       <div class="kpi" id="price">—</div>
       <div class="small" id="v063">—</div>
       <div class="small" id="priceDelta">—</div>
@@ -154,7 +154,7 @@
 </main>
 
 <footer>
-  CohesivX Paper Scalper · PAPER_ONLY · live BTC separat de ultima decizie bot · static dashboard
+  CohesivX Paper Scalper · PAPER_ONLY · live BTC separat de ultima decizie scalper · static dashboard
 </footer>
 
 <script>
@@ -216,7 +216,7 @@ function updatePriceDelta(){
   const diff = latestLivePrice - latestBotPrice;
   const diffPct = diff / latestBotPrice;
   const cls = diff >= 0 ? "good" : "bad";
-  el.innerHTML = `Diferență live față de ultima decizie bot: <span class="${cls}">${fmt(diff,2)} USDT (${pct(diffPct)})</span>`;
+  el.innerHTML = `Diferență live față de ultima decizie scalper: <span class="${cls}">${fmt(diff,2)} USDT (${pct(diffPct)})</span>`;
 }
 
 
@@ -402,7 +402,7 @@ async function refresh(){
     document.getElementById("botName").textContent = "Bot activ: " + (report.bot || "—");
     latestBotPrice = Number(report.price);
     document.getElementById("price").textContent = fmt(report.price,2);
-    document.getElementById("v063").textContent = `Ultima decizie bot · v0.6.3: ${report.v063_action || "—"} / ${report.v063_result || "—"}`;
+    document.getElementById("v063").textContent = `Ultima decizie scalper paper: ${report.scalp_action || "—"}`;
     updatePriceDelta();
     document.getElementById("scalpAction").textContent = report.scalp_action || "—";
     document.getElementById("reason").textContent = report.reason || "—";
