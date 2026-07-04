@@ -1,40 +1,31 @@
 {
   "mode": "paper",
   "starting_balance_usdt": 1000.0,
-  "cash_usdt": 594.54055914,
-  "btc_amount": 0.006776815856,
-  "cost_basis_usdt": 405.21189754,
+  "cash_usdt": 679.29765291,
+  "btc_amount": 0.005421452685,
+  "cost_basis_usdt": 324.16951803,
   "avg_entry_price_usd": 59793.84804757,
-  "realized_pnl_usdt": 0.00915003,
-  "portfolio_value_usdt": 1019.00303187,
-  "last_action": "HOLD",
-  "last_confidence": "v063_target_reached",
+  "realized_pnl_usdt": 3.72386429,
+  "portfolio_value_usdt": 1018.32602797,
+  "last_action": "TAKE_PROFIT_SMALL",
+  "last_confidence": "profit_protection_stale_safe",
   "last_reason": [
-    "Memory edge: 20.65%.",
-    "Expected 7d/30d: 9.73% / 27.80%.",
-    "Historical drawdown risk to weighted p10: 26.54%.",
-    "Memory confidence: 68.4%.",
-    "Weighted memory p50: 80047.79 USD vs execution price 62634.50 USD.",
-    "PnL: unrealized 19.25 USDT (4.75%), realized 0.01 USDT.",
-    "Live source: kraken.",
-    "Structural regime: bear_late; market regime: range_bias_up_dev_extreme.",
-    "Flow: neutru/slab; liquidity: ridicată/puternică.",
-    "v0.6.3 guarded target reached or cash too low for useful accumulation.",
-    "v0.6.3 adapter: raw=HOLD_TARGET_REACHED_V063, paper=HOLD, target exposure=40.0%, fraction=0.00%.",
-    "Cash corridor: profile bear_late_cash_corridor_strong_override, max exposure 40.0%, min cash reserve 10.0%, current exposure 41.7%."
+    "Profit-only executor activated from watcher.",
+    "Small adaptive threshold reached: 4.58% >= 4.50%.",
+    "This path is sell-only and does not use stale state for new buys."
   ],
-  "last_run_at": "2026-07-03T23:42:41.557031+00:00",
+  "last_run_at": "2026-07-04T01:19:24.548780+00:00",
   "not_trading_advice": true,
-  "btc_exposure_pct": 41.6547,
-  "last_execution_price_usd": 62634.5,
+  "btc_exposure_pct": 33.2927,
+  "last_execution_price_usd": 62534.6,
   "last_execution_price_source": "kraken",
   "last_snapshot_price_usd": 61310.0,
   "last_model_price_usd": 76377.49643879641,
   "last_deviation_pct": -17.9935,
   "last_live_price_status": {
-    "checked_at": "2026-07-03T23:42:41.153640+00:00",
+    "checked_at": "2026-07-04T01:19:24.362477+00:00",
     "selected_source": "kraken",
-    "selected_price": 62634.5,
+    "selected_price": 62534.6,
     "sources": {
       "binance": {
         "ok": false,
@@ -43,15 +34,15 @@
       },
       "coinbase": {
         "ok": true,
-        "price": 62626.095
+        "price": 62528.005
       },
       "kraken": {
         "ok": true,
-        "price": 62634.5
+        "price": 62534.6
       }
     },
-    "median_price": 62634.5,
-    "dispersion_pct": 0.013419122049347941
+    "median_price": 62534.6,
+    "dispersion_pct": 0.010546161644915238
   },
   "last_memory_decision": {
     "available": true,
@@ -311,25 +302,18 @@
     }
   },
   "rules": {
-    "logic": "CohesivX memory-weighted paper trading v0.3 + lower PnL/take-profit overlay. Live price is mandatory for any paper execution.",
-    "live_price_sources": [
-      "binance",
-      "coinbase",
-      "kraken"
-    ],
-    "max_entry_fraction": 0.1,
-    "max_btc_exposure_fraction": 0.4,
-    "min_entry_fraction": 0.025,
+    "logic": "CohesivX profit-only stale-safe executor. Sell-only. No new buys on stale state.",
+    "profit_profile": "bear_late_defensive",
     "take_profit_small_pnl": 0.045,
     "take_profit_medium_pnl": 0.09,
     "take_profit_small_fraction": 0.2,
     "take_profit_medium_fraction": 0.35,
-    "requires_live_price_for_execution": true
+    "sell_only": true
   },
-  "unrealized_pnl_usdt": 19.25057519,
-  "unrealized_pnl_pct": 4.7507,
-  "total_pnl_usdt": 19.25972522,
-  "total_pnl_pct": 1.926,
+  "unrealized_pnl_usdt": 14.85885703,
+  "unrealized_pnl_pct": 4.5837,
+  "total_pnl_usdt": 18.58272132,
+  "total_pnl_pct": 1.8583,
   "last_manual_inputs": {
     "manual_action": "BUY_OVERRIDE",
     "amount_usdt": 100.0,
@@ -337,5 +321,53 @@
     "note": "Extra manual paper entry from GitHub workflow."
   },
   "v063_peak_portfolio_value_usdt": 1019.70239927,
-  "v063_current_drawdown_pct": -0.0686
+  "v063_current_drawdown_pct": -0.0686,
+  "last_profit_watch_signal": {
+    "checked_at": "2026-07-04T01:19:24.053877+00:00",
+    "state_date": "2026-07-03",
+    "run_date_utc": "2026-07-04",
+    "state_is_fresh": false,
+    "regime": "bear_late",
+    "profit_profile": "bear_late_defensive",
+    "take_profit_small_pnl": 0.045,
+    "take_profit_medium_pnl": 0.09,
+    "live_price_source": "kraken",
+    "live_price_usd": 62534.6,
+    "live_price_status": {
+      "checked_at": "2026-07-04T01:19:23.561325+00:00",
+      "selected_source": "kraken",
+      "selected_price": 62534.6,
+      "sources": {
+        "binance": {
+          "ok": false,
+          "error_type": "HTTPError",
+          "error": "HTTP Error 451: "
+        },
+        "coinbase": {
+          "ok": true,
+          "price": 62524.005
+        },
+        "kraken": {
+          "ok": true,
+          "price": 62534.6
+        }
+      },
+      "median_price": 62534.6,
+      "dispersion_pct": 0.016942620565256937
+    },
+    "last_bot_run_minutes_ago": 96.70828056666666,
+    "trigger_paper_trader": false,
+    "trigger_profit_exit": true,
+    "trigger_level": "small",
+    "reason": "Small adaptive take-profit threshold reached: 4.58% >= 4.50%. State is stale, so watcher will use sell-only profit executor instead of main bot.",
+    "btc_amount": 0.006776815856,
+    "cash_usdt": 594.54055914,
+    "cost_basis_usdt": 405.21189754,
+    "avg_entry_price_usd": 59793.84804756601,
+    "unrealized_pnl_usdt": 18.573571288617643,
+    "unrealized_pnl_pct": 0.0458366879190268,
+    "portfolio_value_usdt": 1018.3260279686176,
+    "btc_exposure_pct": 41.61589286625576,
+    "execution_path": "stale_safe_profit_exit_executor"
+  }
 }
