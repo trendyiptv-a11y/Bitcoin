@@ -59,6 +59,7 @@ MIN_PRICE_POINTS = 60
 MIN_HOLD_SECONDS_BREAKOUT = 10 * 60
 EARLY_HARD_STOP_NET_PCT = -0.0035
 MATURE_PROTECT_MIN_NET_PCT = 0.0015
+DECAYBREAK_MIN_LOSS_NET_PCT = -0.0030
 
 BITGET_TICKER_URL = "https://api.bitget.com/api/v2/spot/market/tickers?symbol=BTCUSDT"
 
@@ -542,8 +543,18 @@ def choose_guard_action(fc_pos, pnl, open_position, ts):
         return "GUARD_EXIT_HARDBREAK_SUB_PI", {"fresh_breakout_protection": False}
     if fc < PI and post_entry_break >= 0.52:
         return "GUARD_EXIT_POST_ENTRY_BREAK_SUB_PI", {"fresh_breakout_protection": False}
-    if fc < PI and decay_break >= 0.48:
-        return "GUARD_EXIT_DECAYBREAK_SUB_PI", {"fresh_breakout_protection": False}
+    if fc < PI and decay_break >= 0.48 and net_pct <= DECAYBREAK_MIN_LOSS_NET_PCT:
+        return "GUARD_EXIT_DECAYBREAK_SUB_PI", {
+            "fresh_breakout_protection": False,
+            "decaybreak_min_loss_net_pct": DECAYBREAK_MIN_LOSS_NET_PCT,
+            "rule": "decaybreak_loss_confirmed"
+        }
+    if fc < PI and decay_break >= 0.48 and net_pct > DECAYBREAK_MIN_LOSS_NET_PCT:
+        return "GUARD_HOLD", {
+            "fresh_breakout_protection": False,
+            "decaybreak_min_loss_net_pct": DECAYBREAK_MIN_LOSS_NET_PCT,
+            "rule": "decaybreak_wait_for_loss_confirmation"
+        }
     if fc >= TWO_PI and net_pct >= MATURE_PROTECT_MIN_NET_PCT:
         return "GUARD_EXIT_MATURE_2PI_PROTECT", {
             "fresh_breakout_protection": False,
