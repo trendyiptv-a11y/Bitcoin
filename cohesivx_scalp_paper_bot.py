@@ -244,6 +244,73 @@ def ensure_daily(state):
     return state["daily"][key]
 
 
+def is_v2_family_trade(row):
+    bot = str(row.get("bot") or "")
+    reason = str(row.get("reason") or "")
+    return (
+        "v0.2" in bot
+        or "4x2" in bot
+        or "Guarded Paper Exit" in bot
+        or reason.startswith("GUARDED_GUARD_EXIT_")
+        or "GUARD_EXIT_" in reason
+        or "COHESIVE_BREAKOUT_SCALP_V021" in reason
+    )
+
+
+def rebuild_daily_from_trade_log(state, daily):
+    """Authoritative daily counters from v0.2/guarded exit trade log.
+
+    This prevents Termux restarts or stale report/state writes from resetting
+    daily locks while the trade log already has today's losses.
+    """
+    key = today_key()
+    rows = read_jsonl(TRADES_PATH)
+
+    exits = [
+        r for r in rows
+        if is_v2_family_trade(r)
+        and r.get("type") == "PAPER_SCALP_EXIT"
+        and str(r.get("timestamp_utc") or "").startswith(key)
+    ]
+
+    wins = sum(
+        1 for r in exits
+        if str(r.get("outcome") or "").upper() == "WIN"
+        or float(r.get("net_pnl_usdt") or 0.0) >= 0.0
+    )
+    losses = sum(
+        1 for r in exits
+        if str(r.get("outcome") or "").upper() == "LOSS"
+        or float(r.get("net_pnl_usdt") or 0.0) < 0.0
+    )
+    pnl = sum(float(r.get("net_pnl_usdt") or 0.0) for r in exits)
+
+    daily["trades"] = len(exits)
+    daily["wins"] = wins
+    daily["losses"] = losses
+    daily["realized_pnl_usdt"] = pnl
+
+    # Rebuild lock from authoritative counters.
+    daily["locked"] = False
+    daily["lock_reason"] = None
+
+    if pnl <= DAILY_STOP_USDT:
+        daily["locked"] = True
+        daily["lock_reason"] = "DAILY_STOP"
+    elif pnl >= DAILY_LOCK_PROFIT_USDT:
+        daily["locked"] = True
+        daily["lock_reason"] = "DAILY_PROFIT_LOCK"
+    elif losses >= MAX_DAILY_LOSSES:
+        daily["locked"] = True
+        daily["lock_reason"] = "DAILY_LOSS_COUNT_LOCK"
+    elif len(exits) >= MAX_TRADES_PER_DAY:
+        daily["locked"] = True
+        daily["lock_reason"] = "DAILY_MAX_TRADES"
+
+    state["daily"][key] = daily
+    return daily
+
+
 def net_position_pnl(position, current_price):
     entry_usdt = position["entry_usdt"]
     btc = position["btc"]
@@ -399,6 +466,7 @@ def main():
 
     state = load_state()
     daily = ensure_daily(state)
+    daily = rebuild_daily_from_trade_log(state, daily)
 
     # daily locks
     if daily["realized_pnl_usdt"] <= DAILY_STOP_USDT:
