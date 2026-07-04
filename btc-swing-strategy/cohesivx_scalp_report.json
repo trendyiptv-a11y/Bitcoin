@@ -11,45 +11,44 @@
       "rsi_max": 76.0,
       "rsi_min": 55.0
     },
-    "breakout_signal": true,
+    "breakout_signal": false,
     "data_quality": {
       "stale_price_warning": false,
-      "trailing_same_price_count": 1,
-      "unique_prices_last30": 29
+      "trailing_same_price_count": 2,
+      "unique_prices_last30": 28
     },
-    "dist_ema21": 0.00845811478333414,
-    "ema21": 62585.643443962144,
-    "ema50": 62209.33041852256,
-    "ema9": 62773.41529185398,
+    "dist_ema21": 0.00971596766651415,
+    "ema21": 62714.79507880229,
+    "ema50": 62293.85101450538,
+    "ema9": 62971.71540960838,
     "fee_rate": 0.001,
-    "momentum_1": 0.0032584639551002767,
-    "momentum_2": 0.0035776753060899986,
+    "momentum_1": 0.0,
+    "momentum_2": 0.0033134754020438468,
     "near_recent_high_pct": 0.0,
     "price_source": "bitget_public_live",
-    "range_pct": 0.015051889408223084,
-    "recent_high": 63115.0,
-    "recent_low": 62165.0,
+    "range_pct": 0.015304434502297931,
+    "recent_high": 63324.13,
+    "recent_low": 62354.99,
     "reversion_signal": false,
-    "rsi14": 72.08337670865394,
-    "samples": 351,
+    "rsi14": 84.91394405295728,
+    "samples": 353,
     "trend_stack_positive": true
   },
-  "last_trade": {
-    "bot": "CohesivX Daily Scalp Paper v0.2.3-4x2-report-signals",
-    "btc": 7.914125009902559e-05,
-    "entry_fee_usdt": 0.005,
-    "entry_price": 63115.0,
-    "entry_usdt": 5.0,
-    "reason": "COHESIVE_BREAKOUT_SCALP_V021",
-    "timestamp_utc": "2026-07-04T17:34:35.946139+00:00",
-    "type": "PAPER_SCALP_BUY"
-  },
+  "last_trade": null,
   "mode": "PAPER_ONLY",
-  "price": 63115.0,
+  "open_position_pnl": {
+    "current_value_usdt": 5.011550809633209,
+    "entry_fee_usdt": 0.005,
+    "exit_fee_usdt": 0.0050115508096332095,
+    "gross_pnl_usdt": 0.011550809633209091,
+    "net_pnl_pct": 0.00030785176471517637,
+    "net_pnl_usdt": 0.001539258823575882
+  },
+  "price": 63324.13,
   "price_source": "bitget_public_live",
   "real_order_sent": false,
-  "reason": "v0.2.1 breakout entry: positive EMA stack, RSI strength, near local high, controlled range, momentum not rolled over.",
-  "scalp_action": "PAPER_SCALP_BUY_BREAKOUT",
+  "reason": "Open paper position held.",
+  "scalp_action": "HOLD_OPEN_SCALP",
   "state_summary": {
     "losses": 15,
     "open_position": {
@@ -58,20 +57,20 @@
       "entry_price": 63115.0,
       "entry_timestamp_utc": "2026-07-04T17:34:35.946110+00:00",
       "entry_usdt": 5.0,
-      "hold_cycles": 0,
+      "hold_cycles": 1,
       "reason": "COHESIVE_BREAKOUT_SCALP_V021"
     },
     "open_position_pnl": {
-      "current_value_usdt": 4.995,
+      "current_value_usdt": 5.011550809633209,
       "entry_fee_usdt": 0.005,
-      "exit_fee_usdt": 0.004995,
-      "gross_pnl_usdt": -0.004999999999999893,
-      "net_pnl_pct": -0.0029989999999999787,
-      "net_pnl_usdt": -0.014994999999999894
+      "exit_fee_usdt": 0.0050115508096332095,
+      "gross_pnl_usdt": 0.011550809633209091,
+      "net_pnl_pct": 0.00030785176471517637,
+      "net_pnl_usdt": 0.001539258823575882
     },
     "paper_btc": 7.914125009902559e-05,
     "paper_cash_usdt": 94.7098226757135,
-    "paper_total_value_usdt": 99.7048226757135,
+    "paper_total_value_usdt": 99.7213734853467,
     "today": {
       "lock_reason": null,
       "locked": false,
@@ -86,7 +85,7 @@
     "wins": 3
   },
   "status": "PASS",
-  "timestamp_utc": "2026-07-04T17:34:35.940815+00:00",
+  "timestamp_utc": "2026-07-04T17:55:52.104593+00:00",
   "v063_action": "HOLD",
   "v063_result": "NO_ACTION_HOLD"
 }
