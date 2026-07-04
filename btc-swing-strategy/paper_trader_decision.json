@@ -1,29 +1,29 @@
 {
-  "run_at": "2026-07-04T01:19:24.548780+00:00",
+  "run_at": "2026-07-04T03:58:40.516346+00:00",
   "action": "TAKE_PROFIT_SMALL",
   "confidence": "profit_protection_stale_safe",
   "position_fraction": 0.2,
   "trigger_level": "small",
   "execution": {
-    "cash_usdt": 679.2976529057236,
-    "btc_amount": 0.0054214526848,
-    "cost_basis_usdt": 324.169518032,
-    "avg_entry_price_usd": 59793.84804756601,
-    "realized_pnl_usdt": 3.723864287723514,
-    "realized_pnl_delta_usdt": 3.7147142577235144,
-    "unrealized_pnl_usdt": 14.858857030894058,
-    "unrealized_pnl_pct": 0.04583668791902663,
-    "total_pnl_usdt": 18.582721318617573,
-    "total_pnl_pct": 0.018582721318617573,
-    "executed_usdt": 84.75709376572352,
-    "executed_btc": -0.0013553631712000002,
-    "portfolio_value_before": 1018.3260279686176,
-    "portfolio_value_after": 1018.3260279686176
+    "cash_usdt": 747.152744466304,
+    "btc_amount": 0.004337162148,
+    "cost_basis_usdt": 259.335614424,
+    "avg_entry_price_usd": 59793.8480449913,
+    "realized_pnl_usdt": 6.745052240303968,
+    "realized_pnl_delta_usdt": 3.0211879503039683,
+    "unrealized_pnl_usdt": 12.084751801215873,
+    "unrealized_pnl_pct": 0.046598890121809275,
+    "total_pnl_usdt": 18.829804041519843,
+    "total_pnl_pct": 0.01882980404151984,
+    "executed_usdt": 67.85509155630398,
+    "executed_btc": -0.001084290537,
+    "portfolio_value_before": 1018.5731106915199,
+    "portfolio_value_after": 1018.5731106915198
   },
   "live_price_status": {
-    "checked_at": "2026-07-04T01:19:24.362477+00:00",
-    "selected_source": "kraken",
-    "selected_price": 62534.6,
+    "checked_at": "2026-07-04T03:58:40.309640+00:00",
+    "selected_source": "coinbase",
+    "selected_price": 62580.175,
     "sources": {
       "binance": {
         "ok": false,
@@ -32,15 +32,15 @@
       },
       "coinbase": {
         "ok": true,
-        "price": 62528.005
+        "price": 62580.175
       },
       "kraken": {
         "ok": true,
-        "price": 62534.6
+        "price": 62575.0
       }
     },
-    "median_price": 62534.6,
-    "dispersion_pct": 0.010546161644915238
+    "median_price": 62580.175,
+    "dispersion_pct": 0.008269392023916376
   },
   "profit_profile": {
     "profile": "bear_late_defensive",
@@ -54,7 +54,7 @@
   "state_was_fresh": false,
   "reason": [
     "Profit-only executor activated from watcher.",
-    "Small adaptive threshold reached: 4.58% >= 4.50%.",
+    "Small adaptive threshold reached: 4.66% >= 4.50%.",
     "This path is sell-only and does not use stale state for new buys."
   ],
   "not_trading_advice": true
