@@ -5,8 +5,8 @@
   "available_usdt": 1.244390700069359,
   "bitget_account_available": true,
   "bot": "CohesivX Micro-Live",
-  "cooldown_seconds": 351696.00879979134,
-  "last_price": 63344.09,
+  "cooldown_seconds": 355570.131816864,
+  "last_price": 63215.01,
   "live_mode": "ARMED",
   "max_usdt": 5.0,
   "min_seconds_between_real_orders": 840,
@@ -22,5 +22,5 @@
   },
   "status": "PASS",
   "symbol": "BTCUSDT",
-  "timestamp_utc": "2026-07-04T20:06:39.530879+00:00"
+  "timestamp_utc": "2026-07-04T21:11:13.816147+00:00"
 }
