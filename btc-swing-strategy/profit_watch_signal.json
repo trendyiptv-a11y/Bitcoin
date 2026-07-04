@@ -1,18 +1,18 @@
 {
-  "checked_at": "2026-07-04T03:58:40.004176+00:00",
-  "state_date": "2026-07-03",
+  "checked_at": "2026-07-04T04:55:32.666310+00:00",
+  "state_date": "2026-07-04",
   "run_date_utc": "2026-07-04",
-  "state_is_fresh": false,
+  "state_is_fresh": true,
   "regime": "bear_late",
   "profit_profile": "bear_late_defensive",
   "take_profit_small_pnl": 0.045,
   "take_profit_medium_pnl": 0.09,
-  "live_price_source": "coinbase",
-  "live_price_usd": 62580.175,
+  "live_price_source": "kraken",
+  "live_price_usd": 62627.7,
   "live_price_status": {
-    "checked_at": "2026-07-04T03:58:39.707136+00:00",
-    "selected_source": "coinbase",
-    "selected_price": 62580.175,
+    "checked_at": "2026-07-04T04:55:32.474989+00:00",
+    "selected_source": "kraken",
+    "selected_price": 62627.7,
     "sources": {
       "binance": {
         "ok": false,
@@ -21,28 +21,28 @@
       },
       "coinbase": {
         "ok": true,
-        "price": 62580.175
+        "price": 62618.28
       },
       "kraken": {
         "ok": true,
-        "price": 62574.9
+        "price": 62627.7
       }
     },
-    "median_price": 62580.175,
-    "dispersion_pct": 0.008429187038868866
+    "median_price": 62627.7,
+    "dispersion_pct": 0.015041267681869612
   },
-  "last_bot_run_minutes_ago": 159.25758978333334,
-  "trigger_paper_trader": false,
-  "trigger_profit_exit": true,
+  "last_bot_run_minutes_ago": 56.86916595,
+  "trigger_paper_trader": true,
+  "trigger_profit_exit": false,
   "trigger_level": "small",
-  "reason": "Small adaptive take-profit threshold reached: 4.66% >= 4.50%. State is stale, so watcher will use sell-only profit executor instead of main bot.",
-  "btc_amount": 0.005421452685,
-  "cash_usdt": 679.29765291,
-  "cost_basis_usdt": 324.16951803,
-  "avg_entry_price_usd": 59793.84804499129,
-  "unrealized_pnl_usdt": 15.105939751519884,
-  "unrealized_pnl_pct": 0.04659889012180941,
-  "portfolio_value_usdt": 1018.5731106915199,
-  "btc_exposure_pct": 33.30889596635653,
-  "execution_path": "stale_safe_profit_exit_executor"
+  "reason": "Small adaptive take-profit threshold reached: 4.74% >= 4.50%.",
+  "btc_amount": 0.004337162148,
+  "cash_usdt": 747.15274447,
+  "cost_basis_usdt": 259.33561442,
+  "avg_entry_price_usd": 59793.84804406903,
+  "unrealized_pnl_usdt": 12.29087543629953,
+  "unrealized_pnl_pct": 0.04739370434634625,
+  "portfolio_value_usdt": 1018.7792343262995,
+  "btc_exposure_pct": 26.661957831906662,
+  "execution_path": "main_paper_trader"
 }
