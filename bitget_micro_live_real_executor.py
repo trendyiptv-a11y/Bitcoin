@@ -7,6 +7,7 @@ import os
 import time
 import urllib.error
 import urllib.request
+from decimal import Decimal, ROUND_DOWN
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -252,7 +253,14 @@ def make_market_sell_body(bitget_safe, max_usdt):
     if sell_btc <= 0:
         return None, "SELL_AMOUNT_ZERO"
 
-    sell_btc_str = f"{sell_btc:.8f}".rstrip("0").rstrip(".")
+    # Bitget BTCUSDT Spot accepts BTC size scale max 6 decimals.
+    # Use ROUND_DOWN so we never sell more BTC than calculated/available.
+    sell_btc_dec = Decimal(str(sell_btc)).quantize(Decimal("0.000001"), rounding=ROUND_DOWN)
+
+    if sell_btc_dec <= 0:
+        return None, "SELL_AMOUNT_BELOW_BITGET_SCALE"
+
+    sell_btc_str = format(sell_btc_dec, "f").rstrip("0").rstrip(".")
 
     return {
         "symbol": SYMBOL,
@@ -462,8 +470,10 @@ def main():
     success = http_result.get("http_ok") and response.get("code") == "00000"
 
     if success:
-        report["status"] = "SUCCESS"
+        report["status"] = "PASS"
         report["result"] = "REAL_ORDER_PLACED"
+        report["real_order_sent"] = True
+        report["real_order_confirmed"] = True
         report["reasons"].append("Bitget returned success code 00000.")
         mark_last_order(report)
     else:
