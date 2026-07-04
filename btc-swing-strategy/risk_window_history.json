@@ -1,6 +1,6 @@
 {
   "title": "RISK_WINDOW_HISTORY",
-  "generated_at": "2026-07-03T05:02:19.410836+00:00",
+  "generated_at": "2026-07-04T04:10:00.575841+00:00",
   "regimes": [
     "accum_bear",
     "bear_late",
@@ -12,7 +12,7 @@
     "since": "2025-12-01",
     "events": 4,
     "max_streak_days": 74,
-    "current_streak_days": 32,
+    "current_streak_days": 33,
     "current_is_record": false,
     "matching_or_longer_than_current": 2,
     "top_streaks": [
@@ -39,11 +39,11 @@
       },
       {
         "start": "2026-06-02",
-        "end": "2026-07-03",
-        "days": 32,
+        "end": "2026-07-04",
+        "days": 33,
         "is_current": true,
         "start_price": 66669.7,
-        "end_price": 61275.8,
+        "end_price": 62540.3,
         "regimes": [
           "bear_late",
           "bear_struct"
@@ -2059,11 +2059,11 @@
     },
     {
       "start": "2026-06-02",
-      "end": "2026-07-03",
-      "days": 32,
+      "end": "2026-07-04",
+      "days": 33,
       "is_current": true,
       "start_price": 66669.7,
-      "end_price": 61275.8,
+      "end_price": 62540.3,
       "regimes": [
         "bear_late",
         "bear_struct"
