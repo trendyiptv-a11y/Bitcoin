@@ -15,31 +15,31 @@
     "data_quality": {
       "stale_price_warning": false,
       "trailing_same_price_count": 1,
-      "unique_prices_last30": 21
+      "unique_prices_last30": 22
     },
-    "dist_ema21": 0.004577641630003289,
-    "ema21": 62215.21105983307,
-    "ema50": 61819.882791144904,
-    "ema9": 62475.970245730095,
+    "dist_ema21": 0.0035129446806019104,
+    "ema21": 62237.07459984824,
+    "ema50": 61843.65753975121,
+    "ema9": 62471.918196584076,
     "fee_rate": 0.001,
-    "momentum_1": -0.004096112198992045,
-    "momentum_2": -0.0023144704286056023,
-    "near_recent_high_pct": 0.004112959341926468,
+    "momentum_1": -0.0007087998865920647,
+    "momentum_2": -0.004802008761721995,
+    "near_recent_high_pct": 0.004825179315069841,
     "price_source": "bitget_public_live",
-    "range_pct": 0.018497117040461267,
+    "range_pct": 0.018510237094414583,
     "recent_high": 62757.07,
     "recent_low": 61601.0,
     "reversion_signal": false,
-    "rsi14": 69.05824814475508,
-    "samples": 335,
+    "rsi14": 63.900434686042345,
+    "samples": 336,
     "trend_stack_positive": true
   },
   "last_trade": null,
   "mode": "PAPER_ONLY",
-  "price": 62500.01,
+  "price": 62455.71,
   "price_source": "bitget_public_live",
   "real_order_sent": false,
-  "reason": "No valid cohesive scalp setup.",
+  "reason": "v0.6.3 action blocks long scalp: TAKE_PROFIT_SMALL",
   "scalp_action": "HOLD_SCALP",
   "state_summary": {
     "losses": 11,
@@ -62,7 +62,7 @@
     "wins": 2
   },
   "status": "PASS",
-  "timestamp_utc": "2026-07-04T01:23:34.805683+00:00",
-  "v063_action": "HOLD",
-  "v063_result": "NO_ACTION_HOLD"
+  "timestamp_utc": "2026-07-04T02:23:36.705049+00:00",
+  "v063_action": "TAKE_PROFIT_SMALL",
+  "v063_result": "REAL_ORDER_ATTEMPT_FAILED"
 }
