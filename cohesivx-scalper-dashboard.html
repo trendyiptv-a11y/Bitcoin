@@ -122,8 +122,13 @@
     </section>
 
     <section class="card span6">
-      <div class="label">Ziua curentă</div>
-      <div id="today"></div>
+      <div class="label">Ziua curentă UTC · din trade log</div>
+      <div class="row"><span>Trades</span><b id="todayTrades">—</b></div>
+      <div class="row"><span>Wins</span><b id="todayWins">—</b></div>
+      <div class="row"><span>Losses</span><b id="todayLosses">—</b></div>
+      <div class="row"><span>PnL azi</span><b id="todayPnl">—</b></div>
+      <div class="row"><span>Locked</span><b id="todayLocked">—</b></div>
+      <div class="row"><span>Lock reason</span><b id="todayLockReason">—</b></div>
     </section>
 
     <section class="card">
@@ -425,10 +430,13 @@ async function refresh(){
       ["EMA50","ema50","num2"],["Momentum 1","momentum_1","pct"],["Momentum 2","momentum_2","pct"],
       ["Dist EMA21","dist_ema21","pct"],["Range","range_pct","pct"]
     ]);
-    kv(document.getElementById("today"), s.today || {}, [
-      ["Trades","trades","raw"],["Wins","wins","raw"],["Losses","losses","raw"],["PnL azi","realized_pnl_usdt","num4"],
-      ["Locked","locked","raw"],["Lock reason","lock_reason","raw"]
-    ]);
+    const todayState = s.today || {};
+    setTxt("todayTrades", todayState.trades ?? "—");
+    setTxt("todayWins", todayState.wins ?? "—");
+    setTxt("todayLosses", todayState.losses ?? "—");
+    setTxt("todayPnl", todayState.realized_pnl_usdt === undefined ? "—" : fmt(todayState.realized_pnl_usdt, 6));
+    setTxt("todayLocked", todayState.locked ?? "—");
+    setTxt("todayLockReason", todayState.lock_reason || "—");
 
     try{
       const t = await fetchText(TRADES_URL);
