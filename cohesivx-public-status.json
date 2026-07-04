@@ -1,26 +1,18 @@
 {
-  "action": "MICRO_LIVE_PAUSED_AFTER_FIX",
+  "action": "ACCUMULATE_SMALL",
   "audit": "PASS",
   "available_btc": 0.00050949,
   "available_usdt": 1.244390700069359,
   "bitget_account_available": true,
   "bot": "CohesivX Micro-Live",
-  "cooldown_seconds": 293359.7976131439,
-  "last_price": 61642.05,
+  "cooldown_seconds": 298634.36549162865,
+  "last_price": 62510.0,
   "live_mode": "ARMED",
   "max_usdt": 5.0,
   "min_seconds_between_real_orders": 840,
-  "mode": "PUBLIC_STATUS_SAFE_PAUSED",
-  "not_trading_advice": true,
-  "real_order_attempted": false,
-  "real_order_confirmed": false,
+  "mode": "PUBLIC_STATUS_SAFE",
   "real_order_sent": false,
-  "reasons": [
-    "Micro-Live real executor is temporarily paused after sell size scale fix.",
-    "No real order was sent by this public status refresh.",
-    "Previous REAL_ORDER_ATTEMPT_FAILED was caused by Bitget BTC size scale and has been patched."
-  ],
-  "result": "REAL_EXECUTOR_NOT_RUNNING",
+  "result": "INSUFFICIENT_USDT",
   "security": {
     "api_keys_exposed": false,
     "passphrase_exposed": false,
@@ -28,7 +20,7 @@
     "secret_exposed": false,
     "signature_exposed": false
   },
-  "status": "PAUSED",
+  "status": "BLOCKED",
   "symbol": "BTCUSDT",
-  "timestamp_utc": "2026-07-04T04:48:14.788908+00:00"
+  "timestamp_utc": "2026-07-04T05:22:49.044662+00:00"
 }
