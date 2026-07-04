@@ -24,7 +24,7 @@ FEE_RATE = 0.001  # 0.1% per side
 MIN_SAMPLES = 30
 MAX_SAMPLES_KEEP = 500
 
-TAKE_PROFIT_NET_PCT = 0.0045   # +0.45% net după fees
+TAKE_PROFIT_NET_PCT = 0.0025   # +0.25% net după fees, calibrated for faster scalp harvest
 STOP_LOSS_NET_PCT = -0.0035    # -0.35% net după fees
 MAX_HOLD_CYCLES = 16           # 16 x 15m = 4 ore
 
