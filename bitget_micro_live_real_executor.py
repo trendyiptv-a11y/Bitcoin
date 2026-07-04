@@ -454,7 +454,9 @@ def main():
     http_result = post_bitget_order(api_key, api_secret, passphrase, body)
 
     report["http_result"] = http_result
-    report["real_order_sent"] = True
+    report["real_order_attempted"] = True
+    report["real_order_sent"] = False
+    report["real_order_confirmed"] = False
 
     response = http_result.get("response", {})
     success = http_result.get("http_ok") and response.get("code") == "00000"
@@ -467,6 +469,8 @@ def main():
     else:
         report["status"] = "ERROR"
         report["result"] = "REAL_ORDER_ATTEMPT_FAILED"
+        report["real_order_sent"] = False
+        report["real_order_confirmed"] = False
         report["reasons"].append("Bitget did not return success code 00000.")
 
     write_json(REPORT_PATH, report)

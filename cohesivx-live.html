@@ -190,10 +190,25 @@
       const status = await readJson(publicStatusPath);
 
       const liveArmed = status.live_mode === "ARMED";
-      const realOrderSent = status.real_order_sent === true;
       const action = status.action || "UNKNOWN";
       const result = status.result || "UNKNOWN";
       const botStatus = status.status || "UNKNOWN";
+
+      const orderFailed =
+        botStatus === "ERROR" ||
+        result === "REAL_ORDER_ATTEMPT_FAILED";
+
+      const realOrderConfirmed =
+        botStatus === "PASS" &&
+        status.real_order_sent === true &&
+        result !== "REAL_ORDER_ATTEMPT_FAILED" &&
+        status.order_result !== null &&
+        status.order_result !== undefined;
+
+      const realOrderAttempted =
+        status.real_order_attempted === true ||
+        status.real_order_sent === true ||
+        result === "REAL_ORDER_ATTEMPT_FAILED";
 
       if (liveArmed) {
         setText("liveMode", "ARMAT", "ok");
@@ -214,10 +229,18 @@
       document.getElementById("result").textContent =
         "Result: " + result + " · Status: " + botStatus;
 
-      if (realOrderSent) {
-        setText("realOrder", "DA", "danger");
+      if (realOrderConfirmed) {
+        setText("realOrder", "DA", "ok");
         document.getElementById("realOrderSub").textContent =
-          "Ultima rulare a raportat ordin real trimis. Verifică Bitget Order History.";
+          "Ultima rulare are ordin real confirmat de raport. Verifică Bitget Order History.";
+      } else if (orderFailed) {
+        setText("realOrder", "ÎNCERCARE EȘUATĂ", "danger");
+        document.getElementById("realOrderSub").textContent =
+          "A existat încercare de ordin real, dar execuția NU este confirmată.";
+      } else if (realOrderAttempted) {
+        setText("realOrder", "ÎNCERCARE", "warn");
+        document.getElementById("realOrderSub").textContent =
+          "A existat încercare de ordin real. Așteaptă confirmarea raportului.";
       } else {
         setText("realOrder", "NU", "ok");
         document.getElementById("realOrderSub").textContent =
