@@ -28,15 +28,15 @@ TAKE_PROFIT_NET_PCT = 0.0025   # +0.25% net după fees, calibrated for faster sc
 STOP_LOSS_NET_PCT = -0.0035    # -0.35% net după fees
 MAX_HOLD_CYCLES = 16           # 16 x 15m = 4 ore
 
-MAX_TRADES_PER_DAY = 4
-MAX_DAILY_LOSSES = 2
+MAX_TRADES_PER_DAY = 999   # paper scalper: no practical daily trade cap
+MAX_DAILY_LOSSES = 999       # paper scalper: observe many trades before locking
 
 # v0.2 entry calibration: fewer but cleaner reversion entries.
-RSI_ENTRY_MIN = 32.0
-RSI_ENTRY_MAX = 48.0
+RSI_ENTRY_MIN = 35.0         # wait for RSI recovery, not falling knife
+RSI_ENTRY_MAX = 52.0
 MAX_RANGE_PCT_FOR_ENTRY = 0.015       # v0.1 used 0.035; v0.2 blocks noisy days
-MIN_MOMENTUM_1_FOR_ENTRY = 0.0001     # short impulse must turn positive
-MIN_MOMENTUM_2_FOR_ENTRY = 0.0002     # two-sample confirmation
+MIN_MOMENTUM_1_FOR_ENTRY = 0.0003     # short impulse must turn positive
+MIN_MOMENTUM_2_FOR_ENTRY = 0.0006     # two-sample confirmation
 
 # v0.2.1 breakout branch: paper-only, for missed momentum moves.
 # This is intentionally controlled: it allows a small test entry only when price
@@ -550,6 +550,8 @@ def main():
         ema21 is not None
         and rsi14 is not None
         and dist_ema21 <= -0.0015
+        and ema9 is not None
+        and last >= ema9
         and RSI_ENTRY_MIN <= rsi14 <= RSI_ENTRY_MAX
         and momentum_1 > MIN_MOMENTUM_1_FOR_ENTRY
         and momentum_2 > MIN_MOMENTUM_2_FOR_ENTRY

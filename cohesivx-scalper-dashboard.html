@@ -449,8 +449,8 @@ async function refresh(){
         // Final authoritative today stats from trade log, including guarded exits.
         if (typeof computeTodayFromTrades === "function") {
           const finalTodayFromTrades = computeTodayFromTrades(rows);
-          const maxDailyLosses = 2;
-          const maxTradesPerDay = 4;
+          const maxDailyLosses = 999;
+          const maxTradesPerDay = 999;
 
           let lockReason = "—";
           let locked = false;
