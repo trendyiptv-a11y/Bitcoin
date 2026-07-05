@@ -1,0 +1,3 @@
+Force Vercel redeploy for CohesivX BTC dynamic energy card stability patch.
+Timestamp: 2026-07-05
+No functional code changes in this file.
