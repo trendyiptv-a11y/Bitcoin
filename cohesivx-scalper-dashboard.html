@@ -375,7 +375,7 @@ function drawChart(rows){
   const c = document.getElementById("chart");
   const ctx = c.getContext("2d");
   ctx.clearRect(0,0,c.width,c.height);
-  const vals = rows.map(r=>Number(r.price)).filter(v=>Number.isFinite(v)).slice(-160);
+  const vals = rows.map(r=>Number(r.price)).filter(v=>Number.isFinite(v)).slice(-480);
   if(vals.length < 2){ document.getElementById("chartInfo").textContent = "Nu sunt suficiente puncte."; return; }
   const min = Math.min(...vals), max = Math.max(...vals);
   const pad = 24, w = c.width - pad*2, h = c.height - pad*2;

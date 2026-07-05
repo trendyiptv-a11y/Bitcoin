@@ -22,7 +22,7 @@ MAX_TRADE_USDT = 5.0
 FEE_RATE = 0.001  # 0.1% per side
 
 MIN_SAMPLES = 30
-MAX_SAMPLES_KEEP = 500
+MAX_SAMPLES_KEEP = 1500
 
 TAKE_PROFIT_NET_PCT = 0.0025   # +0.25% net după fees, calibrated for faster scalp harvest
 STOP_LOSS_NET_PCT = -0.0035    # -0.35% net după fees
