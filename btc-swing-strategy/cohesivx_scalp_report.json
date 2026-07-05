@@ -15,23 +15,23 @@
     "data_quality": {
       "stale_price_warning": false,
       "trailing_same_price_count": 1,
-      "unique_prices_last30": 18
+      "unique_prices_last30": 17
     },
-    "dist_ema21": 0.00010185491078701295,
-    "ema21": 62722.58139706747,
-    "ema50": 62711.147674069296,
-    "ema9": 62729.86329715497,
+    "dist_ema21": 8.730225843162938e-05,
+    "ema21": 62723.49409730858,
+    "ema50": 62713.00118601925,
+    "ema9": 62729.53712047899,
     "fee_rate": 0.001,
     "momentum_1": -1.594159510012321e-07,
-    "momentum_2": -0.00015046603826909748,
+    "momentum_2": 0.0,
     "near_recent_high_pct": 0.0005746945948577768,
     "price_source": "bitget_public_live",
     "range_pct": 0.0010685652896898967,
     "recent_high": 62765.02,
     "recent_low": 62697.99,
     "reversion_signal": false,
-    "rsi14": 54.9811337121052,
-    "samples": 538,
+    "rsi14": 48.91240157480356,
+    "samples": 540,
     "trend_stack_positive": true
   },
   "last_trade": null,
@@ -62,7 +62,7 @@
     "wins": 3
   },
   "status": "PASS",
-  "timestamp_utc": "2026-07-05T13:26:34.386795+00:00",
+  "timestamp_utc": "2026-07-05T13:31:38.040673+00:00",
   "v063_action": "HOLD",
   "v063_result": "NO_ACTION_HOLD"
 }
