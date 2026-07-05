@@ -28,14 +28,14 @@
     "min_useful_trade_usdt": 5.0,
     "cooldown_minutes": 120
   },
-  "last_checked_at": "2026-07-05T15:19:16.970322+00:00",
-  "last_live_price_usd": 62755.8,
+  "last_checked_at": "2026-07-05T16:17:46.683422+00:00",
+  "last_live_price_usd": 62664.6,
   "last_live_price_source": "kraken",
   "last_report": {
     "action": "EXP_TAKE_PROFIT_25",
-    "reason": "Experimental early harvest: 4.95% >= 2.50%.",
-    "shadow_portfolio_value_usdt": 1012.3545179767361,
-    "base_portfolio_value_usdt": 1019.6974127980948,
-    "overlay_edge_usdt": -7.342894821358641
+    "reason": "Experimental early harvest: 4.80% >= 2.50%.",
+    "shadow_portfolio_value_usdt": 1012.3284147365393,
+    "base_portfolio_value_usdt": 1019.1030771537075,
+    "overlay_edge_usdt": -6.7746624171682015
   }
 }
