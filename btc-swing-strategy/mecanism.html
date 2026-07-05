@@ -1425,6 +1425,23 @@ body.light-mode .energy-live-status.status-capitulare {
   background: rgba(254,226,226,0.88);
 }
 
+
+/* ENERGY_CARD_WEBVIEW_STABILITY_PATCH_START */
+.energy-card,
+.energy-card *,
+.energy-item,
+.energy-live-status,
+.energy-value-block {
+  transform: none !important;
+  transition: none !important;
+  animation: none !important;
+  will-change: auto !important;
+}
+.energy-card {
+  contain: layout paint style;
+}
+/* ENERGY_CARD_WEBVIEW_STABILITY_PATCH_END */
+
 /* ENERGY_PRODUCTION_CARD_END */
 
     /* COMPACT_REGIME_CHIP_CSS */
@@ -2944,8 +2961,8 @@ body.light-mode .card:first-of-type {
                 </div>`;
       }).join("");
 
-      PROD_COST_LINE_EL.className = "energy-card" + (!costs ? " loading" : "");
-      PROD_COST_LINE_EL.innerHTML = `
+      const nextClassName = "energy-card" + (!costs ? " loading" : "");
+      const nextHtml = `
               <div class="energy-card-header">
                 <div>
                   <div class="energy-title">${getEnergyCopy("title")}</div>
@@ -2958,6 +2975,17 @@ body.light-mode .card:first-of-type {
               <div class="energy-note">
                 ${getEnergyCopy("note")}
               </div>`;
+
+      // Stabilitate WebView: nu rescriem DOM-ul dacă rezultatul este identic.
+      // Asta oprește flicker-ul/tremuratul când stratul RO/EN verifică aceeași zonă.
+      if (PROD_COST_LINE_EL.dataset.energyClass === nextClassName &&
+          PROD_COST_LINE_EL.dataset.energyHtml === nextHtml) {
+        return;
+      }
+      PROD_COST_LINE_EL.dataset.energyClass = nextClassName;
+      PROD_COST_LINE_EL.dataset.energyHtml = nextHtml;
+      PROD_COST_LINE_EL.className = nextClassName;
+      PROD_COST_LINE_EL.innerHTML = nextHtml;
     }
 
 
@@ -3572,9 +3600,8 @@ else if (LIQ_REGIME === "normală" || LIQ_REGIME === "moderată")
       <script src="./i18n-en.js" defer></script>
       <script>
         // ENERGY_CARD_I18N_SYNC_START
-        // i18n-en.js are propriul renderer vechi pentru cardul energetic.
-        // Acest sincronizator re-aplică noul card dinamic după schimbarea limbii RO/EN
-        // și după orice re-render automat venit din stratul i18n.
+        // Sincronizare stabilă cu stratul RO/EN.
+        // Nu folosim MutationObserver aici, ca să evităm re-render continuu/flicker în Android WebView.
         (function(){
           function syncEnergyCard(){
             if (typeof window.COHESIVX_RENDER_DYNAMIC_ENERGY_CARD === "function") {
@@ -3582,26 +3609,14 @@ else if (LIQ_REGIME === "normală" || LIQ_REGIME === "moderată")
             }
           }
           document.addEventListener("DOMContentLoaded", function(){
-            setTimeout(syncEnergyCard, 350);
-            setTimeout(syncEnergyCard, 900);
+            setTimeout(syncEnergyCard, 450);
+            setTimeout(syncEnergyCard, 1200);
             document.addEventListener("click", function(ev){
               if (ev.target && ev.target.closest && ev.target.closest("#coeziv-accessibility-panel")) {
-                setTimeout(syncEnergyCard, 80);
-                setTimeout(syncEnergyCard, 360);
+                setTimeout(syncEnergyCard, 140);
+                setTimeout(syncEnergyCard, 520);
               }
             }, true);
-            const el = document.getElementById("prod-cost-line");
-            if (el && window.MutationObserver) {
-              let busy = false;
-              new MutationObserver(function(){
-                if (busy) return;
-                const hasOldTerms = /Miner mediu|Miner scump|Average miner|Expensive miner/.test(el.textContent || "");
-                if (hasOldTerms) {
-                  busy = true;
-                  setTimeout(function(){ syncEnergyCard(); busy = false; }, 0);
-                }
-              }).observe(el, { childList: true, subtree: true, characterData: true });
-            }
           });
         })();
         // ENERGY_CARD_I18N_SYNC_END
