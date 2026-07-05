@@ -1,21 +1,21 @@
 {
   "title": "COEZIUNE_PARTICIPATIVA",
-  "score": 68.26,
+  "score": 66.68,
   "label": "participare tensionată",
   "level": "tense",
   "signal": "flat",
   "main_text": "Participanții rămân activi, dar comportamentul este tensionat. Interesul persistă, însă fluxul dominant poate fi defensiv sau orientat spre ieșire.",
   "components": {
-    "liquidity_component": 57.42,
-    "flow_component": 50.02,
-    "production_component": 67.65,
+    "liquidity_component": 57.62,
+    "flow_component": 44.54,
+    "production_component": 66.29,
     "persistence_component": 100.0,
     "probability_component": 100.0
   },
   "inputs": {
-    "flow_score": 2.07870288940167e-05,
-    "liquidity_score": 0.008241086147652017,
-    "deviation_from_production": 0.11321873067645892,
+    "flow_score": -0.004554144065029356,
+    "liquidity_score": 0.00846681667120509,
+    "deviation_from_production": 0.11796801805167645,
     "signal_probability": 0.5,
     "recent_days": 14,
     "recent_short_days": 0,
@@ -23,19 +23,19 @@
     "recent_flat_days": 14
   },
   "history": {
-    "rows": 5633,
+    "rows": 5634,
     "from": "2011-02-01T00:00:00+00:00",
-    "to": "2026-07-04T00:00:00+00:00",
-    "mean_score": 74.55359843777738,
+    "to": "2026-07-05T00:00:00+00:00",
+    "mean_score": 74.55253106141285,
     "median_score": 77.22,
     "min_score": 56.04,
     "max_score": 97.21,
     "label_counts": {
       "participare coezivă": 3667,
-      "participare tensionată": 1966
+      "participare tensionată": 1967
     }
   },
   "footer": "Indicator experimental derivat din flux, lichiditate, persistență și tensiune față de model. Nu măsoară încă direct utilizarea peer-to-peer on-chain.",
-  "generated_at": "2026-07-04T04:16:29.156702+00:00",
-  "source_timestamp": "2026-07-04T00:00:00+00:00"
+  "generated_at": "2026-07-05T04:38:23.020514+00:00",
+  "source_timestamp": "2026-07-05T00:00:00+00:00"
 }
