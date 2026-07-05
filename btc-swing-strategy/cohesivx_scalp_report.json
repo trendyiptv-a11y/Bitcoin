@@ -15,28 +15,28 @@
     "data_quality": {
       "stale_price_warning": false,
       "trailing_same_price_count": 2,
-      "unique_prices_last30": 23
+      "unique_prices_last30": 22
     },
-    "dist_ema21": 3.480051621061645e-05,
-    "ema21": 62687.82843121047,
-    "ema50": 62706.09497088714,
-    "ema9": 62689.4125998887,
+    "dist_ema21": -0.0003216960078357318,
+    "ema21": 62683.354985056445,
+    "ema50": 62702.97432862639,
+    "ema9": 62679.97627925997,
     "fee_rate": 0.001,
     "momentum_1": 0.0,
-    "momentum_2": -0.0002261411876941603,
-    "near_recent_high_pct": 0.0010574252580275688,
+    "momentum_2": -0.00042781936069239275,
+    "near_recent_high_pct": 0.0014858803070830033,
     "price_source": "bitget_public_live",
-    "range_pct": 0.0022539476385472408,
+    "range_pct": 0.002254912333700262,
     "recent_high": 62756.3,
     "recent_low": 62615.0,
     "reversion_signal": false,
-    "rsi14": 45.85331781140887,
-    "samples": 500,
+    "rsi14": 50.26287581032078,
+    "samples": 502,
     "trend_stack_positive": false
   },
   "last_trade": null,
   "mode": "PAPER_ONLY",
-  "price": 62690.01,
+  "price": 62663.19,
   "price_source": "bitget_public_live",
   "real_order_sent": false,
   "reason": "No valid cohesive scalp setup.",
@@ -62,7 +62,7 @@
     "wins": 3
   },
   "status": "PASS",
-  "timestamp_utc": "2026-07-05T11:50:26.177024+00:00",
+  "timestamp_utc": "2026-07-05T11:55:30.017402+00:00",
   "v063_action": "HOLD",
   "v063_result": "NO_ACTION_HOLD"
 }
