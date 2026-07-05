@@ -15,7 +15,7 @@ python bitget_dry_run_bridge.py >> btc-swing-strategy/termux_15m_runner.log 2>&1
 python bitget_micro_live_executor.py >> btc-swing-strategy/termux_15m_runner.log 2>&1
 python bitget_spot_order_endpoint_validator.py >> btc-swing-strategy/termux_15m_runner.log 2>&1
 python bitget_micro_live_real_executor.py >> btc-swing-strategy/termux_15m_runner.log 2>&1
-python publish_public_status.py >> btc-swing-strategy/termux_15m_runner.log 2>&1
-./push_public_status_hourly.sh >> btc-swing-strategy/termux_15m_runner.log 2>&1
+# python publish_public_status.py  # disabled: local-only bot mode >> btc-swing-strategy/termux_15m_runner.log 2>&1
+# ./push_public_status_hourly.sh  # disabled: local-only bot mode >> btc-swing-strategy/termux_15m_runner.log 2>&1
 echo "Run completed at $(date)" >> btc-swing-strategy/termux_15m_runner.log
 
