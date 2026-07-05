@@ -1329,6 +1329,102 @@ body.light-mode .energy-label {
   .energy-label { font-size: 10px; }
   .energy-value { font-size: 11px; }
 }
+
+.energy-label-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.energy-structural-label {
+  font-size: 11px;
+  color: #cbd5e1;
+  line-height: 1.25;
+}
+.energy-live-status {
+  width: fit-content;
+  padding: 2px 7px;
+  border-radius: 999px;
+  border: 1px solid rgba(148,163,184,0.20);
+  background: rgba(15,23,42,0.66);
+  color: var(--text-muted);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  line-height: 1.2;
+}
+.energy-live-status.status-comfortabil {
+  border-color: rgba(34,197,94,0.55);
+  color: #bbf7d0;
+  background: rgba(20,83,45,0.22);
+}
+.energy-live-status.status-profitabil {
+  border-color: rgba(56,189,248,0.55);
+  color: #bae6fd;
+  background: rgba(8,47,73,0.28);
+}
+.energy-live-status.status-la-limita {
+  border-color: rgba(250,204,21,0.58);
+  color: #fef3c7;
+  background: rgba(113,63,18,0.22);
+}
+.energy-live-status.status-sub-cost {
+  border-color: rgba(251,146,60,0.62);
+  color: #fed7aa;
+  background: rgba(124,45,18,0.22);
+}
+.energy-live-status.status-capitulare {
+  border-color: rgba(248,113,113,0.66);
+  color: #fecaca;
+  background: rgba(127,29,29,0.24);
+}
+.energy-live-status.status-na {
+  border-color: rgba(148,163,184,0.18);
+  color: var(--text-soft);
+}
+.energy-value-block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  text-align: right;
+}
+.energy-diff {
+  font-size: 10px;
+  color: var(--text-soft);
+  white-space: nowrap;
+  line-height: 1.25;
+}
+.energy-diff.positive { color: #4ade80; }
+.energy-diff.negative { color: #fb7185; }
+body.light-mode .energy-structural-label {
+  color: #334155;
+}
+body.light-mode .energy-live-status {
+  background: rgba(255,255,255,0.78);
+}
+body.light-mode .energy-live-status.status-comfortabil {
+  color: #166534;
+  background: rgba(220,252,231,0.82);
+}
+body.light-mode .energy-live-status.status-profitabil {
+  color: #075985;
+  background: rgba(224,242,254,0.84);
+}
+body.light-mode .energy-live-status.status-la-limita {
+  color: #854d0e;
+  background: rgba(254,249,195,0.85);
+}
+body.light-mode .energy-live-status.status-sub-cost {
+  color: #9a3412;
+  background: rgba(255,237,213,0.86);
+}
+body.light-mode .energy-live-status.status-capitulare {
+  color: #991b1b;
+  background: rgba(254,226,226,0.88);
+}
+
 /* ENERGY_PRODUCTION_CARD_END */
 
     /* COMPACT_REGIME_CHIP_CSS */
@@ -1565,9 +1661,36 @@ body.light-mode .card:first-of-type {
               <div class="energy-badge">estimare</div>
             </div>
             <div class="energy-values">
-              <div class="energy-item"><span class="energy-label">Miner eficient</span><span class="energy-value">n/a</span></div>
-              <div class="energy-item main"><span class="energy-label">Miner mediu</span><span class="energy-value">n/a</span></div>
-              <div class="energy-item"><span class="energy-label">Miner scump</span><span class="energy-value">n/a</span></div>
+              <div class="energy-item">
+                <span class="energy-label-stack">
+                  <span class="energy-structural-label">Miner eficient</span>
+                  <span class="energy-live-status status-na">n/a</span>
+                </span>
+                <span class="energy-value-block">
+                  <span class="energy-value">n/a</span>
+                  <span class="energy-diff">Așteptăm prețul live</span>
+                </span>
+              </div>
+              <div class="energy-item main">
+                <span class="energy-label-stack">
+                  <span class="energy-structural-label">Miner standard</span>
+                  <span class="energy-live-status status-na">n/a</span>
+                </span>
+                <span class="energy-value-block">
+                  <span class="energy-value">n/a</span>
+                  <span class="energy-diff">Așteptăm prețul live</span>
+                </span>
+              </div>
+              <div class="energy-item">
+                <span class="energy-label-stack">
+                  <span class="energy-structural-label">Miner ineficient</span>
+                  <span class="energy-live-status status-na">n/a</span>
+                </span>
+                <span class="energy-value-block">
+                  <span class="energy-value">n/a</span>
+                  <span class="energy-diff">Așteptăm prețul live</span>
+                </span>
+              </div>
             </div>
             <div class="energy-note">
               Calcul bazat pe dificultatea rețelei, recompensa pe bloc, eficiența echipamentelor și prețul energiei. Nu reprezintă costul total contabil al minerilor.
@@ -2290,6 +2413,7 @@ body.light-mode .card:first-of-type {
 
     let SNAPSHOT_PRICE = null;
     let LIVE_PRICE = null;
+    let LAST_PRODUCTION_COSTS = null;
     let LAST_SIGNAL_RAW = null;
     let LAST_SNAPSHOT_TIME = null;
     let SIGNAL_HISTORY = [];
@@ -2660,6 +2784,187 @@ body.light-mode .card:first-of-type {
       if (FG_DESC_EL) FG_DESC_EL.textContent = buildFgDescription(fg);
     }
     
+
+    // ---------------- PRAG ENERGETIC BTC DINAMIC ----------------
+
+    function isFinitePositiveNumber(v) {
+      return typeof v === "number" && Number.isFinite(v) && v > 0;
+    }
+
+    function getEnergyLanguage() {
+      try {
+        return localStorage.getItem("coeziv_btc_lang") === "en" ? "en" : "ro";
+      } catch (_) {
+        return "ro";
+      }
+    }
+
+    function getEnergyCopy(key) {
+      const lang = getEnergyLanguage();
+      const copy = {
+        ro: {
+          title: "Prag energetic BTC",
+          subtitle: "Cost energetic estimat de producție",
+          badge: "estimare",
+          efficient: "Miner eficient",
+          standard: "Miner standard",
+          inefficient: "Miner ineficient",
+          waiting: "Așteptăm prețul live",
+          aboveCost: "peste cost",
+          belowCost: "sub cost",
+          note: "Eticheta structurală rămâne fixă. Statusul live se adaptează automat după raportul dintre prețul BTC și costul energetic estimat. Nu reprezintă costul total contabil al minerilor."
+        },
+        en: {
+          title: "BTC energy threshold",
+          subtitle: "Estimated energy production cost",
+          badge: "estimate",
+          efficient: "Efficient miner",
+          standard: "Standard miner",
+          inefficient: "Inefficient miner",
+          waiting: "Waiting for live price",
+          aboveCost: "above cost",
+          belowCost: "below cost",
+          note: "The structural label remains fixed. The live status adapts automatically from the ratio between BTC price and the estimated energy cost. This is not the miners’ full accounting cost."
+        }
+      };
+      return (copy[lang] && copy[lang][key]) || copy.ro[key] || key;
+    }
+
+    function normalizeEnergyStatusClass(label) {
+      return String(label || "n/a")
+        .toLowerCase()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        .replace(/\s+/g, "-")
+        .replace(/[^a-z0-9-]/g, "");
+    }
+
+    function getEnergyMinerStatus(referencePrice, productionCost) {
+      const en = getEnergyLanguage() === "en";
+
+      if (!isFinitePositiveNumber(referencePrice) || !isFinitePositiveNumber(productionCost)) {
+        return {
+          label: "n/a",
+          cssClass: "status-na",
+          description: en ? "Waiting for live BTC price" : "Așteptăm prețul live BTC"
+        };
+      }
+
+      const ratio = referencePrice / productionCost;
+
+      if (ratio >= 1.50) {
+        return {
+          label: en ? "Comfortable" : "Confortabil",
+          cssClass: "status-comfortabil",
+          description: en ? "BTC is well above estimated cost" : "BTC este mult peste cost"
+        };
+      }
+
+      if (ratio >= 1.15) {
+        return {
+          label: en ? "Profitable" : "Profitabil",
+          cssClass: "status-profitabil",
+          description: en ? "BTC is above estimated cost" : "BTC este peste cost"
+        };
+      }
+
+      if (ratio >= 1.00) {
+        return {
+          label: en ? "At the limit" : "La limită",
+          cssClass: "status-la-limita",
+          description: en ? "BTC is above cost, but the zone should be watched" : "BTC este peste cost, dar zona trebuie urmărită"
+        };
+      }
+
+      if (ratio >= 0.85) {
+        return {
+          label: en ? "Below cost" : "Sub cost",
+          cssClass: "status-sub-cost",
+          description: en ? "BTC is below estimated cost" : "BTC este sub cost"
+        };
+      }
+
+      return {
+        label: en ? "Capitulation" : "Capitulare",
+        cssClass: "status-capitulare",
+        description: en ? "BTC is far below estimated cost" : "BTC este mult sub cost"
+      };
+    }
+
+    function formatEnergyDiff(referencePrice, productionCost) {
+      if (!isFinitePositiveNumber(referencePrice) || !isFinitePositiveNumber(productionCost)) {
+        return {
+          text: getEnergyCopy("waiting"),
+          cssClass: ""
+        };
+      }
+
+      const diffPct = ((referencePrice - productionCost) / productionCost) * 100;
+      const sign = diffPct >= 0 ? "+" : "−";
+      const direction = diffPct >= 0 ? getEnergyCopy("aboveCost") : getEnergyCopy("belowCost");
+
+      return {
+        text: `${sign}${Math.abs(diffPct).toFixed(0)}% ${direction}`,
+        cssClass: diffPct >= 0 ? "positive" : "negative"
+      };
+    }
+
+    function renderEnergyCostCard(costs) {
+      if (!PROD_COST_LINE_EL) return;
+
+      const fmt = (v) => isFinitePositiveNumber(v)
+        ? "~" + USD_FORMATTER.format(v) + " USD"
+        : "n/a";
+
+      const referencePrice = isFinitePositiveNumber(LIVE_PRICE)
+        ? LIVE_PRICE
+        : (isFinitePositiveNumber(SNAPSHOT_PRICE) ? SNAPSHOT_PRICE : null);
+
+      const profiles = [
+        { structuralLabel: getEnergyCopy("efficient"), cost: costs && typeof costs === "object" ? costs.cheap : null, main: false },
+        { structuralLabel: getEnergyCopy("standard"), cost: costs && typeof costs === "object" ? costs.average : null, main: true },
+        { structuralLabel: getEnergyCopy("inefficient"), cost: costs && typeof costs === "object" ? costs.expensive : null, main: false }
+      ];
+
+      const rows = profiles.map((profile) => {
+        const status = getEnergyMinerStatus(referencePrice, profile.cost);
+        const diff = formatEnergyDiff(referencePrice, profile.cost);
+        const statusClass = status.cssClass || ("status-" + normalizeEnergyStatusClass(status.label));
+        const itemClass = "energy-item" + (profile.main ? " main" : "");
+
+        return `
+                <div class="${itemClass}" title="${status.description}">
+                  <span class="energy-label-stack">
+                    <span class="energy-structural-label">${profile.structuralLabel}</span>
+                    <span class="energy-live-status ${statusClass}">${status.label}</span>
+                  </span>
+                  <span class="energy-value-block">
+                    <span class="energy-value">${fmt(profile.cost)}</span>
+                    <span class="energy-diff ${diff.cssClass}">${diff.text}</span>
+                  </span>
+                </div>`;
+      }).join("");
+
+      PROD_COST_LINE_EL.className = "energy-card" + (!costs ? " loading" : "");
+      PROD_COST_LINE_EL.innerHTML = `
+              <div class="energy-card-header">
+                <div>
+                  <div class="energy-title">${getEnergyCopy("title")}</div>
+                  <div class="energy-subtitle">${getEnergyCopy("subtitle")}</div>
+                </div>
+                <div class="energy-badge">${getEnergyCopy("badge")}</div>
+              </div>
+              <div class="energy-values">${rows}
+              </div>
+              <div class="energy-note">
+                ${getEnergyCopy("note")}
+              </div>`;
+    }
+
+
+    window.COHESIVX_RENDER_DYNAMIC_ENERGY_CARD = function() {
+      renderEnergyCostCard(LAST_PRODUCTION_COSTS);
+    };
+
     // ---------------- MECANISM (JSON) ----------------
 
     async function loadState() {
@@ -2691,6 +2996,7 @@ body.light-mode .card:first-of-type {
         const liqRegime = state.liquidity_regime || null;
         const liqStrength = state.liquidity_strength || null;
         const productionCosts = state.production_costs_usd || null;
+        LAST_PRODUCTION_COSTS = productionCosts;
         const productionRef = state.production_cost_reference || "average";
         const fgBlock = state.fg || null;
         STATE_PROB = null;
@@ -2800,38 +3106,8 @@ STATE_PROB_FLAT = null;
   LIQ_LINE_EL.textContent = liqText;
 }
 
-        // prag energetic BTC – cost energetic estimat, nu cost total contabil
-        if (PROD_COST_LINE_EL) {
-          const renderEnergyCostCard = (costs) => {
-            const fmt = (v) => (typeof v === "number" && Number.isFinite(v))
-              ? "~" + USD_FORMATTER.format(v) + " USD"
-              : "n/a";
-
-            const cheap = costs && typeof costs === "object" ? costs.cheap : null;
-            const avg = costs && typeof costs === "object" ? costs.average : null;
-            const exp = costs && typeof costs === "object" ? costs.expensive : null;
-
-            PROD_COST_LINE_EL.className = "energy-card" + (!costs ? " loading" : "");
-            PROD_COST_LINE_EL.innerHTML = `
-              <div class="energy-card-header">
-                <div>
-                  <div class="energy-title">Prag energetic BTC</div>
-                  <div class="energy-subtitle">Cost energetic estimat de producție</div>
-                </div>
-                <div class="energy-badge">estimare</div>
-              </div>
-              <div class="energy-values">
-                <div class="energy-item"><span class="energy-label">Miner eficient</span><span class="energy-value">${fmt(cheap)}</span></div>
-                <div class="energy-item main"><span class="energy-label">Miner mediu</span><span class="energy-value">${fmt(avg)}</span></div>
-                <div class="energy-item"><span class="energy-label">Miner scump</span><span class="energy-value">${fmt(exp)}</span></div>
-              </div>
-              <div class="energy-note">
-                Calcul bazat pe dificultatea rețelei, recompensa pe bloc, eficiența echipamentelor și prețul energiei. Nu reprezintă costul total contabil al minerilor.
-              </div>`;
-          };
-
-          renderEnergyCostCard(productionCosts);
-        }
+        // prag energetic BTC – cost energetic estimat, cu status live dinamic
+        renderEnergyCostCard(productionCosts);
 
         if (SNAPSHOT_PRICE === null) {
           LIVE_DELTA_EL.textContent =
@@ -2882,6 +3158,7 @@ updateFGCard(fgBlock);
 
         LIVE_PRICE = live;
         LIVE_PRICE_EL.textContent = USD_FORMATTER.format(live);
+        renderEnergyCostCard(LAST_PRODUCTION_COSTS);
 
         if (
           typeof SNAPSHOT_PRICE === "number" &&
@@ -3293,6 +3570,42 @@ else if (LIQ_REGIME === "normală" || LIQ_REGIME === "moderată")
     document.addEventListener("DOMContentLoaded", start);
   </script>
       <script src="./i18n-en.js" defer></script>
+      <script>
+        // ENERGY_CARD_I18N_SYNC_START
+        // i18n-en.js are propriul renderer vechi pentru cardul energetic.
+        // Acest sincronizator re-aplică noul card dinamic după schimbarea limbii RO/EN
+        // și după orice re-render automat venit din stratul i18n.
+        (function(){
+          function syncEnergyCard(){
+            if (typeof window.COHESIVX_RENDER_DYNAMIC_ENERGY_CARD === "function") {
+              window.COHESIVX_RENDER_DYNAMIC_ENERGY_CARD();
+            }
+          }
+          document.addEventListener("DOMContentLoaded", function(){
+            setTimeout(syncEnergyCard, 350);
+            setTimeout(syncEnergyCard, 900);
+            document.addEventListener("click", function(ev){
+              if (ev.target && ev.target.closest && ev.target.closest("#coeziv-accessibility-panel")) {
+                setTimeout(syncEnergyCard, 80);
+                setTimeout(syncEnergyCard, 360);
+              }
+            }, true);
+            const el = document.getElementById("prod-cost-line");
+            if (el && window.MutationObserver) {
+              let busy = false;
+              new MutationObserver(function(){
+                if (busy) return;
+                const hasOldTerms = /Miner mediu|Miner scump|Average miner|Expensive miner/.test(el.textContent || "");
+                if (hasOldTerms) {
+                  busy = true;
+                  setTimeout(function(){ syncEnergyCard(); busy = false; }, 0);
+                }
+              }).observe(el, { childList: true, subtree: true, characterData: true });
+            }
+          });
+        })();
+        // ENERGY_CARD_I18N_SYNC_END
+      </script>
 <script src="./mecanism-radar-embed.js" defer></script>
    <script src="./guide-nav-i18n.js" defer></script>
     </body>
