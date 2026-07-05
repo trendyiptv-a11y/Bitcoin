@@ -1765,7 +1765,7 @@ body.light-mode .card:first-of-type {
           Interpretare structurală experimentală, nu recomandare financiară.
         </div>
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <!-- DAILY_FULL_INTERPRETATION_EXPANDER_START -->
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <!-- DAILY_FULL_INTERPRETATION_EXPANDER_START -->
         <button id="daily-ai-full-toggle" class="daily-full-toggle" type="button" aria-expanded="false">
           Vezi interpretarea completă
         </button>
@@ -2137,6 +2137,7 @@ body.light-mode .card:first-of-type {
       setText("daily-ai-fg-regime", [data.fear_greed, data.market_regime].filter(Boolean).join(" • ") || "–");
       setText("daily-ai-watch", data.watch_next || "–");
       setText("daily-ai-footer", data.disclaimer || "Interpretare structurală experimentală, nu recomandare financiară.");
+      updateDailyFullInterpretation(data);
       updateDailyFullInterpretation(data.full_interpretation || null);
     }
 
