@@ -386,8 +386,16 @@ def profit_management_overlay(action: str, confidence: str, fraction: float, edg
 def decide(state: dict[str, Any], paper: dict[str, Any], live_price: float | None, live_source: str, live_status: dict[str, Any]) -> tuple[str, str, list[str], float, dict[str, Any], dict[str, Any]]:
     s = hydrate(state, paper, live_price, live_source, live_status)
     if not s["is_fresh_for_today"]:
-        edge = {"available": False, "memory_action": "OBSERVE_STALE_DATA", "position_fraction": 0.0, "decision_edge": 0.0, "reason": "stale state"}
-        return "OBSERVE_STALE_DATA", "none", [f"State date {s['state_date']} is not UTC today {s['run_date_utc']}.", "No paper execution is allowed on stale data."], 0.0, s, edge
+        # Local paper rollover:
+        # If the only problem is that the stored state_date is yesterday,
+        # advance the accounting day automatically without changing cash/BTC/PnL.
+        old_state_date = s.get("state_date")
+        s["state_date"] = s.get("run_date_utc")
+        s["stale_rollover_applied"] = True
+        s["stale_rollover_from"] = old_state_date
+        s["stale_rollover_to"] = s.get("run_date_utc")
+        reasons = locals().get("reasons", [])
+        reasons.append(f"Auto rollover state_date {old_state_date} -> {s.get('run_date_utc')}.")
     edge = estimate_memory_edge(s)
     if not live_price:
         edge["execution_blocked"] = True

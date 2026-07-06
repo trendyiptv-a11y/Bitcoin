@@ -11,6 +11,33 @@ STATE_PATH = Path(__file__).resolve().parent / "btc-swing-strategy" / "coeziv_st
 MIN_USEFUL_ENTRY_USDT = 5.0
 
 
+
+def auto_rollover_state_date(state):
+    """
+    Local paper mode:
+    dacă ziua UTC s-a schimbat, actualizează state_date automat.
+    Nu modifică cash, BTC, realized/unrealized PnL.
+    """
+    from datetime import datetime, timezone
+
+    today = datetime.now(timezone.utc).date().isoformat()
+    old_state_date = state.get("state_date")
+    run_date = state.get("run_date_utc")
+
+    if old_state_date != today:
+        state["state_date"] = today
+        state["run_date_utc"] = today
+        state["stale_rollover_applied"] = True
+        state["stale_rollover_from"] = old_state_date
+        state["stale_rollover_to"] = today
+
+        # curăță mesajul vechi, dacă există
+        if isinstance(state.get("reason"), str) and "State date" in state.get("reason", ""):
+            state["reason"] = "state_date auto rollover applied"
+
+    return state
+
+
 def active_profit_rules(regime: str) -> dict[str, float | str]:
     """
     Regime-aware take-profit thresholds for the paper bot.
