@@ -1,0 +1,5 @@
+CohesivX BTC Fair Zone is an experimental Bitcoin structural valuation indicator. 
+It compares live BTC price with a cohesive price zone derived from production cost, historical price/cost behavior and structural market context.
+
+This is not a buy/sell signal and not financial advice. 
+It is designed as a structural reference layer for Bitcoin valuation.
