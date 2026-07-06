@@ -86,16 +86,68 @@ else:
     cash = ss.get("paper_cash_usdt")
     btc = ss.get("paper_btc")
     open_pos = ss.get("open_position")
-    trades = today.get("trades", 0)
-    wins = today.get("wins", 0)
-    losses = today.get("losses", 0)
-    pnl = today.get("realized_pnl_usdt", 0)
+    # Rebuild today's scalp stats from trade log, not from volatile report state.
+    # Truth source for closed scalp trades = trade log, not report.today
+    trades = wins = losses = 0
+    pnl = 0.0
+
+    try:
+        import datetime
+        today_utc = datetime.datetime.now(datetime.timezone.utc).date().isoformat()
+        log_path = "btc-swing-strategy/cohesivx_scalp_trades.jsonl"
+
+        if os.path.exists(log_path):
+            for line in open(log_path):
+                if not line.strip():
+                    continue
+                row = json.loads(line)
+                if not row.get("timestamp_utc", "").startswith(today_utc):
+                    continue
+                if row.get("type") != "PAPER_SCALP_EXIT":
+                    continue
+
+                trades += 1
+                pnl += float(row.get("net_pnl_usdt", 0) or 0)
+
+                if row.get("outcome") == "WIN":
+                    wins += 1
+                elif row.get("outcome") == "LOSS":
+                    losses += 1
+    except Exception:
+        pass
+
+    try:
+        import datetime
+        today_utc = datetime.datetime.now(datetime.timezone.utc).date().isoformat()
+        log_path = "btc-swing-strategy/cohesivx_scalp_trades.jsonl"
+        trades = wins = losses = 0
+        pnl = 0.0
+
+        if os.path.exists(log_path):
+            for line in open(log_path):
+                if not line.strip():
+                    continue
+                row = json.loads(line)
+                ts = row.get("timestamp_utc", "")
+                if not ts.startswith(today_utc):
+                    continue
+                if row.get("type") == "PAPER_SCALP_EXIT":
+                    trades += 1
+                    pnl += float(row.get("net_pnl_usdt", 0) or 0)
+                    if row.get("outcome") == "WIN":
+                        wins += 1
+                    elif row.get("outcome") == "LOSS":
+                        losses += 1
+    except Exception:
+        pass
     ts = scalp.get("timestamp_utc") or scalp.get("timestamp")
 
     print(f"time: {time_local(ts, scalp_path)}")
     print(f"{action} · price {fmt(price,2)} · open: {'DA' if open_pos else 'NU'}")
     print(f"Cash {fmt(cash,4)} · BTC {btc or 0}")
-    print(f"Azi: {trades} trades · {wins}W/{losses}L · PnL {fmt(pnl,4)} USDT")
+    print(f"Azi închise: {trades} trades · {wins}W/{losses}L · PnL {fmt(pnl,4)} USDT")
+    if open_pos:
+        print("Poziție: DESCHISĂ")
     print(f"Motiv: {reason}")
 
 # 3. PAPER TRADER 1000
@@ -119,6 +171,7 @@ else:
     ts = (
         (decision or {}).get("timestamp_utc")
         or (decision or {}).get("timestamp")
+        or (decision or {}).get("run_at")
         or (decision or {}).get("checked_at")
         or (decision or {}).get("created_at")
         or (decision or {}).get("time")
