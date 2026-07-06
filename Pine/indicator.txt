@@ -1,5 +1,5 @@
 //@version=5
-indicator("CohesivX BTC Fair Zone — Manual Snapshot", overlay=true, max_labels_count=50)
+indicator("CohesivX BTC Fair Zone - Manual Snapshot", overlay=true, max_labels_count=50)
 
 //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // INPUTURI PRINCIPALE
@@ -16,10 +16,10 @@ inefficientCost = input.float(85000, "Inefficient miner cost", step=100)
 showBand        = input.bool(true, "Show cohesive band")
 showEnergyLines = input.bool(true, "Show miner cost lines")
 showTable       = input.bool(true, "Show status table")
-showBackground  = input.bool(true, "Highlight extreme deviation")
+showBackground  = input.bool(true, "Highlight strong/extreme deviation")
 
 //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// CALCULE
+// CALCULE PRINCIPALE
 //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 price = close
@@ -27,27 +27,41 @@ price = close
 deviationPct = centralPrice > 0 ? ((price - centralPrice) / centralPrice) * 100 : na
 absDeviation = math.abs(deviationPct)
 
-zoneStatus =
-     absDeviation < 8  ? "NORMAL" :
-     absDeviation < 18 ? "STRONG DEVIATION" :
-                         "EXTREME DEVIATION"
+string zoneStatus = "EXTREME DEVIATION"
 
-zoneBias =
-     price > centralPrice ? "ABOVE cohesive price" :
-     price < centralPrice ? "BELOW cohesive price" :
-                            "AT cohesive price"
+if absDeviation < 8
+    zoneStatus := "NORMAL"
+else if absDeviation < 18
+    zoneStatus := "STRONG DEVIATION"
+else
+    zoneStatus := "EXTREME DEVIATION"
+
+string zoneBias = "AT cohesive price"
+
+if price > centralPrice
+    zoneBias := "ABOVE cohesive price"
+else if price < centralPrice
+    zoneBias := "BELOW cohesive price"
+else
+    zoneBias := "AT cohesive price"
 
 productionRatio = standardCost > 0 ? price / standardCost : na
 
-minerStatus =
-     productionRatio >= 1.50 ? "COMFORTABLE" :
-     productionRatio >= 1.15 ? "PROFITABLE" :
-     productionRatio >= 1.00 ? "AT LIMIT" :
-     productionRatio >= 0.85 ? "BELOW COST" :
-                               "CAPITULATION"
+string minerStatus = "CAPITULATION"
+
+if productionRatio >= 1.50
+    minerStatus := "COMFORTABLE"
+else if productionRatio >= 1.15
+    minerStatus := "PROFITABLE"
+else if productionRatio >= 1.00
+    minerStatus := "AT LIMIT"
+else if productionRatio >= 0.85
+    minerStatus := "BELOW COST"
+else
+    minerStatus := "CAPITULATION"
 
 //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// CULORI LOGICE
+// CULORI
 //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 centralColor = color.rgb(255, 204, 0)
@@ -59,13 +73,17 @@ efficientColor   = color.rgb(0, 200, 120)
 standardColor    = color.rgb(255, 180, 0)
 inefficientColor = color.rgb(255, 80, 80)
 
-extremeBg =
-     absDeviation >= 18 ? color.new(color.red, 88) :
-     absDeviation >= 8  ? color.new(color.orange, 90) :
-                          na
+color extremeBg = na
+
+if absDeviation >= 18
+    extremeBg := color.new(color.red, 88)
+else if absDeviation >= 8
+    extremeBg := color.new(color.orange, 90)
+else
+    extremeBg := na
 
 //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// PLOTARE ZONĂ COEZIVĂ
+// ZONA COEZIVĂ
 //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 pUpper = plot(showBand ? upperBand : na, "Upper structural band", color=upperColor, linewidth=1)
@@ -76,7 +94,7 @@ fill(pUpper, pLower, color=showBand ? bandColor : na, title="Cohesive fair zone"
 plot(centralPrice, "Cohesive central price", color=centralColor, linewidth=3)
 
 //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// LINII COST PRODUCȚIE
+// COSTURI MINERI
 //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 plot(showEnergyLines ? efficientCost : na, "Efficient miner cost", color=efficientColor, linewidth=1)
@@ -114,7 +132,7 @@ if barstate.islast and showTable
     table.cell(t, 1, 6, minerStatus, text_color=color.white)
 
 //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// ETICHETĂ PE ULTIMA LUMÂNARE
+// ETICHETĂ ULTIMA LUMÂNARE
 //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 var label lastLabel = na
@@ -122,19 +140,11 @@ var label lastLabel = na
 if barstate.islast
     label.delete(lastLabel)
 
-    labelText =
-         "CohesivX BTC Fair Zone\n" +
-         "Price: " + str.tostring(math.round(price)) + "\n" +
-         "Central: " + str.tostring(math.round(centralPrice)) + "\n" +
-         "Deviation: " + str.tostring(deviationPct, "#.##") + "%\n" +
-         zoneStatus + "\n" +
-         minerStatus
+    labelText = "CohesivX BTC Fair Zone\n"
+    labelText := labelText + "Price: " + str.tostring(math.round(price)) + "\n"
+    labelText := labelText + "Central: " + str.tostring(math.round(centralPrice)) + "\n"
+    labelText := labelText + "Deviation: " + str.tostring(deviationPct, "#.##") + "%\n"
+    labelText := labelText + zoneStatus + "\n"
+    labelText := labelText + minerStatus
 
-    lastLabel := label.new(
-         bar_index,
-         price,
-         labelText,
-         style=label.style_label_left,
-         textcolor=color.white,
-         color=color.rgb(20, 20, 20)
-    )
+    lastLabel := label.new(bar_index, price, labelText, style=label.style_label_left, textcolor=color.white, color=color.rgb(20, 20, 20))
