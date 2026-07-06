@@ -704,3 +704,5 @@
 {"price": 62726.44, "price_source": "bitget_public_live", "timestamp_utc": "2026-07-05T20:27:03.541554+00:00", "v063_action": "HOLD"}
 {"price": 62710.01, "price_source": "bitget_public_live", "timestamp_utc": "2026-07-05T20:32:05.608109+00:00", "v063_action": "HOLD"}
 {"price": 62710.01, "price_source": "bitget_public_live", "timestamp_utc": "2026-07-05T20:32:08.059312+00:00", "v063_action": "HOLD"}
+{"price": 63239.99, "price_source": "bitget_public_live", "timestamp_utc": "2026-07-06T05:17:14.604630+00:00", "v063_action": "HOLD_CASH_CORRIDOR"}
+{"price": 63162.61, "price_source": "bitget_public_live", "timestamp_utc": "2026-07-06T05:22:17.205708+00:00", "v063_action": "HOLD_CASH_CORRIDOR"}
