@@ -1,6 +1,6 @@
 {
   "title": "RISK_WINDOW_HISTORY",
-  "generated_at": "2026-07-06T04:49:28.449693+00:00",
+  "generated_at": "2026-07-07T08:39:36.855926+00:00",
   "regimes": [
     "accum_bear",
     "bear_late",
@@ -12,7 +12,7 @@
     "since": "2025-12-01",
     "events": 4,
     "max_streak_days": 74,
-    "current_streak_days": 35,
+    "current_streak_days": 36,
     "current_is_record": false,
     "matching_or_longer_than_current": 2,
     "top_streaks": [
@@ -39,11 +39,11 @@
       },
       {
         "start": "2026-06-02",
-        "end": "2026-07-06",
-        "days": 35,
+        "end": "2026-07-07",
+        "days": 36,
         "is_current": true,
         "start_price": 66669.7,
-        "end_price": 63276.7,
+        "end_price": 63138.2,
         "regimes": [
           "bear_late",
           "bear_struct"
@@ -594,25 +594,6 @@
       "window_days": 180,
       "major_drawdown_threshold": -0.2,
       "min_drawdown": -0.0055456430534792656,
-      "confirmed_major_drawdown": false,
-      "days_to_confirmation": null
-    },
-    {
-      "start": "2016-04-14",
-      "end": "2016-04-14",
-      "days": 1,
-      "is_current": false,
-      "start_price": 424.02,
-      "end_price": 424.02,
-      "regimes": [
-        "bear_struct"
-      ],
-      "signals": [
-        "short"
-      ],
-      "window_days": 180,
-      "major_drawdown_threshold": -0.2,
-      "min_drawdown": 0.005282769680675425,
       "confirmed_major_drawdown": false,
       "days_to_confirmation": null
     },
@@ -2040,11 +2021,11 @@
     },
     {
       "start": "2026-06-02",
-      "end": "2026-07-06",
-      "days": 35,
+      "end": "2026-07-07",
+      "days": 36,
       "is_current": true,
       "start_price": 66669.7,
-      "end_price": 63276.7,
+      "end_price": 63138.2,
       "regimes": [
         "bear_late",
         "bear_struct"
