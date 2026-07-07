@@ -11,6 +11,12 @@ import pandas as pd
 import coeziv_state as base
 from cohesive_fair_price import compute_cohesive_fair_price_v2
 
+try:
+    from tradingview_anchors import compute_tradingview_yearly_anchors
+except Exception as exc:
+    print("Nu am putut importa generatorul de ancore TradingView:", exc)
+    compute_tradingview_yearly_anchors = None
+
 
 BASE_DIR = base.BASE_DIR
 STRATEGY_DIR = base.STRATEGY_DIR
@@ -128,6 +134,59 @@ def _build_model_price_explanation(
         )
 
     return " ".join(pieces)
+
+
+def _safe_tradingview_anchors(
+    fair_price: Optional[Dict[str, Any]],
+    production_costs: Dict[str, Optional[float]],
+    model_price: float,
+    ts: Any,
+) -> Optional[Dict[str, Any]]:
+    """
+    Optional TradingView export. It must never block coeziv_state.json.
+    If anything fails here, the monitor still writes the normal state.
+    """
+    if compute_tradingview_yearly_anchors is None:
+        return None
+
+    anchors = compute_tradingview_yearly_anchors(
+        BASE_DIR,
+        samples=250,
+        start_year=2020,
+    )
+
+    # Override the active year with the exact live monitor snapshot, so Pine
+    # receives the same current central/miner/p10/p90 values as the UI.
+    if fair_price:
+        try:
+            active_year = str(pd.to_datetime(ts).year)
+        except Exception:
+            active_year = str(datetime.now(timezone.utc).year)
+
+        bands = fair_price.get("bands") or {}
+        comps = fair_price.get("components") or {}
+        current = fair_price.get("current") or {}
+        yearly = anchors.setdefault("yearly", {})
+        yearly[active_year] = {
+            "date": current.get("date") or (ts.isoformat() if isinstance(ts, pd.Timestamp) else str(ts)),
+            "central": float(model_price),
+            "miner": production_costs.get("average"),
+            "efficient_miner": production_costs.get("cheap"),
+            "standard_miner": production_costs.get("average"),
+            "inefficient_miner": production_costs.get("expensive"),
+            "p10": bands.get("p10"),
+            "p50": bands.get("p50"),
+            "p90": bands.get("p90"),
+            "ic_close": current.get("ic_close_usd"),
+            "samples": comps.get("similar_context_samples"),
+            "multiplier_p10": comps.get("historical_multiplier_p10"),
+            "multiplier_p50": comps.get("historical_multiplier_p50"),
+            "multiplier_p90": comps.get("historical_multiplier_p90"),
+            "source": "current_monitor_snapshot",
+        }
+        anchors["active_year_override"] = active_year
+
+    return anchors
 
 
 def main() -> None:
@@ -275,6 +334,18 @@ def main() -> None:
             "source": fair_price.get("source"),
         }
 
+    try:
+        state["tradingview_anchors"] = _safe_tradingview_anchors(
+            fair_price=fair_price,
+            production_costs=production_costs,
+            model_price=model_price,
+            ts=ts,
+        )
+    except Exception as exc:
+        print("Nu am putut genera ancorele TradingView:", exc)
+        state["tradingview_anchors"] = None
+        state["tradingview_anchors_error"] = str(exc)
+
     state = base._enrich_state_with_fg(state)
 
     os.makedirs(STRATEGY_DIR, exist_ok=True)
@@ -291,6 +362,9 @@ def main() -> None:
         print("Deviație spot față de preț coeziv:", f"{dev_pct_model * 100:.2f}%")
     if model_price_explanation:
         print("Explicație preț coeziv:", model_price_explanation)
+    if state.get("tradingview_anchors"):
+        years = sorted((state["tradingview_anchors"].get("yearly") or {}).keys())
+        print("Ancore TradingView generate:", ", ".join(years))
 
 
 if __name__ == "__main__":
