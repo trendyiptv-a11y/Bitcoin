@@ -39,9 +39,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Update BTC state and UI
+      - name: Update BTC state, TradingView Pine and UI
         run: |
           python coeziv_state_v2.py
+          python generate_tradingview_indicator.py
           python inject_structural_confirmation.py
           python patch_standard_regime_ui.py
           python patch_mecanism_model_price_ui.py
@@ -54,8 +55,9 @@ jobs:
       - name: Auto-commit generated files
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "Update BTC V2 state and UI"
+          commit_message: "Update BTC V2 state, Pine indicator and UI"
           branch: ${{ github.ref_name }}
           file_pattern: >
             btc-swing-strategy/coeziv_state.json
             btc-swing-strategy/mecanism.html
+            Pine/indicator.txt
