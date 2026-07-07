@@ -152,7 +152,7 @@ def _safe_tradingview_anchors(
     anchors = compute_tradingview_yearly_anchors(
         BASE_DIR,
         samples=250,
-        start_year=2020,
+        start_year=2013,
     )
 
     # Override the active year with the exact live monitor snapshot, so Pine
