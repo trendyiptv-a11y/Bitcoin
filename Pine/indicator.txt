@@ -28,7 +28,7 @@ tablePosition = input.string("Top right", "Table position", options=["Top right"
 // CURRENT MONITOR SNAPSHOT - 2026
 //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-monitorSpot = input.float(63113.00, "Official CohesivX monitor spot", step=10, group="Current monitor snapshot")
+monitorSpot = input.float(64099.00, "Official CohesivX monitor spot", step=10, group="Current monitor snapshot")
 currentCentral = input.float(77069.70, "Current cohesive central price", step=10, group="Current monitor snapshot")
 currentP10 = input.float(46098.43, "Current p10 lower band", step=10, group="Current monitor snapshot")
 currentP90 = input.float(237662.04, "Current p90 upper band - hidden by default", step=10, group="Current monitor snapshot")
@@ -45,7 +45,7 @@ currentInefficientMiner = input.float(89439.26, "Current inefficient miner cost"
 //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 c2013 = input.float(0.00299, "Central 2013", step=0.00001, group="Historical central")
-c2014 = input.float(3.50, "Central 2014", step=0.01, group="Historical central")
+c2014 = input.float(3.50089, "Central 2014", step=0.01, group="Historical central")
 c2015 = input.float(356.85, "Central 2015", step=0.1, group="Historical central")
 c2016 = input.float(113.95, "Central 2016", step=0.1, group="Historical central")
 c2017 = input.float(901.47, "Central 2017", step=0.1, group="Historical central")
@@ -60,7 +60,7 @@ c2025 = input.float(119878.69, "Central 2025", step=1, group="Historical central
 c2026 = input.float(77069.70, "Central 2026 - monitor", step=1, group="Historical central")
 
 p10_2013 = input.float(0.00193, "p10 2013", step=0.00001, group="Historical p10")
-p10_2014 = input.float(1.11, "p10 2014", step=0.01, group="Historical p10")
+p10_2014 = input.float(1.11441, "p10 2014", step=0.01, group="Historical p10")
 p10_2015 = input.float(31.24, "p10 2015", step=0.1, group="Historical p10")
 p10_2016 = input.float(18.46, "p10 2016", step=0.1, group="Historical p10")
 p10_2017 = input.float(128.71, "p10 2017", step=0.1, group="Historical p10")
@@ -75,7 +75,7 @@ p10_2025 = input.float(46339.74, "p10 2025", step=1, group="Historical p10")
 p10_2026 = input.float(46098.43, "p10 2026 - monitor", step=1, group="Historical p10")
 
 p90_2013 = input.float(0.01233, "p90 2013", step=0.00001, group="Historical p90 - table / optional")
-p90_2014 = input.float(11250.67, "p90 2014", step=1, group="Historical p90 - table / optional")
+p90_2014 = input.float(11250.67163, "p90 2014", step=1, group="Historical p90 - table / optional")
 p90_2015 = input.float(81218.49, "p90 2015", step=1, group="Historical p90 - table / optional")
 p90_2016 = input.float(122996.12, "p90 2016", step=1, group="Historical p90 - table / optional")
 p90_2017 = input.float(229423.49, "p90 2017", step=1, group="Historical p90 - table / optional")
@@ -90,7 +90,7 @@ p90_2025 = input.float(632370.87, "p90 2025", step=1, group="Historical p90 - ta
 p90_2026 = input.float(237662.04, "p90 2026 - monitor", step=1, group="Historical p90 - table / optional")
 
 m2013 = input.float(0.00578, "Miner 2013", step=0.00001, group="Historical miner cost")
-m2014 = input.float(2.94, "Miner 2014", step=0.01, group="Historical miner cost")
+m2014 = input.float(2.93520, "Miner 2014", step=0.01, group="Historical miner cost")
 m2015 = input.float(83.84, "Miner 2015", step=0.1, group="Historical miner cost")
 m2016 = input.float(38.47, "Miner 2016", step=0.1, group="Historical miner cost")
 m2017 = input.float(246.36, "Miner 2017", step=0.1, group="Historical miner cost")
