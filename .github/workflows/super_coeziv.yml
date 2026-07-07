@@ -39,9 +39,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Update BTC state, TradingView Pine and UI
+      - name: Update BTC state, terminal, TradingView Pine and UI
         run: |
           python coeziv_state_v2.py
+          python generate_terminal_state.py
           python generate_tradingview_indicator.py
           python inject_structural_confirmation.py
           python patch_standard_regime_ui.py
@@ -61,3 +62,4 @@ jobs:
             btc-swing-strategy/coeziv_state.json
             btc-swing-strategy/mecanism.html
             Pine/indicator.txt
+            btc-swing-strategy/cohesivx_terminal_state.json
