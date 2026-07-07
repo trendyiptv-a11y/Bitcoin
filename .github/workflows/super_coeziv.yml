@@ -26,8 +26,8 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Pull latest main
-        run: git pull --rebase origin main
+      - name: Pull latest current branch
+        run: git pull --rebase origin "${GITHUB_REF_NAME}"
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -55,7 +55,7 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "Update BTC V2 state and UI"
-          branch: main
+          branch: ${{ github.ref_name }}
           file_pattern: >
             btc-swing-strategy/coeziv_state.json
             btc-swing-strategy/mecanism.html
