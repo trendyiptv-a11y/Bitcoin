@@ -1,9 +1,10 @@
 //@version=5
-indicator("CohesivX BTC Suite v2.0 - Historical Monitor", overlay=true, max_labels_count=100)
+indicator("CohesivX BTC Suite v2.1 - Historical Monitor", overlay=true, max_labels_count=100)
 
-// CohesivX BTC Suite v2.0
+// CohesivX BTC Suite v2.1
 // Data source: tradingview_anchors.yearly from coeziv_state.json
 // p90 is preserved statistically but hidden on chart by default.
+// Table can be switched between Compact, Full, Minimal and Hidden.
 // Not financial advice.
 
 //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -17,14 +18,17 @@ showHistoricalMiner = input.bool(true, "Show historical miner cost", group="Modu
 showCurrentSnapshot = input.bool(true, "Show current monitor snapshot", group="Modules")
 showCurrentP90 = input.bool(false, "Show current p90 upper band", group="Advanced statistics")
 showCurrentMinerCosts = input.bool(true, "Show current miner costs", group="Modules")
-showTable = input.bool(true, "Show status table", group="Modules")
 showCrossings = input.bool(false, "Show equilibrium crossings", group="Modules")
 showSignals = input.bool(false, "Show extreme signal markers", group="Modules")
+
+tableMode = input.string("Compact", "Table mode", options=["Compact", "Full", "Minimal", "Hidden"], group="Table")
+tablePosition = input.string("Top right", "Table position", options=["Top right", "Top left", "Bottom right", "Bottom left"], group="Table")
 
 //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // CURRENT MONITOR SNAPSHOT - 2026
 //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+monitorSpot = input.float(63113.00, "Official CohesivX monitor spot", step=10, group="Current monitor snapshot")
 currentCentral = input.float(77069.70, "Current cohesive central price", step=10, group="Current monitor snapshot")
 currentP10 = input.float(46098.43, "Current p10 lower band", step=10, group="Current monitor snapshot")
 currentP90 = input.float(237662.04, "Current p90 upper band - hidden by default", step=10, group="Current monitor snapshot")
@@ -107,6 +111,7 @@ m2026 = input.float(56218.96, "Miner 2026 - monitor", step=1, group="Historical 
 normalDeviation = input.float(8.0, "Normal deviation threshold %", step=1.0, group="Deviation thresholds")
 strongDeviation = input.float(18.0, "Strong deviation threshold %", step=1.0, group="Deviation thresholds")
 euphoriaDeviation = input.float(50.0, "Extreme deviation threshold %", step=5.0, group="Deviation thresholds")
+sourceGapWarning = input.float(10.0, "Source gap warning %", step=1.0, group="Deviation thresholds")
 
 //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // TIME ANCHORS
@@ -177,13 +182,18 @@ historicalP10 = f_year_value(p10_2013, p10_2014, p10_2015, p10_2016, p10_2017, p
 historicalP90 = f_year_value(p90_2013, p90_2014, p90_2015, p90_2016, p90_2017, p90_2018, p90_2019, p90_2020, p90_2021, p90_2022, p90_2023, p90_2024, p90_2025, p90_2026)
 minerCost = f_year_value(m2013, m2014, m2015, m2016, m2017, m2018, m2019, m2020, m2021, m2022, m2023, m2024, m2025, m2026)
 
-historicalDeviationPct = cohesive > 0 ? ((price - cohesive) / cohesive) * 100.0 : na
+chartDeviationPct = cohesive > 0 ? ((price - cohesive) / cohesive) * 100.0 : na
 currentDeviationPct = currentCentral > 0 ? ((price - currentCentral) / currentCentral) * 100.0 : na
+monitorDeviationPct = currentCentral > 0 ? ((monitorSpot - currentCentral) / currentCentral) * 100.0 : na
+sourceGapPct = monitorSpot > 0 ? ((price - monitorSpot) / monitorSpot) * 100.0 : na
 
-absHistoricalDeviation = math.abs(historicalDeviationPct)
+absChartDeviation = math.abs(chartDeviationPct)
 absCurrentDeviation = math.abs(currentDeviationPct)
+absMonitorDeviation = math.abs(monitorDeviationPct)
+absSourceGap = math.abs(sourceGapPct)
 
 productionRatioCurrent = currentStandardMiner > 0 ? price / currentStandardMiner : na
+productionRatioMonitor = currentStandardMiner > 0 ? monitorSpot / currentStandardMiner : na
 productionRatioHistorical = minerCost > 0 ? price / minerCost : na
 
 //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -191,9 +201,9 @@ productionRatioHistorical = minerCost > 0 ? price / minerCost : na
 //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 string cycleStatus = "EXTREME DEVIATION"
-if absHistoricalDeviation < normalDeviation
+if absChartDeviation < normalDeviation
     cycleStatus := "NORMAL"
-else if absHistoricalDeviation < strongDeviation
+else if absChartDeviation < strongDeviation
     cycleStatus := "STRONG DEVIATION"
 else
     cycleStatus := "EXTREME DEVIATION"
@@ -211,6 +221,20 @@ else if absCurrentDeviation < strongDeviation
     snapshotStatus := "STRONG DEVIATION"
 else
     snapshotStatus := "EXTREME DEVIATION"
+
+string monitorStatus = "EXTREME DEVIATION"
+if absMonitorDeviation < normalDeviation
+    monitorStatus := "NORMAL"
+else if absMonitorDeviation < strongDeviation
+    monitorStatus := "STRONG DEVIATION"
+else
+    monitorStatus := "EXTREME DEVIATION"
+
+string sourceStatus = "SOURCE OK"
+if absSourceGap >= sourceGapWarning
+    sourceStatus := "SOURCE GAP"
+else
+    sourceStatus := "SOURCE OK"
 
 string minerStatusCurrent = "CAPITULATION"
 if productionRatioCurrent >= 1.50
@@ -238,17 +262,17 @@ minerCostColor = color.rgb(255, 180, 0)
 efficientMinerColor = color.rgb(0, 200, 120)
 inefficientMinerColor = color.rgb(255, 80, 80)
 
-color deviationColor = color.white
-if historicalDeviationPct >= euphoriaDeviation
-    deviationColor := color.rgb(255, 80, 80)
-else if historicalDeviationPct >= strongDeviation
-    deviationColor := color.rgb(255, 180, 0)
-else if historicalDeviationPct <= -euphoriaDeviation
-    deviationColor := color.rgb(0, 180, 255)
-else if historicalDeviationPct <= -strongDeviation
-    deviationColor := color.rgb(80, 180, 255)
+color chartDeviationColor = color.white
+if chartDeviationPct >= euphoriaDeviation
+    chartDeviationColor := color.rgb(255, 80, 80)
+else if chartDeviationPct >= strongDeviation
+    chartDeviationColor := color.rgb(255, 180, 0)
+else if chartDeviationPct <= -euphoriaDeviation
+    chartDeviationColor := color.rgb(0, 180, 255)
+else if chartDeviationPct <= -strongDeviation
+    chartDeviationColor := color.rgb(80, 180, 255)
 else
-    deviationColor := color.rgb(0, 220, 140)
+    chartDeviationColor := color.rgb(0, 220, 140)
 
 color snapshotDeviationColor = color.white
 if currentDeviationPct >= euphoriaDeviation
@@ -262,6 +286,24 @@ else if currentDeviationPct <= -strongDeviation
 else
     snapshotDeviationColor := color.rgb(0, 220, 140)
 
+color monitorDeviationColor = color.white
+if monitorDeviationPct >= euphoriaDeviation
+    monitorDeviationColor := color.rgb(255, 80, 80)
+else if monitorDeviationPct >= strongDeviation
+    monitorDeviationColor := color.rgb(255, 180, 0)
+else if monitorDeviationPct <= -euphoriaDeviation
+    monitorDeviationColor := color.rgb(0, 180, 255)
+else if monitorDeviationPct <= -strongDeviation
+    monitorDeviationColor := color.rgb(80, 180, 255)
+else
+    monitorDeviationColor := color.rgb(0, 220, 140)
+
+color sourceGapColor = color.rgb(0, 220, 140)
+if absSourceGap >= sourceGapWarning
+    sourceGapColor := color.rgb(255, 180, 0)
+if absSourceGap >= sourceGapWarning * 3.0
+    sourceGapColor := color.rgb(255, 80, 80)
+
 color minerStatusColor = color.white
 if productionRatioCurrent >= 1.15
     minerStatusColor := color.rgb(0, 220, 140)
@@ -271,6 +313,10 @@ else if productionRatioCurrent >= 0.85
     minerStatusColor := color.rgb(255, 120, 80)
 else
     minerStatusColor := color.rgb(255, 60, 60)
+
+bgColor = color.rgb(15, 15, 15)
+headColor = color.rgb(25, 25, 25)
+labelColor = color.white
 
 //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // PLOTS
@@ -298,8 +344,8 @@ crossBelowHistorical = ta.crossunder(price, cohesive)
 crossAboveCurrent = ta.crossover(price, currentCentral)
 crossBelowCurrent = ta.crossunder(price, currentCentral)
 
-historicalEuphoria = historicalDeviationPct >= euphoriaDeviation
-historicalCapitulation = historicalDeviationPct <= -euphoriaDeviation
+historicalEuphoria = chartDeviationPct >= euphoriaDeviation
+historicalCapitulation = chartDeviationPct <= -euphoriaDeviation
 enterHistoricalEuphoria = historicalEuphoria and not historicalEuphoria[1]
 enterHistoricalCapitulation = historicalCapitulation and not historicalCapitulation[1]
 
@@ -316,56 +362,77 @@ alertcondition(crossAboveCurrent, "BTC crossed above current central", "BTC cros
 alertcondition(crossBelowCurrent, "BTC crossed below current central", "BTC crossed below current CohesivX monitor central.")
 
 //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// TABLE HELPERS
+//━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+f_pos(_p) =>
+    pos = position.top_right
+    if _p == "Top left"
+        pos := position.top_left
+    else if _p == "Bottom right"
+        pos := position.bottom_right
+    else if _p == "Bottom left"
+        pos := position.bottom_left
+    pos
+
+f_row(_table, _row, _label, _value, _valueColor) =>
+    table.cell(_table, 0, _row, _label, text_color=labelColor, bgcolor=bgColor)
+    table.cell(_table, 1, _row, _value, text_color=_valueColor, bgcolor=bgColor)
+
+f_blank(_table, _row) =>
+    table.cell(_table, 0, _row, "", text_color=color.new(color.white, 100), bgcolor=color.new(color.black, 100))
+    table.cell(_table, 1, _row, "", text_color=color.new(color.white, 100), bgcolor=color.new(color.black, 100))
+
+//━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // TABLE
 //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-var table t = table.new(position.top_right, 2, 16, border_width=1)
+var table t = table.new(f_pos(tablePosition), 2, 18, border_width=1)
 
-if barstate.islast and showTable
-    table.cell(t, 0, 0, "CohesivX BTC", text_color=color.white, bgcolor=color.rgb(25, 25, 25))
-    table.cell(t, 1, 0, "Suite v2.0", text_color=color.white, bgcolor=color.rgb(25, 25, 25))
+if barstate.islast
+    if tableMode == "Hidden"
+        for i = 0 to 17
+            f_blank(t, i)
+    else
+        table.cell(t, 0, 0, "CohesivX BTC", text_color=color.white, bgcolor=headColor)
+        table.cell(t, 1, 0, "Suite v2.1", text_color=color.white, bgcolor=headColor)
 
-    table.cell(t, 0, 1, "Live price", text_color=color.white, bgcolor=color.rgb(15, 15, 15))
-    table.cell(t, 1, 1, str.tostring(math.round(price)), text_color=color.white, bgcolor=color.rgb(15, 15, 15))
+        if tableMode == "Minimal"
+            f_row(t, 1, "Chart close", str.tostring(math.round(price)), color.white)
+            f_row(t, 2, "Monitor spot", str.tostring(math.round(monitorSpot)), monitorDeviationColor)
+            f_row(t, 3, "Model central", str.tostring(math.round(currentCentral)), currentCentralColor)
+            f_row(t, 4, "Monitor dev", str.tostring(monitorDeviationPct, "#.##") + "%", monitorDeviationColor)
+            f_row(t, 5, "Miner status", minerStatusCurrent + " / " + str.tostring(productionRatioCurrent, "#.##") + "x", minerStatusColor)
+            for i = 6 to 17
+                f_blank(t, i)
 
-    table.cell(t, 0, 2, "Hist. central", text_color=color.white, bgcolor=color.rgb(15, 15, 15))
-    table.cell(t, 1, 2, str.tostring(math.round(cohesive)), text_color=historicalCentralColor, bgcolor=color.rgb(15, 15, 15))
+        else if tableMode == "Compact"
+            f_row(t, 1, "Chart close", str.tostring(math.round(price)), color.white)
+            f_row(t, 2, "Monitor spot", str.tostring(math.round(monitorSpot)), monitorDeviationColor)
+            f_row(t, 3, "Source gap", str.tostring(sourceGapPct, "#.##") + "% / " + sourceStatus, sourceGapColor)
+            f_row(t, 4, "Model central", str.tostring(math.round(currentCentral)), currentCentralColor)
+            f_row(t, 5, "Chart dev", str.tostring(currentDeviationPct, "#.##") + "%", snapshotDeviationColor)
+            f_row(t, 6, "Monitor dev", str.tostring(monitorDeviationPct, "#.##") + "%", monitorDeviationColor)
+            f_row(t, 7, "Current p10/p90", str.tostring(math.round(currentP10)) + " / " + str.tostring(math.round(currentP90)), currentCentralColor)
+            f_row(t, 8, "Miner status", minerStatusCurrent + " / " + str.tostring(productionRatioCurrent, "#.##") + "x", minerStatusColor)
+            for i = 9 to 17
+                f_blank(t, i)
 
-    table.cell(t, 0, 3, "Hist. p10", text_color=color.white, bgcolor=color.rgb(15, 15, 15))
-    table.cell(t, 1, 3, str.tostring(math.round(historicalP10)), text_color=historicalP10Color, bgcolor=color.rgb(15, 15, 15))
-
-    table.cell(t, 0, 4, "Hist. p90 stat", text_color=color.white, bgcolor=color.rgb(15, 15, 15))
-    table.cell(t, 1, 4, str.tostring(math.round(historicalP90)), text_color=historicalP90Color, bgcolor=color.rgb(15, 15, 15))
-
-    table.cell(t, 0, 5, "Hist. deviation", text_color=color.white, bgcolor=color.rgb(15, 15, 15))
-    table.cell(t, 1, 5, str.tostring(historicalDeviationPct, "#.##") + "%", text_color=deviationColor, bgcolor=color.rgb(15, 15, 15))
-
-    table.cell(t, 0, 6, "Cycle status", text_color=color.white, bgcolor=color.rgb(15, 15, 15))
-    table.cell(t, 1, 6, cycleStatus, text_color=deviationColor, bgcolor=color.rgb(15, 15, 15))
-
-    table.cell(t, 0, 7, "Cycle position", text_color=color.white, bgcolor=color.rgb(15, 15, 15))
-    table.cell(t, 1, 7, cyclePosition, text_color=color.white, bgcolor=color.rgb(15, 15, 15))
-
-    table.cell(t, 0, 8, "Current central", text_color=color.white, bgcolor=color.rgb(15, 15, 15))
-    table.cell(t, 1, 8, str.tostring(math.round(currentCentral)), text_color=currentCentralColor, bgcolor=color.rgb(15, 15, 15))
-
-    table.cell(t, 0, 9, "Current p10/p90", text_color=color.white, bgcolor=color.rgb(15, 15, 15))
-    table.cell(t, 1, 9, str.tostring(math.round(currentP10)) + " / " + str.tostring(math.round(currentP90)), text_color=currentCentralColor, bgcolor=color.rgb(15, 15, 15))
-
-    table.cell(t, 0, 10, "Current deviation", text_color=color.white, bgcolor=color.rgb(15, 15, 15))
-    table.cell(t, 1, 10, str.tostring(currentDeviationPct, "#.##") + "%", text_color=snapshotDeviationColor, bgcolor=color.rgb(15, 15, 15))
-
-    table.cell(t, 0, 11, "Snapshot status", text_color=color.white, bgcolor=color.rgb(15, 15, 15))
-    table.cell(t, 1, 11, snapshotStatus, text_color=snapshotDeviationColor, bgcolor=color.rgb(15, 15, 15))
-
-    table.cell(t, 0, 12, "Eff. miner", text_color=color.white, bgcolor=color.rgb(15, 15, 15))
-    table.cell(t, 1, 12, str.tostring(math.round(currentEfficientMiner)), text_color=efficientMinerColor, bgcolor=color.rgb(15, 15, 15))
-
-    table.cell(t, 0, 13, "Std. miner", text_color=color.white, bgcolor=color.rgb(15, 15, 15))
-    table.cell(t, 1, 13, str.tostring(math.round(currentStandardMiner)), text_color=minerCostColor, bgcolor=color.rgb(15, 15, 15))
-
-    table.cell(t, 0, 14, "Ineff. miner", text_color=color.white, bgcolor=color.rgb(15, 15, 15))
-    table.cell(t, 1, 14, str.tostring(math.round(currentInefficientMiner)), text_color=inefficientMinerColor, bgcolor=color.rgb(15, 15, 15))
-
-    table.cell(t, 0, 15, "Miner status", text_color=color.white, bgcolor=color.rgb(15, 15, 15))
-    table.cell(t, 1, 15, minerStatusCurrent + " / " + str.tostring(productionRatioCurrent, "#.##") + "x", text_color=minerStatusColor, bgcolor=color.rgb(15, 15, 15))
+        else
+            f_row(t, 1, "Chart close", str.tostring(math.round(price)), color.white)
+            f_row(t, 2, "Monitor spot", str.tostring(math.round(monitorSpot)), monitorDeviationColor)
+            f_row(t, 3, "Source gap", str.tostring(sourceGapPct, "#.##") + "% / " + sourceStatus, sourceGapColor)
+            f_row(t, 4, "Hist. central", str.tostring(math.round(cohesive)), historicalCentralColor)
+            f_row(t, 5, "Hist. p10", str.tostring(math.round(historicalP10)), historicalP10Color)
+            f_row(t, 6, "Hist. p90 stat", str.tostring(math.round(historicalP90)), historicalP90Color)
+            f_row(t, 7, "Hist. deviation", str.tostring(chartDeviationPct, "#.##") + "%", chartDeviationColor)
+            f_row(t, 8, "Cycle status", cycleStatus, chartDeviationColor)
+            f_row(t, 9, "Cycle position", cyclePosition, color.white)
+            f_row(t, 10, "Current central", str.tostring(math.round(currentCentral)), currentCentralColor)
+            f_row(t, 11, "Current p10/p90", str.tostring(math.round(currentP10)) + " / " + str.tostring(math.round(currentP90)), currentCentralColor)
+            f_row(t, 12, "Chart dev vs current", str.tostring(currentDeviationPct, "#.##") + "%", snapshotDeviationColor)
+            f_row(t, 13, "Monitor dev", str.tostring(monitorDeviationPct, "#.##") + "% / " + monitorStatus, monitorDeviationColor)
+            f_row(t, 14, "Eff. miner", str.tostring(math.round(currentEfficientMiner)), efficientMinerColor)
+            f_row(t, 15, "Std. miner", str.tostring(math.round(currentStandardMiner)), minerCostColor)
+            f_row(t, 16, "Ineff. miner", str.tostring(math.round(currentInefficientMiner)), inefficientMinerColor)
+            f_row(t, 17, "Miner status", minerStatusCurrent + " / " + str.tostring(productionRatioCurrent, "#.##") + "x", minerStatusColor)
