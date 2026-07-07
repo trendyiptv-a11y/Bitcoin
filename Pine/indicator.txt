@@ -1,7 +1,7 @@
 //@version=5
-indicator("CohesivX BTC Suite v2.1 - Historical Monitor", overlay=true, max_labels_count=100)
+indicator("CohesivX BTC Terminal v2.2 - Historical Monitor", overlay=true, max_labels_count=100)
 
-// CohesivX BTC Suite v2.1
+// CohesivX BTC Terminal v2.2
 // Data source: tradingview_anchors.yearly from coeziv_state.json
 // p90 is preserved statistically but hidden on chart by default.
 // Table can be switched between Compact, Full, Minimal and Hidden.
@@ -28,7 +28,7 @@ tablePosition = input.string("Top right", "Table position", options=["Top right"
 // CURRENT MONITOR SNAPSHOT - 2026
 //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-monitorSpot = input.float(64099.00, "Official CohesivX monitor spot", step=10, group="Current monitor snapshot")
+monitorSpot = input.float(63985.00, "Official CohesivX monitor spot", step=10, group="Current monitor snapshot")
 currentCentral = input.float(77069.70, "Current cohesive central price", step=10, group="Current monitor snapshot")
 currentP10 = input.float(46098.43, "Current p10 lower band", step=10, group="Current monitor snapshot")
 currentP90 = input.float(237662.04, "Current p90 upper band - hidden by default", step=10, group="Current monitor snapshot")
@@ -36,6 +36,18 @@ currentP90 = input.float(237662.04, "Current p90 upper band - hidden by default"
 currentEfficientMiner = input.float(30664.89, "Current efficient miner cost", step=10, group="Current monitor snapshot")
 currentStandardMiner = input.float(56218.96, "Current standard miner cost", step=10, group="Current monitor snapshot")
 currentInefficientMiner = input.float(89439.26, "Current inefficient miner cost", step=10, group="Current monitor snapshot")
+
+
+//━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// COHESIVX TERMINAL SCORES
+// Updated automatically from coeziv_state.json / terminal_state
+//━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+terminalMarketState = input.string("STRUCTURAL_ACCUMULATION", "Market state", group="Terminal scores")
+terminalStructuralScore = input.float(66.04, "Structural Score", step=1.0, group="Terminal scores")
+terminalConfidenceScore = input.float(75.26, "Confidence Score", step=1.0, group="Terminal scores")
+terminalFragilityIndex = input.float(39.95, "Fragility Index", step=1.0, group="Terminal scores")
+terminalMinerHealth = input.float(60.00, "Miner Health", step=1.0, group="Terminal scores")
 
 //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // HISTORICAL YEARLY ANCHORS FROM MONITOR EXPORT
@@ -318,6 +330,12 @@ bgColor = color.rgb(15, 15, 15)
 headColor = color.rgb(25, 25, 25)
 labelColor = color.white
 
+terminalScoreColor = terminalStructuralScore >= 75 ? color.rgb(0, 220, 140) : terminalStructuralScore >= 55 ? color.rgb(255, 180, 0) : color.rgb(255, 80, 80)
+confidenceScoreColor = terminalConfidenceScore >= 75 ? color.rgb(0, 220, 140) : terminalConfidenceScore >= 55 ? color.rgb(255, 180, 0) : color.rgb(255, 80, 80)
+fragilityScoreColor = terminalFragilityIndex <= 35 ? color.rgb(0, 220, 140) : terminalFragilityIndex <= 65 ? color.rgb(255, 180, 0) : color.rgb(255, 80, 80)
+minerHealthScoreColor = terminalMinerHealth >= 75 ? color.rgb(0, 220, 140) : terminalMinerHealth >= 55 ? color.rgb(255, 180, 0) : color.rgb(255, 80, 80)
+
+
 //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // PLOTS
 //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -387,35 +405,41 @@ f_blank(_table, _row) =>
 // TABLE
 //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-var table t = table.new(f_pos(tablePosition), 2, 18, border_width=1)
+var table t = table.new(f_pos(tablePosition), 2, 22, border_width=1)
 
 if barstate.islast
     if tableMode == "Hidden"
-        for i = 0 to 17
+        for i = 0 to 21
             f_blank(t, i)
     else
         table.cell(t, 0, 0, "CohesivX BTC", text_color=color.white, bgcolor=headColor)
-        table.cell(t, 1, 0, "Suite v2.1", text_color=color.white, bgcolor=headColor)
+        table.cell(t, 1, 0, "Terminal v2.2", text_color=color.white, bgcolor=headColor)
 
         if tableMode == "Minimal"
-            f_row(t, 1, "Chart close", str.tostring(math.round(price)), color.white)
-            f_row(t, 2, "Monitor spot", str.tostring(math.round(monitorSpot)), monitorDeviationColor)
-            f_row(t, 3, "Model central", str.tostring(math.round(currentCentral)), currentCentralColor)
-            f_row(t, 4, "Monitor dev", str.tostring(monitorDeviationPct, "#.##") + "%", monitorDeviationColor)
-            f_row(t, 5, "Miner status", minerStatusCurrent + " / " + str.tostring(productionRatioCurrent, "#.##") + "x", minerStatusColor)
-            for i = 6 to 17
+            f_row(t, 1, "Market State", terminalMarketState, terminalScoreColor)
+            f_row(t, 2, "Structural", str.tostring(terminalStructuralScore, "#.##") + "/100", terminalScoreColor)
+            f_row(t, 3, "Confidence", str.tostring(terminalConfidenceScore, "#.##") + "/100", confidenceScoreColor)
+            f_row(t, 4, "Fragility", str.tostring(terminalFragilityIndex, "#.##") + "/100", fragilityScoreColor)
+            f_row(t, 5, "Monitor spot", str.tostring(math.round(monitorSpot)), monitorDeviationColor)
+            f_row(t, 6, "Model central", str.tostring(math.round(currentCentral)), currentCentralColor)
+            f_row(t, 7, "Miner health", str.tostring(terminalMinerHealth, "#.##") + "/100", minerHealthScoreColor)
+            for i = 8 to 21
                 f_blank(t, i)
 
         else if tableMode == "Compact"
-            f_row(t, 1, "Chart close", str.tostring(math.round(price)), color.white)
-            f_row(t, 2, "Monitor spot", str.tostring(math.round(monitorSpot)), monitorDeviationColor)
-            f_row(t, 3, "Source gap", str.tostring(sourceGapPct, "#.##") + "% / " + sourceStatus, sourceGapColor)
-            f_row(t, 4, "Model central", str.tostring(math.round(currentCentral)), currentCentralColor)
-            f_row(t, 5, "Chart dev", str.tostring(currentDeviationPct, "#.##") + "%", snapshotDeviationColor)
-            f_row(t, 6, "Monitor dev", str.tostring(monitorDeviationPct, "#.##") + "%", monitorDeviationColor)
-            f_row(t, 7, "Current p10/p90", str.tostring(math.round(currentP10)) + " / " + str.tostring(math.round(currentP90)), currentCentralColor)
-            f_row(t, 8, "Miner status", minerStatusCurrent + " / " + str.tostring(productionRatioCurrent, "#.##") + "x", minerStatusColor)
-            for i = 9 to 17
+            f_row(t, 1, "Market State", terminalMarketState, terminalScoreColor)
+            f_row(t, 2, "Structural", str.tostring(terminalStructuralScore, "#.##") + "/100", terminalScoreColor)
+            f_row(t, 3, "Confidence", str.tostring(terminalConfidenceScore, "#.##") + "/100", confidenceScoreColor)
+            f_row(t, 4, "Fragility", str.tostring(terminalFragilityIndex, "#.##") + "/100", fragilityScoreColor)
+            f_row(t, 5, "Chart close", str.tostring(math.round(price)), color.white)
+            f_row(t, 6, "Monitor spot", str.tostring(math.round(monitorSpot)), monitorDeviationColor)
+            f_row(t, 7, "Source gap", str.tostring(sourceGapPct, "#.##") + "% / " + sourceStatus, sourceGapColor)
+            f_row(t, 8, "Model central", str.tostring(math.round(currentCentral)), currentCentralColor)
+            f_row(t, 9, "Chart dev", str.tostring(currentDeviationPct, "#.##") + "%", snapshotDeviationColor)
+            f_row(t, 10, "Monitor dev", str.tostring(monitorDeviationPct, "#.##") + "%", monitorDeviationColor)
+            f_row(t, 11, "p10/p90", str.tostring(math.round(currentP10)) + " / " + str.tostring(math.round(currentP90)), currentCentralColor)
+            f_row(t, 12, "Miner health", str.tostring(terminalMinerHealth, "#.##") + "/100", minerHealthScoreColor)
+            for i = 13 to 21
                 f_blank(t, i)
 
         else
