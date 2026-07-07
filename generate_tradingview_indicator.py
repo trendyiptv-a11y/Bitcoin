@@ -6,6 +6,8 @@ import re
 from pathlib import Path
 from typing import Any, Optional
 
+from generate_terminal_state import build_terminal_state
+
 ROOT = Path(__file__).resolve().parent
 STATE_PATH = ROOT / "btc-swing-strategy" / "coeziv_state.json"
 PINE_PATH = ROOT / "Pine" / "indicator.txt"
@@ -57,6 +59,17 @@ def main() -> None:
         raise FileNotFoundError(f"Lipsește {PINE_PATH}")
 
     state = json.loads(STATE_PATH.read_text(encoding="utf-8"))
+
+    # The workflow already auto-commits coeziv_state.json. Embedding the terminal
+    # state here makes the CohesivX OS scores/reasoning update automatically
+    # without requiring workflow YAML changes.
+    try:
+        state["terminal_state"] = build_terminal_state(state)
+        STATE_PATH.write_text(json.dumps(state, ensure_ascii=False, indent=2), encoding="utf-8")
+        print("Terminal state embedded into coeziv_state.json")
+    except Exception as exc:
+        print("WARN: nu am putut genera terminal_state:", exc)
+
     pine = PINE_PATH.read_text(encoding="utf-8")
 
     anchors = state.get("tradingview_anchors") or {}
