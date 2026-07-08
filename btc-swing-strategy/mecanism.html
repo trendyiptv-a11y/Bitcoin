@@ -2651,9 +2651,9 @@ body.light-mode .card:first-of-type {
 
       // clasificare deviație
       let devZone = "normală";
-      if (devAbs < 0.25) devZone = "normală";
-      else if (devAbs < 1) devZone = "controlată";
-      else if (devAbs < 3) devZone = "tensionată";
+      if (devAbs < 20) devZone = "normală";
+      else if (devAbs < 40) devZone = "controlată";
+      else if (devAbs < 65) devZone = "tensionată";
       else devZone = "extremă";
 
       let text;
@@ -3211,16 +3211,16 @@ updateFGCard(fgBlock);
           let zoneLabel;
           let zoneClass;
 
-          if (absPct < 0.25) {
+          if (absPct < 20) {
             magnitudeHint = "Diferență foarte mică (zgomot normal de piață).";
             zoneLabel = "Normală (zgomot de piață)";
             zoneClass = "dev-normal";
-          } else if (absPct < 1) {
+          } else if (absPct < 40) {
             magnitudeHint =
               "Mișcare mică față de mecanism; reperul structural rămâne principal.";
             zoneLabel = "Controlată";
             zoneClass = "dev-mild";
-          } else if (absPct < 3) {
+          } else if (absPct < 65) {
             magnitudeHint =
               "Mișcare relevantă față de mecanism; urmărește contextul și nivelurile de risc.";
             zoneLabel = "Tensionată";
