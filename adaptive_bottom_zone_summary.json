@@ -1,0 +1,48 @@
+{
+  "project": "Laborator Prag Adaptiv BTC",
+  "script": "adaptive_bottom_zone_lab_2018.py",
+  "mode": "LAB_ONLY_NO_PRODUCTION_CHANGES",
+  "purpose": "estimate possible BTC bottom zone from closed modern cycles",
+  "source_file": "data/btc_daily.csv",
+  "start_date": "2018-01-01",
+  "rows_2018_plus": 3110,
+  "date_min": "2018-01-01",
+  "date_max": "2026-07-07",
+  "calibration": {
+    "source": "calibrated_from_closed_bear_cycles_2018_plus",
+    "scored_cycles_used": [
+      "2018_bear_low",
+      "2021_2022_bear_low"
+    ],
+    "diagnostic_cycles_excluded_from_bottom_calibration": [
+      "2020_liquidity_low"
+    ],
+    "bottom_low_ratio": 0.18823978150859236,
+    "bottom_mid_ratio": 0.21077711244520396,
+    "bottom_high_ratio": 0.23331444338151455,
+    "bottom_low_pct": 18.823978150859236,
+    "bottom_mid_pct": 21.077711244520396,
+    "bottom_high_pct": 23.331444338151456,
+    "bear_warning_ratio": 0.747,
+    "bear_warning_pct": 74.7
+  },
+  "radar_candidate": {
+    "cycle_label": "2024_2026_open_cycle_provisional",
+    "ath_date": "2025-10-06",
+    "ath_price": 124766.5,
+    "bear_warning_threshold": 93200.5755,
+    "bottom_risk_zone_low": 23486.02018425227,
+    "bottom_risk_zone_mid": 26297.91821468954,
+    "bottom_risk_zone_high": 29109.82798347667,
+    "hard_capitulation_below": 23486.02018425227,
+    "open_cycle_scored": false,
+    "integration_allowed": false,
+    "note": "candidate values only; radar/main trading logic not modified"
+  },
+  "decision": {
+    "main_change_allowed": false,
+    "radar_change_allowed": false,
+    "production_change_allowed": false,
+    "concept": "approved: radar should show possible minimum zone, not use 74.7% ATH as bottom"
+  }
+}
