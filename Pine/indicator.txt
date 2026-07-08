@@ -28,7 +28,7 @@ tablePosition = input.string("Top right", "Table position", options=["Top right"
 // CURRENT MONITOR SNAPSHOT - 2026
 //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-monitorSpot = input.float(63985.00, "Official CohesivX monitor spot", step=10, group="Current monitor snapshot")
+monitorSpot = input.float(62494.00, "Official CohesivX monitor spot", step=10, group="Current monitor snapshot")
 currentCentral = input.float(77069.70, "Current cohesive central price", step=10, group="Current monitor snapshot")
 currentP10 = input.float(46098.43, "Current p10 lower band", step=10, group="Current monitor snapshot")
 currentP90 = input.float(237662.04, "Current p90 upper band - hidden by default", step=10, group="Current monitor snapshot")
@@ -44,9 +44,9 @@ currentInefficientMiner = input.float(89439.26, "Current inefficient miner cost"
 //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 terminalMarketState = input.string("STRUCTURAL_ACCUMULATION", "Market state", group="Terminal scores")
-terminalStructuralScore = input.float(66.04, "Structural Score", step=1.0, group="Terminal scores")
-terminalConfidenceScore = input.float(75.26, "Confidence Score", step=1.0, group="Terminal scores")
-terminalFragilityIndex = input.float(39.95, "Fragility Index", step=1.0, group="Terminal scores")
+terminalStructuralScore = input.float(62.18, "Structural Score", step=1.0, group="Terminal scores")
+terminalConfidenceScore = input.float(74.29, "Confidence Score", step=1.0, group="Terminal scores")
+terminalFragilityIndex = input.float(42.90, "Fragility Index", step=1.0, group="Terminal scores")
 terminalMinerHealth = input.float(60.00, "Miner Health", step=1.0, group="Terminal scores")
 
 //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
