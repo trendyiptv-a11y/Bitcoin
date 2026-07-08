@@ -168,7 +168,7 @@
     set("mini-radar-title", tone.title);
     set("mini-radar-price", usdK(live || lastState.price_usd));
     set("mini-radar-day", `⏳ ${tr("Ziua", "Day")} ${(lastRisk && lastRisk.consecutive_degradation_days) ?? "—"} / ~${(lastRisk && lastRisk.median_days_to_confirmation) ?? "—"}`);
-    set("mini-radar-threshold", `❌ ${tr("Prag", "Threshold")} ${usdK(threshold)}`);
+    set("mini-radar-threshold", `⚙️ ${tr("Prag intern", "Internal threshold")} ${usdK(threshold)}`);
     card.querySelectorAll(".radar-pulse").forEach(el => el.setAttribute("stroke", tone.color));
     const dot = card.querySelector(".radar-dot");
     if (dot) dot.setAttribute("fill", tone.color);
@@ -201,3 +201,288 @@
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
   else boot();
 })();
+
+/* COEZIV_STRUCTURAL_MAP_START */
+/* CohesivX BTC — hartă degradare structurală, display-only */
+(function () {
+  "use strict";
+
+  const BOX_ID = "coeziv-structural-map";
+  const LANG_KEY = "coeziv_btc_lang";
+  let timer = null;
+
+  function by(id) { return document.getElementById(id); }
+  function lang() { return localStorage.getItem(LANG_KEY) === "en" ? "en" : "ro"; }
+  function tr(ro, en) { return lang() === "en" ? en : ro; }
+
+  function usdK(v) {
+    const n = Number(v);
+    if (!Number.isFinite(n)) return "—";
+    return (n / 1000).toFixed(1).replace(".0", "") + "K USD";
+  }
+
+  function parseUsdText(text) {
+    const raw = String(text || "").replace(/[^0-9.,-]/g, "").replace(/,/g, "");
+    const n = Number(raw);
+    return Number.isFinite(n) && n > 0 ? n : null;
+  }
+
+  function livePrice() {
+    const el = by("live-price");
+    return el ? parseUsdText(el.textContent) : null;
+  }
+
+  async function jsonOrNull(path) {
+    try {
+      const r = await fetch(path + "?t=" + Date.now(), { cache: "no-store" });
+      if (!r.ok) return null;
+      return await r.json();
+    } catch (_) {
+      return null;
+    }
+  }
+
+  function deriveStart(state) {
+    const hist = Array.isArray(state && state.signal_history) ? state.signal_history : [];
+    const firstShort = hist.find(x => x.signal === "short");
+    return firstShort ? Number(firstShort.model_price_usd) : Number((state && (state.model_price_usd || state.price_usd)) || 0);
+  }
+
+  function installStyle() {
+    if (by("coeziv-structural-map-style")) return;
+
+    const st = document.createElement("style");
+    st.id = "coeziv-structural-map-style";
+    st.textContent = `
+      #${BOX_ID}{
+        margin:10px auto 2px;
+        padding:9px 9px 10px;
+        border-radius:14px;
+        border:1px solid rgba(148,163,184,.18);
+        background:linear-gradient(180deg,rgba(2,6,23,.34),rgba(2,6,23,.18));
+        text-align:left;
+      }
+      #${BOX_ID} .sd-head{
+        display:flex;
+        justify-content:space-between;
+        gap:8px;
+        align-items:center;
+        margin-bottom:7px;
+        font-size:10.5px;
+        font-weight:900;
+        color:#e5e7eb;
+      }
+      #${BOX_ID} .sd-mode{
+        color:#94a3b8;
+        font-size:9.5px;
+        font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+        white-space:nowrap;
+      }
+      #${BOX_ID} .sd-row{
+        display:grid;
+        grid-template-columns:1fr auto;
+        gap:8px;
+        align-items:center;
+        padding:6px 7px;
+        border-radius:10px;
+        border:1px solid rgba(148,163,184,.13);
+        background:rgba(15,23,42,.20);
+        margin-top:5px;
+      }
+      #${BOX_ID} .sd-row.active{
+        border-color:rgba(255,180,84,.55);
+        box-shadow:0 0 0 1px rgba(255,180,84,.12),0 0 20px rgba(255,180,84,.12);
+        background:rgba(255,180,84,.08);
+      }
+      #${BOX_ID} .sd-name{
+        color:#cbd5e1;
+        font-size:10.2px;
+        font-weight:800;
+        line-height:1.15;
+      }
+      #${BOX_ID} .sd-value{
+        color:#e5e7eb;
+        font-size:10.2px;
+        font-weight:900;
+        font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+        white-space:nowrap;
+      }
+      #${BOX_ID} .sd-note{
+        margin-top:7px;
+        color:#94a3b8;
+        font-size:9.5px;
+        line-height:1.25;
+        text-align:center;
+      }
+      body.light-mode #${BOX_ID}{
+        background:linear-gradient(180deg,rgba(255,255,255,.88),rgba(248,250,252,.76));
+        border-color:rgba(15,23,42,.12);
+      }
+      body.light-mode #${BOX_ID} .sd-head{color:#0f172a}
+      body.light-mode #${BOX_ID} .sd-name{color:#334155}
+      body.light-mode #${BOX_ID} .sd-value{color:#0f172a}
+    `;
+    document.head.appendChild(st);
+  }
+
+  function ensureBox() {
+    const radar = by("coeziv-mini-radar");
+    if (!radar) return null;
+
+    let box = by(BOX_ID);
+    if (box) return box;
+
+    box = document.createElement("div");
+    box.id = BOX_ID;
+
+    const badges = radar.querySelector(".radar-badges");
+    if (badges) badges.insertAdjacentElement("afterend", box);
+    else radar.appendChild(box);
+
+    return box;
+  }
+
+  function row(key, name, value, active) {
+    return `
+      <div class="sd-row ${active === key ? "active" : ""}">
+        <div class="sd-name">${name}</div>
+        <div class="sd-value">${value}</div>
+      </div>
+    `;
+  }
+
+  function activeZone(price, z) {
+    if (!Number.isFinite(price)) return "";
+
+    if (price >= z.ath) return "ath";
+    if (price >= z.bear) return "fragility";
+    if (Number.isFinite(z.internal) && price >= z.internal) return "internal";
+    if (price >= z.bottomHigh) return "deep";
+    if (price >= z.bottomLow) return "lower";
+    return "rupture";
+  }
+
+  function render(summary, state, risk) {
+    installStyle();
+
+    const box = ensureBox();
+    if (!box) return;
+
+    const c = summary && summary.radar_candidate;
+
+    if (!c) {
+      box.innerHTML = `
+        <div class="sd-head">
+          <span>${tr("Hartă degradare structurală BTC", "BTC structural degradation map")}</span>
+          <span class="sd-mode">display-only</span>
+        </div>
+        <div class="sd-note">
+          ${tr("Lipsește adaptive_bottom_zone_summary.json.", "adaptive_bottom_zone_summary.json is missing.")}
+        </div>
+      `;
+      return;
+    }
+
+    const ath = Number(c.ath_price);
+    const bear = Number(c.bear_warning_threshold);
+    const bottomLow = Number(c.bottom_risk_zone_low);
+    const bottomMid = Number(c.bottom_risk_zone_mid);
+    const bottomHigh = Number(c.bottom_risk_zone_high);
+    const hard = Number(c.hard_capitulation_below);
+
+    let internal = null;
+    const start = deriveStart(state);
+    const dd = Number(risk && risk.major_drawdown_threshold);
+
+    if (Number.isFinite(start) && start > 0 && Number.isFinite(dd)) {
+      internal = start * (1 + dd);
+    }
+
+    const price = livePrice() || Number(state && state.price_usd);
+    const active = activeZone(price, { ath, bear, internal, bottomHigh, bottomLow });
+
+    const internalRow = Number.isFinite(internal)
+      ? row(
+          "internal",
+          tr("Prag intern mecanic", "Internal mechanical threshold"),
+          usdK(internal),
+          active
+        )
+      : "";
+
+    box.innerHTML = `
+      <div class="sd-head">
+        <span>${tr("Hartă degradare structurală BTC", "BTC structural degradation map")}</span>
+        <span class="sd-mode">display-only</span>
+      </div>
+
+      ${row(
+        "ath",
+        tr("ATH ciclu / ancoră superioară", "Cycle ATH / upper anchor"),
+        usdK(ath),
+        active
+      )}
+
+      ${row(
+        "fragility",
+        tr("Ruptură de fragilitate", "Fragility rupture"),
+        usdK(bear),
+        active
+      )}
+
+      ${internalRow}
+
+      ${row(
+        "deep",
+        tr("Degradare profundă", "Deep structural degradation"),
+        `${usdK(bottomHigh)} → ${Number.isFinite(internal) ? usdK(internal) : usdK(bear)}`,
+        active
+      )}
+
+      ${row(
+        "lower",
+        tr("Zonă de prag inferior", "Lower threshold zone"),
+        `${usdK(bottomLow)} – ${usdK(bottomHigh)}`,
+        active
+      )}
+
+      ${row(
+        "rupture",
+        tr("Rupere sub nucleu", "Core rupture below"),
+        usdK(hard),
+        active
+      )}
+
+      <div class="sd-note">
+        ${tr(
+          "Prag inferior în formare · minim neconfirmat · nu modifică tradingul.",
+          "Lower threshold forming · minimum unconfirmed · trading unchanged."
+        )}
+        ${Number.isFinite(bottomMid) ? " · " + tr("Mijloc", "Mid") + ": " + usdK(bottomMid) : ""}
+      </div>
+    `;
+  }
+
+  async function load() {
+    const [summary, state, risk] = await Promise.all([
+      jsonOrNull("adaptive_bottom_zone_summary.json"),
+      jsonOrNull("coeziv_state.json"),
+      jsonOrNull("risk_window.json")
+    ]);
+
+    render(summary, state, risk);
+  }
+
+  function boot() {
+    load();
+    clearInterval(timer);
+    timer = setInterval(load, 30 * 1000);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", boot);
+  } else {
+    boot();
+  }
+})();
+/* COEZIV_STRUCTURAL_MAP_END */
