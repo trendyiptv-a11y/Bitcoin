@@ -13,7 +13,13 @@ import requests
 
 BLOCKCHAIN_HASHRATE_URL = "https://api.blockchain.info/charts/hash-rate?timespan=all&format=json"
 ELECTRICITY_USD_PER_KWH_BASE = 0.05
-PRODUCTION_MARKUP = 1.25
+# NOTA: markup-ul a fost scos (era 1.25x) ca sa fie consistent cu
+# btc_production_auto.py, care calculeaza current_production_cost
+# doar din costul electric pur, fara markup. Multiplicatorul istoric
+# (historical_multiplier = close / prod_cost_usd) trebuie calculat pe
+# aceeasi baza ca ancora "curenta", altfel model_price e sistematic
+# deplasat (~25-30% observat empiric inainte de fix).
+PRODUCTION_MARKUP = 1.0
 DEFAULT_SAMPLES = 250
 HTTP_TIMEOUT = 90
 
@@ -58,7 +64,11 @@ def _efficiency_j_per_th(dt: pd.Timestamp) -> float:
         return 33.0
     if d < datetime(2025, 1, 1):
         return 28.2
-    return 26.0
+    # Aliniat cu profilul "average" din btc_production_auto.py (22.0 J/TH),
+    # folosit pentru current_production_cost. Anterior era 26.0, ceea ce
+    # crea o mica inconsistenta (~18%) intre costul "curent" (anchor) si
+    # costurile istorice folosite pentru multiplicator.
+    return 22.0
 
 
 def _estimate_cost_usd_per_btc_from_difficulty(
