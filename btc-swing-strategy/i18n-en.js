@@ -6,6 +6,8 @@
   const SCALE_KEY = "coeziv_btc_scale";
   const SCALE_STEPS = [1, 1.15, 1.30];
   const USD = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
+  let I18N_BUSY = false;
+  let I18N_TIMER = null;
 
   const L = {
     ro: {
@@ -60,44 +62,90 @@
   function regimeChip(full,code){ const x=`${full||""} ${code||""}`.toLowerCase(); if(x.includes("range")&&x.includes("bias_up"))return"RANGE+"; if(x.includes("range")&&x.includes("bias_down"))return"RANGE−"; if(x.includes("range"))return"RANGE"; if(x.includes("up_trend")||x.includes("ascendent"))return"TREND+"; if(x.includes("down_trend")||x.includes("descendent"))return"TREND−"; if(x.includes("transition")||x.includes("tranzi"))return"TRANZ"; if(x.includes("neutral")||x.includes("neutru"))return"NEUTRU"; return x.includes("n/a")?"N/A":"REGIM"; }
 
   function renderEnergy(){
-    // IMPORTANT: mecanism.html owns the dynamic energy card.
-    // This i18n layer must not rebuild the old static card, because that caused
-    // “Miner mediu / Miner scump” to overwrite the new live-status card.
     if (typeof window.COHESIVX_RENDER_DYNAMIC_ENERGY_CARD === "function") {
       window.COHESIVX_RENDER_DYNAMIC_ENERGY_CARD();
     }
   }
 
+  function translateLooseEnglishText(){
+    if (!en()) return;
+    const selector = '#live-delta,#deviation-status,[id*="deviation"],[class*="deviation"]';
+    document.querySelectorAll(selector).forEach(el => {
+      if (!el || el.childElementCount > 0) return;
+      let x = el.textContent || "";
+      const original = x;
+      x = x
+        .replace(/sub față de reperul modelului/gi, "below the model reference")
+        .replace(/peste față de reperul modelului/gi, "above the model reference")
+        .replace(/below versus the model reference/gi, "below the model reference")
+        .replace(/above versus the model reference/gi, "above the model reference")
+        .replace(/sub versus the model reference/gi, "below the model reference")
+        .replace(/Mișcare puternică\s*[—-]\s*verifică lichiditatea/gi, "Strong movement — check liquidity")
+        .replace(/Mișcare puternică; verifică contextul și lichiditatea\.?/gi, "Strong movement; check context and liquidity.")
+        .replace(/verifică contextul și lichiditatea/gi, "check context and liquidity")
+        .replace(/verifică lichiditatea/gi, "check liquidity")
+        .replace(/Normală/gi, "Normal")
+        .replace(/Puternică/gi, "Strong")
+        .replace(/Extremă/gi, "Extreme");
+      if (x !== original) el.textContent = x;
+    });
+  }
+
   function translateLiveText(){
-    const live = by("live-delta"), dev = by("deviation-status");
-    if (live && en()) {
-      live.textContent = live.textContent
-        .replace("Prețul live este", "The live price is")
-        .replace("peste prețul mecanismului", "above the mechanism price")
-        .replace("sub prețul mecanismului", "below the mechanism price")
-        .replace("Diferență foarte mică (zgomot normal de piață).", "Very small difference (normal market noise).")
-        .replace("Diferență foarte mică; poate fi zgomot normal de piață.", "Very small difference; this may be normal market noise.")
-        .replace("Mișcare mică față de mecanism; reperul structural rămâne principal.", "Small movement versus the mechanism; the structural reference remains primary.")
-        .replace("Mișcare relevantă față de mecanism; urmărește contextul și nivelurile de risc.", "Relevant movement versus the mechanism; watch context and risk levels.")
-        .replace("Mișcare relevantă față de reper; merită urmărit contextul.", "Relevant movement versus the reference; context should be watched.")
-        .replace("Mișcare puternică; verifică contextul și lichiditatea.", "Strong movement; check context and liquidity.")
-        .replace("Mișcare puternică față de reper; verifică regimul și riscul.", "Strong movement versus the reference; check regime and risk.")
-        .replace("Prețul live este egal cu prețul analizat de mecanism.", "The live price is equal to the mechanism price.");
+    if (I18N_BUSY) return;
+    I18N_BUSY = true;
+    try {
+      const live = by("live-delta"), dev = by("deviation-status");
+      if (live && en()) {
+        live.textContent = live.textContent
+          .replace("Prețul live este", "The live price is")
+          .replace("peste prețul mecanismului", "above the mechanism price")
+          .replace("sub prețul mecanismului", "below the mechanism price")
+          .replace("Diferență foarte mică (zgomot normal de piață).", "Very small difference (normal market noise).")
+          .replace("Diferență foarte mică; poate fi zgomot normal de piață.", "Very small difference; this may be normal market noise.")
+          .replace("Mișcare mică față de mecanism; reperul structural rămâne principal.", "Small movement versus the mechanism; the structural reference remains primary.")
+          .replace("Mișcare relevantă față de mecanism; urmărește contextul și nivelurile de risc.", "Relevant movement versus the mechanism; watch context and risk levels.")
+          .replace("Mișcare relevantă față de reper; merită urmărit contextul.", "Relevant movement versus the reference; context should be watched.")
+          .replace("Mișcare puternică; verifică contextul și lichiditatea.", "Strong movement; check context and liquidity.")
+          .replace("Mișcare puternică față de reper; verifică regimul și riscul.", "Strong movement versus the reference; check regime and risk.")
+          .replace("Prețul live este egal cu prețul analizat de mecanism.", "The live price is equal to the mechanism price.");
+      }
+      if (dev && en()) {
+        dev.textContent = dev.textContent
+          .replace("Status deviație:", "Deviation status:")
+          .replace("Normală", "Normal")
+          .replace("Controlată", "Controlled")
+          .replace("Tensionată", "Tense")
+          .replace("Extremă", "Extreme")
+          .replace("mișcare de zgomot față de mecanism", "noise-level movement versus the mechanism")
+          .replace("diferență mică față de reper", "small difference from the reference")
+          .replace("prețul se îndepărtează vizibil de mecanism", "price is visibly moving away from the mechanism")
+          .replace("prețul este mult decuplat de reperul coeziv", "price is strongly decoupled from the cohesive reference")
+          .replace("fără abatere față de model", "no deviation from the model")
+          .replace("așteptăm un snapshot al modelului", "waiting for a model snapshot");
+      }
+      translateLooseEnglishText();
+    } finally {
+      I18N_BUSY = false;
     }
-    if (dev && en()) {
-      dev.textContent = dev.textContent
-        .replace("Status deviație:", "Deviation status:")
-        .replace("Normală", "Normal")
-        .replace("Controlată", "Controlled")
-        .replace("Tensionată", "Tense")
-        .replace("Extremă", "Extreme")
-        .replace("mișcare de zgomot față de mecanism", "noise-level movement versus the mechanism")
-        .replace("diferență mică față de reper", "small difference from the reference")
-        .replace("prețul se îndepărtează vizibil de mecanism", "price is visibly moving away from the mechanism")
-        .replace("prețul este mult decuplat de reperul coeziv", "price is strongly decoupled from the cohesive reference")
-        .replace("fără abatere față de model", "no deviation from the model")
-        .replace("așteptăm un snapshot al modelului", "waiting for a model snapshot");
-    }
+  }
+
+  function scheduleTranslateLiveText(){
+    if (!en()) return;
+    clearTimeout(I18N_TIMER);
+    I18N_TIMER = setTimeout(translateLiveText, 0);
+  }
+
+  function watchLiveTranslation(){
+    if (window.__cohesivx_live_i18n_observer) return;
+    const root = document.querySelector(".card:first-of-type") || document.body;
+    if (!root || !window.MutationObserver) return;
+    const obs = new MutationObserver(() => {
+      if (!en() || I18N_BUSY) return;
+      scheduleTranslateLiveText();
+    });
+    obs.observe(root, { childList: true, subtree: true, characterData: true });
+    window.__cohesivx_live_i18n_observer = obs;
   }
 
   function flowText(bias,str){ const s=str==="slab"?"weak":str==="puternică"||str==="puternic"?"strong":str||""; if(en()){ if(bias==="pozitiv")return`Market flow: tilted toward buying${s?` (${s})`:""}.`; if(bias==="negativ")return`Market flow: tilted toward selling${s?` (${s})`:""}.`; if(bias==="neutru")return`Market flow: relatively balanced between buyers and sellers${s?` (${s})`:""}.`; return"Market flow: not available yet."; } let r="Flux de piață: n/a (așteptăm date despre flux)."; if(bias==="pozitiv")r="Flux de piață: orientat spre cumpărare"; else if(bias==="negativ")r="Flux de piață: orientat spre vânzare"; else if(bias==="neutru")r="Flux de piață: relativ echilibrat între cumpărători și vânzători"; return bias&&str?`${r} (${str}).`:bias?`${r}.`:r; }
@@ -140,7 +188,7 @@
   function setScale(v){ v=SCALE_STEPS.includes(Number(v))?Number(v):1; localStorage.setItem(SCALE_KEY,String(v)); applyScale(); buttons(); compactLabel(); }
   function bump(dir){ const cur=parseFloat(localStorage.getItem(SCALE_KEY)||"1"),i=Math.max(0,SCALE_STEPS.indexOf(cur)); setScale(SCALE_STEPS[Math.min(SCALE_STEPS.length-1,Math.max(0,i+dir))]); }
   function panel(){ if(by("coeziv-accessibility-panel"))return; const p=document.createElement("div"); p.id="coeziv-accessibility-panel"; p.className="collapsed"; p.innerHTML=`<button type="button" class="coeziv-compact-toggle" aria-label="RO/EN and text size">RO/EN · A+</button><div class="coeziv-panel-controls"><button type="button" data-lang="ro">RO</button><button type="button" data-lang="en">EN</button><span class="sep"></span><button type="button" data-scale-action="down">A−</button><button type="button" data-scale-action="up">A+</button></div>`; document.body.appendChild(p); p.querySelector(".coeziv-compact-toggle").addEventListener("click",()=>p.classList.toggle("collapsed")); p.querySelectorAll("button[data-lang]").forEach(b=>b.addEventListener("click",()=>setLang(b.dataset.lang))); p.querySelector("[data-scale-action='up']").addEventListener("click",()=>bump(1)); p.querySelector("[data-scale-action='down']").addEventListener("click",()=>bump(-1)); }
-  function applyAll(){ renderHeadings(); translateLiveText(); renderEnergy(); renderStd(); renderState(); renderDaily(); renderParticipation(); renderRisk(); buttons(); compactLabel(); }
-  function init(){ injectStyles(); panel(); applyScale(); document.documentElement.setAttribute("lang",lang()); document.body.setAttribute("data-lang",lang()); applyAll(); setInterval(()=>{ renderHeadings(); translateLiveText(); renderEnergy(); }, 1500); }
+  function applyAll(){ renderHeadings(); translateLiveText(); renderEnergy(); renderStd(); renderState(); renderDaily(); renderParticipation(); renderRisk(); buttons(); compactLabel(); watchLiveTranslation(); }
+  function init(){ injectStyles(); panel(); applyScale(); document.documentElement.setAttribute("lang",lang()); document.body.setAttribute("data-lang",lang()); applyAll(); setInterval(()=>{ renderHeadings(); translateLiveText(); renderEnergy(); }, 500); }
   if(document.readyState === "loading") document.addEventListener("DOMContentLoaded",init); else init();
 })();
