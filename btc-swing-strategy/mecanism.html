@@ -3701,28 +3701,99 @@ else if (LIQ_REGIME === "normală" || LIQ_REGIME === "moderată")
 <script src="./mecanism-radar-embed.js" defer></script>
    <script src="./guide-nav-i18n.js" defer></script>
     
+
+
 <script>
 /* GOOGLE_PLAY_PROMO_SCRIPT_START */
 (function () {
   const banner = document.getElementById("app-download-banner");
   const closeBtn = document.getElementById("app-download-close");
 
-  if (!banner || !closeBtn) return;
+  if (!banner) return;
 
   const hiddenKey = "cohesivx_google_play_banner_hidden";
 
-  if (localStorage.getItem(hiddenKey) === "1") {
+  function hideBanner(permanent) {
     banner.style.display = "none";
-    return;
+    if (permanent) {
+      try { localStorage.setItem(hiddenKey, "1"); } catch (e) {}
+    }
   }
 
-  closeBtn.addEventListener("click", function () {
-    banner.style.display = "none";
-    localStorage.setItem(hiddenKey, "1");
+  function isInsideNativeAppOrWebView() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("app") === "1") return true;
+
+    const ua = (navigator.userAgent || "").toLowerCase();
+
+    /*
+      Android WebView usually exposes "; wv" in userAgent.
+      This keeps the Google Play banner visible in normal Chrome browser,
+      but hides it inside the installed CohesivX Android WebView.
+    */
+    if (ua.includes("; wv") || ua.includes(" version/4.0 ")) return true;
+
+    /*
+      Existing native app injects this style element after page load:
+      cohesivx-native-topbar-css.
+      If it exists, we are inside the Android app wrapper.
+    */
+    if (document.getElementById("cohesivx-native-topbar-css")) return true;
+
+    /*
+      Fallback: the current Android app hides .title-bar and #theme-toggle
+      through injected CSS. If one of them is hidden, hide this promo too.
+    */
+    const titleBar = document.querySelector(".title-bar");
+    const themeToggle = document.getElementById("theme-toggle");
+
+    let titleHidden = false;
+    let themeHidden = false;
+
+    try {
+      titleHidden = !!titleBar && getComputedStyle(titleBar).display === "none";
+      themeHidden = !!themeToggle && getComputedStyle(themeToggle).display === "none";
+    } catch (e) {}
+
+    return titleHidden || themeHidden;
+  }
+
+  function applyVisibilityRule() {
+    if (isInsideNativeAppOrWebView()) {
+      hideBanner(false);
+      return true;
+    }
+
+    try {
+      if (localStorage.getItem(hiddenKey) === "1") {
+        hideBanner(false);
+        return true;
+      }
+    } catch (e) {}
+
+    return false;
+  }
+
+  applyVisibilityRule();
+
+  /*
+    Run several delayed checks because the native app injects CSS after
+    WebView page load. This avoids needing an APK update.
+  */
+  [100, 300, 700, 1200, 2000, 3500].forEach(function (delay) {
+    setTimeout(applyVisibilityRule, delay);
   });
+
+  if (closeBtn) {
+    closeBtn.addEventListener("click", function () {
+      hideBanner(true);
+    });
+  }
 })();
 /* GOOGLE_PLAY_PROMO_SCRIPT_END */
 </script>
+
+
 
 </body>
 </html>
