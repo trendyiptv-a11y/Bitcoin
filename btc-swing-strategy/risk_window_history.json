@@ -1,6 +1,6 @@
 {
   "title": "RISK_WINDOW_HISTORY",
-  "generated_at": "2026-07-08T10:38:37.698902+00:00",
+  "generated_at": "2026-07-09T05:20:50.070125+00:00",
   "regimes": [
     "accum_bear",
     "bear_late",
@@ -12,7 +12,7 @@
     "since": "2025-12-01",
     "events": 4,
     "max_streak_days": 74,
-    "current_streak_days": 37,
+    "current_streak_days": 38,
     "current_is_record": false,
     "matching_or_longer_than_current": 2,
     "top_streaks": [
@@ -39,11 +39,11 @@
       },
       {
         "start": "2026-06-02",
-        "end": "2026-07-08",
-        "days": 37,
+        "end": "2026-07-09",
+        "days": 38,
         "is_current": true,
         "start_price": 66669.7,
-        "end_price": 62868.0,
+        "end_price": 61980.8,
         "regimes": [
           "bear_late",
           "bear_struct"
@@ -909,11 +909,11 @@
     },
     {
       "start": "2018-10-11",
-      "end": "2018-11-06",
-      "days": 27,
+      "end": "2018-10-14",
+      "days": 4,
       "is_current": false,
       "start_price": 6209.47,
-      "end_price": 6479.72,
+      "end_price": 6277.73,
       "regimes": [
         "bear_struct"
       ],
@@ -925,6 +925,25 @@
       "min_drawdown": -0.47942255941328327,
       "confirmed_major_drawdown": true,
       "days_to_confirmation": 39
+    },
+    {
+      "start": "2018-10-16",
+      "end": "2018-11-06",
+      "days": 22,
+      "is_current": false,
+      "start_price": 6583.05,
+      "end_price": 6479.72,
+      "regimes": [
+        "bear_struct"
+      ],
+      "signals": [
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.5089646896195532,
+      "confirmed_major_drawdown": true,
+      "days_to_confirmation": 34
     },
     {
       "start": "2018-11-08",
@@ -2021,11 +2040,11 @@
     },
     {
       "start": "2026-06-02",
-      "end": "2026-07-08",
-      "days": 37,
+      "end": "2026-07-09",
+      "days": 38,
       "is_current": true,
       "start_price": 66669.7,
-      "end_price": 62868.0,
+      "end_price": 61980.8,
       "regimes": [
         "bear_late",
         "bear_struct"
