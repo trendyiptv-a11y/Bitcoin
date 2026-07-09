@@ -1612,6 +1612,78 @@ body.light-mode .card:first-of-type {
   }
 }
 /* WEBVIEW_SCROLL_RENDER_STABILITY_END */
+
+/* MOBILE ANTI-FLICKER PATCH — prevents white repaint flashes on animated mechanism cards */
+html,
+body {
+  background: #020617 !important;
+}
+
+body,
+main,
+section,
+.card,
+.panel,
+.glass,
+.cohesiv-card,
+.mecanism-card,
+.mecanism-panel {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
+img,
+svg,
+canvas,
+.ring,
+.orb,
+.glow,
+.pulse,
+.beam,
+.radar-stage,
+#coeziv-mini-radar,
+#coeziv-structural-map {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+  will-change: transform, opacity;
+}
+
+@media (max-width: 768px) {
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    overflow-x: hidden;
+  }
+
+  .glow,
+  .pulse,
+  .beam,
+  .ring,
+  .orb,
+  .radar-pulse,
+  .radar-sweep,
+  .radar-dot {
+    filter: none !important;
+  }
+
+  .card,
+  .panel,
+  .glass,
+  .cohesiv-card,
+  .mecanism-card,
+  .mecanism-panel,
+  #coeziv-mini-radar,
+  #coeziv-structural-map {
+    contain: paint;
+    isolation: isolate;
+  }
+}
     
 </style>
 
