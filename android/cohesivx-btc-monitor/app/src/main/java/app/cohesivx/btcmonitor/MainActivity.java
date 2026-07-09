@@ -149,7 +149,7 @@ public class MainActivity extends Activity {
 
     private void injectNativeTopBarCss() {
         if (webView == null) return;
-        String js = "(function(){if(document.getElementById('cohesivx-native-topbar-css'))return;var s=document.createElement('style');s.id='cohesivx-native-topbar-css';s.textContent='.title-bar{display:none!important;}#theme-toggle{display:none!important;}.top-controls{display:flex!important;justify-content:flex-start!important;margin:0 0 10px!important;}';document.head.appendChild(s);})()";
+        String js = "(function(){if(document.getElementById('cohesivx-native-topbar-css'))return;var s=document.createElement('style');s.id='cohesivx-native-topbar-css';s.textContent='.title-bar{display:none!important;}#theme-toggle{display:none!important;}#app-download-banner{display:none!important;}.top-controls{display:flex!important;justify-content:flex-start!important;margin:0 0 10px!important;}';document.head.appendChild(s);})()";
         webView.evaluateJavascript(js, value -> syncThemeButton());
     }
     private void syncThemeButton() {
