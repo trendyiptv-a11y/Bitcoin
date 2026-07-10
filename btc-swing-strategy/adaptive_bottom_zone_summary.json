@@ -39,10 +39,37 @@
     "integration_allowed": false,
     "note": "candidate values only; radar/main trading logic not modified"
   },
+  "structural_timing": {
+    "source": "data/btc_daily.csv",
+    "method": "open cycle timing from real price crossing historical fragility threshold",
+    "anchor_date": "2025-10-06",
+    "anchor_price": 124766.5,
+    "fragility_reference_price": 94000.0,
+    "fragility_reference_note": "manual real-price rupture reference approved from investigation",
+    "fragility_touch_date": "2025-11-14",
+    "fragility_touch_low": 94000.0,
+    "adaptive_bear_warning_threshold": 93200.5755,
+    "adaptive_bear_warning_touch_date": "2025-11-16",
+    "adaptive_bear_warning_touch_low": 92890.6,
+    "close_confirmation_date": "2025-11-17",
+    "close_confirmation_price": 92101.3,
+    "confirmation_rule": "confirmed when daily close is below adaptive_bear_warning_threshold after real-price rupture touch",
+    "days_from_fragility_touch_to_confirmation": 3,
+    "days_from_adaptive_touch_to_confirmation": 1,
+    "status_at_date_max": "confirmed_structural_fragility",
+    "days_from_fragility_touch_to_date_max": 235,
+    "days_from_adaptive_touch_to_date_max": 233,
+    "days_from_close_confirmation_to_date_max": 232,
+    "historical_message_rule": {
+      "before_touch": "neconfirmat / în afara fragilității",
+      "touch_before_close_confirmation": "în test structural",
+      "after_close_confirmation": "confirmat structural"
+    }
+  },
   "decision": {
     "main_change_allowed": false,
     "radar_change_allowed": true,
     "production_change_allowed": false,
-    "concept": "approved: radar should show possible minimum zone, bottom absolute and capitulation, without using 74.7% ATH as bottom"
+    "concept": "approved: radar should show possible minimum zone, bottom absolute, capitulation and historical confirmation timing without using 74.7% ATH as bottom"
   }
 }
