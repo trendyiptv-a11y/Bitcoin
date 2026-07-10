@@ -49,15 +49,16 @@ jobs:
         run: |
           cat btc-swing-strategy/risk_window.json
 
-      - name: Commit risk window data if changed
+      - name: Commit backtest data if changed
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add btc-swing-strategy/risk_window.json data/coeziv_backtest_results.csv data/coeziv_backtest_summary.json
+          git restore btc-swing-strategy/risk_window.json || true
+          git add data/coeziv_backtest_results.csv data/coeziv_backtest_summary.json
           if git diff --cached --quiet; then
-            echo "No backtest or risk_window data changes to commit."
+            echo "No backtest data changes to commit."
           else
-            git commit -m "Update coeziv risk window data"
+            git commit -m "Update coeziv backtest data"
             git fetch origin main
             git rebase origin/main
             git push origin HEAD:main
@@ -69,6 +70,5 @@ jobs:
           name: coeziv-backtest-results
           path: |
             data/coeziv_backtest_results.csv
-            data/coeziv_backtest_summary.json
-            btc-swing-strategy/risk_window.json
+            data/coeziv_backtest_summary.json          
           if-no-files-found: error
