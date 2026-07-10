@@ -412,10 +412,53 @@ def build_main_text(active: bool, s: Dict[str, Any], streak_days: int) -> str:
     )
 
 
+def fmt_int_days(value: Any, approx: bool = False) -> str:
+    n = sf(value)
+    if n is None:
+        return "n/a"
+    days = int(round(n))
+    prefix = "~" if approx else ""
+    return f"{prefix}{days} zi" if days == 1 else f"{prefix}{days} zile"
+
+
+def build_timing_bridge(timing: Dict[str, Any]) -> str:
+    """Build the simple bridge between confirmation delay and unresolved duration.
+
+    Objective meaning:
+    - days_to_close_confirmation = how long it took to confirm the break.
+    - days_from_fragility_touch = how long the market has stayed under the effect
+      of that break without a full structural repair.
+    """
+    lag = timing.get("days_to_close_confirmation")
+    touch_days = timing.get("days_from_fragility_touch")
+
+    lag_txt = fmt_int_days(lag)
+    touch_txt = fmt_int_days(touch_days, approx=True)
+
+    if timing.get("confirmed") and lag is not None and touch_days is not None:
+        return (
+            f"Cele {lag_txt} marchează confirmarea intrării în fragilitate; "
+            f"cele {touch_txt} măsoară durata în care structura a rămas sub efectul rupturii, "
+            "fără reparare completă."
+        )
+
+    if timing.get("confirmed") and lag is not None:
+        return (
+            f"Cele {lag_txt} marchează confirmarea intrării în fragilitate. "
+            "Durata rămasă sub efectul rupturii nu poate fi calculată complet din datele disponibile."
+        )
+
+    if touch_days is not None:
+        return (
+            f"Durata urmărită este {touch_txt}, dar ruptura nu are încă o confirmare completă pe închidere."
+        )
+
+    return "Mecanismul urmărește testul structural, dar nu are încă suficiente date pentru durata completă."
+
+
 def build_structural_main_text(zone: Dict[str, Any], timing: Dict[str, Any], bounds: Dict[str, float], observation: Dict[str, Any]) -> str:
     touch = timing.get("fragility_touch_date") or "n/a"
     confirm = timing.get("close_confirmation_date") or "n/a"
-    touch_days = timing.get("days_from_fragility_touch")
     lag = timing.get("days_to_close_confirmation")
     ref = fmt_k(timing.get("fragility_reference_price") or bounds.get("bear"))
     low = fmt_k(bounds.get("bottom_low"))
@@ -424,17 +467,23 @@ def build_structural_main_text(zone: Dict[str, Any], timing: Dict[str, Any], bou
     bottom_status = observation.get("status") or "n/a"
 
     if timing.get("confirmed"):
-        first = f"Ruptura structurală a început la ~{ref} pe {touch} și s-a confirmat pe închidere în {lag} zile, pe {confirm}."
+        first = (
+            f"Bitcoin a intrat în fragilitate la ~{ref}, pe {touch}, "
+            f"iar ruptura a fost confirmată pe închidere după {fmt_int_days(lag)}, pe {confirm}."
+        )
     else:
-        first = f"Prețul a intrat în test structural la ~{ref} pe {touch}; confirmarea pe închidere nu este încă validată."
+        first = (
+            f"Bitcoin a intrat în test structural la ~{ref}, pe {touch}; "
+            "confirmarea pe închidere nu este încă validată."
+        )
 
-    days_txt = f"~{touch_days} zile" if touch_days is not None else "n/a"
+    bridge = build_timing_bridge(timing)
+
     return (
-        f"{first} Structura fragilă este urmărită de {days_txt}. "
+        f"{first} {bridge} "
         f"Regimul curent este: {label}. "
         f"Zona istoric modelată de mecanism, {low}–{high}, este {bottom_status}."
     )
-
 
 def build_legacy_card(last, active: bool, level: str, streak_days: int, s: Dict[str, Any], summary_since: Dict[str, Any]) -> Dict[str, Any]:
     return {
