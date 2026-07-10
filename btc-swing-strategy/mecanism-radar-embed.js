@@ -144,7 +144,7 @@
     });
 
     if (p > bounds.bottomHigh) return zonePack("deep", dir, bounds, {
-      down: tr("Risc de adâncire", "Deepening risk"), flat: tr("Degradare profundă", "Deep degradation"), up: tr("Revenire în degradare", "Recovery inside degradation"),
+      down: tr("Risc de adâncire", "Deepening risk"), flat: tr("Degradare profundă", "Deep degradation"), up: tr("Revenire parțială", "Partial recovery"),
       downCls: "tone-red", flatCls: "tone-red", upCls: "tone-orange", downIcon: "🔴", flatIcon: "🔴", upIcon: "🟠"
     });
 
