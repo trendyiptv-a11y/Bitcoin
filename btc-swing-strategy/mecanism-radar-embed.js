@@ -1,11 +1,10 @@
-/* CohesivX BTC — animated radar insert for mecanism.html, RO/EN aware
-   Main display is anchored to the historical bottom-zone investigation.
+/* CohesivX BTC — compact animated radar insert for mecanism.html, RO/EN aware
+   Display is anchored to the historical bottom-zone investigation.
    Trading logic is not modified. */
 (function () {
   "use strict";
 
   const ID = "coeziv-mini-radar";
-  const STRUCT_ID = "coeziv-structural-map";
   const LANG_KEY = "coeziv_btc_lang";
   let refreshTimer = null;
   let liveSyncTimer = null;
@@ -68,17 +67,12 @@
   function flowDirection(state, risk) {
     const signal = String((state && state.signal) || (risk && risk.current_signal) || "").toLowerCase();
     const flow = String((state && state.flow_bias) || "").toLowerCase();
-    const strength = String((state && state.flow_strength) || "").toLowerCase();
-    if (signal === "long" || flow.includes("pozitiv") || flow.includes("buy") || flow.includes("cump")) {
-      return { code: "up", ro: strength ? `revenire urmărită (${strength})` : "revenire urmărită", en: strength ? `recovery watched (${strength})` : "recovery watched" };
-    }
-    if (signal === "short" || flow.includes("negativ") || flow.includes("sell") || flow.includes("vânz")) {
-      return { code: "down", ro: strength ? `scădere activă (${strength})` : "scădere activă", en: strength ? `active decline (${strength})` : "active decline" };
-    }
-    return { code: "flat", ro: "structură laterală", en: "sideways structure" };
+    if (signal === "long" || flow.includes("pozitiv") || flow.includes("buy") || flow.includes("cump")) return "up";
+    if (signal === "short" || flow.includes("negativ") || flow.includes("sell") || flow.includes("vânz") || flow.includes("vanz")) return "down";
+    return "flat";
   }
 
-  function structuralZone(price, summary, state, risk) {
+  function structuralTone(price, summary, state, risk) {
     const c = candidate(summary);
     if (!c || !Number.isFinite(Number(price))) return null;
 
@@ -92,22 +86,50 @@
     const dir = flowDirection(state, risk);
     const p = Number(price);
 
+    function t(key, cls, icon, color, downTitle, flatTitle, upTitle) {
+      const title = dir === "down" ? downTitle : (dir === "up" ? upTitle : flatTitle);
+      return { key, cls, icon, color, title, dir, ath, bear, bottomLow, bottomMid, bottomHigh, hard, liveInternal };
+    }
+
     if (p >= ath) {
-      return { key: "expansion", cls: "tone-green", icon: "🟢", color: "#6dffb0", title: tr("Expansiune peste ATH", "Expansion above ATH"), direction: dir, ath, bear, bottomLow, bottomMid, bottomHigh, hard, liveInternal };
+      return t("expansion", "tone-green", "🟢", "#6dffb0",
+        tr("Expansiune sub presiune", "Expansion under pressure"),
+        tr("Expansiune structurală", "Structural expansion"),
+        tr("Expansiune activă", "Active expansion"));
     }
+
     if (p >= bear) {
-      return { key: "repaired", cls: "tone-green", icon: "🟢", color: "#6dffb0", title: tr("Structură refăcută", "Structure repaired"), direction: dir, ath, bear, bottomLow, bottomMid, bottomHigh, hard, liveInternal };
+      return t("repaired", "tone-green", "🟢", "#6dffb0",
+        tr("Structură refăcută sub presiune", "Repaired structure under pressure"),
+        tr("Structură refăcută", "Structure repaired"),
+        tr("Creștere structurală", "Structural growth"));
     }
+
     if (Number.isFinite(liveInternal) && p >= liveInternal) {
-      return { key: "fragility", cls: "tone-orange", icon: "🟠", color: "#ffb454", title: tr("Ruptură de fragilitate", "Fragility rupture"), direction: dir, ath, bear, bottomLow, bottomMid, bottomHigh, hard, liveInternal };
+      return t("fragility", dir === "up" ? "tone-orange" : "tone-orange", "🟠", "#ffb454",
+        tr("Risc de fragilitate", "Fragility risk"),
+        tr("Fragilitate urmărită", "Fragility watched"),
+        tr("Reparare fragilitate", "Fragility repair"));
     }
+
     if (p > bottomHigh) {
-      return { key: "deep", cls: "tone-red", icon: "🔴", color: "#ff5d6c", title: tr("Degradare profundă", "Deep degradation"), direction: dir, ath, bear, bottomLow, bottomMid, bottomHigh, hard, liveInternal };
+      return t("deep", dir === "up" ? "tone-orange" : "tone-red", dir === "up" ? "🟠" : "🔴", dir === "up" ? "#ffb454" : "#ff5d6c",
+        tr("Risc de degradare profundă", "Deep degradation risk"),
+        tr("Degradare profundă", "Deep degradation"),
+        tr("Revenire din degradare", "Recovery from degradation"));
     }
+
     if (p >= bottomLow) {
-      return { key: "bottom", cls: "tone-orange", icon: "🟠", color: "#ffb454", title: tr("Bottom final activ", "Final bottom zone active"), direction: dir, ath, bear, bottomLow, bottomMid, bottomHigh, hard, liveInternal };
+      return t("bottom", dir === "down" ? "tone-red" : "tone-orange", dir === "down" ? "🔴" : "🟠", dir === "down" ? "#ff5d6c" : "#ffb454",
+        tr("Risc în bottom final", "Final bottom risk"),
+        tr("Bottom final activ", "Final bottom active"),
+        tr("Ieșire din bottom final", "Leaving final bottom"));
     }
-    return { key: "capitulation", cls: "tone-red", icon: "🔴", color: "#ff5d6c", title: tr("Capitulare sub bottom absolut", "Capitulation below absolute bottom"), direction: dir, ath, bear, bottomLow, bottomMid, bottomHigh, hard, liveInternal };
+
+    return t("capitulation", dir === "up" ? "tone-orange" : "tone-red", dir === "up" ? "🟠" : "🔴", dir === "up" ? "#ffb454" : "#ff5d6c",
+      tr("Risc de capitulare", "Capitulation risk"),
+      tr("Capitulare sub bottom absolut", "Capitulation below absolute bottom"),
+      tr("Revenire din capitulare", "Recovery from capitulation"));
   }
 
   function fallbackToneFor(risk) {
@@ -120,6 +142,17 @@
       return { cls: "tone-red", icon: "🔴", title: days >= median ? tr("Degradare persistentă", "Persistent degradation") : tr("Risc structural", "Structural risk"), color: "#ff5d6c" };
     }
     return { cls: "tone-orange", icon: "🟠", title: tr("Degradare activă", "Active degradation"), color: "#ffb454" };
+  }
+
+  function bottomBadgeText(zone) {
+    if (!zone) return null;
+    if (zone.key === "capitulation") {
+      return `🧨 ${tr("Capitulare sub", "Capitulation below")} ${usdK(zone.hard)}`;
+    }
+    if (zone.key === "bottom") {
+      return `🎯 ${tr("Bottom final activ", "Final bottom active")} ${usdK(zone.bottomLow)}–${usdK(zone.bottomHigh)}`;
+    }
+    return `🎯 ${tr("Bottom final", "Final bottom")} ${usdK(zone.bottomLow)}–${usdK(zone.bottomHigh)}`;
   }
 
   function installStyle() {
@@ -157,22 +190,10 @@
       #${ID}.tone-green{border-color:rgba(109,255,176,.24);--radar-alert:rgba(109,255,176,.46)}
       #${ID}.tone-orange{border-color:rgba(255,180,84,.24);--radar-alert:rgba(255,180,84,.46)}
       #${ID}.tone-red{border-color:rgba(255,93,108,.26);--radar-alert:rgba(255,93,108,.50)}
-      #${STRUCT_ID}{margin:10px auto 2px;padding:9px 9px 10px;border-radius:14px;border:1px solid rgba(148,163,184,.18);background:linear-gradient(180deg,rgba(2,6,23,.34),rgba(2,6,23,.18));text-align:left}
-      #${STRUCT_ID} .sd-head{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:7px;font-size:10.5px;font-weight:900;color:#e5e7eb}
-      #${STRUCT_ID} .sd-mode{color:#94a3b8;font-size:9.5px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:nowrap}
-      #${STRUCT_ID} .sd-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;padding:6px 7px;border-radius:10px;border:1px solid rgba(148,163,184,.13);background:rgba(15,23,42,.20);margin-top:5px}
-      #${STRUCT_ID} .sd-row.active{border-color:rgba(255,180,84,.55);box-shadow:0 0 0 1px rgba(255,180,84,.12),0 0 20px rgba(255,180,84,.12);background:rgba(255,180,84,.08)}
-      #${STRUCT_ID} .sd-name{color:#cbd5e1;font-size:10.2px;font-weight:800;line-height:1.15}
-      #${STRUCT_ID} .sd-value{color:#e5e7eb;font-size:10.2px;font-weight:900;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:nowrap}
-      #${STRUCT_ID} .sd-note{margin-top:7px;color:#94a3b8;font-size:9.5px;line-height:1.25;text-align:center}
       body.light-mode #${ID}{background:radial-gradient(circle at 50% -18%,rgba(14,165,233,.10),transparent 55%),linear-gradient(180deg,rgba(255,255,255,.94),rgba(248,250,252,.84));border-color:rgba(14,165,233,.25);box-shadow:0 10px 24px rgba(15,23,42,.10)}
       body.light-mode #${ID} .radar-title{color:#0f172a}
-      body.light-mode #${STRUCT_ID}{background:linear-gradient(180deg,rgba(255,255,255,.88),rgba(248,250,252,.76));border-color:rgba(15,23,42,.12)}
-      body.light-mode #${STRUCT_ID} .sd-head{color:#0f172a}
-      body.light-mode #${STRUCT_ID} .sd-name{color:#334155}
-      body.light-mode #${STRUCT_ID} .sd-value{color:#0f172a}
       @media(max-width:380px){#${ID} .radar-stage{width:156px;height:156px}}
-      @media(max-width:768px){#${ID},#${STRUCT_ID},#${ID} .radar-stage,#${ID} svg{backface-visibility:hidden;-webkit-backface-visibility:hidden;transform:translate3d(0,0,0);-webkit-transform:translate3d(0,0,0)}#${ID} .radar-pulse,#${ID} .radar-sweep,#${ID} .radar-dot{filter:none!important}}
+      @media(max-width:768px){#${ID},#${ID} .radar-stage,#${ID} svg{backface-visibility:hidden;-webkit-backface-visibility:hidden;transform:translate3d(0,0,0);-webkit-transform:translate3d(0,0,0)}#${ID} .radar-pulse,#${ID} .radar-sweep,#${ID} .radar-dot{filter:none!important}}
     `;
     document.head.appendChild(s);
   }
@@ -225,17 +246,6 @@
     return card;
   }
 
-  function ensureMap(card) {
-    let box = by(STRUCT_ID);
-    if (box) return box;
-    box = document.createElement("div");
-    box.id = STRUCT_ID;
-    const badges = card && card.querySelector(".radar-badges");
-    if (badges) badges.insertAdjacentElement("afterend", box);
-    else if (card) card.appendChild(box);
-    return box;
-  }
-
   function set(id, value) {
     const el = by(id);
     if (el) el.textContent = value;
@@ -249,53 +259,6 @@
     setTimeout(() => card.classList.remove("state-changed"), 2800);
   }
 
-  function row(key, name, value, active) {
-    return `
-      <div class="sd-row ${active === key ? "active" : ""}">
-        <div class="sd-name">${name}</div>
-        <div class="sd-value">${value}</div>
-      </div>
-    `;
-  }
-
-  function renderMap(card, z) {
-    const box = ensureMap(card);
-    if (!box) return;
-
-    if (!z) {
-      box.innerHTML = `
-        <div class="sd-head">
-          <span>${tr("Hartă istorică BTC", "BTC historical map")}</span>
-          <span class="sd-mode">${tr("din istoric", "historical")}</span>
-        </div>
-        <div class="sd-note">${tr("Lipsește adaptive_bottom_zone_summary.json.", "adaptive_bottom_zone_summary.json is missing.")}</div>
-      `;
-      return;
-    }
-
-    const deepTop = Number.isFinite(z.liveInternal) ? z.liveInternal : z.bear;
-    const directionText = tr(z.direction.ro, z.direction.en);
-
-    box.innerHTML = `
-      <div class="sd-head">
-        <span>${tr("Hartă istorică structurală BTC", "BTC historical structural map")}</span>
-        <span class="sd-mode">${tr("din istoric", "historical")}</span>
-      </div>
-      ${row("ath", tr("ATH ciclu / ancoră superioară", "Cycle ATH / upper anchor"), usdK(z.ath), z.key)}
-      ${row("repaired", tr("Structură refăcută peste", "Structure repaired above"), usdK(z.bear), z.key)}
-      ${row("fragility", tr("Ruptură de fragilitate", "Fragility rupture"), usdK(z.bear), z.key)}
-      ${Number.isFinite(z.liveInternal) ? row("internal", tr("Prag fereastră live", "Live window threshold"), usdK(z.liveInternal), z.key) : ""}
-      ${row("deep", tr("Degradare profundă", "Deep degradation"), `${usdK(deepTop)} → ${usdK(z.bottomHigh)}`, z.key)}
-      ${row("bottom", tr("Bottom final istoric", "Historical final bottom"), `${usdK(z.bottomLow)} – ${usdK(z.bottomHigh)}`, z.key)}
-      ${row("bottom-mid", tr("Bottom median", "Median bottom"), usdK(z.bottomMid), z.key)}
-      ${row("bottom-absolute", tr("Bottom absolut", "Absolute bottom"), usdK(z.bottomLow), z.key)}
-      ${row("capitulation", tr("Capitulare sub", "Capitulation below"), usdK(z.hard), z.key)}
-      <div class="sd-note">
-        ${tr("Stare", "State")}: ${z.title} · ${tr("Direcție", "Direction")}: ${directionText} · ${tr("trading neschimbat", "trading unchanged")}
-      </div>
-    `;
-  }
-
   function render(state, risk, summary) {
     lastState = state || lastState;
     lastRisk = risk || lastRisk;
@@ -304,7 +267,7 @@
     if (!card || !lastState) return;
 
     const live = currentLivePrice() || Number(lastState.price_usd);
-    const zone = structuralZone(live, lastSummary, lastState, lastRisk);
+    const zone = structuralTone(live, lastSummary, lastState, lastRisk);
     const tone = zone || fallbackToneFor(lastRisk || {});
     const oldTone = lastToneClass;
 
@@ -316,8 +279,9 @@
     set("mini-radar-price", usdK(live || lastState.price_usd));
     set("mini-radar-day", `⏳ ${tr("Ziua", "Day")} ${(lastRisk && lastRisk.consecutive_degradation_days) ?? "—"} / ~${(lastRisk && lastRisk.median_days_to_confirmation) ?? "—"}`);
 
-    if (zone) {
-      set("mini-radar-threshold", `🎯 ${tr("Bottom final", "Final bottom")} ${usdK(zone.bottomLow)}–${usdK(zone.bottomHigh)}`);
+    const bottomText = bottomBadgeText(zone);
+    if (bottomText) {
+      set("mini-radar-threshold", bottomText);
     } else {
       const threshold = liveWindowThreshold(lastState, lastRisk);
       set("mini-radar-threshold", `⚙️ ${tr("Prag fereastră", "Window threshold")} ${usdK(threshold)}`);
@@ -326,8 +290,6 @@
     card.querySelectorAll(".radar-pulse").forEach(el => el.setAttribute("stroke", tone.color));
     const dot = card.querySelector(".radar-dot");
     if (dot) dot.setAttribute("fill", tone.color);
-
-    renderMap(card, zone);
 
     lastToneClass = tone.cls;
     lastLang = lang();
