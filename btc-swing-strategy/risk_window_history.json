@@ -1,6 +1,6 @@
 {
   "title": "RISK_WINDOW_HISTORY",
-  "generated_at": "2026-07-10T04:31:37.679730+00:00",
+  "generated_at": "2026-07-10T13:17:10.940300+00:00",
   "regimes": [
     "accum_bear",
     "bear_late",
@@ -98,6 +98,7 @@
       }
     ]
   },
+  "structural_source": "btc-swing-strategy/adaptive_bottom_zone_summary.json",
   "history": [
     {
       "start": "2011-04-04",
