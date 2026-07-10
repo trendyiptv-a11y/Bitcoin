@@ -42,6 +42,7 @@ jobs:
       - name: Update BTC state and UI
         run: |
           python coeziv_state_v2.py
+          python risk_window.py
           python inject_structural_confirmation.py
           python patch_standard_regime_ui.py
           python patch_mecanism_model_price_ui.py
@@ -57,5 +58,7 @@ jobs:
           commit_message: "Update BTC V2 state and UI"
           branch: main
           file_pattern: >
+            btc-swing-strategy/risk_window.json
+            btc-swing-strategy/risk_window_history.json
             btc-swing-strategy/coeziv_state.json
             btc-swing-strategy/mecanism.html
