@@ -113,7 +113,6 @@
     const confirmDays = daysBetween(confirm, asOf);
     const confirmLag = Number(t.days_from_fragility_touch_to_confirmation);
     const confirmed = !!(confirm && confirmDays !== null && confirmDays >= 0);
-
     return {
       asOf,
       touch,
@@ -130,7 +129,6 @@
   function structuralTone(price, summary, state, risk) {
     const c = candidate(summary);
     if (!c || !Number.isFinite(Number(price))) return null;
-
     const ath = Number(c.ath_price);
     const bear = Number(c.bear_warning_threshold);
     const bottomLow = Number(c.bottom_risk_zone_low);
@@ -147,45 +145,12 @@
       return { key, cls, icon, color, title, dir, ath, bear, bottomLow, bottomMid, bottomHigh, hard, liveInternal, timing: ts };
     }
 
-    if (p >= ath) {
-      return t("expansion", "tone-green", "🟢", "#6dffb0",
-        tr("Expansiune sub presiune", "Expansion under pressure"),
-        tr("Expansiune structurală", "Structural expansion"),
-        tr("Expansiune activă", "Active expansion"));
-    }
-
-    if (p >= bear) {
-      return t("repaired", "tone-green", "🟢", "#6dffb0",
-        tr("Structură refăcută sub presiune", "Repaired structure under pressure"),
-        tr("Structură refăcută", "Structure repaired"),
-        tr("Creștere structurală", "Structural growth"));
-    }
-
-    if (Number.isFinite(liveInternal) && p >= liveInternal) {
-      return t("fragility", "tone-orange", "🟠", "#ffb454",
-        tr("Risc de fragilitate", "Fragility risk"),
-        tr("Fragilitate urmărită", "Fragility watched"),
-        tr("Reparare fragilitate", "Fragility repair"));
-    }
-
-    if (p > bottomHigh) {
-      return t("deep", dir === "up" ? "tone-orange" : "tone-red", dir === "up" ? "🟠" : "🔴", dir === "up" ? "#ffb454" : "#ff5d6c",
-        tr("Risc de degradare profundă", "Deep degradation risk"),
-        tr("Degradare profundă", "Deep degradation"),
-        tr("Revenire din degradare", "Recovery from degradation"));
-    }
-
-    if (p >= bottomLow) {
-      return t("bottom", dir === "down" ? "tone-red" : "tone-orange", dir === "down" ? "🔴" : "🟠", dir === "down" ? "#ff5d6c" : "#ffb454",
-        tr("Risc în bottom final", "Final bottom risk"),
-        tr("Bottom final activ", "Final bottom active"),
-        tr("Ieșire din bottom final", "Leaving final bottom"));
-    }
-
-    return t("capitulation", dir === "up" ? "tone-orange" : "tone-red", dir === "up" ? "🟠" : "🔴", dir === "up" ? "#ffb454" : "#ff5d6c",
-      tr("Risc de capitulare", "Capitulation risk"),
-      tr("Capitulare sub bottom absolut", "Capitulation below absolute bottom"),
-      tr("Revenire din capitulare", "Recovery from capitulation"));
+    if (p >= ath) return t("expansion", "tone-green", "🟢", "#6dffb0", tr("Expansiune sub presiune", "Expansion under pressure"), tr("Expansiune structurală", "Structural expansion"), tr("Expansiune activă", "Active expansion"));
+    if (p >= bear) return t("repaired", "tone-green", "🟢", "#6dffb0", tr("Structură refăcută sub presiune", "Repaired structure under pressure"), tr("Structură refăcută", "Structure repaired"), tr("Creștere structurală", "Structural growth"));
+    if (Number.isFinite(liveInternal) && p >= liveInternal) return t("fragility", "tone-orange", "🟠", "#ffb454", tr("Risc de fragilitate", "Fragility risk"), tr("Fragilitate urmărită", "Fragility watched"), tr("Reparare fragilitate", "Fragility repair"));
+    if (p > bottomHigh) return t("deep", dir === "up" ? "tone-orange" : "tone-red", dir === "up" ? "🟠" : "🔴", dir === "up" ? "#ffb454" : "#ff5d6c", tr("Risc de degradare profundă", "Deep degradation risk"), tr("Degradare profundă", "Deep degradation"), tr("Revenire din degradare", "Recovery from degradation"));
+    if (p >= bottomLow) return t("bottom", dir === "down" ? "tone-red" : "tone-orange", dir === "down" ? "🔴" : "🟠", dir === "down" ? "#ff5d6c" : "#ffb454", tr("Risc în bottom final", "Final bottom risk"), tr("Bottom final activ", "Final bottom active"), tr("Ieșire din bottom final", "Leaving final bottom"));
+    return t("capitulation", dir === "up" ? "tone-orange" : "tone-red", dir === "up" ? "🟠" : "🔴", dir === "up" ? "#ffb454" : "#ff5d6c", tr("Risc de capitulare", "Capitulation risk"), tr("Capitulare sub bottom absolut", "Capitulation below absolute bottom"), tr("Revenire din capitulare", "Recovery from capitulation"));
   }
 
   function fallbackToneFor(risk) {
@@ -194,9 +159,7 @@
     const median = Number((risk && risk.median_days_to_confirmation) || 27);
     const level = String((risk && risk.level) || "");
     if (!active) return { cls: "tone-green", icon: "🟢", title: tr("Structură refăcută", "Structure repaired"), color: "#6dffb0" };
-    if (days >= median || level === "high") {
-      return { cls: "tone-red", icon: "🔴", title: days >= median ? tr("Degradare persistentă", "Persistent degradation") : tr("Risc structural", "Structural risk"), color: "#ff5d6c" };
-    }
+    if (days >= median || level === "high") return { cls: "tone-red", icon: "🔴", title: days >= median ? tr("Degradare persistentă", "Persistent degradation") : tr("Risc structural", "Structural risk"), color: "#ff5d6c" };
     return { cls: "tone-orange", icon: "🟠", title: tr("Degradare activă", "Active degradation"), color: "#ffb454" };
   }
 
@@ -204,7 +167,6 @@
     const oldDays = Number((risk && risk.consecutive_degradation_days) || 0);
     const median = Number((risk && risk.median_days_to_confirmation) || 27);
     const ts = zone && zone.timing;
-
     if (ts && ts.touchDays !== null) {
       const lag = ts.confirmLag !== null ? ` · ${tr("conf.", "conf.")} +${ts.confirmLag}z` : "";
       if (ts.confirmed) {
@@ -214,7 +176,6 @@
       }
       return `⏳ ${tr("În test", "Testing")} · ${ts.touchDays}z / ~${median || "—"}`;
     }
-
     if (zone && zone.dir === "up") return `↗ ${tr("Revenire", "Recovery")} · ${tr("fereastră", "window")} ${oldDays || "—"}z`;
     if (zone && zone.dir === "down") return `⚠️ ${tr("Risc", "Risk")} · ${tr("ziua", "day")} ${oldDays || "—"} / ~${median || "—"}`;
     return `⏳ ${tr("Fereastră", "Window")} ${oldDays || "—"} / ~${median || "—"}`;
@@ -240,40 +201,17 @@
       #${ID} .radar-pulse{opacity:0;transform-origin:86px 86px;animation:coezivRadarPulse 2.8s ease-out infinite}
       #${ID} .radar-pulse.p2{animation-delay:1.4s}
       #${ID} .radar-dot{transform-origin:86px 86px;animation:coezivRadarBreath 2.8s ease-in-out infinite}
-      @keyframes coezivRadarSpin{to{transform:rotate(360deg)}}
-      @keyframes coezivRadarSpinFast{to{transform:rotate(360deg)}}
-      @keyframes coezivRadarPulse{0%{opacity:.55;transform:scale(.45)}70%,100%{opacity:0;transform:scale(1)}}
-      @keyframes coezivRadarBreath{0%,100%{r:5}50%{r:6.6}}
+      @keyframes coezivRadarSpin{to{transform:rotate(360deg)}}@keyframes coezivRadarSpinFast{to{transform:rotate(360deg)}}@keyframes coezivRadarPulse{0%{opacity:.55;transform:scale(.45)}70%,100%{opacity:0;transform:scale(1)}}@keyframes coezivRadarBreath{0%,100%{r:5}50%{r:6.6}}
       @keyframes coezivRadarAlert{0%{transform:scale(1);box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 14px 30px rgba(0,0,0,.24)}18%{transform:scale(1.018);box-shadow:0 0 0 2px rgba(255,255,255,.10),0 0 34px var(--radar-alert,rgba(255,180,84,.45)),0 18px 42px rgba(0,0,0,.30)}42%{transform:scale(1)}62%{transform:scale(1.012);box-shadow:0 0 0 1px rgba(255,255,255,.08),0 0 24px var(--radar-alert,rgba(255,180,84,.35)),0 18px 42px rgba(0,0,0,.30)}100%{transform:scale(1)}}
       @keyframes coezivIconPop{0%{transform:scale(1)}20%{transform:scale(1.22)}45%{transform:scale(.96)}70%{transform:scale(1.08)}100%{transform:scale(1)}}
-      #${ID}.state-changed{animation:coezivRadarAlert 2.6s ease-out 1}
-      #${ID}.state-changed .radar-stage{filter:drop-shadow(0 0 20px var(--radar-alert,rgba(255,180,84,.45)))}
-      #${ID}.state-changed .radar-sweep{animation:coezivRadarSpinFast .72s linear infinite}
-      #${ID}.state-changed .radar-pulse{animation-duration:1.15s;opacity:.8}
-      #${ID}.state-changed .radar-icon{animation:coezivIconPop 1.1s ease-out 1}
-      #${ID} .radar-read{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none}
-      #${ID} .radar-icon{font-size:27px;line-height:1;filter:drop-shadow(0 0 14px currentColor);transform-origin:center;display:inline-block}
-      #${ID} .radar-title{font-size:13px;font-weight:850;color:#e5e7eb;line-height:1.12;margin-top:5px}
-      #${ID} .radar-price{font-size:10.5px;color:#94a3b8;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;margin-top:5px}
-      #${ID} .radar-badges{display:flex;justify-content:center;flex-wrap:wrap;gap:7px;margin-top:2px}
-      #${ID} .radar-badge{border-radius:11px;padding:6px 9px;font-size:10.5px;font-weight:850;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;border:1px solid rgba(148,163,184,.22);background:rgba(2,6,23,.36);color:#cbd5e1;white-space:nowrap}
-      #${ID} .radar-badge.day{border-color:rgba(255,180,84,.36);color:#ffd29c}
-      #${ID} .radar-badge.threshold{border-color:rgba(255,93,108,.38);color:#ffb2ba}
-      #${ID} .radar-range{width:min(94%,480px);margin:9px auto 0;padding:9px 10px;border-radius:14px;border:1px solid rgba(148,163,184,.18);background:rgba(2,6,23,.36);text-align:left}
-      #${ID} .range-head{display:flex;justify-content:space-between;gap:8px;align-items:center;color:#e5e7eb;font-size:10.3px;font-weight:900;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;margin-bottom:8px}
-      #${ID} .range-head span:last-child{color:#94a3b8;font-weight:800}
-      #${ID} .range-track{position:relative;height:10px;border-radius:999px;background:linear-gradient(90deg,rgba(255,93,108,.90) 0%,rgba(255,93,108,.90) var(--bottom-start,8%),rgba(255,180,84,.92) var(--bottom-start,8%),rgba(255,180,84,.92) var(--bottom-end,18%),rgba(45,212,191,.74) var(--bottom-end,18%),rgba(45,212,191,.74) var(--live-pos,58%),rgba(109,255,176,.32) var(--live-pos,58%),rgba(109,255,176,.32) 100%);box-shadow:inset 0 0 0 1px rgba(255,255,255,.07);overflow:visible}
-      #${ID} .range-marker{position:absolute;top:50%;left:var(--live-pos,50%);width:16px;height:16px;border-radius:999px;background:#e5e7eb;border:2px solid currentColor;transform:translate(-50%,-50%);box-shadow:0 0 18px currentColor;color:#ffb454}
-      #${ID} .range-labels{display:flex;justify-content:space-between;color:#94a3b8;font-size:9px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;margin-top:6px}
-      #${ID}.tone-green{border-color:rgba(109,255,176,.24);--radar-alert:rgba(109,255,176,.46)}
-      #${ID}.tone-orange{border-color:rgba(255,180,84,.24);--radar-alert:rgba(255,180,84,.46)}
-      #${ID}.tone-red{border-color:rgba(255,93,108,.26);--radar-alert:rgba(255,93,108,.50)}
-      body.light-mode #${ID}{background:radial-gradient(circle at 50% -18%,rgba(14,165,233,.10),transparent 55%),linear-gradient(180deg,rgba(255,255,255,.94),rgba(248,250,252,.84));border-color:rgba(14,165,233,.25);box-shadow:0 10px 24px rgba(15,23,42,.10)}
-      body.light-mode #${ID} .radar-title{color:#0f172a}
-      body.light-mode #${ID} .radar-range{background:rgba(255,255,255,.78);border-color:rgba(15,23,42,.12)}
-      body.light-mode #${ID} .range-head{color:#0f172a}
-      @media(max-width:380px){#${ID} .radar-stage{width:156px;height:156px}#${ID} .range-head{font-size:9.5px}}
-      @media(max-width:768px){#${ID},#${ID} .radar-stage,#${ID} svg{backface-visibility:hidden;-webkit-backface-visibility:hidden;transform:translate3d(0,0,0);-webkit-transform:translate3d(0,0,0)}#${ID} .radar-pulse,#${ID} .radar-sweep,#${ID} .radar-dot{filter:none!important}}
+      #${ID}.state-changed{animation:coezivRadarAlert 2.6s ease-out 1}#${ID}.state-changed .radar-stage{filter:drop-shadow(0 0 20px var(--radar-alert,rgba(255,180,84,.45)))}#${ID}.state-changed .radar-sweep{animation:coezivRadarSpinFast .72s linear infinite}#${ID}.state-changed .radar-pulse{animation-duration:1.15s;opacity:.8}#${ID}.state-changed .radar-icon{animation:coezivIconPop 1.1s ease-out 1}
+      #${ID} .radar-read{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none}#${ID} .radar-icon{font-size:27px;line-height:1;filter:drop-shadow(0 0 14px currentColor);transform-origin:center;display:inline-block}#${ID} .radar-title{font-size:13px;font-weight:850;color:#e5e7eb;line-height:1.12;margin-top:5px}#${ID} .radar-price{font-size:10.5px;color:#94a3b8;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;margin-top:5px}
+      #${ID} .radar-badges{display:flex;justify-content:center;flex-wrap:wrap;gap:7px;margin-top:2px}#${ID} .radar-badge{border-radius:11px;padding:6px 9px;font-size:10.5px;font-weight:850;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;border:1px solid rgba(148,163,184,.22);background:rgba(2,6,23,.36);color:#cbd5e1;white-space:nowrap}#${ID} .radar-badge.day{border-color:rgba(255,180,84,.36);color:#ffd29c}#${ID} .radar-badge.threshold{border-color:rgba(255,93,108,.38);color:#ffb2ba}
+      #${ID} .radar-range{width:min(94%,480px);margin:9px auto 0;padding:9px 10px;border-radius:14px;border:1px solid rgba(148,163,184,.18);background:rgba(2,6,23,.36);text-align:left}#${ID} .range-head{display:flex;justify-content:space-between;gap:8px;align-items:center;color:#e5e7eb;font-size:10.3px;font-weight:900;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;margin-bottom:8px}#${ID} .range-head span:last-child{color:#94a3b8;font-weight:800}
+      #${ID} .range-track{position:relative;height:10px;border-radius:999px;background:linear-gradient(90deg,rgba(255,93,108,.90) 0%,rgba(255,93,108,.90) var(--bottom-start,8%),rgba(255,180,84,.92) var(--bottom-start,8%),rgba(255,180,84,.92) var(--bottom-end,18%),rgba(45,212,191,.74) var(--bottom-end,18%),rgba(45,212,191,.74) var(--live-pos,58%),rgba(109,255,176,.32) var(--live-pos,58%),rgba(109,255,176,.32) 100%);box-shadow:inset 0 0 0 1px rgba(255,255,255,.07);overflow:visible}#${ID} .range-marker{position:absolute;top:50%;left:var(--live-pos,50%);width:16px;height:16px;border-radius:999px;background:#e5e7eb;border:2px solid currentColor;transform:translate(-50%,-50%);box-shadow:0 0 18px currentColor;color:#ffb454}#${ID} .range-labels{display:flex;justify-content:space-between;color:#94a3b8;font-size:9px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;margin-top:6px}
+      #${ID}.tone-green{border-color:rgba(109,255,176,.24);--radar-alert:rgba(109,255,176,.46)}#${ID}.tone-orange{border-color:rgba(255,180,84,.24);--radar-alert:rgba(255,180,84,.46)}#${ID}.tone-red{border-color:rgba(255,93,108,.26);--radar-alert:rgba(255,93,108,.50)}
+      body.light-mode #${ID}{background:radial-gradient(circle at 50% -18%,rgba(14,165,233,.10),transparent 55%),linear-gradient(180deg,rgba(255,255,255,.94),rgba(248,250,252,.84));border-color:rgba(14,165,233,.25);box-shadow:0 10px 24px rgba(15,23,42,.10)}body.light-mode #${ID} .radar-title{color:#0f172a}body.light-mode #${ID} .radar-range{background:rgba(255,255,255,.78);border-color:rgba(15,23,42,.12)}body.light-mode #${ID} .range-head{color:#0f172a}
+      @media(max-width:380px){#${ID} .radar-stage{width:156px;height:156px}#${ID} .range-head{font-size:9.5px}}@media(max-width:768px){#${ID},#${ID} .radar-stage,#${ID} svg{backface-visibility:hidden;-webkit-backface-visibility:hidden;transform:translate3d(0,0,0);-webkit-transform:translate3d(0,0,0)}#${ID} .radar-pulse,#${ID} .radar-sweep,#${ID} .radar-dot{filter:none!important}}
     `;
     document.head.appendChild(s);
   }
@@ -284,11 +222,7 @@
       const a = (i / 24) * Math.PI * 2;
       const r1 = 75;
       const r2 = i % 3 === 0 ? 66 : 70;
-      const x1 = 86 + r1 * Math.cos(a);
-      const y1 = 86 + r1 * Math.sin(a);
-      const x2 = 86 + r2 * Math.cos(a);
-      const y2 = 86 + r2 * Math.sin(a);
-      out += `<line class="radar-tick" x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}"/>`;
+      out += `<line class="radar-tick" x1="${(86 + r1 * Math.cos(a)).toFixed(1)}" y1="${(86 + r1 * Math.sin(a)).toFixed(1)}" x2="${(86 + r2 * Math.cos(a)).toFixed(1)}" y2="${(86 + r2 * Math.sin(a)).toFixed(1)}"/>`;
     }
     return out;
   }
@@ -301,49 +235,15 @@
     card.id = ID;
     card.setAttribute("aria-live", "polite");
     card.innerHTML = `
-      <div class="radar-stage">
-        <svg viewBox="0 0 172 172" aria-hidden="true">
-          <circle cx="86" cy="86" r="80" fill="none" stroke="rgba(148,163,184,.18)" stroke-width="1"/>
-          <circle cx="86" cy="86" r="55" fill="none" stroke="rgba(148,163,184,.16)" stroke-width="1"/>
-          <g>${tickMarks()}</g>
-          <circle class="radar-pulse p1" cx="86" cy="86" r="40" fill="none" stroke="#ffb454" stroke-width="1.4"/>
-          <circle class="radar-pulse p2" cx="86" cy="86" r="40" fill="none" stroke="#ffb454" stroke-width="1.4"/>
-          <g class="radar-sweep"><path d="M86 86 L86 7 A79 79 0 0 1 138 28 Z" fill="rgba(109,255,176,.32)"/></g>
-          <circle class="radar-dot" cx="86" cy="86" r="5" fill="#ffb454"/>
-        </svg>
-        <div class="radar-read">
-          <div class="radar-icon" id="mini-radar-icon">🟠</div>
-          <div class="radar-title" id="mini-radar-title">Radar</div>
-          <div class="radar-price" id="mini-radar-price">—</div>
-        </div>
-      </div>
-      <div class="radar-badges">
-        <span id="mini-radar-day" class="radar-badge day">⏳ Fereastră —</span>
-        <span id="mini-radar-threshold" class="radar-badge threshold">🎯 Bottom —</span>
-      </div>
-      <div class="radar-range" id="mini-radar-range" aria-label="BTC structural range">
-        <div class="range-head">
-          <span id="mini-range-title">—</span>
-          <span id="mini-range-live">—</span>
-        </div>
-        <div class="range-track" id="mini-range-track">
-          <span class="range-marker" id="mini-range-marker"></span>
-        </div>
-        <div class="range-labels">
-          <span id="mini-range-low">—</span>
-          <span id="mini-range-mid">—</span>
-          <span id="mini-range-high">—</span>
-        </div>
-      </div>
+      <div class="radar-stage"><svg viewBox="0 0 172 172" aria-hidden="true"><circle cx="86" cy="86" r="80" fill="none" stroke="rgba(148,163,184,.18)" stroke-width="1"/><circle cx="86" cy="86" r="55" fill="none" stroke="rgba(148,163,184,.16)" stroke-width="1"/><g>${tickMarks()}</g><circle class="radar-pulse p1" cx="86" cy="86" r="40" fill="none" stroke="#ffb454" stroke-width="1.4"/><circle class="radar-pulse p2" cx="86" cy="86" r="40" fill="none" stroke="#ffb454" stroke-width="1.4"/><g class="radar-sweep"><path d="M86 86 L86 7 A79 79 0 0 1 138 28 Z" fill="rgba(109,255,176,.32)"/></g><circle class="radar-dot" cx="86" cy="86" r="5" fill="#ffb454"/></svg><div class="radar-read"><div class="radar-icon" id="mini-radar-icon">🟠</div><div class="radar-title" id="mini-radar-title">Radar</div><div class="radar-price" id="mini-radar-price">—</div></div></div>
+      <div class="radar-badges"><span id="mini-radar-day" class="radar-badge day">⏳ Fereastră —</span><span id="mini-radar-threshold" class="radar-badge threshold">🎯 Bottom —</span></div>
+      <div class="radar-range" id="mini-radar-range" aria-label="BTC structural range"><div class="range-head"><span id="mini-range-title">—</span><span id="mini-range-live">—</span></div><div class="range-track" id="mini-range-track"><span class="range-marker" id="mini-range-marker"></span></div><div class="range-labels"><span id="mini-range-low">—</span><span id="mini-range-mid">—</span><span id="mini-range-high">—</span></div></div>
     `;
     anchor.parentNode.insertBefore(card, anchor);
     return card;
   }
 
-  function set(id, value) {
-    const el = by(id);
-    if (el) el.textContent = value;
-  }
+  function set(id, value) { const el = by(id); if (el) el.textContent = value; }
 
   function triggerStateChange(card, toneClass) {
     if (!card || !lastToneClass || lastToneClass === toneClass) return;
@@ -354,28 +254,16 @@
   }
 
   function renderRange(zone, live) {
-    const track = by("mini-range-track");
-    const marker = by("mini-range-marker");
-    const box = by("mini-radar-range");
+    const track = by("mini-range-track"), marker = by("mini-range-marker"), box = by("mini-radar-range");
     if (!track || !marker || !box) return;
-
-    if (!zone) {
-      box.style.display = "none";
-      return;
-    }
-
+    if (!zone) { box.style.display = "none"; return; }
     box.style.display = "block";
     const min = zone.bottomLow;
     const max = zone.bear;
-    const livePos = pctBetween(live, min, max);
-    const bottomStart = pctBetween(zone.bottomLow, min, max);
-    const bottomEnd = pctBetween(zone.bottomHigh, min, max);
-
-    track.style.setProperty("--live-pos", livePos.toFixed(2) + "%");
-    track.style.setProperty("--bottom-start", bottomStart.toFixed(2) + "%");
-    track.style.setProperty("--bottom-end", bottomEnd.toFixed(2) + "%");
+    track.style.setProperty("--live-pos", pctBetween(live, min, max).toFixed(2) + "%");
+    track.style.setProperty("--bottom-start", pctBetween(zone.bottomLow, min, max).toFixed(2) + "%");
+    track.style.setProperty("--bottom-end", pctBetween(zone.bottomHigh, min, max).toFixed(2) + "%");
     marker.style.color = zone.color;
-
     const confirmed = zone.timing && zone.timing.confirmed ? tr("confirmat", "confirmed") : tr("neconfirmat", "unconfirmed");
     set("mini-range-title", zone.dir === "up" ? `${tr("Traseu revenire", "Recovery path")} · ${confirmed}` : (zone.dir === "down" ? `${tr("Traseu risc", "Risk path")} · ${confirmed}` : `${tr("Traseu structural", "Structural path")} · ${confirmed}`));
     set("mini-range-live", `${tr("Live", "Live")} ${usdK(live)}`);
@@ -390,34 +278,23 @@
     lastSummary = summary || lastSummary;
     const card = ensureCard();
     if (!card || !lastState) return;
-
     const live = currentLivePrice() || Number(lastState.price_usd);
     const zone = structuralTone(live, lastSummary, lastState, lastRisk);
     const tone = zone || fallbackToneFor(lastRisk || {});
     const oldTone = lastToneClass;
-
     card.className = tone.cls;
     if (oldTone && oldTone !== tone.cls) triggerStateChange(card, tone.cls);
-
     set("mini-radar-icon", tone.icon);
     set("mini-radar-title", tone.title);
     set("mini-radar-price", usdK(live || lastState.price_usd));
     set("mini-radar-day", momentBadge(zone, lastRisk));
-
     const rangeText = rangeBadgeText(zone);
-    if (rangeText) {
-      set("mini-radar-threshold", rangeText);
-    } else {
-      const threshold = liveWindowThreshold(lastState, lastRisk);
-      set("mini-radar-threshold", `⚙️ ${tr("Prag fereastră", "Window threshold")} ${usdK(threshold)}`);
-    }
-
+    if (rangeText) set("mini-radar-threshold", rangeText);
+    else set("mini-radar-threshold", `⚙️ ${tr("Prag fereastră", "Window threshold")} ${usdK(liveWindowThreshold(lastState, lastRisk))}`);
     card.querySelectorAll(".radar-pulse").forEach(el => el.setAttribute("stroke", tone.color));
     const dot = card.querySelector(".radar-dot");
     if (dot) dot.setAttribute("fill", tone.color);
-
     renderRange(zone, live);
-
     lastToneClass = tone.cls;
     lastLang = lang();
   }
@@ -426,11 +303,7 @@
     installStyle();
     if (!ensureCard()) return;
     try {
-      const [state, risk, summary] = await Promise.all([
-        json("coeziv_state.json"),
-        json("risk_window.json"),
-        jsonOrNull("adaptive_bottom_zone_summary.json")
-      ]);
+      const [state, risk, summary] = await Promise.all([json("coeziv_state.json"), json("risk_window.json"), jsonOrNull("adaptive_bottom_zone_summary.json")]);
       render(state, risk, summary);
     } catch (_) {
       set("mini-radar-title", tr("Radar indisponibil", "Radar unavailable"));
@@ -441,10 +314,7 @@
     load();
     clearInterval(refreshTimer);
     clearInterval(liveSyncTimer);
-    refreshTimer = setInterval(() => {
-      if (lastLang !== lang()) render(lastState, lastRisk, lastSummary);
-      else load();
-    }, 60 * 1000);
+    refreshTimer = setInterval(() => { if (lastLang !== lang()) render(lastState, lastRisk, lastSummary); else load(); }, 60 * 1000);
     liveSyncTimer = setInterval(() => render(lastState, lastRisk, lastSummary), 1000);
   }
 
