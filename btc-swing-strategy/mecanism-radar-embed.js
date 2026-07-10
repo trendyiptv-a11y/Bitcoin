@@ -47,19 +47,6 @@
     catch (_) { return null; }
   }
 
-  function deriveStart(state) {
-    const hist = Array.isArray(state && state.signal_history) ? state.signal_history : [];
-    const firstShort = hist.find(x => x.signal === "short");
-    return firstShort ? Number(firstShort.model_price_usd) : Number((state && (state.model_price_usd || state.price_usd)) || 0);
-  }
-
-  function liveWindowThreshold(state, risk) {
-    const start = deriveStart(state);
-    const dd = Number((risk && risk.major_drawdown_threshold) ?? -0.2);
-    if (!Number.isFinite(start) || start <= 0 || !Number.isFinite(dd)) return null;
-    return start * (1 + dd);
-  }
-
   function candidate(summary) {
     return summary && summary.radar_candidate ? summary.radar_candidate : null;
   }
@@ -126,31 +113,79 @@
     };
   }
 
+  function zonePack(key, dir, bounds, titles) {
+    const isUp = dir === "up";
+    const isDown = dir === "down";
+    const title = isDown ? titles.down : (isUp ? titles.up : titles.flat);
+    const cls = isDown ? titles.downCls : (isUp ? titles.upCls : titles.flatCls);
+    const icon = isDown ? titles.downIcon : (isUp ? titles.upIcon : titles.flatIcon);
+    const color = cls === "tone-green" ? "#6dffb0" : (cls === "tone-red" ? "#ff5d6c" : "#ffb454");
+    return Object.assign({ key, dir, title, cls, icon, color }, bounds);
+  }
+
   function structuralTone(price, summary, state, risk) {
     const c = candidate(summary);
     if (!c || !Number.isFinite(Number(price))) return null;
-    const ath = Number(c.ath_price);
-    const bear = Number(c.bear_warning_threshold);
-    const bottomLow = Number(c.bottom_risk_zone_low);
-    const bottomMid = Number(c.bottom_risk_zone_mid);
-    const bottomHigh = Number(c.bottom_risk_zone_high);
-    const hard = Number(c.hard_capitulation_below);
-    const liveInternal = liveWindowThreshold(state, risk);
-    const dir = flowDirection(state, risk);
-    const ts = timingSnapshot(summary, state);
-    const p = Number(price);
 
-    function t(key, cls, icon, color, downTitle, flatTitle, upTitle) {
-      const title = dir === "down" ? downTitle : (dir === "up" ? upTitle : flatTitle);
-      return { key, cls, icon, color, title, dir, ath, bear, bottomLow, bottomMid, bottomHigh, hard, liveInternal, timing: ts };
+    const p = Number(price);
+    const bounds = {
+      ath: Number(c.ath_price),
+      bear: Number(c.bear_warning_threshold),
+      bottomLow: Number(c.bottom_risk_zone_low),
+      bottomMid: Number(c.bottom_risk_zone_mid),
+      bottomHigh: Number(c.bottom_risk_zone_high),
+      hard: Number(c.hard_capitulation_below),
+      timing: timingSnapshot(summary, state)
+    };
+    const dir = flowDirection(state, risk);
+
+    if (p >= bounds.ath) {
+      return zonePack("expansion", dir, bounds, {
+        down: tr("Expansiune sub presiune", "Expansion under pressure"),
+        flat: tr("Expansiune structurală", "Structural expansion"),
+        up: tr("Expansiune activă", "Active expansion"),
+        downCls: "tone-orange", flatCls: "tone-green", upCls: "tone-green",
+        downIcon: "🟠", flatIcon: "🟢", upIcon: "🟢"
+      });
     }
 
-    if (p >= ath) return t("expansion", "tone-green", "🟢", "#6dffb0", tr("Expansiune sub presiune", "Expansion under pressure"), tr("Expansiune structurală", "Structural expansion"), tr("Expansiune activă", "Active expansion"));
-    if (p >= bear) return t("repaired", "tone-green", "🟢", "#6dffb0", tr("Structură refăcută sub presiune", "Repaired structure under pressure"), tr("Structură refăcută", "Structure repaired"), tr("Creștere structurală", "Structural growth"));
-    if (Number.isFinite(liveInternal) && p >= liveInternal) return t("fragility", "tone-orange", "🟠", "#ffb454", tr("Risc de fragilitate", "Fragility risk"), tr("Fragilitate urmărită", "Fragility watched"), tr("Reparare fragilitate", "Fragility repair"));
-    if (p > bottomHigh) return t("deep", dir === "up" ? "tone-orange" : "tone-red", dir === "up" ? "🟠" : "🔴", dir === "up" ? "#ffb454" : "#ff5d6c", tr("Risc de degradare profundă", "Deep degradation risk"), tr("Degradare profundă", "Deep degradation"), tr("Revenire din degradare", "Recovery from degradation"));
-    if (p >= bottomLow) return t("bottom", dir === "down" ? "tone-red" : "tone-orange", dir === "down" ? "🔴" : "🟠", dir === "down" ? "#ff5d6c" : "#ffb454", tr("Risc în bottom final", "Final bottom risk"), tr("Bottom final activ", "Final bottom active"), tr("Ieșire din bottom final", "Leaving final bottom"));
-    return t("capitulation", dir === "up" ? "tone-orange" : "tone-red", dir === "up" ? "🟠" : "🔴", dir === "up" ? "#ffb454" : "#ff5d6c", tr("Risc de capitulare", "Capitulation risk"), tr("Capitulare sub bottom absolut", "Capitulation below absolute bottom"), tr("Revenire din capitulare", "Recovery from capitulation"));
+    if (p >= bounds.bear) {
+      return zonePack("repaired", dir, bounds, {
+        down: tr("Retest de ruptură", "Rupture retest"),
+        flat: tr("Structură refăcută", "Structure repaired"),
+        up: tr("Creștere structurală", "Structural growth"),
+        downCls: "tone-orange", flatCls: "tone-green", upCls: "tone-green",
+        downIcon: "🟠", flatIcon: "🟢", upIcon: "🟢"
+      });
+    }
+
+    if (p > bounds.bottomHigh) {
+      return zonePack("deep", dir, bounds, {
+        down: tr("Risc de adâncire", "Deepening risk"),
+        flat: tr("Degradare profundă", "Deep degradation"),
+        up: tr("Revenire în degradare", "Recovery inside degradation"),
+        downCls: "tone-red", flatCls: "tone-red", upCls: "tone-orange",
+        downIcon: "🔴", flatIcon: "🔴", upIcon: "🟠"
+      });
+    }
+
+    if (p >= bounds.bottomLow) {
+      return zonePack("bottom", dir, bounds, {
+        down: tr("Risc în bottom final", "Final bottom risk"),
+        flat: tr("Bottom final în test", "Final bottom testing"),
+        up: tr("Ieșire din bottom final", "Leaving final bottom"),
+        downCls: "tone-red", flatCls: "tone-orange", upCls: "tone-orange",
+        downIcon: "🔴", flatIcon: "🟠", upIcon: "🟠"
+      });
+    }
+
+    return zonePack("capitulation", dir, bounds, {
+      down: tr("Risc de capitulare", "Capitulation risk"),
+      flat: tr("Capitulare în test", "Capitulation testing"),
+      up: tr("Revenire din capitulare", "Recovery from capitulation"),
+      downCls: "tone-red", flatCls: "tone-red", upCls: "tone-orange",
+      downIcon: "🔴", flatIcon: "🔴", upIcon: "🟠"
+    });
   }
 
   function fallbackToneFor(risk) {
@@ -159,7 +194,7 @@
     const median = Number((risk && risk.median_days_to_confirmation) || 27);
     const level = String((risk && risk.level) || "");
     if (!active) return { cls: "tone-green", icon: "🟢", title: tr("Structură refăcută", "Structure repaired"), color: "#6dffb0" };
-    if (days >= median || level === "high") return { cls: "tone-red", icon: "🔴", title: days >= median ? tr("Degradare persistentă", "Persistent degradation") : tr("Risc structural", "Structural risk"), color: "#ff5d6c" };
+    if (days >= median || level === "high") return { cls: "tone-red", icon: "🔴", title: tr("Degradare persistentă", "Persistent degradation"), color: "#ff5d6c" };
     return { cls: "tone-orange", icon: "🟠", title: tr("Degradare activă", "Active degradation"), color: "#ffb454" };
   }
 
@@ -170,11 +205,11 @@
     if (ts && ts.touchDays !== null) {
       const lag = ts.confirmLag !== null ? ` · ${tr("conf.", "conf.")} +${ts.confirmLag}z` : "";
       if (ts.confirmed) {
-        if (zone.dir === "up") return `↗ ${tr("Revenire confirmată", "Confirmed recovery")} · ${ts.touchDays}z${lag}`;
-        if (zone.dir === "down") return `⚠️ ${tr("Risc confirmat", "Confirmed risk")} · ${ts.touchDays}z${lag}`;
-        return `✓ ${tr("Confirmat structural", "Structurally confirmed")} · ${ts.touchDays}z${lag}`;
+        if (zone.dir === "up") return `↗ ${tr("Revenire în structură confirmată", "Recovery in confirmed structure")} · ${ts.touchDays}z${lag}`;
+        if (zone.dir === "down") return `⚠️ ${tr("Risc în structură confirmată", "Risk in confirmed structure")} · ${ts.touchDays}z${lag}`;
+        return `✓ ${tr("Structură fragilă confirmată", "Fragile structure confirmed")} · ${ts.touchDays}z${lag}`;
       }
-      return `⏳ ${tr("În test", "Testing")} · ${ts.touchDays}z / ~${median || "—"}`;
+      return `⏳ ${tr("În test structural", "Structural test")} · ${ts.touchDays}z / ~${median || "—"}`;
     }
     if (zone && zone.dir === "up") return `↗ ${tr("Revenire", "Recovery")} · ${tr("fereastră", "window")} ${oldDays || "—"}z`;
     if (zone && zone.dir === "down") return `⚠️ ${tr("Risc", "Risk")} · ${tr("ziua", "day")} ${oldDays || "—"} / ~${median || "—"}`;
@@ -184,8 +219,8 @@
   function rangeBadgeText(zone) {
     if (!zone) return null;
     if (zone.key === "capitulation") return `🧨 ${tr("Capitulare sub", "Capitulation below")} ${usdK(zone.hard)}`;
-    if (zone.key === "bottom") return `🎯 ${tr("Bottom final activ", "Final bottom active")} ${usdK(zone.bottomLow)}–${usdK(zone.bottomHigh)}`;
-    return `🎯 ${tr("Bottom final", "Final bottom")} ${usdK(zone.bottomLow)}–${usdK(zone.bottomHigh)}`;
+    if (zone.key === "bottom") return `🎯 ${tr("Bottom final în test", "Final bottom testing")} ${usdK(zone.bottomLow)}–${usdK(zone.bottomHigh)}`;
+    return `🎯 ${tr("Bottom final neatins", "Final bottom not reached")} ${usdK(zone.bottomLow)}–${usdK(zone.bottomHigh)}`;
   }
 
   function installStyle() {
@@ -290,7 +325,7 @@
     set("mini-radar-day", momentBadge(zone, lastRisk));
     const rangeText = rangeBadgeText(zone);
     if (rangeText) set("mini-radar-threshold", rangeText);
-    else set("mini-radar-threshold", `⚙️ ${tr("Prag fereastră", "Window threshold")} ${usdK(liveWindowThreshold(lastState, lastRisk))}`);
+    else set("mini-radar-threshold", `⚙️ ${tr("Prag fereastră", "Window threshold")} —`);
     card.querySelectorAll(".radar-pulse").forEach(el => el.setAttribute("stroke", tone.color));
     const dot = card.querySelector(".radar-dot");
     if (dot) dot.setAttribute("fill", tone.color);
