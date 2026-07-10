@@ -64,6 +64,31 @@
     return summary && summary.radar_candidate ? summary.radar_candidate : null;
   }
 
+  function timing(summary) {
+    return summary && summary.structural_timing ? summary.structural_timing : null;
+  }
+
+  function ymdDate(value) {
+    const m = String(value || "").match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (!m) return null;
+    return new Date(Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3])));
+  }
+
+  function daysBetween(start, end) {
+    const a = ymdDate(start);
+    const b = ymdDate(end);
+    if (!a || !b) return null;
+    return Math.max(0, Math.floor((b.getTime() - a.getTime()) / 86400000));
+  }
+
+  function stateDate(state, summary) {
+    const s = String((state && (state.timestamp || state.generated_at)) || "").slice(0, 10);
+    if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+    const d = String((summary && summary.date_max) || "");
+    if (/^\d{4}-\d{2}-\d{2}$/.test(d)) return d;
+    return new Date().toISOString().slice(0, 10);
+  }
+
   function flowDirection(state, risk) {
     const signal = String((state && state.signal) || (risk && risk.current_signal) || "").toLowerCase();
     const flow = String((state && state.flow_bias) || "").toLowerCase();
@@ -78,6 +103,30 @@
     return Math.max(0, Math.min(100, ((v - a) / (b - a)) * 100));
   }
 
+  function timingSnapshot(summary, state) {
+    const t = timing(summary);
+    if (!t) return null;
+    const asOf = stateDate(state, summary);
+    const touch = t.fragility_touch_date;
+    const confirm = t.close_confirmation_date;
+    const touchDays = daysBetween(touch, asOf);
+    const confirmDays = daysBetween(confirm, asOf);
+    const confirmLag = Number(t.days_from_fragility_touch_to_confirmation);
+    const confirmed = !!(confirm && confirmDays !== null && confirmDays >= 0);
+
+    return {
+      asOf,
+      touch,
+      confirm,
+      touchDays,
+      confirmDays,
+      confirmLag: Number.isFinite(confirmLag) ? confirmLag : null,
+      confirmed,
+      reference: Number(t.fragility_reference_price),
+      adaptive: Number(t.adaptive_bear_warning_threshold)
+    };
+  }
+
   function structuralTone(price, summary, state, risk) {
     const c = candidate(summary);
     if (!c || !Number.isFinite(Number(price))) return null;
@@ -90,11 +139,12 @@
     const hard = Number(c.hard_capitulation_below);
     const liveInternal = liveWindowThreshold(state, risk);
     const dir = flowDirection(state, risk);
+    const ts = timingSnapshot(summary, state);
     const p = Number(price);
 
     function t(key, cls, icon, color, downTitle, flatTitle, upTitle) {
       const title = dir === "down" ? downTitle : (dir === "up" ? upTitle : flatTitle);
-      return { key, cls, icon, color, title, dir, ath, bear, bottomLow, bottomMid, bottomHigh, hard, liveInternal };
+      return { key, cls, icon, color, title, dir, ath, bear, bottomLow, bottomMid, bottomHigh, hard, liveInternal, timing: ts };
     }
 
     if (p >= ath) {
@@ -151,27 +201,29 @@
   }
 
   function momentBadge(zone, risk) {
-    const days = Number((risk && risk.consecutive_degradation_days) || 0);
+    const oldDays = Number((risk && risk.consecutive_degradation_days) || 0);
     const median = Number((risk && risk.median_days_to_confirmation) || 27);
-    if (!zone) return `⏳ ${tr("Ziua", "Day")} ${days || "—"} / ~${median || "—"}`;
+    const ts = zone && zone.timing;
 
-    if (zone.dir === "up") {
-      return `↗ ${tr("Revenire", "Recovery")} · ${tr("fereastră", "window")} ${days || "—"}z`;
+    if (ts && ts.touchDays !== null) {
+      const lag = ts.confirmLag !== null ? ` · ${tr("conf.", "conf.")} +${ts.confirmLag}z` : "";
+      if (ts.confirmed) {
+        if (zone.dir === "up") return `↗ ${tr("Revenire confirmată", "Confirmed recovery")} · ${ts.touchDays}z${lag}`;
+        if (zone.dir === "down") return `⚠️ ${tr("Risc confirmat", "Confirmed risk")} · ${ts.touchDays}z${lag}`;
+        return `✓ ${tr("Confirmat structural", "Structurally confirmed")} · ${ts.touchDays}z${lag}`;
+      }
+      return `⏳ ${tr("În test", "Testing")} · ${ts.touchDays}z / ~${median || "—"}`;
     }
-    if (zone.dir === "down") {
-      return `⚠️ ${tr("Risc", "Risk")} · ${tr("ziua", "day")} ${days || "—"} / ~${median || "—"}`;
-    }
-    return `⏳ ${tr("Fereastră", "Window")} ${days || "—"} / ~${median || "—"}`;
+
+    if (zone && zone.dir === "up") return `↗ ${tr("Revenire", "Recovery")} · ${tr("fereastră", "window")} ${oldDays || "—"}z`;
+    if (zone && zone.dir === "down") return `⚠️ ${tr("Risc", "Risk")} · ${tr("ziua", "day")} ${oldDays || "—"} / ~${median || "—"}`;
+    return `⏳ ${tr("Fereastră", "Window")} ${oldDays || "—"} / ~${median || "—"}`;
   }
 
   function rangeBadgeText(zone) {
     if (!zone) return null;
-    if (zone.key === "capitulation") {
-      return `🧨 ${tr("Capitulare sub", "Capitulation below")} ${usdK(zone.hard)}`;
-    }
-    if (zone.key === "bottom") {
-      return `🎯 ${tr("Bottom final activ", "Final bottom active")} ${usdK(zone.bottomLow)}–${usdK(zone.bottomHigh)}`;
-    }
+    if (zone.key === "capitulation") return `🧨 ${tr("Capitulare sub", "Capitulation below")} ${usdK(zone.hard)}`;
+    if (zone.key === "bottom") return `🎯 ${tr("Bottom final activ", "Final bottom active")} ${usdK(zone.bottomLow)}–${usdK(zone.bottomHigh)}`;
     return `🎯 ${tr("Bottom final", "Final bottom")} ${usdK(zone.bottomLow)}–${usdK(zone.bottomHigh)}`;
   }
 
@@ -324,7 +376,8 @@
     track.style.setProperty("--bottom-end", bottomEnd.toFixed(2) + "%");
     marker.style.color = zone.color;
 
-    set("mini-range-title", zone.dir === "up" ? tr("Traseu revenire", "Recovery path") : (zone.dir === "down" ? tr("Traseu risc", "Risk path") : tr("Traseu structural", "Structural path")));
+    const confirmed = zone.timing && zone.timing.confirmed ? tr("confirmat", "confirmed") : tr("neconfirmat", "unconfirmed");
+    set("mini-range-title", zone.dir === "up" ? `${tr("Traseu revenire", "Recovery path")} · ${confirmed}` : (zone.dir === "down" ? `${tr("Traseu risc", "Risk path")} · ${confirmed}` : `${tr("Traseu structural", "Structural path")} · ${confirmed}`));
     set("mini-range-live", `${tr("Live", "Live")} ${usdK(live)}`);
     set("mini-range-low", `${tr("Cap", "Cap")} ${usdK(zone.bottomLow)}`);
     set("mini-range-mid", `${tr("Mid", "Mid")} ${usdK(zone.bottomMid)}`);
