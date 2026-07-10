@@ -1,20 +1,164 @@
 {
-  "title": "FEREASTRA_DE_RISC",
+  "title": "FEREASTRA_STRUCTURALA_BTC",
   "active": true,
-  "level": "moderate",
-  "current_regime": "bear_late",
+  "level": "high",
+  "current_regime": "Degradare profundă · zona istoric modelată neatinsă",
   "current_signal": "flat",
-  "consecutive_degradation_days": 39,
+  "consecutive_degradation_days": 238,
+  "streak_days": 238,
   "window_days": 180,
   "major_drawdown_threshold": -0.2,
-  "historical_available_events": 107,
-  "historical_confirmed_events": 53,
-  "historical_confirmation_rate": 0.4953271028037383,
-  "median_days_to_confirmation": 27.0,
-  "average_days_to_confirmation": 44.22641509433962,
-  "median_min_drawdown": -0.19723364752564,
-  "average_min_drawdown": -0.25087341574654526,
-  "main_text": "Contextul actual aparține unei familii istorice care a generat scăderi importante în aproximativ 50% din cazuri. Când acestea s-au confirmat, confirmarea a apărut în medie după ~27 zile.",
-  "footer": "Interpretare statistică a degradării structurale, nu recomandare de tranzacționare.",
-  "generated_at": "2026-07-10T13:17:37.977741+00:00"
+  "threshold": -0.2,
+  "historical_available_events": 54,
+  "historical_confirmed_events": 23,
+  "historical_confirmation_rate": 1.0,
+  "median_days_to_confirmation": 3.0,
+  "average_days_to_confirmation": 3.0,
+  "median_min_drawdown": -0.1775862429604294,
+  "average_min_drawdown": -0.2451126447112857,
+  "since_2025_12_summary": {
+    "since": "2025-12-01",
+    "events": 4,
+    "max_streak_days": 74,
+    "current_streak_days": 39,
+    "current_is_record": false,
+    "matching_or_longer_than_current": 2,
+    "top_streaks": [
+      {
+        "start": "2026-01-22",
+        "end": "2026-04-05",
+        "days": 74,
+        "is_current": false,
+        "start_price": 89454.2,
+        "end_price": 68983.7,
+        "regimes": [
+          "bear_late",
+          "bear_struct"
+        ],
+        "signals": [
+          "flat",
+          "short"
+        ],
+        "window_days": 180,
+        "major_drawdown_threshold": -0.2,
+        "min_drawdown": -0.34567745281943163,
+        "confirmed_major_drawdown": true,
+        "days_to_confirmation": 14
+      },
+      {
+        "start": "2026-06-02",
+        "end": "2026-07-10",
+        "days": 39,
+        "is_current": true,
+        "start_price": 66669.7,
+        "end_price": 63902.4,
+        "regimes": [
+          "bear_late",
+          "bear_struct"
+        ],
+        "signals": [
+          "flat",
+          "short"
+        ],
+        "window_days": 180,
+        "major_drawdown_threshold": -0.2,
+        "min_drawdown": -0.12206144620419768,
+        "confirmed_major_drawdown": false,
+        "days_to_confirmation": null
+      },
+      {
+        "start": "2026-04-07",
+        "end": "2026-04-10",
+        "days": 4,
+        "is_current": false,
+        "start_price": 71925.0,
+        "end_price": 72973.8,
+        "regimes": [
+          "bear_struct"
+        ],
+        "signals": [
+          "flat"
+        ],
+        "window_days": 180,
+        "major_drawdown_threshold": -0.2,
+        "min_drawdown": -0.1862092457420924,
+        "confirmed_major_drawdown": false,
+        "days_to_confirmation": null
+      },
+      {
+        "start": "2026-01-20",
+        "end": "2026-01-20",
+        "days": 1,
+        "is_current": false,
+        "start_price": 88309.9,
+        "end_price": 88309.9,
+        "regimes": [
+          "bear_struct"
+        ],
+        "signals": [
+          "short"
+        ],
+        "window_days": 180,
+        "major_drawdown_threshold": -0.2,
+        "min_drawdown": -0.3371988871009931,
+        "confirmed_major_drawdown": true,
+        "days_to_confirmation": 16
+      }
+    ]
+  },
+  "main_text": "Bitcoin a intrat în fragilitate la ~94K, pe 2025-11-14, iar ruptura a fost confirmată pe închidere după 3 zile, pe 2025-11-17. Cele 3 zile marchează confirmarea intrării în fragilitate; cele ~238 zile măsoară durata în care structura a rămas sub efectul rupturii, fără reparare completă. Regimul curent este: Degradare profundă · zona istoric modelată neatinsă. Zona istoric modelată de mecanism, 23.5K–29.1K, este neatinsă.",
+  "footer": "Interpretare structurală din harta istoric modelată de mecanism; nu modifică modelul de bază, tradingul și nu reprezintă recomandare de tranzacționare.",
+  "generated_at": "2026-07-10T13:50:02.501889+00:00",
+  "structural_source": "btc-swing-strategy/adaptive_bottom_zone_summary.json",
+  "structural_as_of": "2026-07-10",
+  "structural_zone": {
+    "key": "deep",
+    "label": "Degradare profundă · zona istoric modelată neatinsă",
+    "active": true,
+    "level": "high",
+    "direction": "flat"
+  },
+  "structural_timing": {
+    "as_of": "2026-07-10",
+    "fragility_touch_date": "2025-11-14",
+    "adaptive_bear_warning_touch_date": "2025-11-16",
+    "close_confirmation_date": "2025-11-17",
+    "days_from_fragility_touch": 238,
+    "days_from_close_confirmation": 235,
+    "days_to_close_confirmation": 3,
+    "confirmed": true,
+    "fragility_reference_price": 94000.0,
+    "adaptive_bear_warning_threshold": 93200.5755
+  },
+  "bottom_observation": {
+    "status": "neatinsă",
+    "touched_model_zone": false,
+    "touched_hard_capitulation": false,
+    "confirmed_exit_above_zone": false,
+    "min_close_after_fragility_touch": 58531.9
+  },
+  "fragility_reference_price": 94000.0,
+  "adaptive_bear_warning_threshold": 93200.5755,
+  "fragility_touch_date": "2025-11-14",
+  "close_confirmation_date": "2025-11-17",
+  "days_from_fragility_touch": 238,
+  "days_to_close_confirmation": 3,
+  "bottom_risk_zone_low": 23486.02018425227,
+  "bottom_risk_zone_mid": 26297.91821468954,
+  "bottom_risk_zone_high": 29109.82798347667,
+  "bottom_status": "neatinsă",
+  "legacy_risk_window": {
+    "active": true,
+    "level": "moderate",
+    "current_regime": "bear_late",
+    "current_signal": "flat",
+    "consecutive_degradation_days": 39,
+    "historical_available_events": 54,
+    "historical_confirmed_events": 23,
+    "historical_confirmation_rate": 0.42592592592592593,
+    "median_days_to_confirmation": 26.0,
+    "average_days_to_confirmation": 41.47826086956522,
+    "median_min_drawdown": -0.1775862429604294,
+    "average_min_drawdown": -0.2451126447112857
+  }
 }
