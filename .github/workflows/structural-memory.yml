@@ -28,8 +28,12 @@ jobs:
           persist-credentials: true
           fetch-depth: 0
 
-      - name: Pull latest main
-        run: git pull --rebase origin main
+      - name: Configure git identity and pull latest branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME:-main}}"
+          git pull --rebase origin "$BRANCH"
 
       - name: Set up Python
         uses: actions/setup-python@v5
