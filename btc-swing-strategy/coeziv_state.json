@@ -1,16 +1,16 @@
 {
   "timestamp": "2026-07-07T00:00:00+00:00",
-  "price_usd": 64379.0,
-  "model_price_usd": 109161.59246471967,
+  "price_usd": 64305.0,
+  "model_price_usd": 103698.73406329827,
   "ic_close_usd": 63138.2,
   "price_source": "spot",
   "model_price_source": "cohesive_fair_price_v2",
   "model_price_method": "production_cost_context_similarity_v2",
-  "model_price_deviation": -0.41024128957438133,
-  "model_price_explanation": "Prețul coeziv central este ~109,162 USD, calculat din costul de producție actual (~56,219 USD) și din 250 contexte istorice similare, unde multiplicatorul median preț/cost este 1.942×. Prețul live este −41.0% sub acest reper coeziv. Banda statistică a modelului este ~62,724 USD – ~297,078 USD; banda superioară nu este target, ci limită statistică a multiplicatorului istoric.",
+  "model_price_deviation": -0.379886354632373,
+  "model_price_explanation": "Prețul coeziv central este ~103,699 USD, calculat din costul de producție actual (~53,406 USD) și din 250 contexte istorice similare, unde multiplicatorul median preț/cost este 1.942×. Prețul live este −38.0% sub acest reper coeziv. Banda statistică a modelului este ~59,585 USD – ~282,211 USD; banda superioară nu este target, ci limită statistică a multiplicatorului istoric.",
   "signal": "flat",
-  "message": "Prețul de tranzacționare la actualizarea sistemului: în jur de ~64,379 USD. Mecanismul vede un neutru. Fluxul actual de piață este orientat spre vânzare (moderat). Lichiditatea este ridicată, iar mișcările de preț tind să fie mai stabile. Prețul este într-o zonă de echilibru față de costul estimat de producție al rețelei. Nu este o recomandare de tranzacționare, ci o interpretare structurată a riscului. Prețul coeziv central este ~109,162 USD, calculat din costul de producție actual (~56,219 USD) și din 250 contexte istorice similare, unde multiplicatorul median preț/cost este 1.942×. Prețul live este −41.0% sub acest reper coeziv. Banda statistică a modelului este ~62,724 USD – ~297,078 USD; banda superioară nu este target, ci limită statistică a multiplicatorului istoric.",
-  "generated_at": "2026-07-11T21:06:50.742965+00:00",
+  "message": "Prețul de tranzacționare la actualizarea sistemului: în jur de ~64,305 USD. Mecanismul vede un neutru. Fluxul actual de piață este orientat spre vânzare (moderat). Lichiditatea este ridicată, iar mișcările de preț tind să fie mai stabile. Prețul este semnificativ peste costul estimat de producție, zonă specifică fazelor speculative moderate. Nu este o recomandare de tranzacționare, ci o interpretare structurată a riscului. Prețul coeziv central este ~103,699 USD, calculat din costul de producție actual (~53,406 USD) și din 250 contexte istorice similare, unde multiplicatorul median preț/cost este 1.942×. Prețul live este −38.0% sub acest reper coeziv. Banda statistică a modelului este ~59,585 USD – ~282,211 USD; banda superioară nu este target, ci limită statistică a multiplicatorului istoric.",
+  "generated_at": "2026-07-11T22:02:55.395108+00:00",
   "signal_history": [
     {
       "timestamp": "2026-06-08T00:00:00+00:00",
@@ -168,13 +168,13 @@
     "code": "range_bias_up_dev_extreme"
   },
   "production_costs_usd": {
-    "cheap": 30664.887620049052,
-    "average": 56218.96063675661,
-    "expensive": 89439.2555584764
+    "cheap": 29130.300819128486,
+    "average": 53405.55150173558,
+    "expensive": 84963.37738912478
   },
   "production_cost_reference": "average",
-  "production_cost_as_of": "2026-07-11T21:06:50.071332+00:00",
-  "deviation_from_production": 0.14514746040872664,
+  "production_cost_as_of": "2026-07-11T22:02:54.550086+00:00",
+  "deviation_from_production": 0.20408830527497146,
   "flow_score": -0.013544233193917383,
   "flow_bias": "negativ",
   "flow_strength": "moderat",
@@ -184,25 +184,25 @@
   "liquidity_strength": "puternică",
   "liquidity_components": {},
   "model_price_bands": {
-    "p10": 62723.9143613903,
-    "p50": 109161.59246471967,
-    "p90": 297077.5476187995
+    "p10": 59584.972772113826,
+    "p50": 103698.73406329827,
+    "p90": 282210.66504370753
   },
   "model_price_components": {
-    "production_cost_anchor_usd": 56218.96063675661,
+    "production_cost_anchor_usd": 53405.55150173558,
     "historical_multiplier_p10": 1.1157074704148955,
     "historical_multiplier_p50": 1.9417219960724168,
     "historical_multiplier_p90": 5.28429455567997,
     "similar_context_samples": 250,
     "similar_context_distance_median": 0.38654063566884134,
-    "same_regime_price_p50": 106749.9110956769,
+    "same_regime_price_p50": 101407.74233912931,
     "same_regime_multiplier_p50": 1.8988239890348058,
     "same_regime_samples": 114
   },
   "model_price_context": {
     "date": "2026-07-07",
-    "spot_price_usd": 64379.0,
-    "production_cost_usd": 56218.96063675661,
+    "spot_price_usd": 64305.0,
+    "production_cost_usd": 53405.55150173558,
     "ic_close_usd": 63138.2,
     "ic_struct": 71.39815471965933,
     "ic_dir": 15.567099567099566,
@@ -220,10 +220,10 @@
       "multiplier_p10": 1.1157074704148955,
       "multiplier_p50": 1.9417219960724168,
       "multiplier_p90": 5.28429455567997,
-      "price_p10": 62723.9143613903,
-      "price_p50": 109161.59246471967,
-      "price_p90": 297077.5476187995,
-      "spot_deviation_from_p50": -0.41024128957438133,
+      "price_p10": 59584.972772113826,
+      "price_p50": 103698.73406329827,
+      "price_p90": 282210.66504370753,
+      "spot_deviation_from_p50": -0.379886354632373,
       "distance_median": 0.38654063566884134,
       "regime_counts": {
         "bear_struct": 135,
@@ -240,10 +240,10 @@
       "multiplier_p10": 1.0978480074193544,
       "multiplier_p50": 1.8988239890348058,
       "multiplier_p90": 5.316247624068334,
-      "price_p10": 61719.87391425036,
-      "price_p50": 106749.9110956769,
-      "price_p90": 298873.9159127485,
-      "spot_deviation_from_p50": -0.39691753052329065,
+      "price_p10": 58631.17830131212,
+      "price_p50": 101407.74233912931,
+      "price_p90": 283917.1362831608,
+      "spot_deviation_from_p50": -0.3658768204803314,
       "distance_median": 0.6842959019492921,
       "regime_counts": {
         "bear_late": 114
@@ -262,7 +262,7 @@
   },
   "tradingview_anchors": {
     "method": "tradingview_yearly_anchors_v1",
-    "generated_at": "2026-07-11T21:06:51.012889+00:00",
+    "generated_at": "2026-07-11T22:02:55.600543+00:00",
     "source": {
       "ic_series": "/home/runner/work/Bitcoin/Bitcoin/data/ic_btc_series.json",
       "hashrate": "https://api.blockchain.info/charts/hash-rate?timespan=all&format=json",
@@ -467,14 +467,14 @@
       },
       "2026": {
         "date": "2026-07-07",
-        "central": 109161.59246471967,
-        "miner": 56218.96063675661,
-        "efficient_miner": 30664.887620049052,
-        "standard_miner": 56218.96063675661,
-        "inefficient_miner": 89439.2555584764,
-        "p10": 62723.9143613903,
-        "p50": 109161.59246471967,
-        "p90": 297077.5476187995,
+        "central": 103698.73406329827,
+        "miner": 53405.55150173558,
+        "efficient_miner": 29130.300819128486,
+        "standard_miner": 53405.55150173558,
+        "inefficient_miner": 84963.37738912478,
+        "p10": 59584.972772113826,
+        "p50": 103698.73406329827,
+        "p90": 282210.66504370753,
         "ic_close": 63138.2,
         "samples": 250,
         "multiplier_p10": 1.1157074704148955,
@@ -486,22 +486,22 @@
     "active_year_override": "2026"
   },
   "fg": {
-    "structural": 58.63,
+    "structural": 60.1,
     "tactical_24h": 50.0,
-    "combined": 58.63,
-    "tension": 8.63,
-    "structural_zone": "neutral",
+    "combined": 60.1,
+    "tension": 10.1,
+    "structural_zone": "greed",
     "tactical_zone": "neutral",
-    "combined_zone": "neutral"
+    "combined_zone": "greed"
   },
   "terminal_state": {
     "schema": "cohesivx_terminal_state_v0.1",
     "version": "0.1-genesis",
-    "generated_at": "2026-07-11T21:06:51.177034+00:00",
+    "generated_at": "2026-07-11T22:02:55.751072+00:00",
     "source": {
       "state_file": "btc-swing-strategy/coeziv_state.json",
       "timestamp": "2026-07-07T00:00:00+00:00",
-      "generated_at": "2026-07-11T21:06:50.742965+00:00",
+      "generated_at": "2026-07-11T22:02:55.395108+00:00",
       "price_source": "spot",
       "model_price_source": "cohesive_fair_price_v2",
       "model_price_method": "production_cost_context_similarity_v2"
@@ -518,52 +518,52 @@
     },
     "scores": {
       "market_state": "MIXED_STRUCTURE",
-      "structural_score": 17.95,
-      "miner_health": 60.0,
-      "fragility_index": 76.62,
-      "confidence_score": 63.24,
-      "model_deviation_pct": -41.02,
-      "production_ratio": 1.15,
+      "structural_score": 24.02,
+      "miner_health": 76.0,
+      "fragility_index": 67.0,
+      "confidence_score": 68.76,
+      "model_deviation_pct": -37.99,
+      "production_ratio": 1.2,
       "source_agreement": 100.0,
       "source_agreement_note": "Terminal state uses monitor spot as official source. TradingView can compute chart-vs-monitor source gap from the active chart symbol.",
       "inputs": {
-        "price_usd": 64379.0,
-        "model_price_usd": 109161.59,
-        "p10": 62723.91,
-        "p90": 297077.55,
-        "standard_production_cost": 56218.96,
+        "price_usd": 64305.0,
+        "model_price_usd": 103698.73,
+        "p10": 59584.97,
+        "p90": 282210.67,
+        "standard_production_cost": 53405.55,
         "has_tradingview_anchors": true
       }
     },
     "market": {
-      "monitor_spot_usd": 64379.0,
+      "monitor_spot_usd": 64305.0,
       "ic_close_usd": 63138.2,
-      "cohesive_central_usd": 109161.59246471967,
-      "model_deviation": -0.41024128957438133,
-      "model_deviation_pct": -41.02,
-      "model_price_explanation": "Prețul coeziv central este ~109,162 USD, calculat din costul de producție actual (~56,219 USD) și din 250 contexte istorice similare, unde multiplicatorul median preț/cost este 1.942×. Prețul live este −41.0% sub acest reper coeziv. Banda statistică a modelului este ~62,724 USD – ~297,078 USD; banda superioară nu este target, ci limită statistică a multiplicatorului istoric."
+      "cohesive_central_usd": 103698.73406329827,
+      "model_deviation": -0.379886354632373,
+      "model_deviation_pct": -37.99,
+      "model_price_explanation": "Prețul coeziv central este ~103,699 USD, calculat din costul de producție actual (~53,406 USD) și din 250 contexte istorice similare, unde multiplicatorul median preț/cost este 1.942×. Prețul live este −38.0% sub acest reper coeziv. Banda statistică a modelului este ~59,585 USD – ~282,211 USD; banda superioară nu este target, ci limită statistică a multiplicatorului istoric."
     },
     "structure": {
       "bands": {
-        "p10": 62723.9143613903,
-        "p50": 109161.59246471967,
-        "p90": 297077.5476187995
+        "p10": 59584.972772113826,
+        "p50": 103698.73406329827,
+        "p90": 282210.66504370753
       },
       "components": {
-        "production_cost_anchor_usd": 56218.96063675661,
+        "production_cost_anchor_usd": 53405.55150173558,
         "historical_multiplier_p10": 1.1157074704148955,
         "historical_multiplier_p50": 1.9417219960724168,
         "historical_multiplier_p90": 5.28429455567997,
         "similar_context_samples": 250,
         "similar_context_distance_median": 0.38654063566884134,
-        "same_regime_price_p50": 106749.9110956769,
+        "same_regime_price_p50": 101407.74233912931,
         "same_regime_multiplier_p50": 1.8988239890348058,
         "same_regime_samples": 114
       },
       "context": {
         "date": "2026-07-07",
-        "spot_price_usd": 64379.0,
-        "production_cost_usd": 56218.96063675661,
+        "spot_price_usd": 64305.0,
+        "production_cost_usd": 53405.55150173558,
         "ic_close_usd": 63138.2,
         "ic_struct": 71.39815471965933,
         "ic_dir": 15.567099567099566,
@@ -581,10 +581,10 @@
           "multiplier_p10": 1.1157074704148955,
           "multiplier_p50": 1.9417219960724168,
           "multiplier_p90": 5.28429455567997,
-          "price_p10": 62723.9143613903,
-          "price_p50": 109161.59246471967,
-          "price_p90": 297077.5476187995,
-          "spot_deviation_from_p50": -0.41024128957438133,
+          "price_p10": 59584.972772113826,
+          "price_p50": 103698.73406329827,
+          "price_p90": 282210.66504370753,
+          "spot_deviation_from_p50": -0.379886354632373,
           "distance_median": 0.38654063566884134,
           "regime_counts": {
             "bear_struct": 135,
@@ -601,10 +601,10 @@
           "multiplier_p10": 1.0978480074193544,
           "multiplier_p50": 1.8988239890348058,
           "multiplier_p90": 5.316247624068334,
-          "price_p10": 61719.87391425036,
-          "price_p50": 106749.9110956769,
-          "price_p90": 298873.9159127485,
-          "spot_deviation_from_p50": -0.39691753052329065,
+          "price_p10": 58631.17830131212,
+          "price_p50": 101407.74233912931,
+          "price_p90": 283917.1362831608,
+          "spot_deviation_from_p50": -0.3658768204803314,
           "distance_median": 0.6842959019492921,
           "regime_counts": {
             "bear_late": 114
@@ -624,15 +624,15 @@
     },
     "miners": {
       "production_costs_usd": {
-        "cheap": 30664.887620049052,
-        "average": 56218.96063675661,
-        "expensive": 89439.2555584764
+        "cheap": 29130.300819128486,
+        "average": 53405.55150173558,
+        "expensive": 84963.37738912478
       },
       "production_cost_reference": "average",
-      "production_cost_as_of": "2026-07-11T21:06:50.071332+00:00",
-      "deviation_from_production": 0.14514746040872664,
-      "production_ratio": 1.15,
-      "miner_health": 60.0
+      "production_cost_as_of": "2026-07-11T22:02:54.550086+00:00",
+      "deviation_from_production": 0.20408830527497146,
+      "production_ratio": 1.2,
+      "miner_health": 76.0
     },
     "sources": {
       "source_agreement": 100.0,
@@ -655,22 +655,22 @@
         "impact_value": 22.0,
         "category": "structure",
         "value": {
-          "price_usd": 64379.0,
-          "model_price_usd": 109161.59,
-          "deviation_pct": -41.02
+          "price_usd": 64305.0,
+          "model_price_usd": 103698.73,
+          "deviation_pct": -37.99
         },
-        "description": "Monitor spot is −41.0% below the CohesivX central value. This supports an accumulation-style structural reading."
+        "description": "Monitor spot is −38.0% below the CohesivX central value. This supports an accumulation-style structural reading."
       },
       {
-        "factor": "Miner health neutral",
-        "impact": "+8",
-        "impact_value": 8.0,
+        "factor": "Miner health supportive",
+        "impact": "+18",
+        "impact_value": 18.0,
         "category": "miners",
         "value": {
-          "production_ratio": 1.15,
-          "standard_cost": 56218.96
+          "production_ratio": 1.2,
+          "standard_cost": 53405.55
         },
-        "description": "Monitor spot is 1.15× the standard production-cost anchor. Miner context is acceptable but not strong."
+        "description": "Monitor spot is 1.20× the standard production-cost anchor. Miner context is supportive."
       },
       {
         "factor": "Inside statistical model band",
@@ -678,10 +678,10 @@
         "impact_value": 12.0,
         "category": "statistics",
         "value": {
-          "p10": 62723.91,
-          "p90": 297077.55
+          "p10": 59584.97,
+          "p90": 282210.67
         },
-        "description": "Monitor spot remains inside the CohesivX p10/p90 statistical band (62,724 USD – 297,078 USD)."
+        "description": "Monitor spot remains inside the CohesivX p10/p90 statistical band (59,585 USD – 282,211 USD)."
       },
       {
         "factor": "Historical anchors available",
@@ -714,19 +714,19 @@
         "impact_value": 4.0,
         "category": "confidence",
         "value": {
-          "confidence_score": 63.24
+          "confidence_score": 68.76
         },
-        "description": "Confidence score is 63/100. The interpretation is usable but should be checked against source context."
+        "description": "Confidence score is 69/100. The interpretation is usable but should be checked against source context."
       },
       {
-        "factor": "High fragility",
-        "impact": "−18",
-        "impact_value": -18.0,
+        "factor": "Moderate fragility",
+        "impact": "+2",
+        "impact_value": 2.0,
         "category": "fragility",
         "value": {
-          "fragility_index": 76.62
+          "fragility_index": 67.0
         },
-        "description": "Fragility index is 77/100. The structure is sensitive to shocks or source disagreement."
+        "description": "Fragility index is 67/100. The structure is neither clearly fragile nor fully relaxed."
       }
     ],
     "raw_reasoning": {
@@ -734,10 +734,10 @@
       "summary": "The terminal sees a mixed structure with elevated fragility. Interpretation should be cautious.",
       "headline": "Mixed Structure",
       "scores": {
-        "structural_score": 17.95,
-        "miner_health": 60.0,
-        "fragility_index": 76.62,
-        "confidence_score": 63.24
+        "structural_score": 24.02,
+        "miner_health": 76.0,
+        "fragility_index": 67.0,
+        "confidence_score": 68.76
       },
       "reasoning": [
         {
@@ -746,22 +746,22 @@
           "impact_value": 22.0,
           "category": "structure",
           "value": {
-            "price_usd": 64379.0,
-            "model_price_usd": 109161.59,
-            "deviation_pct": -41.02
+            "price_usd": 64305.0,
+            "model_price_usd": 103698.73,
+            "deviation_pct": -37.99
           },
-          "description": "Monitor spot is −41.0% below the CohesivX central value. This supports an accumulation-style structural reading."
+          "description": "Monitor spot is −38.0% below the CohesivX central value. This supports an accumulation-style structural reading."
         },
         {
-          "factor": "Miner health neutral",
-          "impact": "+8",
-          "impact_value": 8.0,
+          "factor": "Miner health supportive",
+          "impact": "+18",
+          "impact_value": 18.0,
           "category": "miners",
           "value": {
-            "production_ratio": 1.15,
-            "standard_cost": 56218.96
+            "production_ratio": 1.2,
+            "standard_cost": 53405.55
           },
-          "description": "Monitor spot is 1.15× the standard production-cost anchor. Miner context is acceptable but not strong."
+          "description": "Monitor spot is 1.20× the standard production-cost anchor. Miner context is supportive."
         },
         {
           "factor": "Inside statistical model band",
@@ -769,10 +769,10 @@
           "impact_value": 12.0,
           "category": "statistics",
           "value": {
-            "p10": 62723.91,
-            "p90": 297077.55
+            "p10": 59584.97,
+            "p90": 282210.67
           },
-          "description": "Monitor spot remains inside the CohesivX p10/p90 statistical band (62,724 USD – 297,078 USD)."
+          "description": "Monitor spot remains inside the CohesivX p10/p90 statistical band (59,585 USD – 282,211 USD)."
         },
         {
           "factor": "Historical anchors available",
@@ -805,19 +805,19 @@
           "impact_value": 4.0,
           "category": "confidence",
           "value": {
-            "confidence_score": 63.24
+            "confidence_score": 68.76
           },
-          "description": "Confidence score is 63/100. The interpretation is usable but should be checked against source context."
+          "description": "Confidence score is 69/100. The interpretation is usable but should be checked against source context."
         },
         {
-          "factor": "High fragility",
-          "impact": "−18",
-          "impact_value": -18.0,
+          "factor": "Moderate fragility",
+          "impact": "+2",
+          "impact_value": 2.0,
           "category": "fragility",
           "value": {
-            "fragility_index": 76.62
+            "fragility_index": 67.0
           },
-          "description": "Fragility index is 77/100. The structure is sensitive to shocks or source disagreement."
+          "description": "Fragility index is 67/100. The structure is neither clearly fragile nor fully relaxed."
         }
       ]
     },
@@ -830,12 +830,23 @@
     "active": true,
     "label": "10Y Structural Projection - not a price target",
     "engine": "cohesivx_projection_engine.build_10y_structural_projection",
+    "engine_status": "alpha_manual_weights_pending_calibration",
+    "calibration_policy": {
+      "primary_start_year": 2022,
+      "fallback_start_year": 2018,
+      "excluded_before_year": 2018,
+      "primary_window": "2022+",
+      "fallback_window": "2018+ only if 2022+ is too thin",
+      "pre_2018_policy": "excluded_from_projection_weights",
+      "direct_10y_calibration": false,
+      "note": "Weights are still alpha/manual; production-cost growth uses 2022+ as primary calibration and 2018+ only as fallback."
+    },
     "base_year": 2026,
     "start_year": 2027,
     "end_year": 2036,
     "method": "projected production cost × structural price/cost multipliers × cohesive objective factors",
     "objective_factors_used": [
-      "production_cost_trend",
+      "production_cost_trend_2022_plus_primary",
       "p10_p50_p90_price_cost_multipliers",
       "terminal_structural_score",
       "terminal_confidence_score",
@@ -847,115 +858,137 @@
       "current_regime_and_signal",
       "halving_cycle_supply_pressure"
     ],
-    "annual_cost_growth_used": 0.2466321453612874,
+    "annual_cost_growth_used": 0.35,
+    "growth_profile": {
+      "annual_cost_growth_used": 0.35,
+      "raw_annual_cost_growth": 0.5264427321789574,
+      "source": "primary_2022_plus",
+      "primary_start_year": 2022,
+      "fallback_start_year": 2018,
+      "excluded_before_year": 2018,
+      "used_years": [
+        2022,
+        2023,
+        2024,
+        2025,
+        2026
+      ],
+      "sample_count": 4,
+      "cap_range": [
+        0.06,
+        0.35
+      ],
+      "note": "2022+ is the official primary calibration window; 2018+ is fallback only; pre-2018 is excluded."
+    },
     "multipliers": {
       "low_price_cost": 1.1157074704148955,
       "central_price_cost": 1.9417219960724168,
-      "high_price_cost": 5.2842945556799705
+      "high_price_cost": 5.28429455567997
     },
     "cohesive_factor_pack": {
-      "combined_factor": 0.9695973277110552,
-      "downside_width_factor": 0.952084,
-      "upside_width_factor": 1.018536,
+      "combined_factor": 1.0129597288184278,
+      "downside_width_factor": 0.9694,
+      "upside_width_factor": 1.026264,
       "components": {
-        "structural_factor": 0.94872,
-        "confidence_factor": 1.01324,
-        "fragility_factor": 0.962732,
-        "miner_health_factor": 1.01,
+        "structural_factor": 0.958432,
+        "confidence_factor": 1.01876,
+        "fragility_factor": 0.9762,
+        "miner_health_factor": 1.026,
         "flow_factor": 0.999187346008365,
-        "fear_greed_factor": 1.005178,
-        "mean_reversion_factor": 1.0328193031659505,
+        "fear_greed_factor": 1.00606,
+        "mean_reversion_factor": 1.0303909083705898,
         "regime_factor": 1.0
       },
       "inputs": {
-        "structural_score": 17.95,
-        "confidence_score": 63.24,
-        "fragility_index": 76.62,
-        "miner_health": 60.0,
+        "structural_score": 24.02,
+        "confidence_score": 68.76,
+        "fragility_index": 67.0,
+        "miner_health": 76.0,
         "flow_score": -0.013544233193917383,
-        "fear_greed_combined": 58.63,
-        "model_price_deviation": -0.41024128957438133
-      }
+        "fear_greed_combined": 60.1,
+        "model_price_deviation": -0.379886354632373
+      },
+      "weight_status": "alpha_manual_weights_pending_2022_plus_backtest_calibration"
     },
     "years": {
       "2027": {
-        "miner": 70084.36350858166,
-        "low": 74446.92109178515,
-        "central": 137751.01859420346,
-        "high": 381830.98704263824,
-        "cohesive_factor": 1.012247318566319,
+        "miner": 72097.49452734303,
+        "low": 77978.25801713765,
+        "central": 143255.79695249224,
+        "high": 400102.5020786703,
+        "cohesive_factor": 1.023304730848699,
         "cycle_halving_factor": 1.02
       },
       "2028": {
-        "miner": 87369.42043698348,
-        "low": 92807.92495619458,
-        "central": 175421.67559006932,
-        "high": 486249.99090967316,
-        "cohesive_factor": 1.0340385970483041,
+        "miner": 97331.61761191311,
+        "low": 105270.64832313584,
+        "central": 199726.35744019493,
+        "high": 557820.4655088523,
+        "cohesive_factor": 1.0568038576296745,
         "cycle_halving_factor": 1.05
       },
       "2029": {
-        "miner": 108917.52803832902,
-        "low": 115697.34259467022,
-        "central": 227331.74168770958,
-        "high": 630139.1031484746,
-        "cohesive_factor": 1.0749177953616207,
+        "miner": 131397.6837760827,
+        "low": 142115.37523623338,
+        "central": 283379.4260894418,
+        "high": 791457.0986164255,
+        "cohesive_factor": 1.1106917762752029,
         "cycle_halving_factor": 1.1
       },
       "2030": {
-        "miner": 135780.0916458703,
-        "low": 144232.0264113936,
-        "central": 270969.5081290349,
-        "high": 751098.2917096292,
-        "cohesive_factor": 1.0277731673737185,
+        "miner": 177386.87309771168,
+        "low": 191855.75656891512,
+        "central": 369833.77779952995,
+        "high": 1032917.5014109238,
+        "cohesive_factor": 1.0737373125475336,
         "cycle_halving_factor": 1.06
       },
       "2031": {
-        "miner": 169267.8269458435,
-        "low": 177824.50489636103,
-        "central": 325052.1558786033,
-        "high": 911040.7865227915,
-        "cohesive_factor": 0.9889892742652764,
+        "miner": 239472.27868191077,
+        "low": 259005.2713680354,
+        "central": 480435.011349012,
+        "high": 1341818.301361172,
+        "cohesive_factor": 1.0332189233947964,
         "cycle_halving_factor": 1.02
       },
       "2032": {
-        "miner": 211014.71424614,
-        "low": 224149.79596360886,
-        "central": 417138.71545011527,
-        "high": 1156263.5912205009,
-        "cohesive_factor": 1.018077194096608,
+        "miner": 323287.57622057956,
+        "low": 349657.1163468478,
+        "central": 667663.3613600242,
+        "high": 1864732.7864504522,
+        "cohesive_factor": 1.0636077152593493,
         "cycle_halving_factor": 1.05
       },
       "2033": {
-        "miner": 263057.7259234645,
-        "low": 279432.3410244086,
-        "central": 544781.3189812491,
-        "high": 1510075.140437139,
-        "cohesive_factor": 1.0665570604821608,
+        "miner": 436438.2278977824,
+        "low": 472037.10706824454,
+        "central": 944266.7539234626,
+        "high": 2637264.940837068,
+        "cohesive_factor": 1.1142557017002706,
         "cycle_halving_factor": 1.1
       },
       "2034": {
-        "miner": 327936.21722183016,
-        "low": 348349.33877458534,
-        "central": 654445.8351821884,
-        "high": 1814053.3679079013,
-        "cohesive_factor": 1.0277731673737185,
+        "miner": 589191.6076620063,
+        "low": 637250.0945421301,
+        "central": 1228405.2044222502,
+        "high": 3430841.9366707676,
+        "cohesive_factor": 1.0737373125475336,
         "cycle_halving_factor": 1.06
       },
       "2035": {
-        "miner": 408815.8300169153,
-        "low": 429481.92741797346,
-        "central": 785066.3017421224,
-        "high": 2200346.64615114,
-        "cohesive_factor": 0.9889892742652764,
+        "miner": 795408.6703437086,
+        "low": 860287.6276318759,
+        "central": 1595767.8929145646,
+        "high": 4456857.874335516,
+        "cohesive_factor": 1.0332189233947964,
         "cycle_halving_factor": 1.02
       },
       "2036": {
-        "miner": 509642.9552316425,
-        "low": 541366.8181272481,
-        "central": 1007473.8552855054,
-        "high": 2792609.016682103,
-        "cohesive_factor": 1.018077194096608,
+        "miner": 1073801.7049640066,
+        "low": 1161388.2973030324,
+        "central": 2217648.027653329,
+        "high": 6193721.6047750935,
+        "cohesive_factor": 1.0636077152593493,
         "cycle_halving_factor": 1.05
       }
     }
@@ -979,8 +1012,8 @@
     },
     "similar_context_samples": 250,
     "regime": "bear_late",
-    "current_deviation": -0.41024128957438133,
+    "current_deviation": -0.379886354632373,
     "label": "Semnal structural, nu intraday",
-    "generated_at": "2026-07-11T21:06:51.222443+00:00"
+    "generated_at": "2026-07-11T22:02:55.799729+00:00"
   }
 }

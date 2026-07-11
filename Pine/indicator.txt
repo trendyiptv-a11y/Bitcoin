@@ -33,14 +33,14 @@ tablePosition = input.string("Top right", "Table position", options=["Top right"
 // CURRENT MONITOR SNAPSHOT - 2026
 //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-monitorSpot = input.float(64379.00, "Official CohesivX monitor spot", step=10, group="Current monitor snapshot")
-currentCentral = input.float(109161.59, "Current cohesive central price", step=10, group="Current monitor snapshot")
-currentP10 = input.float(62723.91, "Current p10 lower band", step=10, group="Current monitor snapshot")
-currentP90 = input.float(297077.55, "Current p90 upper band - hidden by default", step=10, group="Current monitor snapshot")
+monitorSpot = input.float(64305.00, "Official CohesivX monitor spot", step=10, group="Current monitor snapshot")
+currentCentral = input.float(103698.73, "Current cohesive central price", step=10, group="Current monitor snapshot")
+currentP10 = input.float(59584.97, "Current p10 lower band", step=10, group="Current monitor snapshot")
+currentP90 = input.float(282210.67, "Current p90 upper band - hidden by default", step=10, group="Current monitor snapshot")
 
-currentEfficientMiner = input.float(30664.89, "Current efficient miner cost", step=10, group="Current monitor snapshot")
-currentStandardMiner = input.float(56218.96, "Current standard miner cost", step=10, group="Current monitor snapshot")
-currentInefficientMiner = input.float(89439.26, "Current inefficient miner cost", step=10, group="Current monitor snapshot")
+currentEfficientMiner = input.float(29130.30, "Current efficient miner cost", step=10, group="Current monitor snapshot")
+currentStandardMiner = input.float(53405.55, "Current standard miner cost", step=10, group="Current monitor snapshot")
+currentInefficientMiner = input.float(84963.38, "Current inefficient miner cost", step=10, group="Current monitor snapshot")
 
 
 //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -49,10 +49,10 @@ currentInefficientMiner = input.float(89439.26, "Current inefficient miner cost"
 //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 terminalMarketState = input.string("MIXED_STRUCTURE", "Market state", group="Terminal scores")
-terminalStructuralScore = input.float(17.95, "Structural Score", step=1.0, group="Terminal scores")
-terminalConfidenceScore = input.float(63.24, "Confidence Score", step=1.0, group="Terminal scores")
-terminalFragilityIndex = input.float(76.62, "Fragility Index", step=1.0, group="Terminal scores")
-terminalMinerHealth = input.float(60.00, "Miner Health", step=1.0, group="Terminal scores")
+terminalStructuralScore = input.float(24.02, "Structural Score", step=1.0, group="Terminal scores")
+terminalConfidenceScore = input.float(68.76, "Confidence Score", step=1.0, group="Terminal scores")
+terminalFragilityIndex = input.float(67.00, "Fragility Index", step=1.0, group="Terminal scores")
+terminalMinerHealth = input.float(76.00, "Miner Health", step=1.0, group="Terminal scores")
 
 //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // HISTORICAL YEARLY ANCHORS FROM MONITOR EXPORT
@@ -74,7 +74,7 @@ c2022 = input.float(31844.44, "Central 2022", step=1, group="Historical central"
 c2023 = input.float(39706.32, "Central 2023", step=1, group="Historical central")
 c2024 = input.float(79899.65, "Central 2024", step=1, group="Historical central")
 c2025 = input.float(101435.81, "Central 2025", step=1, group="Historical central")
-c2026 = input.float(109161.59, "Central 2026 - monitor", step=1, group="Historical central")
+c2026 = input.float(103698.73, "Central 2026 - monitor", step=1, group="Historical central")
 
 p10_2013 = input.float(0.00193, "p10 2013", step=0.00001, group="Historical p10")
 p10_2014 = input.float(1.11441, "p10 2014", step=0.01, group="Historical p10")
@@ -89,7 +89,7 @@ p10_2022 = input.float(6177.52, "p10 2022", step=1, group="Historical p10")
 p10_2023 = input.float(12414.66, "p10 2023", step=1, group="Historical p10")
 p10_2024 = input.float(19393.09, "p10 2024", step=1, group="Historical p10")
 p10_2025 = input.float(39210.55, "p10 2025", step=1, group="Historical p10")
-p10_2026 = input.float(62723.91, "p10 2026 - monitor", step=1, group="Historical p10")
+p10_2026 = input.float(59584.97, "p10 2026 - monitor", step=1, group="Historical p10")
 
 p90_2013 = input.float(0.01233, "p90 2013", step=0.00001, group="Historical p90 - table / optional")
 p90_2014 = input.float(11250.67163, "p90 2014", step=1, group="Historical p90 - table / optional")
@@ -104,7 +104,7 @@ p90_2022 = input.float(181863.38, "p90 2022", step=1, group="Historical p90 - ta
 p90_2023 = input.float(111082.62, "p90 2023", step=1, group="Historical p90 - table / optional")
 p90_2024 = input.float(344973.45, "p90 2024", step=1, group="Historical p90 - table / optional")
 p90_2025 = input.float(535083.04, "p90 2025", step=1, group="Historical p90 - table / optional")
-p90_2026 = input.float(297077.55, "p90 2026 - monitor", step=1, group="Historical p90 - table / optional")
+p90_2026 = input.float(282210.67, "p90 2026 - monitor", step=1, group="Historical p90 - table / optional")
 
 m2013 = input.float(0.00462, "Miner 2013", step=0.00001, group="Historical miner cost")
 m2014 = input.float(2.34816, "Miner 2014", step=0.01, group="Historical miner cost")
@@ -119,56 +119,56 @@ m2022 = input.float(10135.31, "Miner 2022", step=1, group="Historical miner cost
 m2023 = input.float(12066.62, "Miner 2023", step=1, group="Historical miner cost")
 m2024 = input.float(24411.81, "Miner 2024", step=1, group="Historical miner cost")
 m2025 = input.float(45462.92, "Miner 2025", step=1, group="Historical miner cost")
-m2026 = input.float(56218.96, "Miner 2026 - monitor", step=1, group="Historical miner cost")
+m2026 = input.float(53405.55, "Miner 2026 - monitor", step=1, group="Historical miner cost")
 
 //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // 10Y STRUCTURAL PROJECTION - NOT A PRICE TARGET
 // Values generated by cohesivx_projection_engine.build_10y_structural_projection
 //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-projC2027 = input.float(137751.02, "Projection central 2027", step=1, group="10Y projection central")
-projC2028 = input.float(175421.68, "Projection central 2028", step=1, group="10Y projection central")
-projC2029 = input.float(227331.74, "Projection central 2029", step=1, group="10Y projection central")
-projC2030 = input.float(270969.51, "Projection central 2030", step=1, group="10Y projection central")
-projC2031 = input.float(325052.16, "Projection central 2031", step=1, group="10Y projection central")
-projC2032 = input.float(417138.72, "Projection central 2032", step=1, group="10Y projection central")
-projC2033 = input.float(544781.32, "Projection central 2033", step=1, group="10Y projection central")
-projC2034 = input.float(654445.84, "Projection central 2034", step=1, group="10Y projection central")
-projC2035 = input.float(785066.30, "Projection central 2035", step=1, group="10Y projection central")
-projC2036 = input.float(1007473.86, "Projection central 2036", step=1, group="10Y projection central")
+projC2027 = input.float(143255.80, "Projection central 2027", step=1, group="10Y projection central")
+projC2028 = input.float(199726.36, "Projection central 2028", step=1, group="10Y projection central")
+projC2029 = input.float(283379.43, "Projection central 2029", step=1, group="10Y projection central")
+projC2030 = input.float(369833.78, "Projection central 2030", step=1, group="10Y projection central")
+projC2031 = input.float(480435.01, "Projection central 2031", step=1, group="10Y projection central")
+projC2032 = input.float(667663.36, "Projection central 2032", step=1, group="10Y projection central")
+projC2033 = input.float(944266.75, "Projection central 2033", step=1, group="10Y projection central")
+projC2034 = input.float(1228405.20, "Projection central 2034", step=1, group="10Y projection central")
+projC2035 = input.float(1595767.89, "Projection central 2035", step=1, group="10Y projection central")
+projC2036 = input.float(2217648.03, "Projection central 2036", step=1, group="10Y projection central")
 
-projLow2027 = input.float(74446.92, "Projection low 2027", step=1, group="10Y projection low")
-projLow2028 = input.float(92807.92, "Projection low 2028", step=1, group="10Y projection low")
-projLow2029 = input.float(115697.34, "Projection low 2029", step=1, group="10Y projection low")
-projLow2030 = input.float(144232.03, "Projection low 2030", step=1, group="10Y projection low")
-projLow2031 = input.float(177824.50, "Projection low 2031", step=1, group="10Y projection low")
-projLow2032 = input.float(224149.80, "Projection low 2032", step=1, group="10Y projection low")
-projLow2033 = input.float(279432.34, "Projection low 2033", step=1, group="10Y projection low")
-projLow2034 = input.float(348349.34, "Projection low 2034", step=1, group="10Y projection low")
-projLow2035 = input.float(429481.93, "Projection low 2035", step=1, group="10Y projection low")
-projLow2036 = input.float(541366.82, "Projection low 2036", step=1, group="10Y projection low")
+projLow2027 = input.float(77978.26, "Projection low 2027", step=1, group="10Y projection low")
+projLow2028 = input.float(105270.65, "Projection low 2028", step=1, group="10Y projection low")
+projLow2029 = input.float(142115.38, "Projection low 2029", step=1, group="10Y projection low")
+projLow2030 = input.float(191855.76, "Projection low 2030", step=1, group="10Y projection low")
+projLow2031 = input.float(259005.27, "Projection low 2031", step=1, group="10Y projection low")
+projLow2032 = input.float(349657.12, "Projection low 2032", step=1, group="10Y projection low")
+projLow2033 = input.float(472037.11, "Projection low 2033", step=1, group="10Y projection low")
+projLow2034 = input.float(637250.09, "Projection low 2034", step=1, group="10Y projection low")
+projLow2035 = input.float(860287.63, "Projection low 2035", step=1, group="10Y projection low")
+projLow2036 = input.float(1161388.30, "Projection low 2036", step=1, group="10Y projection low")
 
-projHigh2027 = input.float(381830.99, "Projection high 2027 - optional", step=1, group="10Y projection high")
-projHigh2028 = input.float(486249.99, "Projection high 2028 - optional", step=1, group="10Y projection high")
-projHigh2029 = input.float(630139.10, "Projection high 2029 - optional", step=1, group="10Y projection high")
-projHigh2030 = input.float(751098.29, "Projection high 2030 - optional", step=1, group="10Y projection high")
-projHigh2031 = input.float(911040.79, "Projection high 2031 - optional", step=1, group="10Y projection high")
-projHigh2032 = input.float(1156263.59, "Projection high 2032 - optional", step=1, group="10Y projection high")
-projHigh2033 = input.float(1510075.14, "Projection high 2033 - optional", step=1, group="10Y projection high")
-projHigh2034 = input.float(1814053.37, "Projection high 2034 - optional", step=1, group="10Y projection high")
-projHigh2035 = input.float(2200346.65, "Projection high 2035 - optional", step=1, group="10Y projection high")
-projHigh2036 = input.float(2792609.02, "Projection high 2036 - optional", step=1, group="10Y projection high")
+projHigh2027 = input.float(400102.50, "Projection high 2027 - optional", step=1, group="10Y projection high")
+projHigh2028 = input.float(557820.47, "Projection high 2028 - optional", step=1, group="10Y projection high")
+projHigh2029 = input.float(791457.10, "Projection high 2029 - optional", step=1, group="10Y projection high")
+projHigh2030 = input.float(1032917.50, "Projection high 2030 - optional", step=1, group="10Y projection high")
+projHigh2031 = input.float(1341818.30, "Projection high 2031 - optional", step=1, group="10Y projection high")
+projHigh2032 = input.float(1864732.79, "Projection high 2032 - optional", step=1, group="10Y projection high")
+projHigh2033 = input.float(2637264.94, "Projection high 2033 - optional", step=1, group="10Y projection high")
+projHigh2034 = input.float(3430841.94, "Projection high 2034 - optional", step=1, group="10Y projection high")
+projHigh2035 = input.float(4456857.87, "Projection high 2035 - optional", step=1, group="10Y projection high")
+projHigh2036 = input.float(6193721.60, "Projection high 2036 - optional", step=1, group="10Y projection high")
 
-projMiner2027 = input.float(70084.36, "Projection miner 2027", step=1, group="10Y projection miner")
-projMiner2028 = input.float(87369.42, "Projection miner 2028", step=1, group="10Y projection miner")
-projMiner2029 = input.float(108917.53, "Projection miner 2029", step=1, group="10Y projection miner")
-projMiner2030 = input.float(135780.09, "Projection miner 2030", step=1, group="10Y projection miner")
-projMiner2031 = input.float(169267.83, "Projection miner 2031", step=1, group="10Y projection miner")
-projMiner2032 = input.float(211014.71, "Projection miner 2032", step=1, group="10Y projection miner")
-projMiner2033 = input.float(263057.73, "Projection miner 2033", step=1, group="10Y projection miner")
-projMiner2034 = input.float(327936.22, "Projection miner 2034", step=1, group="10Y projection miner")
-projMiner2035 = input.float(408815.83, "Projection miner 2035", step=1, group="10Y projection miner")
-projMiner2036 = input.float(509642.96, "Projection miner 2036", step=1, group="10Y projection miner")
+projMiner2027 = input.float(72097.49, "Projection miner 2027", step=1, group="10Y projection miner")
+projMiner2028 = input.float(97331.62, "Projection miner 2028", step=1, group="10Y projection miner")
+projMiner2029 = input.float(131397.68, "Projection miner 2029", step=1, group="10Y projection miner")
+projMiner2030 = input.float(177386.87, "Projection miner 2030", step=1, group="10Y projection miner")
+projMiner2031 = input.float(239472.28, "Projection miner 2031", step=1, group="10Y projection miner")
+projMiner2032 = input.float(323287.58, "Projection miner 2032", step=1, group="10Y projection miner")
+projMiner2033 = input.float(436438.23, "Projection miner 2033", step=1, group="10Y projection miner")
+projMiner2034 = input.float(589191.61, "Projection miner 2034", step=1, group="10Y projection miner")
+projMiner2035 = input.float(795408.67, "Projection miner 2035", step=1, group="10Y projection miner")
+projMiner2036 = input.float(1073801.70, "Projection miner 2036", step=1, group="10Y projection miner")
 
 //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // THRESHOLDS
