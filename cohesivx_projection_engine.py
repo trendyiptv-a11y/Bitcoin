@@ -39,6 +39,10 @@ def _standard_miner(data: Dict[str, Any]) -> Optional[float]:
     return _sf(data.get("standard_miner") or data.get("miner"))
 
 
+def _actual_close(data: Dict[str, Any]) -> Optional[float]:
+    return _sf(data.get("ic_close") or data.get("close") or data.get("spot_price_usd"))
+
+
 def _miner_years(yearly: Dict[str, Any], active_year: str, start_year: int) -> list[tuple[int, float]]:
     years: list[tuple[int, float]] = []
     for year_str, data in yearly.items():
@@ -111,6 +115,94 @@ def _projection_growth_profile(yearly: Dict[str, Any], active_year: str) -> Dict
 
 def _projection_growth_rate(yearly: Dict[str, Any], active_year: str) -> float:
     return float(_projection_growth_profile(yearly, active_year)["annual_cost_growth_used"])
+
+
+def _empirical_output_calibration(yearly: Dict[str, Any], active_year: str) -> Dict[str, Any]:
+    """Calibrate projection output from observed 2022+ anchors.
+
+    This does not attempt direct 10Y calibration. It measures how yearly observed
+    BTC closes related to the mechanism's central/band/cost anchors in the modern
+    2022+ window and applies a controlled output-realistization factor.
+    """
+    rows: list[Dict[str, float]] = []
+    for year_str, data in yearly.items():
+        try:
+            year = int(year_str)
+        except Exception:
+            continue
+        if year < PRIMARY_CALIBRATION_START_YEAR or str(year) > active_year:
+            continue
+        data = data or {}
+        actual = _actual_close(data)
+        central = _sf(data.get("central") or data.get("p50"))
+        miner = _standard_miner(data)
+        low = _sf(data.get("p10"))
+        high = _sf(data.get("p90"))
+        if not actual or actual <= 0:
+            continue
+        row: Dict[str, float] = {"year": float(year), "actual": actual}
+        if central and central > 0:
+            row["actual_to_central"] = actual / central
+        if miner and miner > 0:
+            row["actual_to_miner"] = actual / miner
+        if low and low > 0:
+            row["actual_to_low"] = actual / low
+        if high and high > 0:
+            row["actual_to_high"] = actual / high
+        rows.append(row)
+    rows.sort(key=lambda item: item["year"])
+
+    central_ratios = [r["actual_to_central"] for r in rows if "actual_to_central" in r and 0.05 <= r["actual_to_central"] <= 3.0]
+    miner_ratios = [r["actual_to_miner"] for r in rows if "actual_to_miner" in r and 0.05 <= r["actual_to_miner"] <= 20.0]
+    low_ratios = [r["actual_to_low"] for r in rows if "actual_to_low" in r and 0.05 <= r["actual_to_low"] <= 20.0]
+    high_ratios = [r["actual_to_high"] for r in rows if "actual_to_high" in r and 0.0001 <= r["actual_to_high"] <= 3.0]
+
+    if len(central_ratios) >= 3:
+        raw_central = float(median(central_ratios))
+        source = "primary_2022_plus_observed_output"
+    elif len(central_ratios) >= 1:
+        raw_central = float(median(central_ratios))
+        source = "thin_2022_plus_observed_output"
+    else:
+        raw_central = 1.0
+        source = "neutral_no_output_calibration"
+
+    central_factor = _clamp(raw_central, 0.55, 1.25)
+
+    # Apply the empirical correction asymmetrically:
+    # - central receives the direct modern observed correction;
+    # - low receives a gentler correction so the defense band is not overcompressed;
+    # - high receives a stronger correction when recent history says the model was overextended.
+    low_factor = _clamp(1.0 + (central_factor - 1.0) * 0.35, 0.78, 1.10)
+    high_factor = _clamp(1.0 + (central_factor - 1.0) * 0.75, 0.58, 1.20)
+    miner_factor = 1.0
+
+    return {
+        "active": source != "neutral_no_output_calibration",
+        "source": source,
+        "primary_start_year": PRIMARY_CALIBRATION_START_YEAR,
+        "fallback_start_year": FALLBACK_CALIBRATION_START_YEAR,
+        "excluded_before_year": EXCLUDED_CALIBRATION_BEFORE_YEAR,
+        "sample_count": len(rows),
+        "used_years": [int(r["year"]) for r in rows],
+        "raw_central_output_factor": raw_central,
+        "central_output_factor": central_factor,
+        "low_output_factor": low_factor,
+        "high_output_factor": high_factor,
+        "miner_output_factor": miner_factor,
+        "cap_ranges": {
+            "central_output_factor": [0.55, 1.25],
+            "low_output_factor": [0.78, 1.10],
+            "high_output_factor": [0.58, 1.20],
+        },
+        "diagnostics": {
+            "actual_to_central_median": float(median(central_ratios)) if central_ratios else None,
+            "actual_to_miner_median": float(median(miner_ratios)) if miner_ratios else None,
+            "actual_to_low_median": float(median(low_ratios)) if low_ratios else None,
+            "actual_to_high_median": float(median(high_ratios)) if high_ratios else None,
+        },
+        "note": "Empirical 2022+ output calibration realistizes the structural corridor; it is not direct 10Y fitting.",
+    }
 
 
 def _terminal_scores(state: Dict[str, Any]) -> Dict[str, Optional[float]]:
@@ -219,7 +311,7 @@ def _cohesive_factor_pack(state: Dict[str, Any]) -> Dict[str, Any]:
             "regime_factor": regime_factor,
         },
         "inputs": s,
-        "weight_status": "alpha_manual_weights_pending_2022_plus_backtest_calibration",
+        "weight_status": "beta_empirical_output_calibration_2022_plus_manual_component_weights",
     }
 
 
@@ -261,6 +353,7 @@ def build_10y_structural_projection(state: Dict[str, Any]) -> Dict[str, Any]:
     high_mult = _clamp((high or base_miner * 4.0) / base_miner, central_mult, 12.0)
     growth_profile = _projection_growth_profile(yearly, active_year)
     annual_cost_growth = float(growth_profile["annual_cost_growth_used"])
+    output_calibration = _empirical_output_calibration(yearly, active_year)
     factor_pack = _cohesive_factor_pack(state)
     base_cohesive_factor = float(factor_pack["combined_factor"])
     downside_width = float(factor_pack["downside_width_factor"])
@@ -275,20 +368,41 @@ def build_10y_structural_projection(state: Dict[str, Any]) -> Dict[str, Any]:
         cycle_factor = _cycle_halving_factor(year)
         central_factor = _clamp(cohesive_factor * cycle_factor, 0.72, 1.45)
 
+        alpha_low = projected_miner * low_mult * _clamp(min(central_factor, 1.0) * downside_width, 0.65, 1.10)
+        alpha_central = projected_miner * central_mult * central_factor
+        alpha_high = projected_miner * high_mult * _clamp(max(central_factor, 1.0) * upside_width, 0.85, 1.55)
+
+        beta_low = alpha_low * float(output_calibration["low_output_factor"])
+        beta_central = alpha_central * float(output_calibration["central_output_factor"])
+        beta_high = alpha_high * float(output_calibration["high_output_factor"])
+        beta_miner = projected_miner * float(output_calibration["miner_output_factor"])
+
         out_years[str(year)] = {
-            "miner": projected_miner,
-            "low": projected_miner * low_mult * _clamp(min(central_factor, 1.0) * downside_width, 0.65, 1.10),
-            "central": projected_miner * central_mult * central_factor,
-            "high": projected_miner * high_mult * _clamp(max(central_factor, 1.0) * upside_width, 0.85, 1.55),
+            "miner": beta_miner,
+            "low": beta_low,
+            "central": beta_central,
+            "high": beta_high,
+            "alpha_unadjusted": {
+                "miner": projected_miner,
+                "low": alpha_low,
+                "central": alpha_central,
+                "high": alpha_high,
+            },
             "cohesive_factor": central_factor,
             "cycle_halving_factor": cycle_factor,
+            "empirical_output_factors": {
+                "low": output_calibration["low_output_factor"],
+                "central": output_calibration["central_output_factor"],
+                "high": output_calibration["high_output_factor"],
+                "miner": output_calibration["miner_output_factor"],
+            },
         }
 
     return {
         "active": True,
         "label": "10Y Structural Projection - not a price target",
         "engine": "cohesivx_projection_engine.build_10y_structural_projection",
-        "engine_status": "alpha_manual_weights_pending_calibration",
+        "engine_status": "beta_empirical_output_calibration_2022_plus",
         "calibration_policy": {
             "primary_start_year": PRIMARY_CALIBRATION_START_YEAR,
             "fallback_start_year": FALLBACK_CALIBRATION_START_YEAR,
@@ -297,12 +411,12 @@ def build_10y_structural_projection(state: Dict[str, Any]) -> Dict[str, Any]:
             "fallback_window": "2018+ only if 2022+ is too thin",
             "pre_2018_policy": "excluded_from_projection_weights",
             "direct_10y_calibration": False,
-            "note": "Weights are still alpha/manual; production-cost growth uses 2022+ as primary calibration and 2018+ only as fallback.",
+            "note": "Production-cost growth uses 2022+ as primary calibration; output is realistized by empirical 2022+ observed close/model ratios.",
         },
         "base_year": base_year,
         "start_year": PROJECTION_START_YEAR,
         "end_year": PROJECTION_END_YEAR,
-        "method": "projected production cost × structural price/cost multipliers × cohesive objective factors",
+        "method": "alpha structural corridor × empirical 2022+ output calibration",
         "objective_factors_used": [
             "production_cost_trend_2022_plus_primary",
             "p10_p50_p90_price_cost_multipliers",
@@ -315,9 +429,11 @@ def build_10y_structural_projection(state: Dict[str, Any]) -> Dict[str, Any]:
             "model_price_deviation_mean_reversion",
             "current_regime_and_signal",
             "halving_cycle_supply_pressure",
+            "empirical_2022_plus_output_calibration",
         ],
         "annual_cost_growth_used": annual_cost_growth,
         "growth_profile": growth_profile,
+        "empirical_output_calibration": output_calibration,
         "multipliers": {
             "low_price_cost": low_mult,
             "central_price_cost": central_mult,
