@@ -4,7 +4,8 @@ import json
 import math
 import re
 from pathlib import Path
-from typing import Any, Optional
+from statistics import median
+from typing import Any, Dict, Optional
 
 from generate_terminal_state import build_terminal_state
 
@@ -13,11 +14,21 @@ STATE_PATH = ROOT / "btc-swing-strategy" / "coeziv_state.json"
 PINE_PATH = ROOT / "Pine" / "indicator.txt"
 
 
+PROJECTION_START_YEAR = 2027
+PROJECTION_END_YEAR = 2036
+
+
 def _finite(value: Any) -> bool:
     try:
         return math.isfinite(float(value))
     except Exception:
         return False
+
+
+def _sf(value: Any) -> Optional[float]:
+    if not _finite(value):
+        return None
+    return float(value)
 
 
 def _fmt(value: Any, decimals: int = 2) -> Optional[str]:
@@ -36,6 +47,10 @@ def _clean_string(value: Any, fallback: str = "UNKNOWN") -> str:
         return fallback
     text = str(value).replace('"', "'").strip()
     return text or fallback
+
+
+def _clamp(value: float, low: float, high: float) -> float:
+    return max(low, min(high, value))
 
 
 def _replace_assignment_float(text: str, var_name: str, value: Any, decimals: int = 2) -> str:
@@ -62,6 +77,87 @@ def _year_decimals(year: int, value: Any) -> int:
     if year <= 2014 or (_finite(value) and abs(float(value)) < 1):
         return 5
     return 2
+
+
+def _standard_miner(data: Dict[str, Any]) -> Optional[float]:
+    return _sf(data.get("standard_miner") or data.get("miner"))
+
+
+def _projection_growth_rate(yearly: Dict[str, Any], active_year: str) -> float:
+    years = []
+    for year_str, data in yearly.items():
+        try:
+            year = int(year_str)
+        except Exception:
+            continue
+        if str(year) > active_year:
+            continue
+        miner = _standard_miner(data or {})
+        if miner and miner > 0:
+            years.append((year, miner))
+    years.sort()
+
+    growth_rates = []
+    for (_, prev), (_, cur) in zip(years, years[1:]):
+        if prev > 0 and cur > 0:
+            rate = (cur / prev) - 1.0
+            if -0.35 <= rate <= 1.25:
+                growth_rates.append(rate)
+
+    if not growth_rates:
+        return 0.16
+
+    recent = growth_rates[-8:]
+    return _clamp(float(median(recent)), 0.06, 0.35)
+
+
+def build_projection_10y(state: Dict[str, Any], yearly: Dict[str, Any], active_year: str, active: Dict[str, Any]) -> Dict[str, Any]:
+    production_costs = state.get("production_costs_usd") or {}
+    bands = state.get("model_price_bands") or {}
+
+    base_miner = (
+        _standard_miner(active)
+        or _sf(production_costs.get("average"))
+        or _sf(production_costs.get("standard"))
+    )
+    central = _sf(active.get("central") or active.get("p50") or state.get("model_price_usd"))
+    low = _sf(active.get("p10") or bands.get("p10"))
+    high = _sf(active.get("p90") or bands.get("p90"))
+
+    if not base_miner or base_miner <= 0:
+        return {"active": False, "reason": "missing_base_miner"}
+
+    central_mult = _clamp((central or base_miner) / base_miner, 0.75, 8.0)
+    low_mult = _clamp((low or base_miner * 0.9) / base_miner, 0.25, central_mult)
+    high_mult = _clamp((high or base_miner * 4.0) / base_miner, central_mult, 12.0)
+    annual_cost_growth = _projection_growth_rate(yearly, active_year)
+
+    out_years: Dict[str, Dict[str, float]] = {}
+    for year in range(PROJECTION_START_YEAR, PROJECTION_END_YEAR + 1):
+        n = year - int(active_year)
+        projected_miner = base_miner * ((1.0 + annual_cost_growth) ** n)
+        out_years[str(year)] = {
+            "miner": projected_miner,
+            "low": projected_miner * low_mult,
+            "central": projected_miner * central_mult,
+            "high": projected_miner * high_mult,
+        }
+
+    return {
+        "active": True,
+        "label": "10Y Structural Projection - not a price target",
+        "base_year": int(active_year),
+        "start_year": PROJECTION_START_YEAR,
+        "end_year": PROJECTION_END_YEAR,
+        "method": "projected standard production cost multiplied by current structural p10/p50/p90 price-cost multipliers",
+        "annual_cost_growth_used": annual_cost_growth,
+        "multipliers": {
+            "low_price_cost": low_mult,
+            "central_price_cost": central_mult,
+            "high_price_cost": high_mult,
+        },
+        "years": out_years,
+    }
 
 
 def _ensure_terminal_inputs(pine: str) -> str:
@@ -100,6 +196,145 @@ minerHealthScoreColor = terminalMinerHealth >= 75 ? color.rgb(0, 220, 140) : ter
 """
     needle = "labelColor = color.white"
     return pine.replace(needle, needle + block, 1)
+
+
+def _projection_inputs_block() -> str:
+    lines = [
+        "",
+        "//━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+        "// 10Y STRUCTURAL PROJECTION - NOT A PRICE TARGET",
+        "// Generated from projected production cost × structural price/cost multipliers",
+        "//━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+        "",
+    ]
+    for year in range(PROJECTION_START_YEAR, PROJECTION_END_YEAR + 1):
+        lines.append(f'projC{year} = input.float(0.0, "Projection central {year}", step=1, group="10Y projection central")')
+    lines.append("")
+    for year in range(PROJECTION_START_YEAR, PROJECTION_END_YEAR + 1):
+        lines.append(f'projLow{year} = input.float(0.0, "Projection low {year}", step=1, group="10Y projection low")')
+    lines.append("")
+    for year in range(PROJECTION_START_YEAR, PROJECTION_END_YEAR + 1):
+        lines.append(f'projHigh{year} = input.float(0.0, "Projection high {year} - optional", step=1, group="10Y projection high")')
+    lines.append("")
+    for year in range(PROJECTION_START_YEAR, PROJECTION_END_YEAR + 1):
+        lines.append(f'projMiner{year} = input.float(0.0, "Projection miner {year}", step=1, group="10Y projection miner")')
+    return "\n".join(lines) + "\n"
+
+
+def _ensure_projection_layer(pine: str) -> str:
+    pine = pine.replace('indicator("CohesivX BTC Terminal v2.2 - Historical Monitor", overlay=true, max_labels_count=100)', 'indicator("CohesivX BTC Terminal v2.3 - 10Y Structural Projection", overlay=true, max_labels_count=100, max_lines_count=300)')
+    pine = pine.replace("// CohesivX BTC Terminal v2.2", "// CohesivX BTC Terminal v2.3")
+    pine = pine.replace('table.cell(t, 1, 0, "Terminal v2.2"', 'table.cell(t, 1, 0, "Terminal v2.3"')
+
+    module_needle = 'showSignals = input.bool(false, "Show extreme signal markers", group="Modules")'
+    if "showProjectionCentral" not in pine and module_needle in pine:
+        projection_modules = '''showProjectionCentral = input.bool(true, "Show 10Y projection central", group="10Y projection")
+showProjectionLow = input.bool(true, "Show 10Y projection low", group="10Y projection")
+showProjectionHigh = input.bool(false, "Show 10Y projection high - optional", group="10Y projection")
+showProjectionMiner = input.bool(true, "Show 10Y projected miner cost", group="10Y projection")
+showProjectionLabels = input.bool(true, "Show projection labels", group="10Y projection")'''
+        pine = pine.replace(module_needle, module_needle + "\n" + projection_modules, 1)
+
+    input_needle = 'm2026 = input.float'
+    if "projC2027" not in pine and input_needle in pine:
+        idx = pine.find(input_needle)
+        end = pine.find("\n", idx)
+        pine = pine[: end + 1] + _projection_inputs_block() + pine[end + 1 :]
+
+    if "t2037 = timestamp" not in pine:
+        time_lines = "".join([f"t{year} = timestamp({year}, 1, 1, 0, 0)\n" for year in range(2028, 2038)])
+        pine = pine.replace("t2027 = timestamp(2027, 1, 1, 0, 0)\n", "t2027 = timestamp(2027, 1, 1, 0, 0)\n" + time_lines, 1)
+
+    if "projectionCentralColor" not in pine:
+        color_block = """
+projectionCentralColor = color.rgb(0, 220, 180)
+projectionLowColor = color.rgb(80, 180, 255)
+projectionHighColor = color.rgb(255, 120, 120)
+projectionMinerColor = color.rgb(255, 210, 80)
+projectionLabelColor = color.white
+"""
+        pine = pine.replace("inefficientMinerColor = color.rgb(255, 80, 80)\n", "inefficientMinerColor = color.rgb(255, 80, 80)\n" + color_block, 1)
+
+    if "projectionLines = array.new_line" not in pine:
+        draw_block = """
+//━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 10Y STRUCTURAL PROJECTION DRAWING
+// Projection layer only; not a price target.
+//━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+var line[] projectionLines = array.new_line()
+var label[] projectionLabels = array.new_label()
+
+f_projection_line(_show, _x1, _y1, _x2, _y2, _clr, _width) =>
+    if _show and not na(_y1) and not na(_y2) and _y1 > 0 and _y2 > 0
+        array.push(projectionLines, line.new(_x1, _y1, _x2, _y2, xloc=xloc.bar_time, extend=extend.none, color=_clr, width=_width, style=line.style_dashed))
+
+f_projection_label(_show, _x, _y, _txt, _clr) =>
+    if _show and not na(_y) and _y > 0
+        array.push(projectionLabels, label.new(_x, _y, _txt, xloc=xloc.bar_time, style=label.style_label_left, textcolor=projectionLabelColor, color=color.new(_clr, 20), size=size.tiny))
+
+if barstate.islast
+    if array.size(projectionLines) > 0
+        for i = 0 to array.size(projectionLines) - 1
+            line.delete(array.get(projectionLines, i))
+    array.clear(projectionLines)
+    if array.size(projectionLabels) > 0
+        for i = 0 to array.size(projectionLabels) - 1
+            label.delete(array.get(projectionLabels, i))
+    array.clear(projectionLabels)
+
+    f_projection_line(showProjectionCentral, t2026, c2026, t2027, projC2027, projectionCentralColor, 3)
+    f_projection_line(showProjectionCentral, t2027, projC2027, t2028, projC2028, projectionCentralColor, 3)
+    f_projection_line(showProjectionCentral, t2028, projC2028, t2029, projC2029, projectionCentralColor, 3)
+    f_projection_line(showProjectionCentral, t2029, projC2029, t2030, projC2030, projectionCentralColor, 3)
+    f_projection_line(showProjectionCentral, t2030, projC2030, t2031, projC2031, projectionCentralColor, 3)
+    f_projection_line(showProjectionCentral, t2031, projC2031, t2032, projC2032, projectionCentralColor, 3)
+    f_projection_line(showProjectionCentral, t2032, projC2032, t2033, projC2033, projectionCentralColor, 3)
+    f_projection_line(showProjectionCentral, t2033, projC2033, t2034, projC2034, projectionCentralColor, 3)
+    f_projection_line(showProjectionCentral, t2034, projC2034, t2035, projC2035, projectionCentralColor, 3)
+    f_projection_line(showProjectionCentral, t2035, projC2035, t2036, projC2036, projectionCentralColor, 3)
+
+    f_projection_line(showProjectionLow, t2026, p10_2026, t2027, projLow2027, projectionLowColor, 1)
+    f_projection_line(showProjectionLow, t2027, projLow2027, t2028, projLow2028, projectionLowColor, 1)
+    f_projection_line(showProjectionLow, t2028, projLow2028, t2029, projLow2029, projectionLowColor, 1)
+    f_projection_line(showProjectionLow, t2029, projLow2029, t2030, projLow2030, projectionLowColor, 1)
+    f_projection_line(showProjectionLow, t2030, projLow2030, t2031, projLow2031, projectionLowColor, 1)
+    f_projection_line(showProjectionLow, t2031, projLow2031, t2032, projLow2032, projectionLowColor, 1)
+    f_projection_line(showProjectionLow, t2032, projLow2032, t2033, projLow2033, projectionLowColor, 1)
+    f_projection_line(showProjectionLow, t2033, projLow2033, t2034, projLow2034, projectionLowColor, 1)
+    f_projection_line(showProjectionLow, t2034, projLow2034, t2035, projLow2035, projectionLowColor, 1)
+    f_projection_line(showProjectionLow, t2035, projLow2035, t2036, projLow2036, projectionLowColor, 1)
+
+    f_projection_line(showProjectionHigh, t2026, p90_2026, t2027, projHigh2027, projectionHighColor, 1)
+    f_projection_line(showProjectionHigh, t2027, projHigh2027, t2028, projHigh2028, projectionHighColor, 1)
+    f_projection_line(showProjectionHigh, t2028, projHigh2028, t2029, projHigh2029, projectionHighColor, 1)
+    f_projection_line(showProjectionHigh, t2029, projHigh2029, t2030, projHigh2030, projectionHighColor, 1)
+    f_projection_line(showProjectionHigh, t2030, projHigh2030, t2031, projHigh2031, projectionHighColor, 1)
+    f_projection_line(showProjectionHigh, t2031, projHigh2031, t2032, projHigh2032, projectionHighColor, 1)
+    f_projection_line(showProjectionHigh, t2032, projHigh2032, t2033, projHigh2033, projectionHighColor, 1)
+    f_projection_line(showProjectionHigh, t2033, projHigh2033, t2034, projHigh2034, projectionHighColor, 1)
+    f_projection_line(showProjectionHigh, t2034, projHigh2034, t2035, projHigh2035, projectionHighColor, 1)
+    f_projection_line(showProjectionHigh, t2035, projHigh2035, t2036, projHigh2036, projectionHighColor, 1)
+
+    f_projection_line(showProjectionMiner, t2026, m2026, t2027, projMiner2027, projectionMinerColor, 2)
+    f_projection_line(showProjectionMiner, t2027, projMiner2027, t2028, projMiner2028, projectionMinerColor, 2)
+    f_projection_line(showProjectionMiner, t2028, projMiner2028, t2029, projMiner2029, projectionMinerColor, 2)
+    f_projection_line(showProjectionMiner, t2029, projMiner2029, t2030, projMiner2030, projectionMinerColor, 2)
+    f_projection_line(showProjectionMiner, t2030, projMiner2030, t2031, projMiner2031, projectionMinerColor, 2)
+    f_projection_line(showProjectionMiner, t2031, projMiner2031, t2032, projMiner2032, projectionMinerColor, 2)
+    f_projection_line(showProjectionMiner, t2032, projMiner2032, t2033, projMiner2033, projectionMinerColor, 2)
+    f_projection_line(showProjectionMiner, t2033, projMiner2033, t2034, projMiner2034, projectionMinerColor, 2)
+    f_projection_line(showProjectionMiner, t2034, projMiner2034, t2035, projMiner2035, projectionMinerColor, 2)
+    f_projection_line(showProjectionMiner, t2035, projMiner2035, t2036, projMiner2036, projectionMinerColor, 2)
+
+    f_projection_label(showProjectionLabels and showProjectionCentral, t2036, projC2036, "10Y central projection\\nnot a price target", projectionCentralColor)
+    f_projection_label(showProjectionLabels and showProjectionLow, t2036, projLow2036, "10Y structural low", projectionLowColor)
+    f_projection_label(showProjectionLabels and showProjectionMiner, t2036, projMiner2036, "10Y projected miner cost", projectionMinerColor)
+
+"""
+        pine = pine.replace("//━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n// TABLE HELPERS", draw_block + "//━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n// TABLE HELPERS", 1)
+
+    return pine
 
 
 def _patch_table(pine: str) -> str:
@@ -175,7 +410,6 @@ def main() -> None:
 
     try:
         state["terminal_state"] = build_terminal_state(state)
-        STATE_PATH.write_text(json.dumps(state, ensure_ascii=False, indent=2), encoding="utf-8")
         print("Terminal state embedded into coeziv_state.json")
     except Exception as exc:
         print("WARN: nu am putut genera terminal_state:", exc)
@@ -184,11 +418,16 @@ def main() -> None:
     pine = _ensure_terminal_inputs(pine)
     pine = _ensure_terminal_colors(pine)
     pine = _patch_table(pine)
+    pine = _ensure_projection_layer(pine)
 
     anchors = state.get("tradingview_anchors") or {}
     yearly = anchors.get("yearly") or {}
     active_year = str(anchors.get("active_year_override") or state.get("timestamp", "")[:4])
     active = yearly.get(active_year) or {}
+
+    projection = build_projection_10y(state, yearly, active_year, active)
+    state["tradingview_projection_10y"] = projection
+    STATE_PATH.write_text(json.dumps(state, ensure_ascii=False, indent=2), encoding="utf-8")
 
     replacements = {
         "monitorSpot": state.get("price_usd"),
@@ -226,10 +465,26 @@ def main() -> None:
         for var_name, value in mappings.items():
             pine = _replace_assignment_float(pine, var_name, value, decimals=_year_decimals(year, value))
 
+    projection_years = (projection or {}).get("years") or {}
+    for year_str, data in sorted(projection_years.items()):
+        try:
+            year = int(year_str)
+        except Exception:
+            continue
+        mappings = {
+            f"projC{year}": data.get("central"),
+            f"projLow{year}": data.get("low"),
+            f"projHigh{year}": data.get("high"),
+            f"projMiner{year}": data.get("miner"),
+        }
+        for var_name, value in mappings.items():
+            pine = _replace_assignment_float(pine, var_name, value, decimals=2)
+
     PINE_PATH.write_text(pine, encoding="utf-8")
     print("TradingView Pine indicator actualizat:", PINE_PATH)
     print("Monitor spot:", state.get("price_usd"))
     print("Active year:", active_year)
+    print("10Y projection:", projection.get("label") if isinstance(projection, dict) else None)
 
 
 if __name__ == "__main__":
