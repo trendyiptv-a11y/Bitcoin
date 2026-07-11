@@ -6,6 +6,9 @@ from typing import Any, Dict, Optional
 
 PROJECTION_START_YEAR = 2027
 PROJECTION_END_YEAR = 2036
+PRIMARY_CALIBRATION_START_YEAR = 2022
+FALLBACK_CALIBRATION_START_YEAR = 2018
+EXCLUDED_CALIBRATION_BEFORE_YEAR = 2018
 
 
 def _finite(value: Any) -> bool:
@@ -36,32 +39,78 @@ def _standard_miner(data: Dict[str, Any]) -> Optional[float]:
     return _sf(data.get("standard_miner") or data.get("miner"))
 
 
-def _projection_growth_rate(yearly: Dict[str, Any], active_year: str) -> float:
-    years = []
+def _miner_years(yearly: Dict[str, Any], active_year: str, start_year: int) -> list[tuple[int, float]]:
+    years: list[tuple[int, float]] = []
     for year_str, data in yearly.items():
         try:
             year = int(year_str)
         except Exception:
             continue
-        if str(year) > active_year:
+        if year < start_year or str(year) > active_year:
             continue
         miner = _standard_miner(data or {})
         if miner and miner > 0:
             years.append((year, miner))
     years.sort()
+    return years
 
-    growth_rates = []
+
+def _rates_from_years(years: list[tuple[int, float]]) -> list[float]:
+    growth_rates: list[float] = []
     for (_, prev), (_, cur) in zip(years, years[1:]):
         if prev > 0 and cur > 0:
             rate = (cur / prev) - 1.0
             if -0.35 <= rate <= 1.25:
                 growth_rates.append(rate)
+    return growth_rates
 
-    if not growth_rates:
-        return 0.16
 
-    recent = growth_rates[-8:]
-    return _clamp(float(median(recent)), 0.06, 0.35)
+def _projection_growth_profile(yearly: Dict[str, Any], active_year: str) -> Dict[str, Any]:
+    """Return the production-cost growth assumption under the official calibration policy.
+
+    Policy:
+    - 2022+ is the primary calibration window.
+    - 2018+ is used only as fallback/robustness when 2022+ is too thin.
+    - pre-2018 BTC is excluded from projection-weight calibration.
+    """
+    primary_years = _miner_years(yearly, active_year, PRIMARY_CALIBRATION_START_YEAR)
+    fallback_years = _miner_years(yearly, active_year, FALLBACK_CALIBRATION_START_YEAR)
+    primary_rates = _rates_from_years(primary_years)
+    fallback_rates = _rates_from_years(fallback_years)
+
+    if len(primary_rates) >= 2:
+        raw_rate = float(median(primary_rates))
+        source = "primary_2022_plus"
+        used_years = [year for year, _ in primary_years]
+        sample_count = len(primary_rates)
+    elif fallback_rates:
+        raw_rate = float(median(fallback_rates[-8:]))
+        source = "fallback_2018_plus"
+        used_years = [year for year, _ in fallback_years]
+        sample_count = len(fallback_rates)
+    else:
+        raw_rate = 0.16
+        source = "default_no_sufficient_history"
+        used_years = []
+        sample_count = 0
+
+    capped_rate = _clamp(raw_rate, 0.06, 0.35)
+    return {
+        "annual_cost_growth_used": capped_rate,
+        "raw_annual_cost_growth": raw_rate,
+        "source": source,
+        "primary_start_year": PRIMARY_CALIBRATION_START_YEAR,
+        "fallback_start_year": FALLBACK_CALIBRATION_START_YEAR,
+        "excluded_before_year": EXCLUDED_CALIBRATION_BEFORE_YEAR,
+        "used_years": used_years,
+        "sample_count": sample_count,
+        "cap_range": [0.06, 0.35],
+        "note": "2022+ is the official primary calibration window; 2018+ is fallback only; pre-2018 is excluded.",
+    }
+
+
+def _projection_growth_rate(yearly: Dict[str, Any], active_year: str) -> float:
+    return float(_projection_growth_profile(yearly, active_year)["annual_cost_growth_used"])
 
 
 def _terminal_scores(state: Dict[str, Any]) -> Dict[str, Optional[float]]:
@@ -170,6 +219,7 @@ def _cohesive_factor_pack(state: Dict[str, Any]) -> Dict[str, Any]:
             "regime_factor": regime_factor,
         },
         "inputs": s,
+        "weight_status": "alpha_manual_weights_pending_2022_plus_backtest_calibration",
     }
 
 
@@ -209,7 +259,8 @@ def build_10y_structural_projection(state: Dict[str, Any]) -> Dict[str, Any]:
     central_mult = _clamp((central or base_miner) / base_miner, 0.75, 8.0)
     low_mult = _clamp((low or base_miner * 0.9) / base_miner, 0.25, central_mult)
     high_mult = _clamp((high or base_miner * 4.0) / base_miner, central_mult, 12.0)
-    annual_cost_growth = _projection_growth_rate(yearly, active_year)
+    growth_profile = _projection_growth_profile(yearly, active_year)
+    annual_cost_growth = float(growth_profile["annual_cost_growth_used"])
     factor_pack = _cohesive_factor_pack(state)
     base_cohesive_factor = float(factor_pack["combined_factor"])
     downside_width = float(factor_pack["downside_width_factor"])
@@ -237,12 +288,23 @@ def build_10y_structural_projection(state: Dict[str, Any]) -> Dict[str, Any]:
         "active": True,
         "label": "10Y Structural Projection - not a price target",
         "engine": "cohesivx_projection_engine.build_10y_structural_projection",
+        "engine_status": "alpha_manual_weights_pending_calibration",
+        "calibration_policy": {
+            "primary_start_year": PRIMARY_CALIBRATION_START_YEAR,
+            "fallback_start_year": FALLBACK_CALIBRATION_START_YEAR,
+            "excluded_before_year": EXCLUDED_CALIBRATION_BEFORE_YEAR,
+            "primary_window": "2022+",
+            "fallback_window": "2018+ only if 2022+ is too thin",
+            "pre_2018_policy": "excluded_from_projection_weights",
+            "direct_10y_calibration": False,
+            "note": "Weights are still alpha/manual; production-cost growth uses 2022+ as primary calibration and 2018+ only as fallback.",
+        },
         "base_year": base_year,
         "start_year": PROJECTION_START_YEAR,
         "end_year": PROJECTION_END_YEAR,
         "method": "projected production cost × structural price/cost multipliers × cohesive objective factors",
         "objective_factors_used": [
-            "production_cost_trend",
+            "production_cost_trend_2022_plus_primary",
             "p10_p50_p90_price_cost_multipliers",
             "terminal_structural_score",
             "terminal_confidence_score",
@@ -255,6 +317,7 @@ def build_10y_structural_projection(state: Dict[str, Any]) -> Dict[str, Any]:
             "halving_cycle_supply_pressure",
         ],
         "annual_cost_growth_used": annual_cost_growth,
+        "growth_profile": growth_profile,
         "multipliers": {
             "low_price_cost": low_mult,
             "central_price_cost": central_mult,
