@@ -25,6 +25,101 @@
     }
   };
 
+  const TRADER_T = {
+    ro: {
+      signal: "SEMNAL",
+      asset: "BTC",
+      flow: "Flux",
+      participation: "Participare",
+      liquidity: "Lichiditate",
+      growth: "Confirmare creștere",
+      yes: "da",
+      no: "nu",
+      buy: {
+        icon: "⬆",
+        title: "CUMPĂRARE",
+        subtitle: "Piața confirmă direcția. Forța internă susține urcarea.",
+        action: "Atitudine: cumpărare controlată / acumulare"
+      },
+      accumulate: {
+        icon: "↗",
+        title: "ACUMULARE",
+        subtitle: "Piața arată refacere, dar confirmarea completă lipsește.",
+        action: "Atitudine: intrări mici / fără agresivitate"
+      },
+      wait: {
+        icon: "Ⅱ",
+        title: "AȘTEAPTĂ",
+        subtitle: "Piața nu arată panică, dar refacerea nu este confirmată.",
+        action: "Atitudine: prudență / fără intrări agresive"
+      },
+      attention: {
+        icon: "⚠",
+        title: "ATENȚIE",
+        subtitle: "Piața stă în picioare, dar presiunea internă este prezentă.",
+        action: "Atitudine: reducere risc / fără poziții noi mari"
+      },
+      sell: {
+        icon: "↓",
+        title: "VÂNZARE",
+        subtitle: "Presiunea internă domină. Zona curentă nu este susținută.",
+        action: "Atitudine: reducere expunere"
+      },
+      risk: {
+        icon: "!",
+        title: "RISC",
+        subtitle: "Structura este fragilă, iar presiunea internă crește.",
+        action: "Atitudine: protecție capital / cash"
+      }
+    },
+    en: {
+      signal: "SIGNAL",
+      asset: "BTC",
+      flow: "Flow",
+      participation: "Participation",
+      liquidity: "Liquidity",
+      growth: "Growth confirmation",
+      yes: "yes",
+      no: "no",
+      buy: {
+        icon: "⬆",
+        title: "BUY",
+        subtitle: "The market confirms direction. Internal strength supports upside.",
+        action: "Attitude: controlled buying / accumulation"
+      },
+      accumulate: {
+        icon: "↗",
+        title: "ACCUMULATE",
+        subtitle: "The market shows recovery, but full confirmation is still missing.",
+        action: "Attitude: small entries / no aggression"
+      },
+      wait: {
+        icon: "Ⅱ",
+        title: "WAIT",
+        subtitle: "The market does not show panic, but recovery is not confirmed.",
+        action: "Attitude: prudence / no aggressive entries"
+      },
+      attention: {
+        icon: "⚠",
+        title: "ATTENTION",
+        subtitle: "The market is standing, but internal pressure is present.",
+        action: "Attitude: reduce risk / no large new positions"
+      },
+      sell: {
+        icon: "↓",
+        title: "SELL",
+        subtitle: "Internal pressure dominates. The current zone is not supported.",
+        action: "Attitude: reduce exposure"
+      },
+      risk: {
+        icon: "!",
+        title: "RISK",
+        subtitle: "The structure is fragile and internal pressure is rising.",
+        action: "Attitude: capital protection / cash"
+      }
+    }
+  };
+
   function pick(obj, roKey, enKey) {
     if (!obj) return "";
     return lang() === "en" ? (obj[enKey] || obj[roKey] || "") : (obj[roKey] || obj[enKey] || "");
@@ -166,6 +261,14 @@
       .cxdc-layer{position:absolute;left:17px;right:17px;height:46px;border-radius:50%;border:2px solid var(--c);background:rgba(255,255,255,.025);box-shadow:0 0 16px var(--c),inset 0 0 12px rgba(255,255,255,.08);animation:cxdcFloat 6s ease-in-out infinite;z-index:4}.cxdc-layer:before{content:"";position:absolute;left:12%;right:12%;top:50%;height:2px;background:var(--c);box-shadow:0 0 8px var(--c)}
       .cxdc-layer.context{top:66px;--c:#f8feff}.cxdc-layer.price{top:132px;--c:#ffe600}.cxdc-layer.part{top:198px;--c:#ff9800}.cxdc-layer.flow{top:264px;--c:#14f4ff}.cxdc-layer.liq{top:330px;--c:#19a7ff}.cxdc-layer.growth{top:396px;--c:#ff4968}.cxdc-risk{position:absolute;left:30px;right:30px;bottom:34px;height:54px;border-radius:50%;border:2px solid #ff4c25;background:rgba(255,75,32,.12);box-shadow:0 0 22px rgba(255,88,40,.58);z-index:5;animation:cxdcRisk 5s ease-in-out infinite}.cxdc-off{position:absolute;left:50%;top:412px;transform:translateX(-50%);font-size:40px;color:#ff3156;text-shadow:0 0 12px #ff3156;z-index:7}
       .cxdc-info{border-top:1px solid rgba(35,238,255,.18);margin-top:12px;padding-top:13px}.cxdc-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:10px}.cxdc-date{font-size:18px;color:#a9bbd2}.cxdc-title{font-size:clamp(20px,6vw,26px);font-weight:700;color:#fff;text-align:right}.cxdc-formula{border-top:1px solid rgba(35,238,255,.14);padding-top:12px;margin-top:10px;font-size:14px;line-height:1.45;color:#d9e8f7}.cxdc-formula b{display:block;color:#00f7ff;letter-spacing:.08em;margin-bottom:5px}.cxdc-footer{margin-top:10px;font-size:12px;color:#8fa6bd}.cxdc-full{margin-top:12px;width:100%;border:1px solid rgba(0,247,255,.58);border-radius:16px;padding:13px 14px;color:#00f7ff;background:rgba(0,247,255,.08);font-weight:800;letter-spacing:.03em}.cxdc-panel{display:none;margin-top:10px;border-radius:16px;border:1px solid rgba(56,189,248,.26);background:rgba(15,23,42,.62);padding:12px 13px;font-size:13px;line-height:1.58;color:var(--text-main);white-space:pre-wrap}.cxdc-panel.open{display:block}
+      .cxtr{margin:0 0 12px;padding:13px;border-radius:20px;border:1px solid rgba(250,204,21,.58);background:radial-gradient(circle at 0 0,rgba(250,204,21,.16),transparent 42%),linear-gradient(180deg,rgba(15,23,42,.90),rgba(2,6,23,.82));box-shadow:0 0 24px rgba(250,204,21,.12);contain:layout paint style}
+      .cxtr-top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:9px;font-size:11px;color:#9fb1c7}.cxtr-asset{font-weight:950;letter-spacing:.16em;color:#facc15}.cxtr-main{display:flex;align-items:center;gap:12px}.cxtr-icon{width:54px;height:54px;border-radius:17px;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:950;background:rgba(250,204,21,.14);color:#facc15;border:1px solid rgba(250,204,21,.50);box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 0 18px rgba(250,204,21,.12)}
+      .cxtr-k{font-size:10px;letter-spacing:.20em;text-transform:uppercase;color:#8fa6bd;font-weight:800}.cxtr-title{font-size:clamp(30px,9vw,46px);line-height:.96;font-weight:950;letter-spacing:.02em;color:#facc15;text-shadow:0 0 22px rgba(250,204,21,.20)}.cxtr-sub{margin-top:10px;font-size:14px;line-height:1.42;color:#f8fafc}.cxtr-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px}.cxtr-cell{border-radius:13px;padding:8px 9px;border:1px solid rgba(148,163,184,.18);background:rgba(15,23,42,.66)}.cxtr-cell span{display:block;font-size:10px;color:#8fa6bd;text-transform:uppercase;letter-spacing:.08em}.cxtr-cell strong{display:block;margin-top:3px;font-size:13px;color:#f8fafc}.cxtr-action{margin-top:12px;padding:10px 12px;border-radius:15px;font-size:14px;font-weight:900;text-align:center;border:1px solid rgba(250,204,21,.46);color:#facc15;background:rgba(250,204,21,.08)}
+      .cxtr.signal-buy{border-color:rgba(34,197,94,.70);box-shadow:0 0 28px rgba(34,197,94,.16)}.cxtr.signal-buy .cxtr-icon,.cxtr.signal-buy .cxtr-title,.cxtr.signal-buy .cxtr-action{color:#22c55e;border-color:rgba(34,197,94,.58)}.cxtr.signal-buy .cxtr-icon,.cxtr.signal-buy .cxtr-action{background:rgba(34,197,94,.10)}
+      .cxtr.signal-accumulate{border-color:rgba(45,212,191,.70);box-shadow:0 0 28px rgba(45,212,191,.14)}.cxtr.signal-accumulate .cxtr-icon,.cxtr.signal-accumulate .cxtr-title,.cxtr.signal-accumulate .cxtr-action{color:#2dd4bf;border-color:rgba(45,212,191,.58)}.cxtr.signal-accumulate .cxtr-icon,.cxtr.signal-accumulate .cxtr-action{background:rgba(45,212,191,.10)}
+      .cxtr.signal-attention{border-color:rgba(249,115,22,.75);box-shadow:0 0 28px rgba(249,115,22,.16)}.cxtr.signal-attention .cxtr-icon,.cxtr.signal-attention .cxtr-title,.cxtr.signal-attention .cxtr-action{color:#fb923c;border-color:rgba(249,115,22,.60)}.cxtr.signal-attention .cxtr-icon,.cxtr.signal-attention .cxtr-action{background:rgba(249,115,22,.10)}
+      .cxtr.signal-sell,.cxtr.signal-risk{border-color:rgba(239,68,68,.78);box-shadow:0 0 30px rgba(239,68,68,.18)}.cxtr.signal-sell .cxtr-icon,.cxtr.signal-sell .cxtr-title,.cxtr.signal-sell .cxtr-action,.cxtr.signal-risk .cxtr-icon,.cxtr.signal-risk .cxtr-title,.cxtr.signal-risk .cxtr-action{color:#ef4444;border-color:rgba(239,68,68,.62)}.cxtr.signal-sell .cxtr-icon,.cxtr.signal-sell .cxtr-action,.cxtr.signal-risk .cxtr-icon,.cxtr.signal-risk .cxtr-action{background:rgba(239,68,68,.10)}
+      @media(max-width:380px){.cxtr{padding:12px}.cxtr-icon{width:48px;height:48px;font-size:26px}.cxtr-grid{grid-template-columns:1fr}.cxtr-sub,.cxtr-action{font-size:13px}}
       @keyframes cxdcBeam{0%,100%{opacity:.84}50%{opacity:.58}}@keyframes cxdcParticles{to{background-position:0 -240px}}@keyframes cxdcFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}@keyframes cxdcRisk{0%,100%{opacity:.78;transform:scale(1)}50%{opacity:.94;transform:scale(1.012)}}
       @media(max-width:760px),(pointer:coarse){#daily-ai-card,.cxdc,.cxdc-core,.cxdc-cylinder{background-color:#020617!important;box-shadow:none!important;transform:none!important;filter:none!important;will-change:auto!important}.cxdc-core:before{background:linear-gradient(180deg,rgba(3,18,34,.92),rgba(0,10,22,.96))!important}.cxdc-particles,.cxdc-beam,.cxdc-layer,.cxdc-risk{animation:none!important;transition:none!important;will-change:auto!important}.cxdc-particles{opacity:.08!important}.cxdc-beam{opacity:.34!important;background:linear-gradient(180deg,transparent,rgba(0,247,255,.30) 22%,rgba(125,245,255,.36) 50%,rgba(0,247,255,.30) 78%,transparent)!important;box-shadow:0 0 10px rgba(0,240,255,.28)!important}.cxdc-layer{box-shadow:0 0 8px rgba(120,240,255,.18),inset 0 0 8px rgba(255,255,255,.05)!important}.cxdc-risk{box-shadow:0 0 10px rgba(255,88,40,.28)!important}.cxdc-cylinder:before,.cxdc-cylinder:after{box-shadow:none!important;border-color:rgba(125,245,255,.42)!important}}
       @media(max-width:380px){.cxdc-core{min-height:555px}.cxdc-labels{left:10px;width:40%;gap:20px}.cxdc-label .wire,.cxdc-label .pin{display:none}.cxdc-cylinder{right:5px;width:56%;height:505px}}
@@ -173,12 +276,83 @@
     document.head.appendChild(style);
   }
 
+  function normSignalText(v) {
+    return String(v || "")
+      .toLowerCase()
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  }
+
+  function escHtml(v) {
+    return String(v ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  function deriveTraderSignal(info) {
+    const t = TRADER_T[lang()];
+    const price = normSignalText(info.price);
+    const participation = normSignalText(info.participation);
+    const flow = normSignalText(info.flow);
+    const liquidity = normSignalText(info.liquidity);
+    const growth = normSignalText(info.growth);
+    const risk = normSignalText(info.risk);
+    const formula = normSignalText(info.formula);
+
+    const hasGrowth = info.visual?.growthPresent || growth.includes("prezent") || growth.includes("present") || growth === "da" || growth === "yes";
+    const isCohesive = info.visual?.participationCohesive || participation.includes("coeziv") || participation.includes("cohesive");
+    const isTense = participation.includes("tension") || participation.includes("tense");
+    const flowPositive = info.visual?.flowPositive || flow.includes("pozitiv") || flow.includes("positive");
+    const flowNegative = info.visual?.flowNegative || flow.includes("negativ") || flow.includes("negative");
+    const liquidityGood = liquidity.includes("ridicat") || liquidity.includes("buna") || liquidity.includes("buna") || liquidity.includes("bun") || liquidity.includes("good") || liquidity.includes("high");
+    const deep = price.includes("degradare profunda") || price.includes("deep degradation") || risk.includes("degradare profunda") || risk.includes("deep degradation") || formula.includes("degradare profunda") || formula.includes("deep degradation");
+    const unrepaired = formula.includes("nereparat") || formula.includes("unrepaired") || formula.includes("not repaired") || risk.includes("ruptur");
+
+    let key = "wait";
+    if (hasGrowth && isCohesive && flowPositive && liquidityGood && !deep && !unrepaired) key = "buy";
+    else if (isCohesive && flowPositive && liquidityGood && !hasGrowth) key = "accumulate";
+    else if (flowNegative && isTense && !liquidityGood) key = "sell";
+    else if (deep && flowNegative) key = "risk";
+    else if (flowNegative && isTense && !hasGrowth) key = "attention";
+
+    const copy = t[key] || t.wait;
+    return {
+      key,
+      icon: copy.icon,
+      title: copy.title,
+      subtitle: copy.subtitle,
+      action: copy.action,
+      growth: hasGrowth ? t.yes : t.no,
+      flow: info.flow || "–",
+      participation: info.participation || "–",
+      liquidity: info.liquidity || "–"
+    };
+  }
+
   function render(info) {
     css();
     const root = document.getElementById("daily-cylinder-root") || document.getElementById("daily-ai-card")?.querySelector(".card-inner");
     if (!root) return;
     const l = lang();
+    const tr = deriveTraderSignal(info);
+    const tt = TRADER_T[l];
     root.innerHTML = `
+      <div class="cxtr signal-${tr.key}">
+        <div class="cxtr-top"><div class="cxtr-asset">${tt.asset}</div><div class="cxtr-date">${escHtml(info.date)}</div></div>
+        <div class="cxtr-main">
+          <div class="cxtr-icon">${escHtml(tr.icon)}</div>
+          <div><div class="cxtr-k">${tt.signal}</div><div class="cxtr-title">${escHtml(tr.title)}</div></div>
+        </div>
+        <div class="cxtr-sub">${escHtml(tr.subtitle)}</div>
+        <div class="cxtr-grid">
+          <div class="cxtr-cell"><span>${tt.flow}</span><strong>${escHtml(tr.flow)}</strong></div>
+          <div class="cxtr-cell"><span>${tt.participation}</span><strong>${escHtml(tr.participation)}</strong></div>
+          <div class="cxtr-cell"><span>${tt.liquidity}</span><strong>${escHtml(tr.liquidity)}</strong></div>
+          <div class="cxtr-cell"><span>${tt.growth}</span><strong>${escHtml(tr.growth)}</strong></div>
+        </div>
+        <div class="cxtr-action">${escHtml(tr.action)}</div>
+      </div>
       <div class="cxdc">
         <div class="cxdc-core">
           <div class="cxdc-labels">
