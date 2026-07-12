@@ -1,4 +1,4 @@
-/* CohesivX visual summary fix v7 — hides old structural card and preserves opened details */
+/* CohesivX visual summary fix v8 — hides old structural card, preserves opened details, and displays cohesive FG labels */
 (function () {
   'use strict';
 
@@ -119,7 +119,129 @@
     });
   }
 
+  function fgTitle(zone) {
+    switch (String(zone || '').toLowerCase()) {
+      case 'extreme_fear': return 'Extreme Fear';
+      case 'fear': return 'Fear';
+      case 'greed': return 'Greed';
+      case 'extreme_greed': return 'Extreme Greed';
+      default: return 'Neutral';
+    }
+  }
+
+  function fgCssZone(zone) {
+    var z = String(zone || '').toLowerCase();
+    if (z === 'optimism_tensionat') return 'neutral';
+    if (z === 'greed_fragil') return 'greed';
+    if (z === 'neutru_tensionat') return 'neutral';
+    if (['extreme_fear', 'fear', 'neutral', 'greed', 'extreme_greed'].indexOf(z) >= 0) return z;
+    return 'neutral';
+  }
+
+  function fallbackCohesiveFg(fg, stateLike) {
+    var score = Number(fg && fg.combined);
+    var rawZone = String((fg && fg.combined_zone) || 'neutral').toLowerCase();
+
+    var signal = String((stateLike && stateLike.signal) || '').toLowerCase();
+    var flowBias = String((stateLike && stateLike.flow_bias) || '').toLowerCase();
+    var flowStrength = String((stateLike && stateLike.flow_strength) || '').toLowerCase();
+    var deviation = Number(stateLike && stateLike.model_price_deviation);
+    var structural = (stateLike && stateLike.structural_confirmation) || {};
+    var regime = String(structural.regime || '').toLowerCase();
+
+    var history = Array.isArray(stateLike && stateLike.signal_history) ? stateLike.signal_history : [];
+    var growthCount = history.filter(function (row) {
+      return row && String(row.signal || '').toLowerCase() === 'long';
+    }).length;
+
+    var structuralTension = regime.indexOf('bear') >= 0 || (Number.isFinite(deviation) && deviation <= -0.20);
+    var weakNeutralFlow = flowBias === 'neutru' && flowStrength === 'slab';
+    var noGrowth = growthCount === 0 && (signal === 'flat' || signal === 'neutral' || !signal);
+
+    if (rawZone === 'greed' && Number.isFinite(score) && score < 65 && (structuralTension || (weakNeutralFlow && noGrowth))) {
+      return {
+        label: 'Optimism tensionat',
+        zone: 'optimism_tensionat',
+        description: 'Apetit de risc ușor, dar fără confirmare structurală. Piața nu arată panică, însă fluxul este slab, contextele de creștere lipsesc, iar structura rămâne nereparată.'
+      };
+    }
+
+    if (rawZone === 'greed' && (structuralTension || weakNeutralFlow || noGrowth)) {
+      return {
+        label: 'Greed fragil',
+        zone: 'greed_fragil',
+        description: 'Există apetit de risc, dar confirmarea este incompletă. Greed-ul devine sănătos doar dacă este susținut de flux pozitiv persistent, participare coezivă și reparare structurală.'
+      };
+    }
+
+    return null;
+  }
+
+  function installCohesiveFearGreedDisplay() {
+    if (window.__cohesivxFgDisplayInstalled) return;
+    if (typeof window.updateFGCard !== 'function') return;
+
+    window.__cohesivxFgDisplayInstalled = true;
+    var original = window.updateFGCard;
+
+    window.updateFGCard = function (fg) {
+      original(fg);
+
+      if (!fg || typeof fg.combined !== 'number' || !Number.isFinite(fg.combined)) return;
+
+      var zoneEl = document.getElementById('fg-score-zone');
+      var descEl = document.getElementById('fg-description');
+      if (!zoneEl) return;
+
+      var stateLike = window.COHESIVX_LAST_STATE || null;
+      var display = null;
+
+      if (fg.cohesive_label || fg.cohesive_description || fg.cohesive_zone) {
+        display = {
+          label: fg.cohesive_label || fgTitle(fg.combined_zone),
+          zone: fg.cohesive_zone || fg.combined_zone || 'neutral',
+          description: fg.cohesive_description || ''
+        };
+      } else {
+        display = fallbackCohesiveFg(fg, stateLike);
+      }
+
+      if (!display) return;
+
+      zoneEl.textContent = display.label;
+      zoneEl.className = 'fg-zone-pill fg-zone-' + fgCssZone(display.zone);
+      if (descEl && display.description) descEl.textContent = display.description;
+    };
+  }
+
+  function rememberLatestState() {
+    if (window.__cohesivxStateFetchHookInstalled) return;
+    if (typeof window.fetch !== 'function') return;
+
+    window.__cohesivxStateFetchHookInstalled = true;
+    var originalFetch = window.fetch;
+
+    window.fetch = function () {
+      var args = arguments;
+      var url = args && args[0];
+      var urlText = typeof url === 'string' ? url : (url && url.url ? String(url.url) : '');
+
+      return originalFetch.apply(this, args).then(function (response) {
+        try {
+          if (urlText.indexOf('coeziv_state.json') >= 0 && response && typeof response.clone === 'function') {
+            response.clone().json().then(function (data) {
+              if (data && typeof data === 'object') window.COHESIVX_LAST_STATE = data;
+            }).catch(function () {});
+          }
+        } catch (_) {}
+        return response;
+      });
+    };
+  }
+
   function tick() {
+    rememberLatestState();
+    installCohesiveFearGreedDisplay();
     hideLongMainText();
     hideOldStructuralConfirmation();
     observeVisualSummary();
@@ -130,6 +252,7 @@
     markClicks();
 
     tick();
+    setTimeout(tick, 100);
     setTimeout(tick, 300);
     setTimeout(tick, 900);
     setTimeout(tick, 1800);
