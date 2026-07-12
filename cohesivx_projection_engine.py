@@ -11,6 +11,19 @@ FALLBACK_CALIBRATION_START_YEAR = 2018
 EXCLUDED_CALIBRATION_BEFORE_YEAR = 2018
 
 
+_FALSE_STRINGS = {"", "0", "false", "no", "none", "null", "real", "observed", "actual", "historical", "history"}
+_SYNTHETIC_MARKERS = (
+    "projection",
+    "projected",
+    "synthetic",
+    "forecast",
+    "estimate",
+    "estimated",
+    "model_future",
+    "future",
+)
+
+
 def _finite(value: Any) -> bool:
     try:
         return math.isfinite(float(value))
@@ -43,16 +56,89 @@ def _actual_close(data: Dict[str, Any]) -> Optional[float]:
     return _sf(data.get("ic_close") or data.get("close") or data.get("spot_price_usd"))
 
 
+def _active_year_int(active_year: str) -> Optional[int]:
+    try:
+        return int(str(active_year)[:4])
+    except Exception:
+        return None
+
+
+def _truthy_marker(value: Any) -> bool:
+    if value is None:
+        return False
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, (int, float)):
+        return value != 0
+    text = str(value).strip().lower()
+    return text not in _FALSE_STRINGS
+
+
+def _is_synthetic_or_projected_year(data: Dict[str, Any]) -> bool:
+    """Return True when a yearly anchor is explicitly not observed history.
+
+    The projection engine must never train empirical factors on its own future
+    output. This guard catches explicit boolean flags and text markers that may
+    appear in future generated yearly rows.
+    """
+    if not isinstance(data, dict):
+        return False
+
+    bool_keys = (
+        "is_projection",
+        "is_projected",
+        "projection",
+        "projected",
+        "is_synthetic",
+        "synthetic",
+        "forecast",
+        "estimated",
+    )
+    for key in bool_keys:
+        if key in data and _truthy_marker(data.get(key)):
+            return True
+
+    text_keys = ("kind", "type", "status", "source", "label", "method", "engine_status")
+    for key in text_keys:
+        raw = data.get(key)
+        if raw is None:
+            continue
+        text = str(raw).strip().lower()
+        if any(marker in text for marker in _SYNTHETIC_MARKERS):
+            return True
+    return False
+
+
+def _is_observed_calibration_year(year: int, data: Dict[str, Any], active_year: str, start_year: int) -> bool:
+    active_int = _active_year_int(active_year)
+    if active_int is None:
+        return False
+    if year < start_year or year > active_int:
+        return False
+    if year >= PROJECTION_START_YEAR:
+        return False
+    if _is_synthetic_or_projected_year(data or {}):
+        return False
+    actual = _actual_close(data or {})
+    return bool(actual and actual > 0)
+
+
 def _miner_years(yearly: Dict[str, Any], active_year: str, start_year: int) -> list[tuple[int, float]]:
     years: list[tuple[int, float]] = []
+    active_int = _active_year_int(active_year)
+    if active_int is None:
+        return years
     for year_str, data in yearly.items():
         try:
             year = int(year_str)
         except Exception:
             continue
-        if year < start_year or str(year) > active_year:
+        data = data or {}
+        if year < start_year or year > active_int or year >= PROJECTION_START_YEAR:
             continue
-        miner = _standard_miner(data or {})
+        if _is_synthetic_or_projected_year(data):
+            continue
+        miner = _standard_miner(data)
         if miner and miner > 0:
             years.append((year, miner))
     years.sort()
@@ -76,6 +162,7 @@ def _projection_growth_profile(yearly: Dict[str, Any], active_year: str) -> Dict
     - 2022+ is the primary calibration window.
     - 2018+ is used only as fallback/robustness when 2022+ is too thin.
     - pre-2018 BTC is excluded from projection-weight calibration.
+    - future/synthetic/projection rows are excluded from all calibration.
     """
     primary_years = _miner_years(yearly, active_year, PRIMARY_CALIBRATION_START_YEAR)
     fallback_years = _miner_years(yearly, active_year, FALLBACK_CALIBRATION_START_YEAR)
@@ -109,7 +196,9 @@ def _projection_growth_profile(yearly: Dict[str, Any], active_year: str) -> Dict
         "used_years": used_years,
         "sample_count": sample_count,
         "cap_range": [0.06, 0.35],
-        "note": "2022+ is the official primary calibration window; 2018+ is fallback only; pre-2018 is excluded.",
+        "synthetic_future_guard": True,
+        "projection_start_year_excluded": PROJECTION_START_YEAR,
+        "note": "2022+ is the official primary calibration window; 2018+ is fallback only; pre-2018 and synthetic/projection rows are excluded.",
     }
 
 
@@ -123,16 +212,32 @@ def _empirical_output_calibration(yearly: Dict[str, Any], active_year: str) -> D
     This does not attempt direct 10Y calibration. It measures how yearly observed
     BTC closes related to the mechanism's central/band/cost anchors in the modern
     2022+ window and applies a controlled output-realistization factor.
+
+    Only observed historical rows are allowed. Future projection years, synthetic
+    rows and any row without real close/spot data are excluded explicitly.
     """
     rows: list[Dict[str, float]] = []
+    excluded_rows: list[Dict[str, Any]] = []
     for year_str, data in yearly.items():
         try:
             year = int(year_str)
         except Exception:
             continue
-        if year < PRIMARY_CALIBRATION_START_YEAR or str(year) > active_year:
-            continue
         data = data or {}
+        if year < PRIMARY_CALIBRATION_START_YEAR:
+            continue
+        if not _is_observed_calibration_year(year, data, active_year, PRIMARY_CALIBRATION_START_YEAR):
+            if year >= PRIMARY_CALIBRATION_START_YEAR:
+                reason = "not_observed_history"
+                if year >= PROJECTION_START_YEAR:
+                    reason = "projection_year_excluded"
+                elif _is_synthetic_or_projected_year(data):
+                    reason = "synthetic_or_projected_row_excluded"
+                elif not _actual_close(data):
+                    reason = "missing_actual_close"
+                excluded_rows.append({"year": year, "reason": reason})
+            continue
+
         actual = _actual_close(data)
         central = _sf(data.get("central") or data.get("p50"))
         miner = _standard_miner(data)
@@ -151,6 +256,7 @@ def _empirical_output_calibration(yearly: Dict[str, Any], active_year: str) -> D
             row["actual_to_high"] = actual / high
         rows.append(row)
     rows.sort(key=lambda item: item["year"])
+    excluded_rows.sort(key=lambda item: item["year"])
 
     central_ratios = [r["actual_to_central"] for r in rows if "actual_to_central" in r and 0.05 <= r["actual_to_central"] <= 3.0]
     miner_ratios = [r["actual_to_miner"] for r in rows if "actual_to_miner" in r and 0.05 <= r["actual_to_miner"] <= 20.0]
@@ -185,6 +291,9 @@ def _empirical_output_calibration(yearly: Dict[str, Any], active_year: str) -> D
         "excluded_before_year": EXCLUDED_CALIBRATION_BEFORE_YEAR,
         "sample_count": len(rows),
         "used_years": [int(r["year"]) for r in rows],
+        "excluded_rows": excluded_rows,
+        "synthetic_future_guard": True,
+        "projection_start_year_excluded": PROJECTION_START_YEAR,
         "raw_central_output_factor": raw_central,
         "central_output_factor": central_factor,
         "low_output_factor": low_factor,
@@ -201,7 +310,7 @@ def _empirical_output_calibration(yearly: Dict[str, Any], active_year: str) -> D
             "actual_to_low_median": float(median(low_ratios)) if low_ratios else None,
             "actual_to_high_median": float(median(high_ratios)) if high_ratios else None,
         },
-        "note": "Empirical 2022+ output calibration realistizes the structural corridor; it is not direct 10Y fitting.",
+        "note": "Empirical 2022+ output calibration uses observed historical rows only; future/synthetic/projection rows are excluded.",
     }
 
 
@@ -402,23 +511,25 @@ def build_10y_structural_projection(state: Dict[str, Any]) -> Dict[str, Any]:
         "active": True,
         "label": "10Y Structural Projection - not a price target",
         "engine": "cohesivx_projection_engine.build_10y_structural_projection",
-        "engine_status": "beta_empirical_output_calibration_2022_plus",
+        "engine_status": "beta_empirical_output_calibration_2022_plus_observed_only_guard",
         "calibration_policy": {
             "primary_start_year": PRIMARY_CALIBRATION_START_YEAR,
             "fallback_start_year": FALLBACK_CALIBRATION_START_YEAR,
             "excluded_before_year": EXCLUDED_CALIBRATION_BEFORE_YEAR,
-            "primary_window": "2022+",
-            "fallback_window": "2018+ only if 2022+ is too thin",
+            "primary_window": "2022+ observed rows only",
+            "fallback_window": "2018+ observed rows only if 2022+ is too thin",
             "pre_2018_policy": "excluded_from_projection_weights",
+            "projection_year_policy": "years >= PROJECTION_START_YEAR are excluded from calibration",
+            "synthetic_row_policy": "rows marked projection/synthetic/forecast/estimated are excluded from calibration",
             "direct_10y_calibration": False,
-            "note": "Production-cost growth uses 2022+ as primary calibration; output is realistized by empirical 2022+ observed close/model ratios.",
+            "note": "Production-cost growth uses observed 2022+ as primary calibration; output is realistized by empirical observed close/model ratios only.",
         },
         "base_year": base_year,
         "start_year": PROJECTION_START_YEAR,
         "end_year": PROJECTION_END_YEAR,
-        "method": "alpha structural corridor × empirical 2022+ output calibration",
+        "method": "alpha structural corridor × observed-only empirical 2022+ output calibration",
         "objective_factors_used": [
-            "production_cost_trend_2022_plus_primary",
+            "production_cost_trend_2022_plus_primary_observed_only",
             "p10_p50_p90_price_cost_multipliers",
             "terminal_structural_score",
             "terminal_confidence_score",
@@ -429,7 +540,7 @@ def build_10y_structural_projection(state: Dict[str, Any]) -> Dict[str, Any]:
             "model_price_deviation_mean_reversion",
             "current_regime_and_signal",
             "halving_cycle_supply_pressure",
-            "empirical_2022_plus_output_calibration",
+            "empirical_2022_plus_output_calibration_observed_only",
         ],
         "annual_cost_growth_used": annual_cost_growth,
         "growth_profile": growth_profile,
