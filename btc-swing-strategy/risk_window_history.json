@@ -1,6 +1,6 @@
 {
   "title": "RISK_WINDOW_HISTORY",
-  "generated_at": "2026-07-11T22:42:40.235368+00:00",
+  "generated_at": "2026-07-12T04:05:28.878246+00:00",
   "regimes": [
     "accum_bear",
     "bear_late",
@@ -12,7 +12,7 @@
     "since": "2025-12-01",
     "events": 4,
     "max_streak_days": 74,
-    "current_streak_days": 40,
+    "current_streak_days": 41,
     "current_is_record": false,
     "matching_or_longer_than_current": 2,
     "top_streaks": [
@@ -39,11 +39,11 @@
       },
       {
         "start": "2026-06-02",
-        "end": "2026-07-11",
-        "days": 40,
+        "end": "2026-07-12",
+        "days": 41,
         "is_current": true,
         "start_price": 66669.7,
-        "end_price": 64117.7,
+        "end_price": 64151.8,
         "regimes": [
           "bear_late",
           "bear_struct"
@@ -98,6 +98,7 @@
       }
     ]
   },
+  "structural_source": "btc-swing-strategy/adaptive_bottom_zone_summary.json",
   "history": [
     {
       "start": "2011-04-04",
@@ -398,10 +399,29 @@
     },
     {
       "start": "2014-07-25",
-      "end": "2014-12-01",
-      "days": 130,
+      "end": "2014-07-25",
+      "days": 1,
       "is_current": false,
       "start_price": 600.5,
+      "end_price": 600.5,
+      "regimes": [
+        "accum_bear"
+      ],
+      "signals": [
+        "short"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.7253621981681933,
+      "confirmed_major_drawdown": true,
+      "days_to_confirmation": 24
+    },
+    {
+      "start": "2014-07-27",
+      "end": "2014-12-01",
+      "days": 128,
+      "is_current": false,
+      "start_price": 595.03,
       "end_price": 378.61,
       "regimes": [
         "accum_bear",
@@ -414,9 +434,9 @@
       ],
       "window_days": 180,
       "major_drawdown_threshold": -0.2,
-      "min_drawdown": -0.7253621981681933,
+      "min_drawdown": -0.7228375039913955,
       "confirmed_major_drawdown": true,
-      "days_to_confirmation": 24
+      "days_to_confirmation": 22
     },
     {
       "start": "2014-12-08",
@@ -2040,11 +2060,11 @@
     },
     {
       "start": "2026-06-02",
-      "end": "2026-07-11",
-      "days": 40,
+      "end": "2026-07-12",
+      "days": 41,
       "is_current": true,
       "start_price": 66669.7,
-      "end_price": 64117.7,
+      "end_price": 64151.8,
       "regimes": [
         "bear_late",
         "bear_struct"
