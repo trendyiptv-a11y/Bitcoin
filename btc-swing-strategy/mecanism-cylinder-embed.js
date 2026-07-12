@@ -35,6 +35,16 @@
       growth: "Confirmare creștere",
       yes: "da",
       no: "nu",
+      legendTitle: "LEGENDĂ SEMNALE",
+      legendSubtitle: "Ce poate afișa cardul în funcție de context.",
+      legend: {
+        buy: ["CUMPĂRARE", "Forță confirmată"],
+        accumulate: ["ACUMULARE", "Refacere în formare"],
+        wait: ["AȘTEAPTĂ", "Direcție neconfirmată"],
+        attention: ["ATENȚIE", "Presiune internă"],
+        sell: ["VÂNZARE", "Reducere expunere"],
+        risk: ["RISC", "Protecție capital"]
+      },
       buy: {
         icon: "⬆",
         title: "CUMPĂRARE",
@@ -81,6 +91,16 @@
       growth: "Growth confirmation",
       yes: "yes",
       no: "no",
+      legendTitle: "SIGNAL LEGEND",
+      legendSubtitle: "What the card can show depending on context.",
+      legend: {
+        buy: ["BUY", "Confirmed strength"],
+        accumulate: ["ACCUMULATE", "Recovery forming"],
+        wait: ["WAIT", "Direction unconfirmed"],
+        attention: ["ATTENTION", "Internal pressure"],
+        sell: ["SELL", "Reduce exposure"],
+        risk: ["RISK", "Protect capital"]
+      },
       buy: {
         icon: "⬆",
         title: "BUY",
@@ -264,11 +284,13 @@
       .cxtr{margin:0 0 12px;padding:13px;border-radius:20px;border:1px solid rgba(250,204,21,.58);background:radial-gradient(circle at 0 0,rgba(250,204,21,.16),transparent 42%),linear-gradient(180deg,rgba(15,23,42,.90),rgba(2,6,23,.82));box-shadow:0 0 24px rgba(250,204,21,.12);contain:layout paint style}
       .cxtr-top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:9px;font-size:11px;color:#9fb1c7}.cxtr-asset{font-weight:950;letter-spacing:.16em;color:#facc15}.cxtr-main{display:flex;align-items:center;gap:12px}.cxtr-icon{width:54px;height:54px;border-radius:17px;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:950;background:rgba(250,204,21,.14);color:#facc15;border:1px solid rgba(250,204,21,.50);box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 0 18px rgba(250,204,21,.12)}
       .cxtr-k{font-size:10px;letter-spacing:.20em;text-transform:uppercase;color:#8fa6bd;font-weight:800}.cxtr-title{font-size:clamp(30px,9vw,46px);line-height:.96;font-weight:950;letter-spacing:.02em;color:#facc15;text-shadow:0 0 22px rgba(250,204,21,.20)}.cxtr-sub{margin-top:10px;font-size:14px;line-height:1.42;color:#f8fafc}.cxtr-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px}.cxtr-cell{border-radius:13px;padding:8px 9px;border:1px solid rgba(148,163,184,.18);background:rgba(15,23,42,.66)}.cxtr-cell span{display:block;font-size:10px;color:#8fa6bd;text-transform:uppercase;letter-spacing:.08em}.cxtr-cell strong{display:block;margin-top:3px;font-size:13px;color:#f8fafc}.cxtr-action{margin-top:12px;padding:10px 12px;border-radius:15px;font-size:14px;font-weight:900;text-align:center;border:1px solid rgba(250,204,21,.46);color:#facc15;background:rgba(250,204,21,.08)}
+      .cxlg{margin:0 0 12px;padding:12px;border-radius:18px;border:1px solid rgba(148,163,184,.20);background:linear-gradient(180deg,rgba(15,23,42,.78),rgba(2,6,23,.64));contain:layout paint style}
+      .cxlg-head{display:flex;justify-content:space-between;align-items:flex-end;gap:10px;margin-bottom:9px}.cxlg-title{font-size:12px;font-weight:950;letter-spacing:.14em;color:#dbeafe}.cxlg-sub{font-size:10px;color:#8fa6bd;text-align:right;line-height:1.25}.cxlg-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.cxlg-item{display:flex;align-items:center;gap:8px;padding:8px;border-radius:12px;border:1px solid rgba(148,163,184,.16);background:rgba(15,23,42,.56);opacity:.78}.cxlg-item.active{opacity:1;border-width:2px;background:rgba(15,23,42,.82)}.cxlg-dot{width:10px;height:10px;border-radius:999px;flex:0 0 auto;background:#94a3b8;box-shadow:0 0 10px rgba(148,163,184,.45)}.cxlg-text{min-width:0}.cxlg-name{font-size:11px;font-weight:900;line-height:1.1;color:#f8fafc}.cxlg-desc{margin-top:2px;font-size:10px;color:#8fa6bd;line-height:1.12}.cxlg-item.buy .cxlg-dot{background:#22c55e;box-shadow:0 0 10px rgba(34,197,94,.55)}.cxlg-item.accumulate .cxlg-dot{background:#2dd4bf;box-shadow:0 0 10px rgba(45,212,191,.55)}.cxlg-item.wait .cxlg-dot{background:#facc15;box-shadow:0 0 10px rgba(250,204,21,.55)}.cxlg-item.attention .cxlg-dot{background:#fb923c;box-shadow:0 0 10px rgba(251,146,60,.55)}.cxlg-item.sell .cxlg-dot,.cxlg-item.risk .cxlg-dot{background:#ef4444;box-shadow:0 0 10px rgba(239,68,68,.58)}.cxlg-item.buy.active{border-color:rgba(34,197,94,.70)}.cxlg-item.accumulate.active{border-color:rgba(45,212,191,.70)}.cxlg-item.wait.active{border-color:rgba(250,204,21,.70)}.cxlg-item.attention.active{border-color:rgba(251,146,60,.76)}.cxlg-item.sell.active,.cxlg-item.risk.active{border-color:rgba(239,68,68,.78)}
       .cxtr.signal-buy{border-color:rgba(34,197,94,.70);box-shadow:0 0 28px rgba(34,197,94,.16)}.cxtr.signal-buy .cxtr-icon,.cxtr.signal-buy .cxtr-title,.cxtr.signal-buy .cxtr-action{color:#22c55e;border-color:rgba(34,197,94,.58)}.cxtr.signal-buy .cxtr-icon,.cxtr.signal-buy .cxtr-action{background:rgba(34,197,94,.10)}
       .cxtr.signal-accumulate{border-color:rgba(45,212,191,.70);box-shadow:0 0 28px rgba(45,212,191,.14)}.cxtr.signal-accumulate .cxtr-icon,.cxtr.signal-accumulate .cxtr-title,.cxtr.signal-accumulate .cxtr-action{color:#2dd4bf;border-color:rgba(45,212,191,.58)}.cxtr.signal-accumulate .cxtr-icon,.cxtr.signal-accumulate .cxtr-action{background:rgba(45,212,191,.10)}
       .cxtr.signal-attention{border-color:rgba(249,115,22,.75);box-shadow:0 0 28px rgba(249,115,22,.16)}.cxtr.signal-attention .cxtr-icon,.cxtr.signal-attention .cxtr-title,.cxtr.signal-attention .cxtr-action{color:#fb923c;border-color:rgba(249,115,22,.60)}.cxtr.signal-attention .cxtr-icon,.cxtr.signal-attention .cxtr-action{background:rgba(249,115,22,.10)}
       .cxtr.signal-sell,.cxtr.signal-risk{border-color:rgba(239,68,68,.78);box-shadow:0 0 30px rgba(239,68,68,.18)}.cxtr.signal-sell .cxtr-icon,.cxtr.signal-sell .cxtr-title,.cxtr.signal-sell .cxtr-action,.cxtr.signal-risk .cxtr-icon,.cxtr.signal-risk .cxtr-title,.cxtr.signal-risk .cxtr-action{color:#ef4444;border-color:rgba(239,68,68,.62)}.cxtr.signal-sell .cxtr-icon,.cxtr.signal-sell .cxtr-action,.cxtr.signal-risk .cxtr-icon,.cxtr.signal-risk .cxtr-action{background:rgba(239,68,68,.10)}
-      @media(max-width:380px){.cxtr{padding:12px}.cxtr-icon{width:48px;height:48px;font-size:26px}.cxtr-grid{grid-template-columns:1fr}.cxtr-sub,.cxtr-action{font-size:13px}}
+      @media(max-width:380px){.cxtr{padding:12px}.cxtr-icon{width:48px;height:48px;font-size:26px}.cxtr-grid{grid-template-columns:1fr}.cxtr-sub,.cxtr-action{font-size:13px}.cxlg-grid{grid-template-columns:1fr}.cxlg-head{align-items:flex-start;flex-direction:column}.cxlg-sub{text-align:left}}
       @keyframes cxdcBeam{0%,100%{opacity:.84}50%{opacity:.58}}@keyframes cxdcParticles{to{background-position:0 -240px}}@keyframes cxdcFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}@keyframes cxdcRisk{0%,100%{opacity:.78;transform:scale(1)}50%{opacity:.94;transform:scale(1.012)}}
       @media(max-width:760px),(pointer:coarse){#daily-ai-card,.cxdc,.cxdc-core,.cxdc-cylinder{background-color:#020617!important;box-shadow:none!important;transform:none!important;filter:none!important;will-change:auto!important}.cxdc-core:before{background:linear-gradient(180deg,rgba(3,18,34,.92),rgba(0,10,22,.96))!important}.cxdc-particles,.cxdc-beam,.cxdc-layer,.cxdc-risk{animation:none!important;transition:none!important;will-change:auto!important}.cxdc-particles{opacity:.08!important}.cxdc-beam{opacity:.34!important;background:linear-gradient(180deg,transparent,rgba(0,247,255,.30) 22%,rgba(125,245,255,.36) 50%,rgba(0,247,255,.30) 78%,transparent)!important;box-shadow:0 0 10px rgba(0,240,255,.28)!important}.cxdc-layer{box-shadow:0 0 8px rgba(120,240,255,.18),inset 0 0 8px rgba(255,255,255,.05)!important}.cxdc-risk{box-shadow:0 0 10px rgba(255,88,40,.28)!important}.cxdc-cylinder:before,.cxdc-cylinder:after{box-shadow:none!important;border-color:rgba(125,245,255,.42)!important}}
       @media(max-width:380px){.cxdc-core{min-height:555px}.cxdc-labels{left:10px;width:40%;gap:20px}.cxdc-label .wire,.cxdc-label .pin{display:none}.cxdc-cylinder{right:5px;width:56%;height:505px}}
@@ -330,6 +352,16 @@
     };
   }
 
+  function traderLegendHtml(activeKey) {
+    const tt = TRADER_T[lang()];
+    const order = ["buy", "accumulate", "wait", "attention", "sell", "risk"];
+    const rows = order.map((key) => {
+      const item = tt.legend && tt.legend[key] ? tt.legend[key] : [key, ""];
+      return `<div class="cxlg-item ${key}${key === activeKey ? " active" : ""}"><span class="cxlg-dot"></span><span class="cxlg-text"><span class="cxlg-name">${escHtml(item[0])}</span><span class="cxlg-desc">${escHtml(item[1])}</span></span></div>`;
+    }).join("");
+    return `<div class="cxlg"><div class="cxlg-head"><div class="cxlg-title">${escHtml(tt.legendTitle)}</div><div class="cxlg-sub">${escHtml(tt.legendSubtitle)}</div></div><div class="cxlg-grid">${rows}</div></div>`;
+  }
+
   function render(info) {
     css();
     const root = document.getElementById("daily-cylinder-root") || document.getElementById("daily-ai-card")?.querySelector(".card-inner");
@@ -353,6 +385,7 @@
         </div>
         <div class="cxtr-action">${escHtml(tr.action)}</div>
       </div>
+      ${traderLegendHtml(tr.key)}
       <div class="cxdc">
         <div class="cxdc-core">
           <div class="cxdc-labels">
