@@ -7,9 +7,12 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 
 ROOT = Path(__file__).resolve().parent
-STATE_PATH = ROOT / "btc-swing-strategy" / "coeziv_state.json"
+STRATEGY_DIR = ROOT / "btc-swing-strategy"
+STATE_PATH = STRATEGY_DIR / "coeziv_state.json"
+RISK_WINDOW_PATH = STRATEGY_DIR / "risk_window.json"
+PARTICIPATION_PATH = STRATEGY_DIR / "participation_cohesion.json"
 SUMMARY_CANDIDATES = [
-    ROOT / "btc-swing-strategy" / "comparative_backtest_summary.json",
+    STRATEGY_DIR / "comparative_backtest_summary.json",
     ROOT / "comparative_backtest_summary.json",
 ]
 
@@ -29,6 +32,15 @@ def _load_json(path: Path) -> Dict[str, Any]:
     if not isinstance(data, dict):
         raise ValueError(f"JSON invalid în {path}")
     return data
+
+
+def _load_optional_json(path: Path) -> Dict[str, Any]:
+    try:
+        if path.exists() and path.is_file():
+            return _load_json(path)
+    except Exception as exc:
+        print(f"Nu am putut încărca {path}: {exc}")
+    return {}
 
 
 def _find_summary_path() -> Optional[Path]:
@@ -62,8 +74,23 @@ def _safe_float(value: Any, default: Optional[float] = None) -> Optional[float]:
         return default
 
 
+def _safe_int(value: Any, default: int = 0) -> int:
+    try:
+        return int(value)
+    except Exception:
+        return default
+
+
 def _norm(value: Any) -> str:
     return str(value or "").strip().lower()
+
+
+def _norm_ascii(value: Any) -> str:
+    table = str.maketrans({
+        "ă": "a", "â": "a", "î": "i", "ș": "s", "ş": "s", "ț": "t", "ţ": "t",
+        "Ă": "a", "Â": "a", "Î": "i", "Ș": "s", "Ş": "s", "Ț": "t", "Ţ": "t",
+    })
+    return str(value or "").strip().lower().translate(table)
 
 
 def _recent_signal_count(state: Dict[str, Any], signal: str) -> int:
@@ -72,6 +99,16 @@ def _recent_signal_count(state: Dict[str, Any], signal: str) -> int:
     if not isinstance(history, list):
         return 0
     return sum(1 for row in history if isinstance(row, dict) and _norm(row.get("signal")) == wanted)
+
+
+def _participation_label(participation: Dict[str, Any]) -> str:
+    return str(
+        participation.get("label")
+        or participation.get("participation_label")
+        or participation.get("state_label")
+        or participation.get("level")
+        or ""
+    )
 
 
 def _build_cohesive_fg_view(state: Dict[str, Any]) -> Dict[str, Any]:
@@ -99,7 +136,6 @@ def _build_cohesive_fg_view(state: Dict[str, Any]) -> Dict[str, Any]:
     structural_deviation = _safe_float(structural.get("current_deviation"), model_deviation) or model_deviation
 
     recent_growth_contexts = _recent_signal_count(state, "long")
-    recent_downside_contexts = _recent_signal_count(state, "short")
 
     structural_bearish = structural_regime in {"bear_late", "bear_struct", "accum_bear"}
     deeply_below_internal_value = structural_deviation <= -0.20 or model_deviation <= -0.20
@@ -214,6 +250,161 @@ def _enrich_fg_with_cohesive_view(state: Dict[str, Any]) -> None:
     fg.update(_build_cohesive_fg_view(state))
 
 
+def _build_trader_signal(state: Dict[str, Any], risk_window: Dict[str, Any], participation: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Semnalul trader este scris în JSON ca strat de sinteză.
+    UI-ul trebuie să îl afișeze, nu să îl inventeze.
+    """
+    signal = _norm_ascii(state.get("signal"))
+    flow_bias = _norm_ascii(state.get("flow_bias"))
+    flow_strength = _norm_ascii(state.get("flow_strength"))
+    liquidity_regime = _norm_ascii(state.get("liquidity_regime"))
+    liquidity_strength = _norm_ascii(state.get("liquidity_strength"))
+
+    participation_label = _participation_label(participation)
+    participation_text = _norm_ascii(participation_label)
+    participation_score = _safe_float(participation.get("score"), None)
+    recent_short_days = _safe_int(participation.get("recent_short_days"), 0)
+
+    risk_text = _norm_ascii(
+        risk_window.get("current_regime")
+        or risk_window.get("level")
+        or risk_window.get("main_text")
+        or ""
+    )
+    risk_level = _norm_ascii(risk_window.get("level"))
+    structural_zone = risk_window.get("structural_zone") or {}
+    structural_direction = _norm_ascii(structural_zone.get("direction"))
+
+    recent_growth_contexts = _recent_signal_count(state, "long")
+    recent_downside_contexts = _recent_signal_count(state, "short")
+
+    flow_positive = flow_bias == "pozitiv"
+    flow_negative = flow_bias == "negativ"
+    weak_neutral_flow = flow_bias == "neutru" and flow_strength == "slab"
+    liquidity_good = liquidity_regime in {"ridicata", "high"} or liquidity_strength in {"puternica", "strong"}
+    participation_cohesive = "coeziv" in participation_text or "cohesive" in participation_text or (participation_score is not None and participation_score >= 70)
+    participation_tense = "tension" in participation_text or "tense" in participation_text or (participation_score is not None and participation_score < 70)
+    growth_confirmed = recent_growth_contexts > 0 or signal == "long"
+    defensive_pressure = recent_short_days > 0 or recent_downside_contexts > 0 or signal == "short"
+    deep_structural_risk = "degradare profunda" in risk_text or "deep degradation" in risk_text or risk_level == "high"
+    unrepaired_structure = deep_structural_risk or "nerepar" in risk_text or "unrepaired" in risk_text or structural_direction == "flat"
+
+    key = "wait"
+    if growth_confirmed and participation_cohesive and flow_positive and liquidity_good and not deep_structural_risk:
+        key = "buy"
+    elif participation_cohesive and flow_positive and liquidity_good and not growth_confirmed:
+        key = "accumulate"
+    elif flow_negative and participation_tense and not liquidity_good:
+        key = "sell"
+    elif deep_structural_risk and flow_negative:
+        key = "risk"
+    elif (flow_negative and participation_tense) or (defensive_pressure and not growth_confirmed):
+        key = "attention"
+
+    copy = {
+        "buy": {
+            "label": "CUMPĂRARE",
+            "label_en": "BUY",
+            "subtitle": "Piața confirmă direcția. Forța internă susține urcarea.",
+            "subtitle_en": "The market confirms direction. Internal strength supports upside.",
+            "attitude": "cumpărare controlată / acumulare",
+            "attitude_en": "controlled buying / accumulation",
+        },
+        "accumulate": {
+            "label": "ACUMULARE",
+            "label_en": "ACCUMULATE",
+            "subtitle": "Piața arată refacere, dar confirmarea completă lipsește.",
+            "subtitle_en": "The market shows recovery, but full confirmation is still missing.",
+            "attitude": "intrări mici / fără agresivitate",
+            "attitude_en": "small entries / no aggression",
+        },
+        "wait": {
+            "label": "AȘTEAPTĂ",
+            "label_en": "WAIT",
+            "subtitle": "Piața nu arată panică, dar refacerea nu este confirmată.",
+            "subtitle_en": "The market does not show panic, but recovery is not confirmed.",
+            "attitude": "prudență / fără intrări agresive",
+            "attitude_en": "prudence / no aggressive entries",
+        },
+        "attention": {
+            "label": "ATENȚIE",
+            "label_en": "ATTENTION",
+            "subtitle": "Piața stă în picioare, dar presiunea internă este prezentă.",
+            "subtitle_en": "The market is standing, but internal pressure is present.",
+            "attitude": "reducere risc / fără poziții noi mari",
+            "attitude_en": "reduce risk / no large new positions",
+        },
+        "sell": {
+            "label": "VÂNZARE",
+            "label_en": "SELL",
+            "subtitle": "Presiunea internă domină. Zona curentă nu este susținută.",
+            "subtitle_en": "Internal pressure dominates. The current zone is not supported.",
+            "attitude": "reducere expunere",
+            "attitude_en": "reduce exposure",
+        },
+        "risk": {
+            "label": "RISC",
+            "label_en": "RISK",
+            "subtitle": "Structura este fragilă, iar presiunea internă crește.",
+            "subtitle_en": "The structure is fragile and internal pressure is rising.",
+            "attitude": "protecție capital / cash",
+            "attitude_en": "capital protection / cash",
+        },
+    }[key]
+
+    reasons = []
+    if weak_neutral_flow:
+        reasons.append("flux neutru slab")
+    elif flow_positive:
+        reasons.append("flux pozitiv")
+    elif flow_negative:
+        reasons.append("flux negativ")
+    if participation_tense:
+        reasons.append("participare tensionată")
+    elif participation_cohesive:
+        reasons.append("participare coezivă")
+    if liquidity_good:
+        reasons.append("lichiditate ridicată")
+    if not growth_confirmed:
+        reasons.append("fără confirmare de creștere")
+    if unrepaired_structure:
+        reasons.append("structură nereparată")
+
+    reason = ", ".join(reasons) if reasons else "sinteză coezivă a mecanismului"
+
+    return {
+        "key": key,
+        "label": copy["label"],
+        "label_en": copy["label_en"],
+        "subtitle": copy["subtitle"],
+        "subtitle_en": copy["subtitle_en"],
+        "attitude": copy["attitude"],
+        "attitude_en": copy["attitude_en"],
+        "reason": reason,
+        "reason_en": reason,
+        "metrics": {
+            "flow": "neutru slab" if weak_neutral_flow else ("pozitiv" if flow_positive else "negativ" if flow_negative else (state.get("flow_bias") or "–")),
+            "participation": participation_label or "–",
+            "liquidity": "bună / ridicată" if liquidity_good else (state.get("liquidity_regime") or "–"),
+            "growth_confirmed": bool(growth_confirmed),
+            "growth_confirmed_label": "da" if growth_confirmed else "nu",
+            "recent_growth_contexts": recent_growth_contexts,
+            "recent_downside_contexts": recent_downside_contexts,
+            "structural_risk": risk_window.get("current_regime") or risk_window.get("level") or "–",
+            "unrepaired_structure": bool(unrepaired_structure),
+        },
+        "source": "coeziv_state + risk_window + participation_cohesion",
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+    }
+
+
+def _enrich_state_with_trader_signal(state: Dict[str, Any]) -> None:
+    risk_window = _load_optional_json(RISK_WINDOW_PATH)
+    participation = _load_optional_json(PARTICIPATION_PATH)
+    state["trader_signal"] = _build_trader_signal(state, risk_window, participation)
+
+
 def build_structural_confirmation(summary: Dict[str, Any], state: Dict[str, Any]) -> Dict[str, Any]:
     h7 = _get_threshold_block(summary, 7)
     h30 = _get_threshold_block(summary, 30)
@@ -251,6 +442,7 @@ def main() -> None:
 
     state["structural_confirmation"] = build_structural_confirmation(summary, state)
     _enrich_fg_with_cohesive_view(state)
+    _enrich_state_with_trader_signal(state)
 
     # Scoatem vechea statistică tactică 24h/72h din state-ul principal, ca UI-ul să nu o mai trateze ca mecanism.
     for key in TACTICAL_KEYS:
@@ -270,7 +462,7 @@ def main() -> None:
     state["message"] = msg.strip()
 
     STATE_PATH.write_text(json.dumps(state, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    print(f"Confirmare structurală injectată din {summary_path} în {STATE_PATH}")
+    print(f"Confirmare structurală și semnal trader injectate din {summary_path} în {STATE_PATH}")
 
 
 if __name__ == "__main__":
