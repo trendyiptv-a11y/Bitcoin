@@ -2,7 +2,7 @@ name: coeziv_state - Generate snapshot BTC
 
 on:
   schedule:
-    - cron: "30 0 * * *"
+    - cron: "45 0 * * *"
   workflow_dispatch:
 
 permissions:
@@ -39,11 +39,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Update BTC state and UI
+      - name: Update BTC state, interpretation and UI
         run: |
           python coeziv_state_v2.py
           python risk_window.py
           python inject_structural_confirmation.py
+          python build_daily_cohesiv_interpretation.py
           python patch_standard_regime_ui.py
           python patch_mecanism_model_price_ui.py
 
@@ -55,10 +56,11 @@ jobs:
       - name: Auto-commit generated files
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "Update BTC V2 state and UI"
+          commit_message: "Update BTC V2 state, interpretation and UI"
           branch: main
           file_pattern: >
             btc-swing-strategy/risk_window.json
             btc-swing-strategy/risk_window_history.json
             btc-swing-strategy/coeziv_state.json
+            btc-swing-strategy/daily_cohesiv_interpretation.json
             btc-swing-strategy/mecanism.html
