@@ -13,143 +13,35 @@
 
   <style>
     :root{
-      --bg:#020617;
-      --bg2:#020b1f;
-      --card:#061122;
-      --card2:#08182d;
-      --line:rgba(148,163,184,.22);
-      --line2:rgba(56,189,248,.42);
-      --text:#e5e7eb;
-      --soft:#9ca3af;
-      --muted:#64748b;
-      --white:#f8fafc;
-      --cyan:#38bdf8;
-      --green:#22c55e;
-      --yellow:#facc15;
-      --orange:#fb923c;
-      --red:#ef4444;
-      --shadow:0 24px 70px rgba(0,0,0,.45);
-      --radius:24px;
-      --pill:999px;
+      --bg:#020617;--card:#061122;--card2:#08182d;--line:rgba(148,163,184,.22);--line2:rgba(56,189,248,.42);
+      --text:#e5e7eb;--soft:#9ca3af;--muted:#64748b;--white:#f8fafc;--cyan:#38bdf8;--green:#22c55e;
+      --yellow:#facc15;--orange:#fb923c;--red:#ef4444;--shadow:0 24px 70px rgba(0,0,0,.45);--radius:24px;--pill:999px;
     }
-
-    *{box-sizing:border-box}
-    html{scroll-behavior:smooth}
-    body{
-      margin:0;
-      font-family:"Inter",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-      color:var(--text);
-      background:
-        radial-gradient(circle at 78% 0,rgba(56,189,248,.18),transparent 34%),
-        radial-gradient(circle at 0 18%,rgba(34,197,94,.10),transparent 32%),
-        linear-gradient(180deg,#020617 0,#020617 55%,#000 100%);
-      -webkit-font-smoothing:antialiased;
-    }
-    a{color:inherit}
-    .wrap{max-width:1120px;margin:0 auto;padding:18px 16px 44px}
-
-    header{
-      display:flex;align-items:center;justify-content:space-between;gap:16px;
-      padding:10px 0 22px;position:relative;z-index:5
-    }
-    .brand{display:flex;align-items:center;gap:12px;min-width:0}
-    .logo{
-      width:38px;height:38px;border-radius:15px;
-      background:conic-gradient(from 220deg,var(--green),var(--cyan),#6366f1,var(--green));
-      box-shadow:0 0 28px rgba(56,189,248,.45);position:relative;flex:0 0 auto
-    }
-    .logo:after{content:"";position:absolute;inset:9px;border-radius:11px;background:#020617}
-    .brand b{display:block;font-size:15px;letter-spacing:.16em;text-transform:uppercase;color:var(--white)}
-    .brand span{display:block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--soft);margin-top:2px}
-    nav{display:flex;gap:14px;align-items:center;font-size:13px;color:var(--soft)}
-    nav a{text-decoration:none;padding:8px 2px}
-    nav a:hover{color:var(--white)}
-
-    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:var(--pill);padding:12px 18px;text-decoration:none;font-size:14px;font-weight:800;border:1px solid transparent;white-space:nowrap}
-    .btn.primary{background:linear-gradient(135deg,var(--green),var(--cyan));color:#020617;box-shadow:0 18px 48px rgba(34,197,94,.25)}
-    .btn.ghost{background:rgba(15,23,42,.72);border-color:rgba(148,163,184,.35);color:var(--text)}
-    .btn.small{padding:9px 13px;font-size:12px}
-
-    .hero{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(320px,.9fr);gap:22px;align-items:center;padding:20px 0 30px}
-    .eyebrow{display:inline-flex;gap:8px;align-items:center;border:1px solid rgba(56,189,248,.36);background:rgba(56,189,248,.08);color:#bae6fd;border-radius:var(--pill);padding:7px 11px;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin-bottom:14px}
-    .dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 12px var(--green)}
-    h1{margin:0 0 14px;font-size:clamp(35px,6vw,62px);line-height:.98;letter-spacing:-.05em;color:var(--white)}
-    h1 span{background:linear-gradient(135deg,var(--green),var(--cyan));-webkit-background-clip:text;color:transparent}
-    .lead{font-size:17px;line-height:1.65;color:var(--soft);max-width:660px;margin:0 0 18px}
-    .hero-actions{display:flex;flex-wrap:wrap;gap:10px;margin:22px 0 0}
-    .badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px;color:var(--soft);font-size:12px}
-    .badge{border:1px solid rgba(148,163,184,.25);background:rgba(15,23,42,.55);border-radius:var(--pill);padding:7px 10px}
-
-    .phone-card{border:1px solid var(--line2);background:radial-gradient(circle at 50% 0,rgba(56,189,248,.16),transparent 42%),linear-gradient(180deg,#061122,#020617);border-radius:34px;padding:14px;box-shadow:var(--shadow);max-width:420px;margin-left:auto}
-    .screen{border:1px solid rgba(148,163,184,.22);border-radius:26px;background:#020617;padding:14px;overflow:hidden}
-    .topline{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:11px;margin-bottom:12px}
-    .signal{border:1px solid rgba(250,204,21,.55);background:radial-gradient(circle at 0 0,rgba(250,204,21,.18),transparent 45%),rgba(15,23,42,.74);border-radius:22px;padding:14px;margin-bottom:12px}
-    .signal-k{font-size:11px;text-transform:uppercase;letter-spacing:.18em;color:var(--soft);font-weight:900}
-    .signal-v{font-size:42px;line-height:.95;letter-spacing:-.04em;color:var(--yellow);font-weight:950;margin-top:6px}
-    .signal-p{font-size:13px;line-height:1.45;color:var(--text);margin-top:10px}
-    .mini-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-    .mini{border:1px solid rgba(148,163,184,.18);background:rgba(15,23,42,.62);border-radius:16px;padding:10px}
-    .mini span{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:800;margin-bottom:5px}
-    .mini b{display:block;font-size:13px;color:var(--white)}
-    .risk-strip{margin-top:10px;border:1px solid rgba(239,68,68,.35);background:rgba(127,29,29,.22);border-radius:16px;padding:10px;color:#fecaca;font-size:12px;line-height:1.4}
-
-    section{padding:36px 0;border-top:1px solid rgba(148,163,184,.12)}
-    .section-head{max-width:760px;margin-bottom:18px}
-    .label{font-size:12px;color:var(--muted);font-weight:900;letter-spacing:.16em;text-transform:uppercase;margin-bottom:8px}
-    h2{font-size:clamp(25px,4vw,38px);line-height:1.05;color:var(--white);margin:0 0 10px;letter-spacing:-.04em}
-    .sub{color:var(--soft);font-size:15px;line-height:1.65;margin:0}
-
-    .cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
-    .card{border:1px solid var(--line);background:radial-gradient(circle at top,rgba(56,189,248,.08),transparent 45%),linear-gradient(180deg,var(--card),#020617);border-radius:var(--radius);padding:18px;min-height:180px}
-    .card .icon{font-size:28px;margin-bottom:12px}
-    .card h3{margin:0 0 8px;color:var(--white);font-size:17px}
-    .card p{margin:0;color:var(--soft);line-height:1.55;font-size:14px}
-
-    .signal-list{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin-top:16px}
-    .sig{border:1px solid rgba(148,163,184,.2);border-radius:16px;background:rgba(15,23,42,.58);padding:12px 8px;text-align:center}
-    .sig b{display:block;font-size:12px;color:var(--white);margin-top:4px}.sig span{font-size:22px}
-    .sig.buy span{color:var(--green)}.sig.acc span{color:#2dd4bf}.sig.wait span{color:var(--yellow)}.sig.att span{color:var(--orange)}.sig.sell span,.sig.risk span{color:var(--red)}
-
-    .two{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:stretch}
-    .wide-card{border:1px solid var(--line);border-radius:var(--radius);background:linear-gradient(180deg,var(--card2),#020617);padding:20px;box-shadow:0 18px 50px rgba(0,0,0,.22)}
-    .wide-card h3{margin:0 0 10px;color:var(--white);font-size:20px}
-    .wide-card p{margin:0;color:var(--soft);line-height:1.65;font-size:14px}
-    .quote{margin-top:14px;border-left:3px solid var(--cyan);padding-left:12px;color:#dbeafe;font-size:14px;line-height:1.55}
-
-    .live{display:grid;grid-template-columns:1.1fr .9fr;gap:14px}
-    .live-main{border:1px solid rgba(56,189,248,.38);border-radius:var(--radius);background:radial-gradient(circle at 0 0,rgba(56,189,248,.14),transparent 45%),#020617;padding:20px}
-    .live-main .big{font-size:42px;font-weight:950;color:var(--white);letter-spacing:-.05em;line-height:1;margin:8px 0}
-    .live-main p{color:var(--soft);line-height:1.55;margin:0}
-    .live-side{display:grid;gap:10px}
-    .metric{border:1px solid rgba(148,163,184,.2);background:rgba(15,23,42,.64);border-radius:18px;padding:13px}
-    .metric span{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-weight:900;margin-bottom:5px}
-    .metric b{display:block;color:var(--white);font-size:15px}
-
-    .disclaimer{border:1px solid rgba(251,146,60,.38);background:rgba(124,45,18,.18);border-radius:var(--radius);padding:18px;color:#fed7aa;line-height:1.6;font-size:14px}
-    footer{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center;border-top:1px solid rgba(148,163,184,.12);padding-top:22px;color:var(--muted);font-size:12px}
-
-    @media(max-width:900px){
-      .hero,.two,.live{grid-template-columns:1fr}.phone-card{margin:0;max-width:none}.cards{grid-template-columns:1fr}.signal-list{grid-template-columns:repeat(2,1fr)}nav{display:none}header .btn{display:none}.wrap{padding-inline:14px}
-    }
+    *{box-sizing:border-box} html{scroll-behavior:smooth}
+    body{margin:0;font-family:"Inter",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text);background:radial-gradient(circle at 78% 0,rgba(56,189,248,.18),transparent 34%),radial-gradient(circle at 0 18%,rgba(34,197,94,.10),transparent 32%),linear-gradient(180deg,#020617 0,#020617 55%,#000 100%);-webkit-font-smoothing:antialiased}
+    a{color:inherit}.wrap{max-width:1120px;margin:0 auto;padding:18px 16px 44px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:10px 0 22px;position:relative;z-index:5}
+    .brand{display:flex;align-items:center;gap:12px;min-width:0}.logo{width:38px;height:38px;border-radius:15px;background:conic-gradient(from 220deg,var(--green),var(--cyan),#6366f1,var(--green));box-shadow:0 0 28px rgba(56,189,248,.45);position:relative;flex:0 0 auto}.logo:after{content:"";position:absolute;inset:9px;border-radius:11px;background:#020617}
+    .brand b{display:block;font-size:15px;letter-spacing:.16em;text-transform:uppercase;color:var(--white)}.brand span{display:block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--soft);margin-top:2px}
+    nav{display:flex;gap:14px;align-items:center;font-size:13px;color:var(--soft)}nav a{text-decoration:none;padding:8px 2px}nav a:hover{color:var(--white)}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:var(--pill);padding:12px 18px;text-decoration:none;font-size:14px;font-weight:850;border:1px solid transparent;white-space:nowrap}.btn.primary{background:linear-gradient(135deg,var(--green),var(--cyan));color:#020617;box-shadow:0 18px 48px rgba(34,197,94,.25)}.btn.ghost{background:rgba(15,23,42,.72);border-color:rgba(148,163,184,.35);color:var(--text)}.btn.small{padding:9px 13px;font-size:12px}
+    .hero{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(320px,.9fr);gap:22px;align-items:center;padding:20px 0 30px}.eyebrow{display:inline-flex;gap:8px;align-items:center;border:1px solid rgba(56,189,248,.36);background:rgba(56,189,248,.08);color:#bae6fd;border-radius:var(--pill);padding:7px 11px;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin-bottom:14px}.dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 12px var(--green)}
+    h1{margin:0 0 14px;font-size:clamp(35px,6vw,62px);line-height:.98;letter-spacing:-.05em;color:var(--white)}h1 span{background:linear-gradient(135deg,var(--green),var(--cyan));-webkit-background-clip:text;color:transparent}.lead{font-size:17px;line-height:1.65;color:var(--soft);max-width:660px;margin:0 0 18px}.hero-actions{display:flex;flex-wrap:wrap;gap:10px;margin:22px 0 0}.badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px;color:var(--soft);font-size:12px}.badge{border:1px solid rgba(148,163,184,.25);background:rgba(15,23,42,.55);border-radius:var(--pill);padding:7px 10px}
+    .phone-card{border:1px solid var(--line2);background:radial-gradient(circle at 50% 0,rgba(56,189,248,.16),transparent 42%),linear-gradient(180deg,#061122,#020617);border-radius:34px;padding:14px;box-shadow:var(--shadow);max-width:420px;margin-left:auto;position:relative}.screen{border:1px solid rgba(148,163,184,.22);border-radius:26px;background:#020617;padding:14px;overflow:hidden;position:relative}.preview-content{filter:blur(7px);opacity:.58;user-select:none;pointer-events:none}.preview-cover{position:absolute;inset:14px;border-radius:24px;display:grid;place-items:center;text-align:center;padding:22px;background:linear-gradient(180deg,rgba(2,6,23,.18),rgba(2,6,23,.84));backdrop-filter:blur(1px);z-index:3}.preview-cover h3{margin:0 0 8px;font-size:22px;color:var(--white);letter-spacing:-.03em}.preview-cover p{margin:0 0 14px;color:#cbd5e1;line-height:1.45;font-size:13px}.topline{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:11px;margin-bottom:12px}.signal{border:1px solid rgba(250,204,21,.55);background:radial-gradient(circle at 0 0,rgba(250,204,21,.18),transparent 45%),rgba(15,23,42,.74);border-radius:22px;padding:14px;margin-bottom:12px}.signal-k{font-size:11px;text-transform:uppercase;letter-spacing:.18em;color:var(--soft);font-weight:900}.signal-v{font-size:42px;line-height:.95;letter-spacing:-.04em;color:var(--yellow);font-weight:950;margin-top:6px}.signal-p{font-size:13px;line-height:1.45;color:var(--text);margin-top:10px}.mini-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.mini{border:1px solid rgba(148,163,184,.18);background:rgba(15,23,42,.62);border-radius:16px;padding:10px}.mini span{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:800;margin-bottom:5px}.mini b{display:block;font-size:13px;color:var(--white)}.risk-strip{margin-top:10px;border:1px solid rgba(239,68,68,.35);background:rgba(127,29,29,.22);border-radius:16px;padding:10px;color:#fecaca;font-size:12px;line-height:1.4}
+    section{padding:36px 0;border-top:1px solid rgba(148,163,184,.12)}.section-head{max-width:760px;margin-bottom:18px}.label{font-size:12px;color:var(--muted);font-weight:900;letter-spacing:.16em;text-transform:uppercase;margin-bottom:8px}h2{font-size:clamp(25px,4vw,38px);line-height:1.05;color:var(--white);margin:0 0 10px;letter-spacing:-.04em}.sub{color:var(--soft);font-size:15px;line-height:1.65;margin:0}
+    .cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.card{border:1px solid var(--line);background:radial-gradient(circle at top,rgba(56,189,248,.08),transparent 45%),linear-gradient(180deg,var(--card),#020617);border-radius:var(--radius);padding:18px;min-height:180px}.card .icon{font-size:28px;margin-bottom:12px}.card h3{margin:0 0 8px;color:var(--white);font-size:17px}.card p{margin:0;color:var(--soft);line-height:1.55;font-size:14px}
+    .signal-list{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin-top:16px}.sig{border:1px solid rgba(148,163,184,.2);border-radius:16px;background:rgba(15,23,42,.58);padding:12px 8px;text-align:center}.sig b{display:block;font-size:12px;color:var(--white);margin-top:4px}.sig span{font-size:22px}.sig.buy span{color:var(--green)}.sig.acc span{color:#2dd4bf}.sig.wait span{color:var(--yellow)}.sig.att span{color:var(--orange)}.sig.sell span,.sig.risk span{color:var(--red)}
+    .teaser{display:grid;grid-template-columns:1.1fr .9fr;gap:14px}.teaser-box{position:relative;min-height:270px;border:1px solid rgba(56,189,248,.38);border-radius:var(--radius);background:radial-gradient(circle at 0 0,rgba(56,189,248,.14),transparent 45%),#020617;padding:20px;overflow:hidden}.teaser-data{filter:blur(8px);opacity:.52}.teaser-data .big{font-size:42px;font-weight:950;color:var(--white);letter-spacing:-.05em;line-height:1;margin:8px 0}.teaser-overlay{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:24px;background:linear-gradient(180deg,rgba(2,6,23,.15),rgba(2,6,23,.88))}.teaser-overlay h3{font-size:27px;letter-spacing:-.04em;margin:0 0 10px;color:var(--white)}.teaser-overlay p{margin:0 0 15px;color:#cbd5e1;line-height:1.5}.teaser-side{display:grid;gap:10px}.metric{border:1px solid rgba(148,163,184,.2);background:rgba(15,23,42,.64);border-radius:18px;padding:13px;filter:blur(5px);opacity:.55}.metric span{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-weight:900;margin-bottom:5px}.metric b{display:block;color:var(--white);font-size:15px}
+    .two{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:stretch}.wide-card{border:1px solid var(--line);border-radius:var(--radius);background:linear-gradient(180deg,var(--card2),#020617);padding:20px;box-shadow:0 18px 50px rgba(0,0,0,.22)}.wide-card h3{margin:0 0 10px;color:var(--white);font-size:20px}.wide-card p{margin:0;color:var(--soft);line-height:1.65;font-size:14px}.quote{margin-top:14px;border-left:3px solid var(--cyan);padding-left:12px;color:#dbeafe;font-size:14px;line-height:1.55}.center-cta{text-align:center;margin-top:18px}.disclaimer{border:1px solid rgba(251,146,60,.38);background:rgba(124,45,18,.18);border-radius:var(--radius);padding:18px;color:#fed7aa;line-height:1.6;font-size:14px}footer{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center;border-top:1px solid rgba(148,163,184,.12);padding-top:22px;color:var(--muted);font-size:12px}
+    @media(max-width:900px){.hero,.two,.teaser{grid-template-columns:1fr}.phone-card{margin:0;max-width:none}.cards{grid-template-columns:1fr}.signal-list{grid-template-columns:repeat(2,1fr)}nav{display:none}header .btn{display:none}.wrap{padding-inline:14px}.teaser-side{display:none}}
   </style>
 </head>
 <body>
   <div class="wrap">
     <header>
-      <div class="brand">
-        <div class="logo" aria-hidden="true"></div>
-        <div>
-          <b>CohesivX BTC Monitor</b>
-          <span>Bitcoin structural signal</span>
-        </div>
-      </div>
-      <nav aria-label="Navigare">
-        <a href="#signal">Semnal</a>
-        <a href="#mechanism">Mecanism</a>
-        <a href="#alerts">Notificări</a>
-        <a href="#safety">Siguranță</a>
-      </nav>
-      <a class="btn small ghost" href="https://play.google.com/store/apps/details?id=app.cohesivx.btcmonitor">Google Play</a>
+      <div class="brand"><div class="logo" aria-hidden="true"></div><div><b>CohesivX BTC Monitor</b><span>Bitcoin structural signal</span></div></div>
+      <nav aria-label="Navigare"><a href="#signal">Semnal</a><a href="#mechanism">Ce urmărește</a><a href="#alerts">Notificări</a><a href="#safety">Siguranță</a></nav>
+      <a class="btn small ghost" href="https://play.google.com/store/apps/details?id=app.cohesivx.btcmonitor">Descarcă aplicația</a>
     </header>
 
     <main>
@@ -157,199 +49,39 @@
         <div>
           <div class="eyebrow"><span class="dot"></span> Monitor structural Bitcoin</div>
           <h1>Bitcoin, tradus în <span>semnal clar.</span></h1>
-          <p class="lead">
-            CohesivX BTC Monitor urmărește zilnic starea internă a pieței BTC și o transformă într-un mesaj simplu:
-            <strong>AȘTEAPTĂ, ACUMULARE, CUMPĂRARE, ATENȚIE, VÂNZARE</strong> sau <strong>RISC</strong>.
-          </p>
-          <p class="lead">
-            Aplicația combină prețul, costul estimat de producție, fluxul, lichiditatea, participarea și riscul structural. Nu promite predicții perfecte și nu oferă recomandări financiare; arată contextul mecanismului.
-          </p>
-          <div class="hero-actions">
-            <a class="btn primary" href="https://play.google.com/store/apps/details?id=app.cohesivx.btcmonitor">Descarcă aplicația</a>
-            <a class="btn ghost" href="./btc-swing-strategy/mecanism.html">Vezi mecanismul live</a>
-          </div>
-          <div class="badges">
-            <span class="badge">semnal zilnic BTC</span>
-            <span class="badge">cost estimat de producție</span>
-            <span class="badge">radar structural</span>
-            <span class="badge">alerte la schimbarea semnalului</span>
-          </div>
+          <p class="lead">CohesivX BTC Monitor urmărește zilnic starea internă a pieței BTC și o transformă într-un mesaj simplu: <strong>AȘTEAPTĂ, ACUMULARE, CUMPĂRARE, ATENȚIE, VÂNZARE</strong> sau <strong>RISC</strong>.</p>
+          <p class="lead">Pagina îți arată ideea aplicației. Semnalul complet, valorile zilei și contextul mecanismului sunt disponibile în aplicație.</p>
+          <div class="hero-actions"><a class="btn primary" href="https://play.google.com/store/apps/details?id=app.cohesivx.btcmonitor">Descarcă aplicația</a></div>
+          <div class="badges"><span class="badge">semnal zilnic BTC</span><span class="badge">cost estimat de producție</span><span class="badge">radar structural</span><span class="badge">alerte la schimbarea semnalului</span></div>
         </div>
 
-        <aside class="phone-card" aria-label="Exemplu de card în aplicație">
+        <aside class="phone-card" aria-label="Previzualizare aplicație">
           <div class="screen">
-            <div class="topline"><span>COHESIVX BTC</span><span id="sampleDate">live sample</span></div>
-            <div class="signal" id="sampleSignalBox">
-              <div class="signal-k">SEMNAL</div>
-              <div class="signal-v" id="sampleSignal">AȘTEAPTĂ</div>
-              <div class="signal-p" id="sampleSubtitle">Piața nu arată panică, dar refacerea nu este confirmată.</div>
+            <div class="preview-content">
+              <div class="topline"><span>COHESIVX BTC</span><span>astăzi</span></div>
+              <div class="signal"><div class="signal-k">SEMNAL</div><div class="signal-v">VÂNZARE</div><div class="signal-p">Presiunea internă domină. Zona curentă nu este susținută.</div></div>
+              <div class="mini-grid"><div class="mini"><span>Preț BTC</span><b>$63,053</b></div><div class="mini"><span>Cost producție</span><b>$53,406</b></div><div class="mini"><span>Flux</span><b>negativ moderat</b></div><div class="mini"><span>Lichiditate</span><b>moderată</b></div></div>
+              <div class="risk-strip">Radar structural: degradare profundă · zona istoric modelată neatinsă</div>
             </div>
-            <div class="mini-grid">
-              <div class="mini"><span>Preț BTC</span><b id="samplePrice">–</b></div>
-              <div class="mini"><span>Cost producție</span><b id="sampleCost">–</b></div>
-              <div class="mini"><span>Flux</span><b id="sampleFlow">–</b></div>
-              <div class="mini"><span>Lichiditate</span><b id="sampleLiquidity">–</b></div>
-            </div>
-            <div class="risk-strip" id="sampleRisk">Radar structural: se încarcă datele curente…</div>
+            <div class="preview-cover"><div><h3>Semnalul complet este în aplicație.</h3><p>Instalează CohesivX BTC Monitor pentru starea zilei, context și notificări.</p><a class="btn primary" href="https://play.google.com/store/apps/details?id=app.cohesivx.btcmonitor">Descarcă aplicația</a></div></div>
           </div>
         </aside>
       </section>
 
-      <section id="signal">
-        <div class="section-head">
-          <div class="label">Semnalul zilei</div>
-          <h2>Un mesaj pentru om, construit dintr-un mecanism complex.</h2>
-          <p class="sub">În loc să urmărești zeci de indicatori separați, aplicația afișează starea zilei într-un semnal simplu. Mecanismul rămâne în spate; produsul vizibil este decizia de context.</p>
-        </div>
-        <div class="signal-list">
-          <div class="sig buy"><span>⬆</span><b>CUMPĂRARE</b></div>
-          <div class="sig acc"><span>↗</span><b>ACUMULARE</b></div>
-          <div class="sig wait"><span>Ⅱ</span><b>AȘTEAPTĂ</b></div>
-          <div class="sig att"><span>⚠</span><b>ATENȚIE</b></div>
-          <div class="sig sell"><span>↓</span><b>VÂNZARE</b></div>
-          <div class="sig risk"><span>!</span><b>RISC</b></div>
-        </div>
-      </section>
+      <section id="signal"><div class="section-head"><div class="label">Semnalul zilei</div><h2>Un mesaj pentru om, construit dintr-un mecanism complex.</h2><p class="sub">În loc să urmărești zeci de indicatori separați, aplicația afișează starea zilei într-un semnal simplu.</p></div><div class="signal-list"><div class="sig buy"><span>⬆</span><b>CUMPĂRARE</b></div><div class="sig acc"><span>↗</span><b>ACUMULARE</b></div><div class="sig wait"><span>Ⅱ</span><b>AȘTEAPTĂ</b></div><div class="sig att"><span>⚠</span><b>ATENȚIE</b></div><div class="sig sell"><span>↓</span><b>VÂNZARE</b></div><div class="sig risk"><span>!</span><b>RISC</b></div></div><div class="center-cta"><a class="btn primary" href="https://play.google.com/store/apps/details?id=app.cohesivx.btcmonitor">Vezi semnalul în aplicație</a></div></section>
 
-      <section id="mechanism">
-        <div class="section-head">
-          <div class="label">Ce urmărește aplicația</div>
-          <h2>Nu doar preț. Structură, energie și participare.</h2>
-        </div>
-        <div class="cards">
-          <article class="card">
-            <div class="icon">⚡</div>
-            <h3>Cost estimat de producție</h3>
-            <p>Aplicația compară prețul BTC cu un reper energetic estimat. Indicatorul ajută la citirea zonei de presiune sau confort, fără a fi cost contabil complet al minerilor.</p>
-          </article>
-          <article class="card">
-            <div class="icon">📡</div>
-            <h3>Radar structural</h3>
-            <p>Urmărește dacă BTC este în degradare, revenire parțială, bottom în test sau structură refăcută. Prețul este citit în context, nu izolat.</p>
-          </article>
-          <article class="card">
-            <div class="icon">🧭</div>
-            <h3>Flux și participare</h3>
-            <p>Mecanismul verifică dacă mișcarea este susținută de flux, lichiditate și participare coezivă. Așa se evită interpretarea superficială a unei singure lumânări.</p>
-          </article>
-        </div>
-      </section>
+      <section id="mechanism"><div class="section-head"><div class="label">Ce urmărește aplicația</div><h2>Nu doar preț. Structură, energie și participare.</h2></div><div class="cards"><article class="card"><div class="icon">⚡</div><h3>Cost estimat de producție</h3><p>Aplicația compară prețul BTC cu un reper energetic estimat. Indicatorul ajută la citirea zonei de presiune sau confort.</p></article><article class="card"><div class="icon">📡</div><h3>Radar structural</h3><p>Urmărește dacă BTC este în degradare, revenire parțială, bottom în test sau structură refăcută.</p></article><article class="card"><div class="icon">🧭</div><h3>Flux și participare</h3><p>Mecanismul verifică dacă mișcarea este susținută de flux, lichiditate și participare coezivă.</p></article></div></section>
 
-      <section>
-        <div class="live">
-          <div class="live-main">
-            <div class="label">Snapshot live</div>
-            <div class="big" id="liveSignal">–</div>
-            <p id="liveText">Se încarcă ultimul semnal publicat de mecanism.</p>
-          </div>
-          <div class="live-side">
-            <div class="metric"><span>Preț model</span><b id="modelPrice">–</b></div>
-            <div class="metric"><span>Fear & Greed coeziv</span><b id="fgState">–</b></div>
-            <div class="metric"><span>Risc structural</span><b id="structRisk">–</b></div>
-          </div>
-        </div>
-      </section>
+      <section><div class="teaser"><div class="teaser-box"><div class="teaser-data"><div class="label">Snapshot live</div><div class="big">VÂNZARE</div><p>Atitudine: reducere expunere. Presiunea internă domină.</p></div><div class="teaser-overlay"><div><h3>Datele zilei sunt în aplicație.</h3><p>Pagina publică arată doar previzualizarea. Descarcă aplicația pentru semnal, context și notificări.</p><a class="btn primary" href="https://play.google.com/store/apps/details?id=app.cohesivx.btcmonitor">Descarcă aplicația</a></div></div></div><div class="teaser-side"><div class="metric"><span>Preț model</span><b>$102,890 · -38,7%</b></div><div class="metric"><span>Fear & Greed coeziv</span><b>Neutru · 59.5</b></div><div class="metric"><span>Risc structural</span><b>Degradare profundă</b></div></div></div></section>
 
-      <section id="alerts">
-        <div class="two">
-          <div class="wide-card">
-            <h3>Primești alertă când semnalul se schimbă.</h3>
-            <p>Aplicația poate trimite notificări locale când mecanismul trece, de exemplu, din AȘTEAPTĂ în VÂNZARE sau din ATENȚIE în ACUMULARE.</p>
-            <div class="quote">Nu te notifică inutil în fiecare zi. Ideea este să apară alerta când starea contează.</div>
-          </div>
-          <div class="wide-card">
-            <h3>Mod util și când nu ai semnal perfect.</h3>
-            <p>Aplicația salvează snapshoturi locale și poate afișa ultima stare cunoscută. Astfel, mecanismul rămâne lizibil chiar și când conexiunea este slabă sau pagina live nu se încarcă imediat.</p>
-          </div>
-        </div>
-      </section>
+      <section id="alerts"><div class="two"><div class="wide-card"><h3>Primești alertă când semnalul se schimbă.</h3><p>Aplicația poate trimite notificări locale când mecanismul trece, de exemplu, din AȘTEAPTĂ în VÂNZARE sau din ATENȚIE în ACUMULARE.</p><div class="quote">Nu te notifică inutil în fiecare zi. Ideea este să apară alerta când starea contează.</div></div><div class="wide-card"><h3>Creată pentru citire rapidă.</h3><p>Deschizi aplicația, vezi semnalul, verifici contextul și decizi singur ce faci mai departe. Fără zgomot inutil.</p></div></div><div class="center-cta"><a class="btn primary" href="https://play.google.com/store/apps/details?id=app.cohesivx.btcmonitor">Instalează CohesivX BTC Monitor</a></div></section>
 
-      <section id="safety">
-        <div class="section-head">
-          <div class="label">Limitare importantă</div>
-          <h2>Instrument experimental, nu consultant financiar.</h2>
-        </div>
-        <div class="disclaimer">
-          CohesivX BTC Monitor este un instrument experimental de analiză structurală. Nu garantează profit, nu prezice cu certitudine mișcările pieței și nu reprezintă recomandare de cumpărare sau vânzare. Deciziile financiare aparțin exclusiv utilizatorului.
-        </div>
-      </section>
+      <section id="safety"><div class="section-head"><div class="label">Limitare importantă</div><h2>Instrument experimental, nu consultant financiar.</h2></div><div class="disclaimer">CohesivX BTC Monitor este un instrument experimental de analiză structurală. Nu garantează profit, nu prezice cu certitudine mișcările pieței și nu reprezintă recomandare de cumpărare sau vânzare. Deciziile financiare aparțin exclusiv utilizatorului.</div></section>
     </main>
 
-    <footer>
-      <div>© <span id="year"></span> CohesivX BTC Monitor</div>
-      <div>Semnal structural Bitcoin · actualizare zilnică · nu recomandare financiară</div>
-    </footer>
+    <footer><div>© <span id="year"></span> CohesivX BTC Monitor</div><div>Semnal structural Bitcoin · actualizare zilnică · nu recomandare financiară</div></footer>
   </div>
 
-  <script>
-    document.getElementById("year").textContent = new Date().getFullYear();
-
-    function usd(v){
-      const n = Number(v);
-      if(!Number.isFinite(n)) return "–";
-      return "$" + Math.round(n).toLocaleString("en-US");
-    }
-    function pct(v){
-      const n = Number(v);
-      if(!Number.isFinite(n)) return "–";
-      return (n*100).toFixed(1).replace(".", ",") + "%";
-    }
-    function dateRo(raw){
-      const s = String(raw || "").slice(0,10);
-      if(/^\d{4}-\d{2}-\d{2}$/.test(s)){
-        const [y,m,d] = s.split("-"); return d + "." + m + "." + y;
-      }
-      return "live sample";
-    }
-    function flowText(state){
-      const b = String(state.flow_bias || "").trim();
-      const s = String(state.flow_strength || "").trim();
-      if(!b && !s) return "–";
-      if(b.toLowerCase()==="neutru" && s) return "neutru " + s;
-      return (b + " " + s).trim();
-    }
-
-    (async function(){
-      try{
-        const [stateRes, riskRes] = await Promise.all([
-          fetch("./btc-swing-strategy/coeziv_state.json?t=" + Date.now(), {cache:"no-store"}),
-          fetch("./btc-swing-strategy/risk_window.json?t=" + Date.now(), {cache:"no-store"})
-        ]);
-        if(!stateRes.ok) throw new Error("state");
-        const state = await stateRes.json();
-        const risk = riskRes.ok ? await riskRes.json() : {};
-        const trader = state.trader_signal || {};
-        const fg = state.fg || {};
-        const prod = state.production_costs_usd || {};
-
-        const label = trader.label || "AȘTEAPTĂ";
-        const subtitle = trader.subtitle || state.message || "Semnalul curent este citit din mecanism.";
-        const riskText = risk.current_regime || (trader.metrics && trader.metrics.structural_risk) || "–";
-
-        document.getElementById("sampleDate").textContent = dateRo(state.timestamp || state.generated_at);
-        document.getElementById("sampleSignal").textContent = label;
-        document.getElementById("sampleSubtitle").textContent = subtitle;
-        document.getElementById("samplePrice").textContent = usd(state.price_usd);
-        document.getElementById("sampleCost").textContent = usd(prod.average || state.model_price_components?.production_cost_anchor_usd);
-        document.getElementById("sampleFlow").textContent = flowText(state);
-        document.getElementById("sampleLiquidity").textContent = state.liquidity_regime || "–";
-        document.getElementById("sampleRisk").textContent = "Radar structural: " + riskText;
-
-        document.getElementById("liveSignal").textContent = label;
-        document.getElementById("liveText").textContent = (trader.attitude ? "Atitudine: " + trader.attitude + ". " : "") + subtitle;
-        document.getElementById("modelPrice").textContent = usd(state.model_price_usd) + " · " + pct(state.model_price_deviation) + " față de model";
-        document.getElementById("fgState").textContent = (fg.cohesive_label || fg.combined_zone || "–") + (Number.isFinite(Number(fg.combined)) ? " · " + Number(fg.combined).toFixed(1) : "");
-        document.getElementById("structRisk").textContent = riskText;
-
-        const box = document.getElementById("sampleSignalBox");
-        const key = String(trader.key || "wait").toLowerCase();
-        const color = key === "buy" ? "#22c55e" : key === "accumulate" ? "#2dd4bf" : key === "attention" ? "#fb923c" : (key === "sell" || key === "risk") ? "#ef4444" : "#facc15";
-        document.getElementById("sampleSignal").style.color = color;
-        box.style.borderColor = color + "99";
-      }catch(e){
-        console.log("CohesivX landing live data failed", e);
-      }
-    })();
-  </script>
+  <script>document.getElementById("year").textContent=new Date().getFullYear();</script>
 </body>
 </html>
