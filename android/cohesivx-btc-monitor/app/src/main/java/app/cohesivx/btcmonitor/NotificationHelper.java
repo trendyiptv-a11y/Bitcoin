@@ -24,10 +24,12 @@ import java.nio.charset.StandardCharsets;
  * Trigger principal:
  *   coeziv_state.json -> trader_signal.key
  *
- * Notifică doar când semnalul se schimbă:
+ * Notifică la schimbarea semnalului:
  *   wait -> accumulate / buy / attention / sell / risk etc.
  *
- * La prima citire NU notifică. Doar salvează starea inițială.
+ * Regula de update APK:
+ *   dacă aplicația primește pentru prima dată un semnal activ deja existent
+ *   cum ar fi sell/risk/buy/accumulate/attention, notifică o singură dată.
  */
 public final class NotificationHelper {
 
@@ -37,6 +39,7 @@ public final class NotificationHelper {
     private static final String PREFS = "cohesivx_notifications";
     private static final String PREF_LAST_TRADER_KEY = "last_trader_signal_key";
     private static final String PREF_LAST_TRADER_LABEL = "last_trader_signal_label";
+    private static final String PREF_LAST_NOTIFIED_TRADER_KEY = "last_notified_trader_signal_key";
     private static final String PREF_LAST_STRUCTURAL_SIGNATURE = "last_structural_signature";
 
     private static final int REQ_POST_NOTIFICATIONS = 314;
@@ -67,21 +70,12 @@ public final class NotificationHelper {
 
             JSONObject state = new JSONObject(readUtf8(stateFile));
 
-            /*
-             * 1) Regula nouă, curată:
-             * notificare la schimbarea trader_signal.key.
-             */
             JSONObject trader = state.optJSONObject("trader_signal");
             if (trader != null) {
                 checkTraderSignalChange(context, trader);
                 return;
             }
 
-            /*
-             * 2) Fallback vechi:
-             * dacă JSON-ul nu are încă trader_signal, păstrăm o notificare structurală simplă,
-             * ca aplicația să nu rămână mută pe versiuni vechi de date.
-             */
             checkStructuralFallback(context);
 
         } catch (Exception ignored) {
@@ -101,14 +95,19 @@ public final class NotificationHelper {
 
         SharedPreferences prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
         String lastKey = prefs.getString(PREF_LAST_TRADER_KEY, "");
+        String lastLabel = prefs.getString(PREF_LAST_TRADER_LABEL, "");
+        String lastNotifiedKey = prefs.getString(PREF_LAST_NOTIFIED_TRADER_KEY, "");
+
+        boolean firstRun = lastKey == null || lastKey.isEmpty();
+        boolean changed = !firstRun && !lastKey.equals(key);
+        boolean activeSignalNotYetNotified = isActiveSignal(key) && !key.equals(lastNotifiedKey);
 
         /*
-         * Prima rulare:
-         * salvăm starea, dar nu trimitem notificare.
-         * Altfel utilizatorul primește alertă imediat după instalare/deschidere,
-         * chiar dacă nu s-a schimbat nimic.
+         * Prima citire cu WAIT/AȘTEAPTĂ rămâne mută.
+         * Prima citire cu semnal activ notifică o singură dată.
+         * Asta rezolvă cazul APK update: aplicația a fost instalată după ce mecanismul trecuse deja în VÂNZARE.
          */
-        if (lastKey == null || lastKey.isEmpty()) {
+        if (firstRun && !isActiveSignal(key)) {
             prefs.edit()
                     .putString(PREF_LAST_TRADER_KEY, key)
                     .putString(PREF_LAST_TRADER_LABEL, label)
@@ -116,29 +115,37 @@ public final class NotificationHelper {
             return;
         }
 
-        if (lastKey.equals(key)) return;
+        if (!changed && !activeSignalNotYetNotified) return;
 
-        String previousLabel = prefs.getString(PREF_LAST_TRADER_LABEL, lastKey);
+        String previousLabel = (lastLabel == null || lastLabel.isEmpty()) ? lastKey : lastLabel;
+
+        String title = "BTC: " + label;
+        String body = !subtitle.isEmpty()
+                ? subtitle
+                : (changed ? "Semnalul s-a schimbat din " + previousLabel + " în " + label + "." : "Semnal activ detectat: " + label + ".");
+
+        String expanded;
+        if (changed) {
+            expanded = "Semnalul s-a schimbat din " + previousLabel + " în " + label + ".";
+        } else {
+            expanded = "Semnal activ detectat: " + label + ".";
+        }
+        if (!attitude.isEmpty()) expanded += "\nAtitudine: " + attitude + ".";
+        if (!reason.isEmpty()) expanded += "\nMotiv: " + reason + ".";
+
+        boolean sent = notify(context, title, body, expanded);
+        if (!sent) return;
 
         prefs.edit()
                 .putString(PREF_LAST_TRADER_KEY, key)
                 .putString(PREF_LAST_TRADER_LABEL, label)
+                .putString(PREF_LAST_NOTIFIED_TRADER_KEY, key)
                 .apply();
+    }
 
-        String title = "BTC: " + label;
-
-        String body;
-        if (!subtitle.isEmpty()) {
-            body = subtitle;
-        } else {
-            body = "Semnalul s-a schimbat din " + previousLabel + " în " + label + ".";
-        }
-
-        String expanded = "Semnalul s-a schimbat din " + previousLabel + " în " + label + ".";
-        if (!attitude.isEmpty()) expanded += "\nAtitudine: " + attitude + ".";
-        if (!reason.isEmpty()) expanded += "\nMotiv: " + reason + ".";
-
-        notify(context, title, body, expanded);
+    private static boolean isActiveSignal(String key) {
+        String k = clean(key).toLowerCase();
+        return k.equals("buy") || k.equals("accumulate") || k.equals("attention") || k.equals("sell") || k.equals("risk");
     }
 
     private static void checkStructuralFallback(Context context) {
@@ -163,25 +170,27 @@ public final class NotificationHelper {
 
             if (lastSignature.equals(signature)) return;
 
-            prefs.edit().putString(PREF_LAST_STRUCTURAL_SIGNATURE, signature).apply();
-
-            notify(
+            boolean sent = notify(
                     context,
                     "BTC: schimbare structurală",
                     currentRegime.isEmpty() ? "Contextul structural s-a modificat." : currentRegime,
                     "Contextul structural BTC s-a modificat.\nRegim: " + currentRegime + "\nNivel: " + level
             );
+
+            if (sent) {
+                prefs.edit().putString(PREF_LAST_STRUCTURAL_SIGNATURE, signature).apply();
+            }
         } catch (Exception ignored) {
         }
     }
 
-    private static void notify(Context context, String title, String body, String expanded) {
+    private static boolean notify(Context context, String title, String body, String expanded) {
         createChannel(context);
 
         if (Build.VERSION.SDK_INT >= 33 &&
                 context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)
                         != PackageManager.PERMISSION_GRANTED) {
-            return;
+            return false;
         }
 
         Intent intent = new Intent(context, MainActivity.class);
@@ -220,7 +229,10 @@ public final class NotificationHelper {
 
         if (nm != null) {
             nm.notify(NOTIFICATION_ID_TRADER_SIGNAL, builder.build());
+            return true;
         }
+
+        return false;
     }
 
     private static void createChannel(Context context) {
@@ -247,9 +259,9 @@ public final class NotificationHelper {
         try (FileInputStream in = new FileInputStream(file)) {
             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
             byte[] data = new byte[4096];
-            int n;
-            while ((n = in.read(data)) != -1) {
-                buffer.write(data, 0, n);
+            int numRead;
+            while ((numRead = in.read(data)) != -1) {
+                buffer.write(data, 0, numRead);
             }
             return new String(buffer.toByteArray(), StandardCharsets.UTF_8);
         }
