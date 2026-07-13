@@ -2,7 +2,7 @@ name: Fetch J_BTC data
 
 on:
   schedule:
-    - cron: "0 5 * * *"   # opțional: zilnic la 05:00 UTC
+    - cron: "45 23 * * *"   # zilnic înainte de mecanismul BTC
   workflow_dispatch:       # ca să îl poți porni manual
 
 permissions:
@@ -55,7 +55,7 @@ jobs:
 
           if git diff --cached --quiet; then
             echo "No changes to commit"
-          else:
+          else
             git commit -m "Update J_BTC data [skip ci]"
             git push
           fi
