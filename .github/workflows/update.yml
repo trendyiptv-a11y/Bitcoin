@@ -50,6 +50,7 @@ jobs:
           ls -lah data_global || true
           echo "=== btc-swing-strategy state ==="
           ls -lah btc-swing-strategy/coeziv_state.json || true
+          ls -lah btc-swing-strategy/daily_cohesiv_interpretation.json || true
 
       - name: Commit updated data
         run: |
@@ -59,6 +60,7 @@ jobs:
           git add data/*.json data/*.csv || true
           git add data_global/*.csv || true
           git add btc-swing-strategy/coeziv_state.json || true
+          git add btc-swing-strategy/daily_cohesiv_interpretation.json || true
           git add btc-swing-strategy/mecanism.html || true
 
           git commit -m "Auto-update data" || echo "Nothing to commit"
