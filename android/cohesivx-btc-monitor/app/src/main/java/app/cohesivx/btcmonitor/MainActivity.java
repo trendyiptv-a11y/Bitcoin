@@ -89,6 +89,7 @@ public class MainActivity extends Activity {
         if (infoButton != null) infoButton.setOnClickListener(v -> showAboutDialog());
         createSplashOverlay();
         NotificationHelper.ensureReady(this);
+        SignalCheckWorker.schedule(this);
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
         settings.setDomStorageEnabled(true);
