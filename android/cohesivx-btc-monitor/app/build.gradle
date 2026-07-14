@@ -6,4 +6,40 @@ def cohesivxKeystorePath = System.getenv('COHESIVX_UPLOAD_KEYSTORE_PATH')
 def cohesivxKeystorePassword = System.getenv('COHESIVX_UPLOAD_KEYSTORE_PASSWORD')
 def cohesivxUploadKeyAlias = System.getenv('COHESIVX_UPLOAD_KEY_ALIAS')
 def cohesivxUploadKeyPassword = System.getenv('COHESIVX_UPLOAD_KEY_PASSWORD')
-def hasCohesivxReleaseSigning = cohesiv
+def hasCohesivxReleaseSigning = cohesivxKeystorePath && cohesivxKeystorePassword && cohesivxUploadKeyAlias && cohesivxUploadKeyPassword
+
+android {
+    namespace 'app.cohesivx.btcmonitor'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'app.cohesivx.btcmonitor'
+        minSdk 23
+        targetSdk 35
+        versionCode 12
+        versionName '0.3.3'
+    }
+
+    if (hasCohesivxReleaseSigning) {
+        signingConfigs {
+            release {
+                storeFile file(cohesivxKeystorePath)
+                storePassword cohesivxKeystorePassword
+                keyAlias cohesivxUploadKeyAlias
+                keyPassword cohesivxUploadKeyPassword
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            if (hasCohesivxReleaseSigning) {
+                signingConfig signingConfigs.release
+            }
+        }
+    }
+}
+
+dependencies {
+    implementation 'androidx.work:work-runtime:2.9.1'
+}
