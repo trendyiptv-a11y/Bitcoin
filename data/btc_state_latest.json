@@ -1,26 +1,26 @@
 {
-  "as_of": "2026-07-14",
-  "close": 62401.1,
-  "ic_struct": 70.53,
-  "ic_dir": 16.79,
-  "vol30_ann_pct": 30.34,
-  "vol30_index": 8.9,
+  "as_of": "2026-07-15",
+  "close": 64626.8,
+  "ic_struct": 69.63,
+  "ic_dir": 20.16,
+  "vol30_ann_pct": 33.96,
+  "vol30_index": 13.11,
   "regime_code": "bear_late",
   "regime_label": "Bear târziu / capitulare",
   "regime_short": "Structură descendentă avansată, cu risc de mișcări extreme.",
   "regime_color": "orange",
-  "prob_up": 0.2713,
-  "prob_down": 0.7287,
+  "prob_up": 0.3041,
+  "prob_down": 0.6959,
   "bias_label": "bias bear pronunțat",
-  "confidence_label": "puternic",
-  "confidence_score": 68.9,
+  "confidence_label": "mediu",
+  "confidence_score": 65.6,
   "context_short": {
     "trend": {
-      "text": "Trend: structură ridicată (IC 71), bias bear (ICD 17).",
+      "text": "Trend: structură ridicată (IC 70), bias bear (ICD 20).",
       "color": "red"
     },
     "volatility": {
-      "text": "Volatilitate relativă: scăzută (vol30 ~ 30.3%).",
+      "text": "Volatilitate relativă: scăzută (vol30 ~ 34.0%).",
       "color": "green"
     },
     "macro": {
@@ -28,21 +28,21 @@
       "color": "grey"
     }
   },
-  "signal_probability": 0.3586666666666667,
+  "signal_probability": 0.36,
   "signal_prob_horizon_hours": 72,
   "signal_prob_samples": 750,
   "signal_prob_source": "historical_72h_ic_similarity",
   "signal_prob_breakdown": {
-    "in_direction": 0.3586666666666667,
-    "opposite": 0.4533333333333333,
-    "flat": 0.188
+    "in_direction": 0.36,
+    "opposite": 0.44133333333333336,
+    "flat": 0.19866666666666666
   },
   "signal_expected_drift": {
     "horizon_hours": 72,
-    "p10": -0.04745577357114696,
-    "p50": 0.0049113452760023435,
-    "p90": 0.056686003314340094,
-    "mean": 0.0037442039698043416
+    "p10": -0.04190433641737161,
+    "p50": 0.003739279533393036,
+    "p90": 0.05356622216704652,
+    "mean": 0.003847782757037289
   },
   "signal_context_direction": "down",
   "signal_stat_window": {
