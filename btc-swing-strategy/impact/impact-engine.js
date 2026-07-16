@@ -50,21 +50,10 @@
     return max || num(risk && risk.since_2025_12_summary && risk.since_2025_12_summary.max_streak_days, 74);
   }
 
-  function participationScore(state){
-    return num(state && (state.participation_score || state.participation_cohesion_score), null);
-  }
-
-  function flowBias(state){
-    return String((state && (state.flow_bias || (state.flow && state.flow.bias))) || '').toLowerCase();
-  }
-
-  function flowStrength(state){
-    return String((state && (state.flow_strength || (state.flow && state.flow.strength))) || '').toLowerCase();
-  }
-
-  function liquidityRegime(state){
-    return String((state && (state.liquidity_regime || (state.liquidity && state.liquidity.regime))) || '').toLowerCase();
-  }
+  function participationScore(state){ return num(state && (state.participation_score || state.participation_cohesion_score), null); }
+  function flowBias(state){ return String((state && (state.flow_bias || (state.flow && state.flow.bias))) || '').toLowerCase(); }
+  function flowStrength(state){ return String((state && (state.flow_strength || (state.flow && state.flow.strength))) || '').toLowerCase(); }
+  function liquidityRegime(state){ return String((state && (state.liquidity_regime || (state.liquidity && state.liquidity.regime))) || '').toLowerCase(); }
 
   function priceChangeHint(state){
     var h = state && state.signal_history;
@@ -78,22 +67,15 @@
   }
 
   function scenario(risk, state){
-    risk = risk || {};
-    state = state || {};
-    var day = currentStreak(risk);
-    var avg = avgDays(risk);
-    var precedent = precedentDays(risk);
+    risk = risk || {}; state = state || {};
+    var day = currentStreak(risk), avg = avgDays(risk), precedent = precedentDays(risk);
     var signal = String(state.signal || risk.current_signal || 'flat').toLowerCase();
-    var ps = participationScore(state);
-    var fb = flowBias(state);
-    var fs = flowStrength(state);
-    var liq = liquidityRegime(state);
+    var ps = participationScore(state), fb = flowBias(state), fs = flowStrength(state), liq = liquidityRegime(state);
     var nearPrecedent = precedent > 0 && day >= Math.round(precedent * 0.80);
     var aboveAvg = day > avg;
     var priceUp = priceChangeHint(state) > 0.008;
     var weakFlow = fb.indexOf('neutru') !== -1 || fb.indexOf('neutral') !== -1 || fs.indexOf('slab') !== -1 || fs.indexOf('weak') !== -1;
     var highLiquidity = liq.indexOf('ridicat') !== -1 || liq.indexOf('high') !== -1 || liq.indexOf('bun') !== -1;
-
     var id = 'daily_default';
     if (signal === 'long') id = 'structure_confirming';
     else if (signal === 'short') id = 'structural_pressure';
@@ -103,20 +85,7 @@
     else if (highLiquidity && weakFlow) id = 'liquidity_without_direction';
     else if (Number.isFinite(ps) && ps >= 72) id = 'participation_repair';
 
-    var data = {
-      id:id,
-      day:day || '–',
-      avg:avg,
-      precedent:precedent,
-      signal:signalLabel(signal),
-      signalRaw:signal,
-      priceChange:priceChangeHint(state),
-      flowBias:fb,
-      flowStrength:fs,
-      liquidityRegime:liq,
-      participationScore:ps
-    };
-
+    var data = { id:id, day:day || '–', avg:avg, precedent:precedent, signal:signalLabel(signal), signalRaw:signal, priceChange:priceChangeHint(state), flowBias:fb, flowStrength:fs, liquidityRegime:liq, participationScore:ps };
     var ro = {
       structure_confirming:{kicker:'INFORMAȚIA ZILEI',title:'STRUCTURA ÎNCEPE SĂ CONFIRME',badge:'CONFIRMARE STRUCTURALĂ',subtitle:'Semnalul mecanismului s-a schimbat. Nu mai privim doar prețul, ci coeziunea din spatele mișcării.',warning1:'DIRECȚIA NU MAI ESTE DOAR NARAȚIUNE.',warning2:'CONFIRMAREA TREBUIE URMĂRITĂ ÎN CONTEXT.',meaning:['Semnalul mecanismului a trecut în regim pozitiv.','Participarea și fluxul trebuie să susțină mișcarea.','Tactica: confirmare, disciplină și risc controlat.'],footer:'CÂND STRUCTURA CONFIRMĂ, PREȚUL NU MAI ESTE SINGURUL ARGUMENT.'},
       structural_pressure:{kicker:'INFORMAȚIA ZILEI',title:'PRESIUNE STRUCTURALĂ ACTIVĂ',badge:'RISC STRUCTURAL',subtitle:'Mecanismul vede presiune, nu doar volatilitate. Zona trebuie tratată cu prudență.',warning1:'RISCUL NU MAI ESTE DOAR LOCAL.',warning2:'STRUCTURA CERE PRUDENȚĂ.',meaning:['Semnalul indică presiune descendentă.','Lichiditatea poate accelera mișcările.','Tactica: reducerea expunerii și observare.'],footer:'CÂND STRUCTURA APASĂ, REACȚIA TREBUIE SĂ FIE MAI LENTĂ DECÂT EMOȚIA.'},
@@ -127,7 +96,6 @@
       participation_repair:{kicker:'INFORMAȚIA ZILEI',title:'PARTICIPAREA REVINE',badge:'REPARAȚIE ÎN CURS',subtitle:'Mecanismul vede prime semne de reconectare structurală prin participare.',warning1:'REPARAȚIA ÎNCEPE PRIN PARTICIPARE.',warning2:'CONFIRMAREA FINALĂ ARE NEVOIE DE FLUX.',meaning:['Participarea urcă spre o zonă mai sănătoasă.','Structura începe să se reconecteze.','Tactica: observă dacă fluxul confirmă.'],footer:'CÂND PARTICIPAREA REVINE, MECANISMUL ÎNCEPE SĂ RESPIRE.'},
       daily_default:{kicker:'INFORMAȚIA ZILEI',title:'MECANISMUL RĂMÂNE ÎN OBSERVAȚIE',badge:'MONITORIZARE',subtitle:'Nu există încă o schimbare structurală majoră. Contextul rămâne mai important decât zgomotul.',warning1:'FĂRĂ CONFIRMARE STRUCTURALĂ MAJORĂ.',warning2:'CONTEXTUL RĂMÂNE CHEIA.',meaning:['Semnalul curent nu cere grabă.','Prețul trebuie citit împreună cu fluxul și participarea.','Tactica: observare și disciplină.'],footer:'MECANISMUL NU ALEARGĂ DUPĂ PREȚ. ÎL AȘTEAPTĂ SĂ CONFIRME.'}
     };
-
     var en = {
       structure_confirming:{kicker:'TODAY\'S IMPACT',title:'THE STRUCTURE STARTS TO CONFIRM',badge:'STRUCTURAL CONFIRMATION',subtitle:'The mechanism signal has shifted. Price is no longer the only argument; cohesion behind the move matters.',warning1:'DIRECTION IS NO LONGER JUST NARRATIVE.',warning2:'CONFIRMATION MUST BE READ IN CONTEXT.',meaning:['The mechanism has shifted into a positive regime.','Participation and flow must support the move.','Tactic: confirmation, discipline and controlled risk.'],footer:'WHEN STRUCTURE CONFIRMS, PRICE IS NO LONGER THE ONLY ARGUMENT.'},
       structural_pressure:{kicker:'TODAY\'S IMPACT',title:'ACTIVE STRUCTURAL PRESSURE',badge:'STRUCTURAL RISK',subtitle:'The mechanism sees pressure, not just volatility. This zone requires caution.',warning1:'RISK IS NO LONGER ONLY LOCAL.',warning2:'STRUCTURE REQUIRES CAUTION.',meaning:['The signal indicates downside pressure.','Liquidity can accelerate moves.','Tactic: reduce exposure and observe.'],footer:'WHEN STRUCTURE PRESSES, REACTION MUST BE SLOWER THAN EMOTION.'},
@@ -138,11 +106,9 @@
       participation_repair:{kicker:'TODAY\'S IMPACT',title:'PARTICIPATION IS RETURNING',badge:'REPAIR IN PROGRESS',subtitle:'The mechanism sees early signs of structural reconnection through participation.',warning1:'REPAIR STARTS THROUGH PARTICIPATION.',warning2:'FINAL CONFIRMATION NEEDS FLOW.',meaning:['Participation is moving toward a healthier zone.','The structure begins to reconnect.','Tactic: watch whether flow confirms.'],footer:'WHEN PARTICIPATION RETURNS, THE MECHANISM STARTS TO BREATHE.'},
       daily_default:{kicker:'TODAY\'S IMPACT',title:'THE MECHANISM REMAINS UNDER OBSERVATION',badge:'MONITORING',subtitle:'There is no major structural shift yet. Context remains more important than noise.',warning1:'NO MAJOR STRUCTURAL CONFIRMATION YET.',warning2:'CONTEXT REMAINS THE KEY.',meaning:['The current signal does not require urgency.','Price must be read together with flow and participation.','Tactic: observation and discipline.'],footer:'THE MECHANISM DOES NOT CHASE PRICE. IT WAITS FOR CONFIRMATION.'}
     };
-
     var pack = (lang() === 'en' ? en : ro)[id] || (lang() === 'en' ? en.daily_default : ro.daily_default);
     Object.keys(pack).forEach(function(k){ data[k] = pack[k]; });
-    data.metaLine = pick('Ziua '+data.day+' · media istorică ~'+data.avg+' zile · precedent 2026: '+data.precedent+' zile · semnal: '+data.signal,
-                         'Day '+data.day+' · historical average ~'+data.avg+' days · 2026 precedent: '+data.precedent+' days · signal: '+data.signal);
+    data.metaLine = pick('Ziua '+data.day+' · media istorică ~'+data.avg+' zile · precedent 2026: '+data.precedent+' zile · semnal: '+data.signal, 'Day '+data.day+' · historical average ~'+data.avg+' days · 2026 precedent: '+data.precedent+' days · signal: '+data.signal);
     data.cta = pick('Vezi explicația vizuală →','View visual explanation →');
     data.dayLabel = pick('Ziua','Day');
     data.contextTitle = pick('CONTEXT VS. ISTORIC','CONTEXT VS. HISTORY');
@@ -151,17 +117,9 @@
     return data;
   }
 
-  function fetchJson(url){
-    return fetch(url + (url.indexOf('?') === -1 ? '?' : '&') + 't=' + Date.now(), {cache:'no-store'}).then(function(r){ return r.json(); }).catch(function(){ return null; });
-  }
+  function fetchJson(url){ return fetch(url + (url.indexOf('?') === -1 ? '?' : '&') + 't=' + Date.now(), {cache:'no-store'}).then(function(r){ return r.json(); }).catch(function(){ return null; }); }
+  function load(basePath){ basePath = basePath || './'; return Promise.all([fetchJson(basePath + 'risk_window.json'), fetchJson(basePath + 'coeziv_state.json')]).then(function(res){ return scenario(res[0], res[1]); }); }
+  function decide(risk, state){ return scenario(risk, state); }
 
-  function load(basePath){
-    basePath = basePath || './';
-    return Promise.all([
-      fetchJson(basePath + 'risk_window.json'),
-      fetchJson(basePath + 'coeziv_state.json')
-    ]).then(function(res){ return scenario(res[0], res[1]); });
-  }
-
-  window.CohesivXImpactEngine = { scenario:scenario, load:load, lang:lang };
+  window.CohesivXImpactEngine = { scenario:scenario, decide:decide, load:load, lang:lang };
 })();
