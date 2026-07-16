@@ -4,6 +4,7 @@
   var KEY = 'coeziv_btc_lang';
   var lastStructuralState = null;
   var lastImpactData = { risk:null, state:null };
+  var topScrollTimersStarted = false;
 
   function isEn(){
     try{
@@ -13,7 +14,37 @@
     }catch(e){ return false; }
   }
 
+  function isMonitorPage(){ return /mecanism\.html/i.test(location.pathname); }
   function tx(ro, en){ return isEn() ? en : ro; }
+
+  function disableScrollRestoration(){
+    if (!isMonitorPage()) return;
+    try { if ('scrollRestoration' in history) history.scrollRestoration = 'manual'; } catch(e) {}
+  }
+
+  function shouldForceTop(){
+    if (!isMonitorPage()) return false;
+    if (location.hash) return false;
+    try {
+      var nav = performance && performance.getEntriesByType ? performance.getEntriesByType('navigation')[0] : null;
+      if (nav && (nav.type === 'back_forward')) return false;
+    } catch(e) {}
+    return true;
+  }
+
+  function forceTopNow(){
+    if (!shouldForceTop()) return;
+    try { window.scrollTo(0, 0); } catch(e) {}
+  }
+
+  function stabilizeInitialTop(){
+    if (topScrollTimersStarted || !shouldForceTop()) return;
+    topScrollTimersStarted = true;
+    forceTopNow();
+    [60, 180, 420, 900, 1600].forEach(function(ms){ setTimeout(forceTopNow, ms); });
+  }
+
+  disableScrollRestoration();
 
   function samePageGuideLink(a){
     var href = (a.getAttribute('href') || '').toLowerCase();
@@ -127,7 +158,7 @@
   }
 
   function createImpactBanner(){
-    if (!/mecanism\.html/i.test(location.pathname)) return null;
+    if (!isMonitorPage()) return null;
     addImpactStyle();
     var banner = document.getElementById('cohesivx-impact-banner');
     var anchor = document.querySelector('.top-controls') || document.querySelector('.title-bar');
@@ -140,6 +171,7 @@
     }
     if (banner.parentNode !== anchor.parentNode || banner.previousSibling !== anchor) {
       anchor.parentNode.insertBefore(banner, anchor.nextSibling);
+      stabilizeInitialTop();
     }
     return banner;
   }
@@ -168,10 +200,11 @@
 
     if (aboveAvg) banner.classList.add('impact-above-average');
     else banner.classList.remove('impact-above-average');
+    stabilizeInitialTop();
   }
 
   function fetchImpact(){
-    if (!/mecanism\.html/i.test(location.pathname)) return;
+    if (!isMonitorPage()) return;
     createImpactBanner();
     Promise.all([
       fetch('./risk_window.json', {cache:'no-store'}).then(function(r){ return r.json(); }).catch(function(){ return null; }),
@@ -305,7 +338,7 @@
   }
 
   function fetchStructural(){
-    if (!/mecanism\.html/i.test(location.pathname)) return;
+    if (!isMonitorPage()) return;
     addStructuralStyle();
     createStructuralCard();
     fetch('./coeziv_state.json', {cache:'no-store'})
@@ -317,10 +350,14 @@
   }
 
   function start(){
+    disableScrollRestoration();
+    stabilizeInitialTop();
     applyGuideText();
     fetchImpact();
     fetchStructural();
     addLegendReverseObserver();
+    window.addEventListener('load', stabilizeInitialTop, { once:true });
+    setTimeout(stabilizeInitialTop, 1200);
   }
 
   if (document.readyState === 'loading') {
