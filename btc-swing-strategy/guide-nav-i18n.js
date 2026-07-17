@@ -39,13 +39,17 @@
     });
   }
 
+  function normalizeText(value){
+    return String(value || '').replace(/\s+/g, ' ').trim();
+  }
+
   function translateLeafText(from, to){
+    var target = normalizeText(from);
     Array.prototype.slice.call(document.querySelectorAll('body *')).forEach(function(el){
       if (!el || el.children.length) return;
       var tag = (el.tagName || '').toLowerCase();
       if (tag === 'script' || tag === 'style' || tag === 'textarea') return;
-      var text = (el.textContent || '').trim();
-      if (text === from) el.textContent = to;
+      if (normalizeText(el.textContent) === target) el.textContent = to;
     });
   }
 
@@ -54,6 +58,7 @@
       ['Indice combinat (structură + tactică)', 'Combined index (structure + tactic)'],
       ['Neutru tensionat', 'Tense neutral'],
       ['Tensiune', 'Tension'],
+      ['Degradare profundă · zona istoric modelată neatinsă', 'Deep degradation · modeled historical zone not reached'],
       ['Nu există panică, dar contextul structural rămâne tensionat. Confirmarea direcției trebuie așteptată.', 'No panic, but the structural context remains tense. Direction confirmation should be awaited.'],
       ['Sentiment de piață derivat din mecanismul coeziv (structură + semnal + volatilitate), fără date sociale sau externe.', 'Market sentiment derived from the cohesive mechanism: structure, signal and volatility, without social or external data.']
     ];
