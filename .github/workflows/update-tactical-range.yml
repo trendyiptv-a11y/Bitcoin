@@ -1,0 +1,22 @@
+name: Update Tactical Range
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "*/30 * * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  tactical-range:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Generate tactical range candidate
+        run: |
+          python3 scripts/update_tactical_range.py --output /tmp/tactical_range.new.json
+
+      - name: Publish only on signal
