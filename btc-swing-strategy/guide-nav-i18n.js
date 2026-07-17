@@ -3,7 +3,6 @@
 
   var KEY = 'coeziv_btc_lang';
   var lastStructuralState = null;
-  var tacticalDisplayLoading = false;
 
   function isEn(){
     try{
@@ -26,7 +25,27 @@
     return href.indexOf('mecanism.html') !== -1;
   }
 
+  function restoreAccidentallyHiddenContent(){
+    if (!/mecanism\.html/i.test(location.pathname)) return;
+    var selectors = ['.shell', '.card', '.card-secondary', '#daily-cylinder-root', '#coeziv-mini-radar', '#prod-cost-line'];
+    selectors.forEach(function(sel){
+      Array.prototype.slice.call(document.querySelectorAll(sel)).forEach(function(el){
+        if (!el) return;
+        if (el.getAttribute('data-cohesivx-hidden-daily-visual') === '1') {
+          el.removeAttribute('data-cohesivx-hidden-daily-visual');
+          el.removeAttribute('aria-hidden');
+        }
+        if (el.style && el.style.display === 'none') {
+          el.style.display = '';
+        }
+      });
+    });
+    var tactical = document.getElementById('cohesivx-tactical-range-card');
+    if (tactical && tactical.parentNode) tactical.parentNode.removeChild(tactical);
+  }
+
   function applyGuideText(){
+    restoreAccidentallyHiddenContent();
     var english = isEn();
     var guide = document.getElementById('guide-link') ||
       Array.prototype.slice.call(document.querySelectorAll('a')).find(samePageGuideLink);
@@ -47,7 +66,6 @@
     document.documentElement.lang = english ? 'en' : 'ro';
     if (lastStructuralState) renderStructural(lastStructuralState);
     reverseSignalLegend();
-    hideDailyVisualCards();
   }
 
   function reverseSignalLegend(){
@@ -58,29 +76,6 @@
     order.forEach(function(key){
       var item = grid.querySelector('.cxlg-item.' + key);
       if (item) grid.appendChild(item);
-    });
-  }
-
-  function hideDailyVisualCards(){
-    if (!/mecanism\.html/i.test(location.pathname)) return;
-    var blocks = Array.prototype.slice.call(document.querySelectorAll('.card, .card-secondary, section, article, div'));
-    blocks.forEach(function(el){
-      if (!el || el.id === 'cohesivx-tactical-range-card') return;
-      var text = (el.textContent || '').toUpperCase();
-      var isVisualContext =
-        text.indexOf('CONTEXT') !== -1 &&
-        text.indexOf('PREȚ') !== -1 &&
-        text.indexOf('PARTICIPARE') !== -1 &&
-        text.indexOf('RISC STRUCTURAL') !== -1;
-      var isDailyInterpretation =
-        (text.indexOf('INTERPRETAREA ZILEI') !== -1 || text.indexOf('DAILY INTERPRETATION') !== -1) &&
-        (text.indexOf('FORMULA ZILEI') !== -1 || text.indexOf('VEZI INTERPRETAREA COMPLETĂ') !== -1 || text.indexOf('FULL INTERPRETATION') !== -1);
-
-      if (isVisualContext || isDailyInterpretation) {
-        el.style.display = 'none';
-        el.setAttribute('aria-hidden', 'true');
-        el.setAttribute('data-cohesivx-hidden-daily-visual', '1');
-      }
     });
   }
 
@@ -96,8 +91,8 @@
     if (!root) return;
     var obs = new MutationObserver(function(){
       window.requestAnimationFrame(function(){
+        restoreAccidentallyHiddenContent();
         reverseSignalLegend();
-        hideDailyVisualCards();
       });
     });
     obs.observe(root, { childList:true, subtree:true });
@@ -218,7 +213,7 @@
 
     ctx.textContent = tx(
       'Context structural curent: '+label+'. '+(samples ? 'Analiza folosește '+samples+' contexte istorice similare.' : 'Analiza folosește contexte istorice similare.')+' Semnalul este un reper de structură, nu o recomandare de tranzacționare.',
-      'Current structural context: '+label+'. '+(samples ? 'The analysis uses '+samples+' similar historical contexts.' : 'The analysis uses similar historical contexts.')+' The signal is a structural reference, not a trading recommendation.'
+      'Current structural context: '+label+'. '+(samples ? 'The analysis uses '+samples+' similar contexts.' : 'The analysis uses similar contexts.')+' The signal is a structural reference, not a trading recommendation.'
     );
   }
 
@@ -234,37 +229,14 @@
     setTimeout(createStructuralCard, 1200);
   }
 
-  function loadTacticalRangeDisplay(){
-    if (!/mecanism\.html/i.test(location.pathname)) return;
-    if (window.CohesivXTacticalRangeDisplay && typeof window.CohesivXTacticalRangeDisplay.load === 'function') {
-      window.CohesivXTacticalRangeDisplay.load();
-      return;
-    }
-    if (tacticalDisplayLoading || document.querySelector('script[data-cohesivx-tactical-range-display]')) return;
-    tacticalDisplayLoading = true;
-    var s = document.createElement('script');
-    s.src = './tactical-range-display.js?v=2';
-    s.defer = true;
-    s.setAttribute('data-cohesivx-tactical-range-display','1');
-    s.onload = function(){
-      tacticalDisplayLoading = false;
-      if (window.CohesivXTacticalRangeDisplay && typeof window.CohesivXTacticalRangeDisplay.load === 'function') {
-        window.CohesivXTacticalRangeDisplay.load();
-      }
-    };
-    s.onerror = function(){ tacticalDisplayLoading = false; };
-    document.head.appendChild(s);
-  }
-
   function start(){
+    restoreAccidentallyHiddenContent();
     applyGuideText();
     fetchStructural();
-    loadTacticalRangeDisplay();
     addLegendReverseObserver();
-    hideDailyVisualCards();
-    setTimeout(hideDailyVisualCards, 300);
-    setTimeout(hideDailyVisualCards, 900);
-    setTimeout(hideDailyVisualCards, 1800);
+    setTimeout(restoreAccidentallyHiddenContent, 200);
+    setTimeout(restoreAccidentallyHiddenContent, 800);
+    setTimeout(restoreAccidentallyHiddenContent, 1800);
   }
 
   if (document.readyState === 'loading') {
