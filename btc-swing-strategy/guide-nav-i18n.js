@@ -3,6 +3,7 @@
 
   var KEY = 'coeziv_btc_lang';
   var lastStructuralState = null;
+  var tacticalDisplayLoading = false;
 
   function isEn(){
     try{
@@ -206,9 +207,32 @@
     setTimeout(createStructuralCard, 1200);
   }
 
+  function loadTacticalRangeDisplay(){
+    if (!/mecanism\.html/i.test(location.pathname)) return;
+    if (window.CohesivXTacticalRangeDisplay && typeof window.CohesivXTacticalRangeDisplay.load === 'function') {
+      window.CohesivXTacticalRangeDisplay.load();
+      return;
+    }
+    if (tacticalDisplayLoading || document.querySelector('script[data-cohesivx-tactical-range-display]')) return;
+    tacticalDisplayLoading = true;
+    var s = document.createElement('script');
+    s.src = './tactical-range-display.js?v=1';
+    s.defer = true;
+    s.setAttribute('data-cohesivx-tactical-range-display','1');
+    s.onload = function(){
+      tacticalDisplayLoading = false;
+      if (window.CohesivXTacticalRangeDisplay && typeof window.CohesivXTacticalRangeDisplay.load === 'function') {
+        window.CohesivXTacticalRangeDisplay.load();
+      }
+    };
+    s.onerror = function(){ tacticalDisplayLoading = false; };
+    document.head.appendChild(s);
+  }
+
   function start(){
     applyGuideText();
     fetchStructural();
+    loadTacticalRangeDisplay();
     addLegendReverseObserver();
   }
 
