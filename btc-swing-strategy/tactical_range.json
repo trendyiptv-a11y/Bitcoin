@@ -1,10 +1,40 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-07-17T10:46:51+00:00",
-  "data_status": "error",
-  "tactical_signal": "WAIT",
+  "updated_at": "2026-07-17T11:11:26+00:00",
+  "data_status": "live",
+  "symbol": "BTCUSDT",
+  "source": "bitget_spot_candles",
+  "timeframe": "1h",
+  "window_hours": 72,
+  "range_low": 62667.42,
+  "range_high": 65600.77,
+  "range_width": 2933.35,
+  "current_price": 63112.14,
+  "position": 0.1516,
+  "range_state": "SHIFTING_UP",
+  "structural_signal": "WAIT",
+  "tactical_signal": "BUY",
   "confidence": "low",
-  "message_ro": "Așteaptă: Tactical Range nu a putut fi actualizat momentan.",
-  "message_en": "Wait: Tactical Range could not be updated right now.",
-  "error": "HTTP Error 451: "
+  "reason_code": "LOW_EDGE",
+  "message_ro": "Cumpărare tactică: prețul este aproape de baza range-ului, iar structural rămâne WAIT.",
+  "message_en": "Tactical buy: price is near the lower range edge while the structural layer remains WAIT.",
+  "frontend_hint": {
+    "show_only": [
+      "tactical_signal",
+      "message_ro",
+      "message_en"
+    ],
+    "labels": {
+      "BUY": "BUY",
+      "SELL": "SELL",
+      "WAIT": "WAIT"
+    }
+  },
+  "debug": {
+    "previous_range_low": 61825.77,
+    "previous_range_high": 64514.99,
+    "previous_range_width": 2689.22,
+    "candles_used": 168,
+    "source_errors": []
+  }
 }
