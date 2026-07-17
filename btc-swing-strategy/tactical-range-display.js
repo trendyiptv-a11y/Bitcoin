@@ -20,7 +20,7 @@
     var style = document.createElement('style');
     style.id = 'cohesivx-tactical-range-style';
     style.textContent = ''+
-      '#'+cardId+'{margin:10px auto 14px;padding:12px 12px 13px;border-radius:18px;border:1px solid rgba(56,189,248,.26);background:radial-gradient(circle at 0 0,rgba(56,189,248,.10),transparent 48%),linear-gradient(180deg,rgba(15,23,42,.70),rgba(15,23,42,.44));box-shadow:inset 0 1px 0 rgba(255,255,255,.035);text-align:left;}'+
+      '#'+cardId+'{display:block!important;clear:both!important;width:100%!important;max-width:100%!important;min-width:0!important;flex:0 0 100%!important;margin:10px 0 14px!important;padding:12px 12px 13px;border-radius:18px;border:1px solid rgba(56,189,248,.26);background:radial-gradient(circle at 0 0,rgba(56,189,248,.10),transparent 48%),linear-gradient(180deg,rgba(15,23,42,.70),rgba(15,23,42,.44));box-shadow:inset 0 1px 0 rgba(255,255,255,.035);text-align:left;}'+
       '#'+cardId+' .tr-title{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--text-soft);margin-bottom:8px;}'+
       '#'+cardId+' .tr-main{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 11px;border-radius:14px;border:1px solid rgba(56,189,248,.25);background:rgba(56,189,248,.065);}'+
       '#'+cardId+' .tr-label{font-size:12px;line-height:1.35;color:var(--text-muted);font-weight:650;}'+
@@ -37,19 +37,14 @@
   }
 
   function findMainSignalAnchor(){
-    var candidates = Array.prototype.slice.call(document.querySelectorAll('.card, .card-secondary, section, article, div'));
-    for (var i = 0; i < candidates.length; i++) {
-      var el = candidates[i];
-      var text = (el.textContent || '').toUpperCase();
-      if (
-        text.indexOf('SEMNAL') !== -1 &&
-        (text.indexOf('AȘTEAPTĂ') !== -1 || text.indexOf('ASTEAPTA') !== -1 || text.indexOf('WAIT') !== -1 || text.indexOf('BUY') !== -1 || text.indexOf('SELL') !== -1) &&
-        (text.indexOf('FLUX') !== -1 || text.indexOf('PARTICIPARE') !== -1 || text.indexOf('LICHIDITATE') !== -1 || text.indexOf('LIQUIDITY') !== -1)
-      ) {
-        return el;
+    var cards = Array.prototype.slice.call(document.querySelectorAll('.card'));
+    for (var i = 0; i < cards.length; i++) {
+      var text = (cards[i].textContent || '').toUpperCase();
+      if (text.indexOf('BITCOIN') !== -1 && text.indexOf('PREȚ LIVE') !== -1) {
+        return cards[i];
       }
     }
-    return null;
+    return cards.length ? cards[0] : null;
   }
 
   function fallbackAnchor(){
@@ -71,8 +66,8 @@
       card.innerHTML = '<div class="tr-title"></div><div class="tr-main"><div class="tr-label"></div><div class="tr-signal wait">WAIT</div></div><div class="tr-message"></div><div class="tr-meta"></div>';
     }
 
-    if (card.parentNode !== anchor.parentNode || card.previousSibling !== anchor) {
-      anchor.parentNode.insertBefore(card, anchor.nextSibling);
+    if (card.parentNode !== anchor.parentNode || card.previousElementSibling !== anchor) {
+      anchor.parentNode.insertBefore(card, anchor.nextElementSibling);
     }
     return card;
   }
