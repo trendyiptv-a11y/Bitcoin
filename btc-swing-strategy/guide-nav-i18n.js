@@ -47,6 +47,7 @@
     document.documentElement.lang = english ? 'en' : 'ro';
     if (lastStructuralState) renderStructural(lastStructuralState);
     reverseSignalLegend();
+    hideDailyVisualCards();
   }
 
   function reverseSignalLegend(){
@@ -57,6 +58,29 @@
     order.forEach(function(key){
       var item = grid.querySelector('.cxlg-item.' + key);
       if (item) grid.appendChild(item);
+    });
+  }
+
+  function hideDailyVisualCards(){
+    if (!/mecanism\.html/i.test(location.pathname)) return;
+    var blocks = Array.prototype.slice.call(document.querySelectorAll('.card, .card-secondary, section, article, div'));
+    blocks.forEach(function(el){
+      if (!el || el.id === 'cohesivx-tactical-range-card') return;
+      var text = (el.textContent || '').toUpperCase();
+      var isVisualContext =
+        text.indexOf('CONTEXT') !== -1 &&
+        text.indexOf('PREȚ') !== -1 &&
+        text.indexOf('PARTICIPARE') !== -1 &&
+        text.indexOf('RISC STRUCTURAL') !== -1;
+      var isDailyInterpretation =
+        (text.indexOf('INTERPRETAREA ZILEI') !== -1 || text.indexOf('DAILY INTERPRETATION') !== -1) &&
+        (text.indexOf('FORMULA ZILEI') !== -1 || text.indexOf('VEZI INTERPRETAREA COMPLETĂ') !== -1 || text.indexOf('FULL INTERPRETATION') !== -1);
+
+      if (isVisualContext || isDailyInterpretation) {
+        el.style.display = 'none';
+        el.setAttribute('aria-hidden', 'true');
+        el.setAttribute('data-cohesivx-hidden-daily-visual', '1');
+      }
     });
   }
 
@@ -71,7 +95,10 @@
     var root = document.getElementById('daily-cylinder-root') || document.body;
     if (!root) return;
     var obs = new MutationObserver(function(){
-      window.requestAnimationFrame(reverseSignalLegend);
+      window.requestAnimationFrame(function(){
+        reverseSignalLegend();
+        hideDailyVisualCards();
+      });
     });
     obs.observe(root, { childList:true, subtree:true });
   }
@@ -216,7 +243,7 @@
     if (tacticalDisplayLoading || document.querySelector('script[data-cohesivx-tactical-range-display]')) return;
     tacticalDisplayLoading = true;
     var s = document.createElement('script');
-    s.src = './tactical-range-display.js?v=1';
+    s.src = './tactical-range-display.js?v=2';
     s.defer = true;
     s.setAttribute('data-cohesivx-tactical-range-display','1');
     s.onload = function(){
@@ -234,6 +261,10 @@
     fetchStructural();
     loadTacticalRangeDisplay();
     addLegendReverseObserver();
+    hideDailyVisualCards();
+    setTimeout(hideDailyVisualCards, 300);
+    setTimeout(hideDailyVisualCards, 900);
+    setTimeout(hideDailyVisualCards, 1800);
   }
 
   if (document.readyState === 'loading') {
