@@ -20,7 +20,7 @@
     var style = document.createElement('style');
     style.id = 'cohesivx-tactical-range-style';
     style.textContent = ''+
-      '#'+cardId+'{margin:12px auto 12px;padding:12px 12px 13px;border-radius:18px;border:1px solid rgba(56,189,248,.26);background:radial-gradient(circle at 0 0,rgba(56,189,248,.10),transparent 48%),linear-gradient(180deg,rgba(15,23,42,.70),rgba(15,23,42,.44));box-shadow:inset 0 1px 0 rgba(255,255,255,.035);text-align:left;}'+
+      '#'+cardId+'{margin:10px auto 14px;padding:12px 12px 13px;border-radius:18px;border:1px solid rgba(56,189,248,.26);background:radial-gradient(circle at 0 0,rgba(56,189,248,.10),transparent 48%),linear-gradient(180deg,rgba(15,23,42,.70),rgba(15,23,42,.44));box-shadow:inset 0 1px 0 rgba(255,255,255,.035);text-align:left;}'+
       '#'+cardId+' .tr-title{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--text-soft);margin-bottom:8px;}'+
       '#'+cardId+' .tr-main{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 11px;border-radius:14px;border:1px solid rgba(56,189,248,.25);background:rgba(56,189,248,.065);}'+
       '#'+cardId+' .tr-label{font-size:12px;line-height:1.35;color:var(--text-muted);font-weight:650;}'+
@@ -36,11 +36,33 @@
     document.head.appendChild(style);
   }
 
+  function findMainSignalAnchor(){
+    var candidates = Array.prototype.slice.call(document.querySelectorAll('.card, .card-secondary, section, article, div'));
+    for (var i = 0; i < candidates.length; i++) {
+      var el = candidates[i];
+      var text = (el.textContent || '').toUpperCase();
+      if (
+        text.indexOf('SEMNAL') !== -1 &&
+        (text.indexOf('AȘTEAPTĂ') !== -1 || text.indexOf('ASTEAPTA') !== -1 || text.indexOf('WAIT') !== -1 || text.indexOf('BUY') !== -1 || text.indexOf('SELL') !== -1) &&
+        (text.indexOf('FLUX') !== -1 || text.indexOf('PARTICIPARE') !== -1 || text.indexOf('LICHIDITATE') !== -1 || text.indexOf('LIQUIDITY') !== -1)
+      ) {
+        return el;
+      }
+    }
+    return null;
+  }
+
+  function fallbackAnchor(){
+    return document.getElementById('structural-confirmation-card') ||
+      document.getElementById('coeziv-mini-radar') ||
+      document.getElementById('prod-cost-line');
+  }
+
   function createCard(){
     if (!isMonitorPage()) return null;
     addStyle();
     var card = document.getElementById(cardId);
-    var anchor = document.getElementById('structural-confirmation-card') || document.getElementById('coeziv-mini-radar') || document.getElementById('prod-cost-line');
+    var anchor = findMainSignalAnchor() || fallbackAnchor();
     if (!anchor || !anchor.parentNode) return card || null;
 
     if (!card) {
@@ -48,6 +70,7 @@
       card.id = cardId;
       card.innerHTML = '<div class="tr-title"></div><div class="tr-main"><div class="tr-label"></div><div class="tr-signal wait">WAIT</div></div><div class="tr-message"></div><div class="tr-meta"></div>';
     }
+
     if (card.parentNode !== anchor.parentNode || card.previousSibling !== anchor) {
       anchor.parentNode.insertBefore(card, anchor.nextSibling);
     }
@@ -77,7 +100,7 @@
     var meta = card.querySelector('.tr-meta');
 
     if (title) title.textContent = tx('Semnal tactic range','Tactical range signal');
-    if (label) label.textContent = tx('Backendul calculează range-ul. Front-ul afișează doar semnalul.','Backend calculates the range. The frontend only displays the signal.');
+    if (label) label.textContent = tx('Strat secundar: backendul calculează, front-ul afișează doar semnalul.','Secondary layer: backend calculates, frontend only displays the signal.');
     if (signal) {
       signal.className = 'tr-signal ' + css;
       signal.textContent = sig;
@@ -102,6 +125,7 @@
       });
     setTimeout(createCard, 400);
     setTimeout(createCard, 1200);
+    setTimeout(createCard, 2200);
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', load); else load();
