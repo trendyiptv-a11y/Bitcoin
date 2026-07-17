@@ -36,14 +36,29 @@
     document.head.appendChild(style);
   }
 
+  function hasSignalCardText(el){
+    var text = (el && el.textContent ? el.textContent : '').toUpperCase();
+    return text.indexOf('SEMNAL') !== -1 &&
+      (text.indexOf('AȘTEAPTĂ') !== -1 || text.indexOf('ASTEAPTA') !== -1 || text.indexOf('WAIT') !== -1 || text.indexOf('BUY') !== -1 || text.indexOf('SELL') !== -1) &&
+      (text.indexOf('FLUX') !== -1 || text.indexOf('PARTICIPARE') !== -1 || text.indexOf('LICHIDITATE') !== -1 || text.indexOf('LIQUIDITY') !== -1);
+  }
+
   function findMainSignalAnchor(){
-    var cards = Array.prototype.slice.call(document.querySelectorAll('.card'));
+    var cards = Array.prototype.slice.call(document.querySelectorAll('.card, .card-secondary'));
+
     for (var i = 0; i < cards.length; i++) {
-      var text = (cards[i].textContent || '').toUpperCase();
-      if (text.indexOf('BITCOIN') !== -1 && text.indexOf('PREȚ LIVE') !== -1) {
-        return cards[i];
+      if (cards[i].id === cardId) continue;
+      if (hasSignalCardText(cards[i])) return cards[i];
+    }
+
+    // Fallback: main price card. This is only used while the generated signal card has not rendered yet.
+    for (var j = 0; j < cards.length; j++) {
+      var text = (cards[j].textContent || '').toUpperCase();
+      if (text.indexOf('BITCOIN') !== -1 && (text.indexOf('PREȚ LIVE') !== -1 || text.indexOf('PRET LIVE') !== -1 || text.indexOf('LIVE PRICE') !== -1)) {
+        return cards[j];
       }
     }
+
     return cards.length ? cards[0] : null;
   }
 
@@ -121,6 +136,7 @@
     setTimeout(createCard, 400);
     setTimeout(createCard, 1200);
     setTimeout(createCard, 2200);
+    setTimeout(createCard, 3500);
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', load); else load();
