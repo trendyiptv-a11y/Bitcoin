@@ -3,6 +3,7 @@
 
   var KEY = 'coeziv_btc_lang';
   var lastTacticalState = null;
+  var langTimer = null;
 
   function isEn(){
     try{
@@ -45,7 +46,13 @@
 
   function translateLeafText(from, to){
     var target = normalizeText(from);
-    Array.prototype.slice.call(document.querySelectorAll('body *')).forEach(function(el){
+    var roots = document.querySelectorAll('.card, .card-secondary, #daily-cylinder-root, #coeziv-mini-radar');
+    var nodes = [];
+    Array.prototype.slice.call(roots).forEach(function(root){
+      if (!root) return;
+      nodes = nodes.concat(Array.prototype.slice.call(root.querySelectorAll('*')));
+    });
+    nodes.forEach(function(el){
       if (!el || el.children.length) return;
       var tag = (el.tagName || '').toLowerCase();
       if (tag === 'script' || tag === 'style' || tag === 'textarea') return;
@@ -93,6 +100,33 @@
     reverseSignalLegend();
   }
 
+  function scheduleLanguageRefresh(){
+    if (langTimer) clearTimeout(langTimer);
+    applyGuideText();
+    langTimer = setTimeout(applyGuideText, 40);
+    setTimeout(applyGuideText, 120);
+    setTimeout(applyGuideText, 260);
+  }
+
+  function addLanguageFastListener(){
+    document.addEventListener('click', function(ev){
+      var t = ev.target;
+      if (!t) return;
+      var text = normalizeText(t.textContent || '');
+      var hot = text === 'RO' || text === 'EN' || text.indexOf('RO/EN') !== -1 || text.indexOf('A+') !== -1 || text.indexOf('A-') !== -1;
+      if (hot) scheduleLanguageRefresh();
+    }, true);
+    document.addEventListener('touchend', function(ev){
+      var t = ev.target;
+      if (!t) return;
+      var text = normalizeText(t.textContent || '');
+      if (text === 'RO' || text === 'EN' || text.indexOf('RO/EN') !== -1) scheduleLanguageRefresh();
+    }, true);
+    window.addEventListener('storage', function(ev){
+      if (ev && ev.key === KEY) scheduleLanguageRefresh();
+    });
+  }
+
   function reverseSignalLegend(){
     var grid = document.querySelector('.cxlg-grid');
     if (!grid) return;
@@ -107,7 +141,7 @@
     setTimeout(reverseSignalLegend, 250);
     setTimeout(reverseSignalLegend, 800);
     setTimeout(reverseSignalLegend, 1500);
-    setInterval(reverseSignalLegend, 900);
+    setInterval(reverseSignalLegend, 1200);
     if (!window.MutationObserver) return;
     var root = document.getElementById('daily-cylinder-root') || document.body;
     if (!root) return;
@@ -244,6 +278,7 @@
     restoreAccidentallyHiddenContent();
     applyGuideText();
     fetchTactical();
+    addLanguageFastListener();
     addLegendReverseObserver();
     setTimeout(restoreAccidentallyHiddenContent, 200);
     setTimeout(translateFearGreedFragments, 350);
@@ -257,6 +292,6 @@
     start();
   }
 
-  setInterval(applyGuideText, 700);
+  setInterval(applyGuideText, 1800);
   setInterval(fetchTactical, 5 * 60 * 1000);
 })();
