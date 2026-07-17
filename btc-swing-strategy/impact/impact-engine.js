@@ -1,27 +1,27 @@
 (function(){
-  'use strict';
-
-  var LANG_KEY = 'coeziv_btc_lang';
-  var PROD_BASE = 'https://coezivx.vercel.app/btc-swing-strategy/';
-
-  function lang(){
-    try{
-      return localStorage.getItem(LANG_KEY)==='en' ||
-        document.documentElement.lang==='en' ||
-        (document.body && document.body.getAttribute('data-lang')==='en') ? 'en' : 'ro';
-    }catch(e){ return 'ro'; }
-  }
-
-  function pick(ro,en){ return lang()==='en' ? en : ro; }
-  function num(v,fallback){ var n=Number(v); return Number.isFinite(n)?n:fallback; }
-
-  function signalLabel(signal){
-    var s=String(signal||'flat').toLowerCase();
-    if(lang()==='en'){
-      if(s==='long') return 'UPWARD PRESSURE';
-      if(s==='short') return 'DOWNSIDE RISK';
-      return 'WAIT';
-    }
-    if(s==='long') return 'PRESIUNE DE CREȘTERE';
-    if(s==='short') return 'RISC DE SCĂDERE';
-   
+'use strict';
+var KEY='coeziv_btc_lang';
+var PROD='https://coezivx.vercel.app/btc-swing-strategy/';
+function en(){try{return localStorage.getItem(KEY)==='en'||document.documentElement.lang==='en'||(document.body&&document.body.getAttribute('data-lang')==='en')}catch(e){return false}}
+function t(ro,eg){return en()?eg:ro}
+function n(v,f){var x=Number(v);return Number.isFinite(x)?x:f}
+function label(s){s=String(s||'flat').toLowerCase();if(en()){if(s==='long')return'UPWARD PRESSURE';if(s==='short')return'DOWNSIDE RISK';return'WAIT'}if(s==='long')return'PRESIUNE DE CREȘTERE';if(s==='short')return'RISC DE SCĂDERE';return'AȘTEAPTĂ'}
+function day(r){return n(r&&r.since_2025_12_summary&&r.since_2025_12_summary.current_streak_days,n(r&&r.legacy_risk_window&&r.legacy_risk_window.consecutive_degradation_days,n(r&&r.consecutive_degradation_days,0)))}
+function avg(r){var a=n(r&&r.legacy_risk_window&&r.legacy_risk_window.average_days_to_confirmation,n(r&&r.average_days_to_confirmation,41));if(a<10&&r&&r.since_2025_12_summary)a=41;return Math.round(a)}
+function prec(r){var arr=r&&r.since_2025_12_summary&&Array.isArray(r.since_2025_12_summary.top_streaks)?r.since_2025_12_summary.top_streaks:[],m=0;arr.forEach(function(x){if(!x.is_current&&n(x.days,0)>m)m=n(x.days,0)});return m||n(r&&r.since_2025_12_summary&&r.since_2025_12_summary.max_streak_days,74)}
+function ch(s){var h=s&&s.signal_history;if(!Array.isArray(h)||h.length<2)return 0;var a=h[h.length-1]||{},b=h[h.length-2]||{};var p1=n(a.price_usd||a.ic_close_usd||a.model_price_usd,null),p0=n(b.price_usd||b.ic_close_usd||b.model_price_usd,null);return p1&&p0?(p1-p0)/p0:0}
+function scenario(r,s){r=r||{};s=s||{};var d=day(r),a=avg(r),p=prec(r),sig=String(s.signal||r.current_signal||'flat').toLowerCase();var liq=String(s.liquidity_regime||'').toLowerCase(),fb=String(s.flow_bias||'').toLowerCase(),fs=String(s.flow_strength||'').toLowerCase();var id='daily_default';if(sig==='long')id='structure_confirming';else if(sig==='short')id='structural_pressure';else if(p>0&&d>=Math.round(p*.8))id='testing_limit';else if(d>a)id='tactic_changed';else if(ch(s)>.008&&sig==='flat')id='price_up_no_confirm';else if((liq.indexOf('ridicat')>=0||liq.indexOf('high')>=0||liq.indexOf('bun')>=0)&&(fb.indexOf('neutru')>=0||fb.indexOf('neutral')>=0||fs.indexOf('slab')>=0||fs.indexOf('weak')>=0))id='liquidity_without_direction';
+var packs={
+structure_confirming:[t('STRUCTURA ÎNCEPE SĂ CONFIRME','THE STRUCTURE STARTS TO CONFIRM'),t('CONFIRMARE STRUCTURALĂ','STRUCTURAL CONFIRMATION'),t('Semnalul mecanismului s-a schimbat. Coeziunea din spatele mișcării contează.','The mechanism signal has shifted. Cohesion behind the move matters.'),[t('Semnalul a trecut în regim pozitiv.','The signal shifted into a positive regime.'),t('Participarea și fluxul trebuie să susțină mișcarea.','Participation and flow must support the move.'),t('Tactica: confirmare și risc controlat.','Tactic: confirmation and controlled risk.')]],
+structural_pressure:[t('PRESIUNE STRUCTURALĂ ACTIVĂ','ACTIVE STRUCTURAL PRESSURE'),t('RISC STRUCTURAL','STRUCTURAL RISK'),t('Mecanismul vede presiune, nu doar volatilitate.','The mechanism sees pressure, not just volatility.'),[t('Semnalul indică presiune descendentă.','The signal indicates downside pressure.'),t('Lichiditatea poate accelera mișcările.','Liquidity can accelerate moves.'),t('Tactica: prudență și observare.','Tactic: caution and observation.')]],
+testing_limit:[t('PIAȚA TESTEAZĂ LIMITA','THE MARKET IS TESTING THE LIMIT'),t('APROAPE DE PRECEDENT','NEAR PRECEDENT'),t('Range-ul curent se apropie de precedentul major.','The current range is approaching the major precedent.'),[t('Durata curentă se apropie de recordul recent.','The current duration is approaching the recent record.'),t('Modelele medii nu mai sunt suficiente.','Average models are no longer enough.'),t('Tactica: răbdare, context și confirmare.','Tactic: patience, context and confirmation.')]],
+tactic_changed:[t('TACTICA S-A SCHIMBAT','THE TACTIC HAS CHANGED'),t('RANGE PRELUNGIT','EXTENDED RANGE'),t('Piața stă peste media istorică în mecanism. Semnalul principal rămâne prudența.','The market is staying above the historical average inside the mechanism. The main signal remains caution.'),[t('Structura s-a prelungit peste media istorică.','The structure has extended beyond the historical average.'),t('Modelele vechi pot da semnale înșelătoare.','Old models can create misleading signals.'),t('Noua tactică: răbdare + adaptare + disciplină.','New tactic: patience + adaptation + discipline.')]],
+price_up_no_confirm:[t('PREȚUL A URCAT, STRUCTURA NU A CONFIRMAT','PRICE ROSE, STRUCTURE DID NOT CONFIRM'),t('FĂRĂ CONFIRMARE','NO CONFIRMATION'),t('Mișcarea de preț există, dar mecanismul nu vede încă reparație completă.','The price move exists, but the mechanism does not yet see full repair.'),[t('Prețul poate urca fără reparație structurală.','Price can rise without structural repair.'),t('Fluxul și participarea trebuie să confirme.','Flow and participation must confirm.'),t('Nu confunda impulsul cu schimbarea de regim.','Do not confuse impulse with regime change.')]],
+liquidity_without_direction:[t('LICHIDITATE MULTĂ, DIRECȚIE PUȚINĂ','HIGH LIQUIDITY, LOW DIRECTION'),t('ABSORBȚIE','ABSORPTION'),t('Lichiditatea este prezentă, dar direcția structurală nu e confirmată.','Liquidity is present, but structural direction is not confirmed.'),[t('Lichiditatea poate susține mișcări scurte.','Liquidity can support short moves.'),t('Fără flux, mișcarea rămâne incompletă.','Without flow, the move remains incomplete.'),t('Urmărește confirmarea, nu doar volumul.','Watch confirmation, not only volume.')]],
+daily_default:[t('MECANISMUL RĂMÂNE ÎN OBSERVAȚIE','THE MECHANISM REMAINS UNDER OBSERVATION'),t('MONITORIZARE','MONITORING'),t('Nu există încă o schimbare structurală majoră.','There is no major structural shift yet.'),[t('Semnalul curent nu cere grabă.','The current signal does not require urgency.'),t('Prețul trebuie citit cu fluxul și participarea.','Price must be read with flow and participation.'),t('Tactica: observare și disciplină.','Tactic: observation and discipline.')]]};
+var q=packs[id]||packs.daily_default;return{id:id,kicker:t('INFORMAȚIA ZILEI','TODAY\'S IMPACT'),title:q[0],badge:q[1],subtitle:q[2],pageLead:q[2],meaning:q[3],bullets:q[3],warning1:t('MEDIA ISTORICĂ A FOST DEPĂȘITĂ CA PRAG TACTIC.','THE HISTORICAL AVERAGE HAS BEEN EXCEEDED AS A TACTICAL THRESHOLD.'),warning2:t('PRECEDENTUL 2026 RĂMÂNE REPERUL MAJOR.','THE 2026 PRECEDENT REMAINS THE MAJOR REFERENCE.'),footer:t('PIAȚA A ÎNVĂȚAT SĂ STEA MAI MULT ÎN MECANISM.','THE MARKET HAS LEARNED TO STAY LONGER INSIDE THE MECHANISM.'),day:d||'–',avg:a,avgDays:a,precedent:p,precedentDays:p,signal:label(sig),dayLabel:t('Ziua','Day'),cta:t('Vezi explicația vizuală →','View visual explanation →'),metaLine:t('Ziua '+(d||'–')+' · media istorică ~'+a+' zile · precedent 2026: '+p+' zile · semnal: '+label(sig),'Day '+(d||'–')+' · historical average ~'+a+' days · 2026 precedent: '+p+' days · signal: '+label(sig)),backText:t('← Înapoi la BTC Monitor','← Back to BTC Monitor'),contextTitle:t('CONTEXT VS. ISTORIC','CONTEXT VS. HISTORY'),meaningTitle:t('CE ÎNSEAMNĂ?','WHAT DOES IT MEAN?')};}
+function json(u){return fetch(u+(u.indexOf('?')<0?'?':'&')+'t='+Date.now(),{cache:'no-store'}).then(function(r){if(!r.ok)throw new Error(u);return r.json()})}
+function load(base){var prod=PROD;var local=base||'./';return Promise.all([json(prod+'risk_window.json'),json(prod+'coeziv_state.json')]).catch(function(){return Promise.all([json(local+'risk_window.json'),json(local+'coeziv_state.json')])}).then(function(x){return scenario(x[0],x[1])})}
+function loadRaw(base){var prod=PROD;var local=base||'./';return Promise.all([json(prod+'risk_window.json'),json(prod+'coeziv_state.json')]).catch(function(){return Promise.all([json(local+'risk_window.json'),json(local+'coeziv_state.json')])})}
+window.CohesivXImpactEngine={scenario:scenario,decide:scenario,load:load,loadRaw:loadRaw,lang:lang,PROD_BASE:PROD};
+})();
