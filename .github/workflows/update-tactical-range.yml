@@ -3,7 +3,7 @@ name: Update Tactical Range
 on:
   workflow_dispatch:
   schedule:
-    - cron: "*/30 * * * *"
+    - cron: "0 */3 * * *"
 
 permissions:
   contents: write
@@ -19,4 +19,48 @@ jobs:
         run: |
           python3 scripts/update_tactical_range.py --output /tmp/tactical_range.new.json
 
-      - name: Publish only on signal
+      - name: Publish only on relevant signal change
+        run: |
+          python3 - <<'PY'
+          import json, pathlib, shutil
+
+          current_path = pathlib.Path('btc-swing-strategy/tactical_range.json')
+          new_path = pathlib.Path('/tmp/tactical_range.new.json')
+
+          current = {}
+          if current_path.exists():
+              try:
+                  current = json.loads(current_path.read_text(encoding='utf-8'))
+              except Exception:
+                  current = {}
+
+          new = json.loads(new_path.read_text(encoding='utf-8'))
+
+          watched = [
+              'tactical_signal',
+              'range_state',
+              'confidence',
+              'range_low',
+              'range_high'
+          ]
+
+          changed = any(current.get(k) != new.get(k) for k in watched)
+
+          if changed:
+              shutil.copyfile(new_path, current_path)
+              pathlib.Path('/tmp/tactical_changed').write_text('1', encoding='utf-8')
+          else:
+              pathlib.Path('/tmp/tactical_changed').write_text('0', encoding='utf-8')
+          PY
+
+      - name: Commit tactical range update
+        run: |
+          if [ "$(cat /tmp/tactical_changed)" = "1" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add btc-swing-strategy/tactical_range.json
+            git commit -m "Update tactical range signal"
+            git push
+          else
+            echo "No relevant tactical signal change."
+          fi
