@@ -241,9 +241,7 @@
     var cards = Array.prototype.slice.call(document.querySelectorAll('.card.card-secondary'));
     for (var i = 0; i < cards.length; i++) {
       var text = (cards[i].textContent || '').toUpperCase();
-      if (text.indexOf('REGIMURI STANDARD DE PIAȚĂ') !== -1 || text.indexOf('REGIMURI STANDARD DE PIATA') !== -1) {
-        return cards[i];
-      }
+      if (text.indexOf('REGIMURI STANDARD DE PIAȚĂ') !== -1 || text.indexOf('REGIMURI STANDARD DE PIATA') !== -1) return cards[i];
     }
     return null;
   }
@@ -289,7 +287,7 @@
     var message = slot.querySelector('.tr-message');
     var meta = slot.querySelector('.tr-meta');
     if (title) title.textContent = tx('Semnal tactic range','Tactical range signal');
-    if (sub) sub.textContent = tx('Strat secundar. Backendul calculează range-ul; front-ul afișează doar semnalul.', 'Secondary layer. Backend calculates the range; the frontend only displays the signal.');
+    if (sub) sub.textContent = tx('Citește poziția prețului în range-ul recent.', 'Reads price position inside the recent range.');
     if (label) label.textContent = tx('Semnal tactic', 'Tactical signal');
     if (signal) {
       signal.className = 'tr-signal ' + css;
