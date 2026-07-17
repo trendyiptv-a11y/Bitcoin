@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-07-17T00:00:00+00:00",
+  "data_status": "placeholder_until_backend_runs",
+  "symbol": "BTCUSDT",
+  "source": "backend_pending",
+  "timeframe": "1h",
+  "window_hours": 72,
+  "range_low": null,
+  "range_high": null,
+  "range_width": null,
+  "current_price": null,
+  "position": null,
+  "range_state": "PENDING",
+  "structural_signal": "WAIT",
+  "tactical_signal": "WAIT",
+  "confidence": "low",
+  "reason_code": "BACKEND_PENDING",
+  "message_ro": "Așteaptă: Tactical Range va apărea după prima rulare a backendului.",
+  "message_en": "Wait: Tactical Range will appear after the first backend run.",
+  "frontend_hint": {
+    "show_only": ["tactical_signal", "message_ro", "message_en"],
+    "labels": {
+      "BUY": "BUY",
+      "SELL": "SELL",
+      "WAIT": "WAIT"
+    }
+  }
+}
