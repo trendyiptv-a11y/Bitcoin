@@ -1,26 +1,26 @@
 {
-  "as_of": "2026-07-17",
-  "close": 63598.4,
-  "ic_struct": 69.16,
-  "ic_dir": 19.69,
-  "vol30_ann_pct": 33.59,
-  "vol30_index": 12.61,
+  "as_of": "2026-07-18",
+  "close": 63908.3,
+  "ic_struct": 68.85,
+  "ic_dir": 19.32,
+  "vol30_ann_pct": 32.41,
+  "vol30_index": 11.38,
   "regime_code": "bear_late",
   "regime_label": "Bear târziu / capitulare",
   "regime_short": "Structură descendentă avansată, cu risc de mișcări extreme.",
   "regime_color": "orange",
-  "prob_up": 0.3007,
-  "prob_down": 0.6993,
+  "prob_up": 0.298,
+  "prob_down": 0.702,
   "bias_label": "bias bear pronunțat",
   "confidence_label": "mediu",
-  "confidence_score": 65.7,
+  "confidence_score": 65.9,
   "context_short": {
     "trend": {
-      "text": "Trend: structură ridicată (IC 69), bias bear (ICD 20).",
+      "text": "Trend: structură ridicată (IC 69), bias bear (ICD 19).",
       "color": "red"
     },
     "volatility": {
-      "text": "Volatilitate relativă: scăzută (vol30 ~ 33.6%).",
+      "text": "Volatilitate relativă: scăzută (vol30 ~ 32.4%).",
       "color": "green"
     },
     "macro": {
@@ -28,21 +28,21 @@
       "color": "grey"
     }
   },
-  "signal_probability": 0.3626666666666667,
+  "signal_probability": 0.356,
   "signal_prob_horizon_hours": 72,
   "signal_prob_samples": 750,
   "signal_prob_source": "historical_72h_ic_similarity",
   "signal_prob_breakdown": {
-    "in_direction": 0.3626666666666667,
-    "opposite": 0.43733333333333335,
-    "flat": 0.2
+    "in_direction": 0.356,
+    "opposite": 0.44133333333333336,
+    "flat": 0.20266666666666666
   },
   "signal_expected_drift": {
     "horizon_hours": 72,
-    "p10": -0.04190433641737161,
-    "p50": 0.0034323095855358643,
-    "p90": 0.05259557168780996,
-    "mean": 0.003193481713120986
+    "p10": -0.041503359310409715,
+    "p50": 0.003954869507514336,
+    "p90": 0.053004272878018684,
+    "mean": 0.003977711587923541
   },
   "signal_context_direction": "down",
   "signal_stat_window": {
