@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-07-18T13:22:04+00:00",
+  "updated_at": "2026-07-18T15:59:59+00:00",
   "data_status": "live",
   "symbol": "BTCUSDT",
   "source": "bitget_spot_candles",
   "timeframe": "1h",
   "window_hours": 72,
   "range_low": 62535.4,
-  "range_high": 65600.77,
-  "range_width": 3065.37,
-  "current_price": 63977.94,
-  "position": 0.4706,
+  "range_high": 65463.17,
+  "range_width": 2927.77,
+  "current_price": 64120.53,
+  "position": 0.5414,
   "range_state": "COMPRESSING",
   "structural_signal": "WAIT",
   "tactical_signal": "WAIT",
@@ -32,8 +32,8 @@
   },
   "debug": {
     "previous_range_low": 61825.77,
-    "previous_range_high": 65575.0,
-    "previous_range_width": 3749.23,
+    "previous_range_high": 65600.77,
+    "previous_range_width": 3775.0,
     "candles_used": 168,
     "source_errors": []
   }
