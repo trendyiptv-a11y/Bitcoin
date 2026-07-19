@@ -1,0 +1,158 @@
+//@version=5
+indicator("CohesivX BTC Terminal v2.4-seed - Auto Projection", overlay=true, max_lines_count=300, max_labels_count=80)
+
+// Experimental auto-data version.
+// GitHub Actions updates CSV seed files; Pine reads them with request.seed().
+// Projection layer only; not a price target.
+
+seedSource = "trendyiptv-a11y/Bitcoin"
+showProjectionCentral = input.bool(true, "Show 10Y projection central", group="10Y projection")
+showProjectionLow = input.bool(true, "Show 10Y projection low", group="10Y projection")
+showProjectionHigh = input.bool(false, "Show 10Y projection high - optional", group="10Y projection")
+showProjectionMiner = input.bool(true, "Show 10Y projected miner cost", group="10Y projection")
+showProjectionLabels = input.bool(true, "Show projection labels", group="10Y projection")
+
+f_hold(_x) =>
+    ta.valuewhen(not na(_x), _x, 0)
+
+curCentral = f_hold(request.seed(seedSource, "COHESIVX_BTC_CURRENT", open, ignore_invalid_symbol=true))
+curP90 = f_hold(request.seed(seedSource, "COHESIVX_BTC_CURRENT", high, ignore_invalid_symbol=true))
+curP10 = f_hold(request.seed(seedSource, "COHESIVX_BTC_CURRENT", low, ignore_invalid_symbol=true))
+curMiner = f_hold(request.seed(seedSource, "COHESIVX_BTC_CURRENT", close, ignore_invalid_symbol=true))
+
+projC2027 = f_hold(request.seed(seedSource, "COHESIVX_BTC_PROJ_2027", open, ignore_invalid_symbol=true))
+projHigh2027 = f_hold(request.seed(seedSource, "COHESIVX_BTC_PROJ_2027", high, ignore_invalid_symbol=true))
+projLow2027 = f_hold(request.seed(seedSource, "COHESIVX_BTC_PROJ_2027", low, ignore_invalid_symbol=true))
+projMiner2027 = f_hold(request.seed(seedSource, "COHESIVX_BTC_PROJ_2027", close, ignore_invalid_symbol=true))
+
+projC2028 = f_hold(request.seed(seedSource, "COHESIVX_BTC_PROJ_2028", open, ignore_invalid_symbol=true))
+projHigh2028 = f_hold(request.seed(seedSource, "COHESIVX_BTC_PROJ_2028", high, ignore_invalid_symbol=true))
+projLow2028 = f_hold(request.seed(seedSource, "COHESIVX_BTC_PROJ_2028", low, ignore_invalid_symbol=true))
+projMiner2028 = f_hold(request.seed(seedSource, "COHESIVX_BTC_PROJ_2028", close, ignore_invalid_symbol=true))
+
+projC2029 = f_hold(request.seed(seedSource, "COHESIVX_BTC_PROJ_2029", open, ignore_invalid_symbol=true))
+projHigh2029 = f_hold(request.seed(seedSource, "COHESIVX_BTC_PROJ_2029", high, ignore_invalid_symbol=true))
+projLow2029 = f_hold(request.seed(seedSource, "COHESIVX_BTC_PROJ_2029", low, ignore_invalid_symbol=true))
+projMiner2029 = f_hold(request.seed(seedSource, "COHESIVX_BTC_PROJ_2029", close, ignore_invalid_symbol=true))
+
+projC2030 = f_hold(request.seed(seedSource, "COHESIVX_BTC_PROJ_2030", open, ignore_invalid_symbol=true))
+projHigh2030 = f_hold(request.seed(seedSource, "COHESIVX_BTC_PROJ_2030", high, ignore_invalid_symbol=true))
+projLow2030 = f_hold(request.seed(seedSource, "COHESIVX_BTC_PROJ_2030", low, ignore_invalid_symbol=true))
+projMiner2030 = f_hold(request.seed(seedSource, "COHESIVX_BTC_PROJ_2030", close, ignore_invalid_symbol=true))
+
+projC2031 = f_hold(request.seed(seedSource, "COHESIVX_BTC_PROJ_2031", open, ignore_invalid_symbol=true))
+projHigh2031 = f_hold(request.seed(seedSource, "COHESIVX_BTC_PROJ_2031", high, ignore_invalid_symbol=true))
+projLow2031 = f_hold(request.seed(seedSource, "COHESIVX_BTC_PROJ_2031", low, ignore_invalid_symbol=true))
+projMiner2031 = f_hold(request.seed(seedSource, "COHESIVX_BTC_PROJ_2031", close, ignore_invalid_symbol=true))
+
+projC2032 = f_hold(request.seed(seedSource, "COHESIVX_BTC_PROJ_2032", open, ignore_invalid_symbol=true))
+projHigh2032 = f_hold(request.seed(seedSource, "COHESIVX_BTC_PROJ_2032", high, ignore_invalid_symbol=true))
+projLow2032 = f_hold(request.seed(seedSource, "COHESIVX_BTC_PROJ_2032", low, ignore_invalid_symbol=true))
+projMiner2032 = f_hold(request.seed(seedSource, "COHESIVX_BTC_PROJ_2032", close, ignore_invalid_symbol=true))
+
+projC2033 = f_hold(request.seed(seedSource, "COHESIVX_BTC_PROJ_2033", open, ignore_invalid_symbol=true))
+projHigh2033 = f_hold(request.seed(seedSource, "COHESIVX_BTC_PROJ_2033", high, ignore_invalid_symbol=true))
+projLow2033 = f_hold(request.seed(seedSource, "COHESIVX_BTC_PROJ_2033", low, ignore_invalid_symbol=true))
+projMiner2033 = f_hold(request.seed(seedSource, "COHESIVX_BTC_PROJ_2033", close, ignore_invalid_symbol=true))
+
+projC2034 = f_hold(request.seed(seedSource, "COHESIVX_BTC_PROJ_2034", open, ignore_invalid_symbol=true))
+projHigh2034 = f_hold(request.seed(seedSource, "COHESIVX_BTC_PROJ_2034", high, ignore_invalid_symbol=true))
+projLow2034 = f_hold(request.seed(seedSource, "COHESIVX_BTC_PROJ_2034", low, ignore_invalid_symbol=true))
+projMiner2034 = f_hold(request.seed(seedSource, "COHESIVX_BTC_PROJ_2034", close, ignore_invalid_symbol=true))
+
+projC2035 = f_hold(request.seed(seedSource, "COHESIVX_BTC_PROJ_2035", open, ignore_invalid_symbol=true))
+projHigh2035 = f_hold(request.seed(seedSource, "COHESIVX_BTC_PROJ_2035", high, ignore_invalid_symbol=true))
+projLow2035 = f_hold(request.seed(seedSource, "COHESIVX_BTC_PROJ_2035", low, ignore_invalid_symbol=true))
+projMiner2035 = f_hold(request.seed(seedSource, "COHESIVX_BTC_PROJ_2035", close, ignore_invalid_symbol=true))
+
+projC2036 = f_hold(request.seed(seedSource, "COHESIVX_BTC_PROJ_2036", open, ignore_invalid_symbol=true))
+projHigh2036 = f_hold(request.seed(seedSource, "COHESIVX_BTC_PROJ_2036", high, ignore_invalid_symbol=true))
+projLow2036 = f_hold(request.seed(seedSource, "COHESIVX_BTC_PROJ_2036", low, ignore_invalid_symbol=true))
+projMiner2036 = f_hold(request.seed(seedSource, "COHESIVX_BTC_PROJ_2036", close, ignore_invalid_symbol=true))
+
+t2026 = timestamp(2026, 1, 1, 0, 0)
+t2027 = timestamp(2027, 1, 1, 0, 0)
+t2028 = timestamp(2028, 1, 1, 0, 0)
+t2029 = timestamp(2029, 1, 1, 0, 0)
+t2030 = timestamp(2030, 1, 1, 0, 0)
+t2031 = timestamp(2031, 1, 1, 0, 0)
+t2032 = timestamp(2032, 1, 1, 0, 0)
+t2033 = timestamp(2033, 1, 1, 0, 0)
+t2034 = timestamp(2034, 1, 1, 0, 0)
+t2035 = timestamp(2035, 1, 1, 0, 0)
+t2036 = timestamp(2036, 1, 1, 0, 0)
+
+projectionCentralColor = color.rgb(0, 220, 180)
+projectionLowColor = color.rgb(80, 180, 255)
+projectionHighColor = color.rgb(255, 120, 120)
+projectionMinerColor = color.rgb(255, 210, 80)
+projectionLabelColor = color.white
+
+var line[] projectionLines = array.new_line()
+var label[] projectionLabels = array.new_label()
+
+f_projection_line(_show, _x1, _y1, _x2, _y2, _clr, _width) =>
+    if _show and not na(_y1) and not na(_y2) and _y1 > 0 and _y2 > 0
+        array.push(projectionLines, line.new(_x1, _y1, _x2, _y2, xloc=xloc.bar_time, extend=extend.none, color=_clr, width=_width, style=line.style_dashed))
+
+f_projection_label(_show, _x, _y, _txt, _clr) =>
+    if _show and not na(_y) and _y > 0
+        array.push(projectionLabels, label.new(_x, _y, _txt, xloc=xloc.bar_time, style=label.style_label_left, textcolor=projectionLabelColor, color=color.new(_clr, 20), size=size.tiny))
+
+if barstate.islast
+    if array.size(projectionLines) > 0
+        for i = 0 to array.size(projectionLines) - 1
+            line.delete(array.get(projectionLines, i))
+    array.clear(projectionLines)
+    if array.size(projectionLabels) > 0
+        for i = 0 to array.size(projectionLabels) - 1
+            label.delete(array.get(projectionLabels, i))
+    array.clear(projectionLabels)
+
+    f_projection_line(showProjectionCentral, t2026, curCentral, t2027, projC2027, projectionCentralColor, 3)
+    f_projection_line(showProjectionLow, t2026, curP10, t2027, projLow2027, projectionLowColor, 1)
+    f_projection_line(showProjectionHigh, t2026, curP90, t2027, projHigh2027, projectionHighColor, 1)
+    f_projection_line(showProjectionMiner, t2026, curMiner, t2027, projMiner2027, projectionMinerColor, 2)
+    f_projection_line(showProjectionCentral, t2027, projC2027, t2028, projC2028, projectionCentralColor, 3)
+    f_projection_line(showProjectionLow, t2027, projLow2027, t2028, projLow2028, projectionLowColor, 1)
+    f_projection_line(showProjectionHigh, t2027, projHigh2027, t2028, projHigh2028, projectionHighColor, 1)
+    f_projection_line(showProjectionMiner, t2027, projMiner2027, t2028, projMiner2028, projectionMinerColor, 2)
+    f_projection_line(showProjectionCentral, t2028, projC2028, t2029, projC2029, projectionCentralColor, 3)
+    f_projection_line(showProjectionLow, t2028, projLow2028, t2029, projLow2029, projectionLowColor, 1)
+    f_projection_line(showProjectionHigh, t2028, projHigh2028, t2029, projHigh2029, projectionHighColor, 1)
+    f_projection_line(showProjectionMiner, t2028, projMiner2028, t2029, projMiner2029, projectionMinerColor, 2)
+    f_projection_line(showProjectionCentral, t2029, projC2029, t2030, projC2030, projectionCentralColor, 3)
+    f_projection_line(showProjectionLow, t2029, projLow2029, t2030, projLow2030, projectionLowColor, 1)
+    f_projection_line(showProjectionHigh, t2029, projHigh2029, t2030, projHigh2030, projectionHighColor, 1)
+    f_projection_line(showProjectionMiner, t2029, projMiner2029, t2030, projMiner2030, projectionMinerColor, 2)
+    f_projection_line(showProjectionCentral, t2030, projC2030, t2031, projC2031, projectionCentralColor, 3)
+    f_projection_line(showProjectionLow, t2030, projLow2030, t2031, projLow2031, projectionLowColor, 1)
+    f_projection_line(showProjectionHigh, t2030, projHigh2030, t2031, projHigh2031, projectionHighColor, 1)
+    f_projection_line(showProjectionMiner, t2030, projMiner2030, t2031, projMiner2031, projectionMinerColor, 2)
+    f_projection_line(showProjectionCentral, t2031, projC2031, t2032, projC2032, projectionCentralColor, 3)
+    f_projection_line(showProjectionLow, t2031, projLow2031, t2032, projLow2032, projectionLowColor, 1)
+    f_projection_line(showProjectionHigh, t2031, projHigh2031, t2032, projHigh2032, projectionHighColor, 1)
+    f_projection_line(showProjectionMiner, t2031, projMiner2031, t2032, projMiner2032, projectionMinerColor, 2)
+    f_projection_line(showProjectionCentral, t2032, projC2032, t2033, projC2033, projectionCentralColor, 3)
+    f_projection_line(showProjectionLow, t2032, projLow2032, t2033, projLow2033, projectionLowColor, 1)
+    f_projection_line(showProjectionHigh, t2032, projHigh2032, t2033, projHigh2033, projectionHighColor, 1)
+    f_projection_line(showProjectionMiner, t2032, projMiner2032, t2033, projMiner2033, projectionMinerColor, 2)
+    f_projection_line(showProjectionCentral, t2033, projC2033, t2034, projC2034, projectionCentralColor, 3)
+    f_projection_line(showProjectionLow, t2033, projLow2033, t2034, projLow2034, projectionLowColor, 1)
+    f_projection_line(showProjectionHigh, t2033, projHigh2033, t2034, projHigh2034, projectionHighColor, 1)
+    f_projection_line(showProjectionMiner, t2033, projMiner2033, t2034, projMiner2034, projectionMinerColor, 2)
+    f_projection_line(showProjectionCentral, t2034, projC2034, t2035, projC2035, projectionCentralColor, 3)
+    f_projection_line(showProjectionLow, t2034, projLow2034, t2035, projLow2035, projectionLowColor, 1)
+    f_projection_line(showProjectionHigh, t2034, projHigh2034, t2035, projHigh2035, projectionHighColor, 1)
+    f_projection_line(showProjectionMiner, t2034, projMiner2034, t2035, projMiner2035, projectionMinerColor, 2)
+    f_projection_line(showProjectionCentral, t2035, projC2035, t2036, projC2036, projectionCentralColor, 3)
+    f_projection_line(showProjectionLow, t2035, projLow2035, t2036, projLow2036, projectionLowColor, 1)
+    f_projection_line(showProjectionHigh, t2035, projHigh2035, t2036, projHigh2036, projectionHighColor, 1)
+    f_projection_line(showProjectionMiner, t2035, projMiner2035, t2036, projMiner2036, projectionMinerColor, 2)
+
+    f_projection_label(showProjectionLabels and showProjectionCentral, t2036, projC2036, "10Y central projection\nauto seed · not target", projectionCentralColor)
+    f_projection_label(showProjectionLabels and showProjectionLow, t2036, projLow2036, "10Y structural low", projectionLowColor)
+    f_projection_label(showProjectionLabels and showProjectionMiner, t2036, projMiner2036, "10Y projected miner cost", projectionMinerColor)
+
+// Small status marker: if seed values are missing, this remains empty/na.
+plot(showProjectionCentral ? curCentral : na, title="Current central from seed", display=display.none)
