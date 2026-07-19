@@ -61,11 +61,13 @@ def _pine_seed_template() -> str:
         "// Experimental auto-data version.",
         "// GitHub Actions updates CSV seed files; Pine reads them with request.seed().",
         "// Projection layer only; not a price target.",
+        "// TradingView currently limits scripts to 40 security/seed requests.",
+        "// This auto version reads central, low and miner only: 3 current + 30 projection = 33 requests.",
+        "// High projection remains in the CSV/manifest for audit but is disabled in this Pine template.",
         "",
         f'seedSource = "{SEED_SOURCE}"',
         'showProjectionCentral = input.bool(true, "Show 10Y projection central", group="10Y projection")',
         'showProjectionLow = input.bool(true, "Show 10Y projection low", group="10Y projection")',
-        'showProjectionHigh = input.bool(false, "Show 10Y projection high - optional", group="10Y projection")',
         'showProjectionMiner = input.bool(true, "Show 10Y projected miner cost", group="10Y projection")',
         'showProjectionLabels = input.bool(true, "Show projection labels", group="10Y projection")',
         "",
@@ -73,7 +75,6 @@ def _pine_seed_template() -> str:
         "    ta.valuewhen(not na(_x), _x, 0)",
         "",
         f'curCentral = f_hold(request.seed(seedSource, "{CURRENT_SYMBOL}", open, ignore_invalid_symbol=true))',
-        f'curP90 = f_hold(request.seed(seedSource, "{CURRENT_SYMBOL}", high, ignore_invalid_symbol=true))',
         f'curP10 = f_hold(request.seed(seedSource, "{CURRENT_SYMBOL}", low, ignore_invalid_symbol=true))',
         f'curMiner = f_hold(request.seed(seedSource, "{CURRENT_SYMBOL}", close, ignore_invalid_symbol=true))',
         "",
@@ -83,7 +84,6 @@ def _pine_seed_template() -> str:
         sym = f"{PROJ_SYMBOL_PREFIX}{year}"
         lines.extend([
             f'projC{year} = f_hold(request.seed(seedSource, "{sym}", open, ignore_invalid_symbol=true))',
-            f'projHigh{year} = f_hold(request.seed(seedSource, "{sym}", high, ignore_invalid_symbol=true))',
             f'projLow{year} = f_hold(request.seed(seedSource, "{sym}", low, ignore_invalid_symbol=true))',
             f'projMiner{year} = f_hold(request.seed(seedSource, "{sym}", close, ignore_invalid_symbol=true))',
             "",
@@ -99,7 +99,6 @@ def _pine_seed_template() -> str:
         "",
         "projectionCentralColor = color.rgb(0, 220, 180)",
         "projectionLowColor = color.rgb(80, 180, 255)",
-        "projectionHighColor = color.rgb(255, 120, 120)",
         "projectionMinerColor = color.rgb(255, 210, 80)",
         "projectionLabelColor = color.white",
         "",
@@ -130,12 +129,10 @@ def _pine_seed_template() -> str:
     for year in years:
         start_c = "curCentral" if prev == "2026" else f"projC{prev}"
         start_low = "curP10" if prev == "2026" else f"projLow{prev}"
-        start_high = "curP90" if prev == "2026" else f"projHigh{prev}"
         start_miner = "curMiner" if prev == "2026" else f"projMiner{prev}"
         lines.extend([
             f"    f_projection_line(showProjectionCentral, t{prev}, {start_c}, t{year}, projC{year}, projectionCentralColor, 3)",
             f"    f_projection_line(showProjectionLow, t{prev}, {start_low}, t{year}, projLow{year}, projectionLowColor, 1)",
-            f"    f_projection_line(showProjectionHigh, t{prev}, {start_high}, t{year}, projHigh{year}, projectionHighColor, 1)",
             f"    f_projection_line(showProjectionMiner, t{prev}, {start_miner}, t{year}, projMiner{year}, projectionMinerColor, 2)",
         ])
         prev = str(year)
@@ -181,6 +178,9 @@ def main() -> None:
         "engine_status": projection.get("engine_status"),
         "method": projection.get("method"),
         "symbols": {"current": CURRENT_SYMBOL, "projection_prefix": PROJ_SYMBOL_PREFIX},
+        "pine_request_count": 33,
+        "tradingview_request_limit": 40,
+        "high_band_policy": "exported_to_csv_and_manifest_but_not_requested_by_seed_pine_to_stay_under_40_request_limit",
         "projection_years": {},
         "note": "CSV OHLC mapping: open=central, high=high band, low=low band, close=projected miner cost, volume=spot/year marker.",
     }
@@ -212,11 +212,11 @@ def main() -> None:
         "GitHub Actions updates root CSV seed symbols for TradingView `request.seed()`.\n\n"
         "Mapping per CSV row:\n"
         "- `open` = central structural projection\n"
-        "- `high` = high/statistical projection\n"
+        "- `high` = high/statistical projection, exported for audit but not requested by the auto Pine template\n"
         "- `low` = low/defense projection\n"
         "- `close` = projected standard miner cost\n\n"
-        "Use `Pine/indicator_seed_request.txt` as the experimental auto-data Pine script.\n"
-        "The normal `Pine/indicator.txt` remains the stable hardcoded fallback.\n",
+        "`Pine/indicator_seed_request.txt` stays under TradingView's 40 request limit by reading central, low and miner only.\n"
+        "The normal `Pine/indicator.txt` remains the stable hardcoded fallback with optional high band.\n",
         encoding="utf-8",
     )
 
