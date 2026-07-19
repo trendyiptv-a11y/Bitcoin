@@ -1831,7 +1831,7 @@ body.light-mode .app-download-close { background: rgba(255,255,255,0.9); }
           Interpretare structurală experimentală, nu recomandare financiară.
         </div>
 
-                                                                                                                                                                <!-- DAILY_FULL_INTERPRETATION_EXPANDER_START -->
+                                                                                                                        <!-- DAILY_FULL_INTERPRETATION_EXPANDER_START -->
         <button id="daily-ai-full-toggle" class="daily-full-toggle" type="button" aria-expanded="false">
           Vezi interpretarea completă
         </button>
@@ -3793,31 +3793,7 @@ else if (LIQ_REGIME === "normală" || LIQ_REGIME === "moderată")
 /* GOOGLE_PLAY_PROMO_SCRIPT_END */
 </script>
 
-<script>
-/* HIDE_OLD_MECHANISM_CARDS_START */
-(function () {
-  function hideOldMechanismCards() {
-    document.querySelectorAll(".card.card-secondary").forEach(function (card) {
-      var text = (card.textContent || "").toUpperCase();
 
-      if (
-        text.includes("ISTORIC CONTEXTE MECANISM") ||
-        text.includes("REGIMURI STANDARD DE PIAȚĂ") ||
-        text.includes("REGIMURI STANDARD DE PIATA")
-      ) {
-        card.style.display = "none";
-        card.setAttribute("aria-hidden", "true");
-      }
-    });
-  }
-
-  document.addEventListener("DOMContentLoaded", hideOldMechanismCards);
-  setTimeout(hideOldMechanismCards, 300);
-  setTimeout(hideOldMechanismCards, 1000);
-  setTimeout(hideOldMechanismCards, 2000);
-})();
- /* HIDE_OLD_MECHANISM_CARDS_END */
-</script>
 
 </body>
 </html>
