@@ -28,14 +28,14 @@ tablePosition = input.string("Top right", "Table position", options=["Top right"
 // CURRENT MONITOR SNAPSHOT - 2026
 //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-monitorSpot = input.float(64287.00, "Official CohesivX monitor spot", step=10, group="Current monitor snapshot")
-currentCentral = input.float(109161.59, "Current cohesive central price", step=10, group="Current monitor snapshot")
-currentP10 = input.float(62723.91, "Current p10 lower band", step=10, group="Current monitor snapshot")
-currentP90 = input.float(297077.55, "Current p90 upper band - hidden by default", step=10, group="Current monitor snapshot")
+monitorSpot = input.float(64463.00, "Official CohesivX monitor spot", step=10, group="Current monitor snapshot")
+currentCentral = input.float(103698.73, "Current cohesive central price", step=10, group="Current monitor snapshot")
+currentP10 = input.float(59584.97, "Current p10 lower band", step=10, group="Current monitor snapshot")
+currentP90 = input.float(282210.67, "Current p90 upper band - hidden by default", step=10, group="Current monitor snapshot")
 
-currentEfficientMiner = input.float(30664.89, "Current efficient miner cost", step=10, group="Current monitor snapshot")
-currentStandardMiner = input.float(56218.96, "Current standard miner cost", step=10, group="Current monitor snapshot")
-currentInefficientMiner = input.float(89439.26, "Current inefficient miner cost", step=10, group="Current monitor snapshot")
+currentEfficientMiner = input.float(29130.30, "Current efficient miner cost", step=10, group="Current monitor snapshot")
+currentStandardMiner = input.float(53405.55, "Current standard miner cost", step=10, group="Current monitor snapshot")
+currentInefficientMiner = input.float(84963.38, "Current inefficient miner cost", step=10, group="Current monitor snapshot")
 
 
 //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -44,10 +44,10 @@ currentInefficientMiner = input.float(89439.26, "Current inefficient miner cost"
 //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 terminalMarketState = input.string("MIXED_STRUCTURE", "Market state", group="Terminal scores")
-terminalStructuralScore = input.float(17.78, "Structural Score", step=1.0, group="Terminal scores")
-terminalConfidenceScore = input.float(63.20, "Confidence Score", step=1.0, group="Terminal scores")
-terminalFragilityIndex = input.float(76.75, "Fragility Index", step=1.0, group="Terminal scores")
-terminalMinerHealth = input.float(60.00, "Miner Health", step=1.0, group="Terminal scores")
+terminalStructuralScore = input.float(24.33, "Structural Score", step=1.0, group="Terminal scores")
+terminalConfidenceScore = input.float(68.83, "Confidence Score", step=1.0, group="Terminal scores")
+terminalFragilityIndex = input.float(66.76, "Fragility Index", step=1.0, group="Terminal scores")
+terminalMinerHealth = input.float(76.00, "Miner Health", step=1.0, group="Terminal scores")
 
 //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // HISTORICAL YEARLY ANCHORS FROM MONITOR EXPORT
@@ -69,7 +69,7 @@ c2022 = input.float(31844.44, "Central 2022", step=1, group="Historical central"
 c2023 = input.float(39706.32, "Central 2023", step=1, group="Historical central")
 c2024 = input.float(79899.65, "Central 2024", step=1, group="Historical central")
 c2025 = input.float(101435.81, "Central 2025", step=1, group="Historical central")
-c2026 = input.float(109161.59, "Central 2026 - monitor", step=1, group="Historical central")
+c2026 = input.float(103698.73, "Central 2026 - monitor", step=1, group="Historical central")
 
 p10_2013 = input.float(0.00193, "p10 2013", step=0.00001, group="Historical p10")
 p10_2014 = input.float(1.11441, "p10 2014", step=0.01, group="Historical p10")
@@ -84,7 +84,7 @@ p10_2022 = input.float(6177.52, "p10 2022", step=1, group="Historical p10")
 p10_2023 = input.float(12414.66, "p10 2023", step=1, group="Historical p10")
 p10_2024 = input.float(19393.09, "p10 2024", step=1, group="Historical p10")
 p10_2025 = input.float(39210.55, "p10 2025", step=1, group="Historical p10")
-p10_2026 = input.float(62723.91, "p10 2026 - monitor", step=1, group="Historical p10")
+p10_2026 = input.float(59584.97, "p10 2026 - monitor", step=1, group="Historical p10")
 
 p90_2013 = input.float(0.01233, "p90 2013", step=0.00001, group="Historical p90 - table / optional")
 p90_2014 = input.float(11250.67163, "p90 2014", step=1, group="Historical p90 - table / optional")
@@ -99,7 +99,7 @@ p90_2022 = input.float(181863.38, "p90 2022", step=1, group="Historical p90 - ta
 p90_2023 = input.float(111082.62, "p90 2023", step=1, group="Historical p90 - table / optional")
 p90_2024 = input.float(344973.45, "p90 2024", step=1, group="Historical p90 - table / optional")
 p90_2025 = input.float(535083.04, "p90 2025", step=1, group="Historical p90 - table / optional")
-p90_2026 = input.float(297077.55, "p90 2026 - monitor", step=1, group="Historical p90 - table / optional")
+p90_2026 = input.float(282210.67, "p90 2026 - monitor", step=1, group="Historical p90 - table / optional")
 
 m2013 = input.float(0.00462, "Miner 2013", step=0.00001, group="Historical miner cost")
 m2014 = input.float(2.34816, "Miner 2014", step=0.01, group="Historical miner cost")
@@ -114,7 +114,7 @@ m2022 = input.float(10135.31, "Miner 2022", step=1, group="Historical miner cost
 m2023 = input.float(12066.62, "Miner 2023", step=1, group="Historical miner cost")
 m2024 = input.float(24411.81, "Miner 2024", step=1, group="Historical miner cost")
 m2025 = input.float(45462.92, "Miner 2025", step=1, group="Historical miner cost")
-m2026 = input.float(56218.96, "Miner 2026 - monitor", step=1, group="Historical miner cost")
+m2026 = input.float(53405.55, "Miner 2026 - monitor", step=1, group="Historical miner cost")
 
 //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // THRESHOLDS
