@@ -1,0 +1,87 @@
+{
+  "seed_source": "trendyiptv-a11y/Bitcoin",
+  "generated_at": "2026-07-19T21:03:04.023702+00:00",
+  "state_timestamp": "2026-07-07T00:00:00+00:00",
+  "engine_status": "beta_empirical_output_calibration_2022_plus_observed_only_guard",
+  "method": "alpha structural corridor × observed-only empirical 2022+ output calibration",
+  "symbols": {
+    "current": "COHESIVX_BTC_CURRENT",
+    "projection_prefix": "COHESIVX_BTC_PROJ_"
+  },
+  "pine_request_count": 33,
+  "tradingview_request_limit": 40,
+  "high_band_policy": "exported_to_csv_and_manifest_but_not_requested_by_seed_pine_to_stay_under_40_request_limit",
+  "projection_years": {
+    "2027": {
+      "symbol": "COHESIVX_BTC_PROJ_2027",
+      "central": 87245.44215926089,
+      "low": 67338.15369193327,
+      "high": 282838.4934471387,
+      "miner": 72097.49452734303
+    },
+    "2028": {
+      "symbol": "COHESIVX_BTC_PROJ_2028",
+      "central": 121668.1703794163,
+      "low": 90906.50748410994,
+      "high": 394432.5475222672,
+      "miner": 97331.61761191311
+    },
+    "2029": {
+      "symbol": "COHESIVX_BTC_PROJ_2029",
+      "central": 172671.32602258312,
+      "low": 122723.78510354842,
+      "high": 559778.2131082143,
+      "miner": 131397.6837760827
+    },
+    "2030": {
+      "symbol": "COHESIVX_BTC_PROJ_2030",
+      "central": 225407.34319328278,
+      "low": 165677.1098897904,
+      "high": 730741.5927164619,
+      "miner": 177386.87309771168
+    },
+    "2031": {
+      "symbol": "COHESIVX_BTC_PROJ_2031",
+      "central": 292816.89771429286,
+      "low": 223664.09835121705,
+      "high": 949274.6916703475,
+      "miner": 239472.27868191077
+    },
+    "2032": {
+      "symbol": "COHESIVX_BTC_PROJ_2032",
+      "central": 406929.3652058923,
+      "low": 301946.53277414304,
+      "high": 1319212.6229830561,
+      "miner": 323287.57622057956
+    },
+    "2033": {
+      "symbol": "COHESIVX_BTC_PROJ_2033",
+      "central": 575514.3879340477,
+      "low": 407627.8192450931,
+      "high": 1865743.5667903225,
+      "miner": 436438.2278977824
+    },
+    "2034": {
+      "symbol": "COHESIVX_BTC_PROJ_2034",
+      "central": 748691.8992123839,
+      "low": 550297.5559808756,
+      "high": 2427162.767342683,
+      "miner": 589191.6076620063
+    },
+    "2035": {
+      "symbol": "COHESIVX_BTC_PROJ_2035",
+      "central": 972593.1558636345,
+      "low": 742901.7005741823,
+      "high": 3153021.8213498825,
+      "miner": 795408.6703437086
+    },
+    "2036": {
+      "symbol": "COHESIVX_BTC_PROJ_2036",
+      "central": 1351618.4298399037,
+      "low": 1002917.2957751462,
+      "high": 4381772.972317115,
+      "miner": 1073801.7049640066
+    }
+  },
+  "note": "CSV OHLC mapping: open=central, high=high band, low=low band, close=projected miner cost, volume=spot/year marker."
+}
