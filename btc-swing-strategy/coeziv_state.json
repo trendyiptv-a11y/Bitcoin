@@ -1,16 +1,16 @@
 {
   "timestamp": "2026-07-20T00:00:00+00:00",
-  "price_usd": 64753.0,
+  "price_usd": 64646.0,
   "model_price_usd": 102146.37091013248,
   "ic_close_usd": 64710.4,
   "price_source": "spot",
   "model_price_source": "cohesive_fair_price_v2",
   "model_price_method": "production_cost_context_similarity_v2",
-  "model_price_deviation": -0.3660763527568772,
-  "model_price_explanation": "Prețul coeziv central este ~102,146 USD, calculat din costul de producție actual (~53,406 USD) și din 250 contexte istorice similare, unde multiplicatorul median preț/cost este 1.913×. Prețul live este −36.6% sub acest reper coeziv. Banda statistică a modelului este ~59,585 USD – ~271,504 USD; banda superioară nu este target, ci limită statistică a multiplicatorului istoric.",
+  "model_price_deviation": -0.36712386916932166,
+  "model_price_explanation": "Prețul coeziv central este ~102,146 USD, calculat din costul de producție actual (~53,406 USD) și din 250 contexte istorice similare, unde multiplicatorul median preț/cost este 1.913×. Prețul live este −36.7% sub acest reper coeziv. Banda statistică a modelului este ~59,585 USD – ~271,504 USD; banda superioară nu este target, ci limită statistică a multiplicatorului istoric.",
   "signal": "flat",
-  "message": "Prețul de tranzacționare la actualizarea sistemului: în jur de ~64,753 USD. Mecanismul vede un neutru. Fluxul actual de piață este relativ echilibrat (slab). Lichiditatea este ridicată, iar mișcările de preț tind să fie mai stabile. Prețul este semnificativ peste costul estimat de producție, zonă specifică fazelor speculative moderate. Nu este o recomandare de tranzacționare, ci o interpretare structurată a riscului. Prețul coeziv central este ~102,146 USD, calculat din costul de producție actual (~53,406 USD) și din 250 contexte istorice similare, unde multiplicatorul median preț/cost este 1.913×. Prețul live este −36.6% sub acest reper coeziv. Banda statistică a modelului este ~59,585 USD – ~271,504 USD; banda superioară nu este target, ci limită statistică a multiplicatorului istoric.",
-  "generated_at": "2026-07-20T04:06:44.663649+00:00",
+  "message": "Prețul de tranzacționare la actualizarea sistemului: în jur de ~64,646 USD. Mecanismul vede un neutru. Fluxul actual de piață este relativ echilibrat (slab). Lichiditatea este ridicată, iar mișcările de preț tind să fie mai stabile. Prețul este semnificativ peste costul estimat de producție, zonă specifică fazelor speculative moderate. Nu este o recomandare de tranzacționare, ci o interpretare structurată a riscului. Prețul coeziv central este ~102,146 USD, calculat din costul de producție actual (~53,406 USD) și din 250 contexte istorice similare, unde multiplicatorul median preț/cost este 1.913×. Prețul live este −36.7% sub acest reper coeziv. Banda statistică a modelului este ~59,585 USD – ~271,504 USD; banda superioară nu este target, ci limită statistică a multiplicatorului istoric.",
+  "generated_at": "2026-07-20T04:25:45.768802+00:00",
   "signal_history": [
     {
       "timestamp": "2026-06-21T00:00:00+00:00",
@@ -173,8 +173,8 @@
     "expensive": 84963.37738912478
   },
   "production_cost_reference": "average",
-  "production_cost_as_of": "2026-07-20T04:06:43.989147+00:00",
-  "deviation_from_production": 0.21247694629453737,
+  "production_cost_as_of": "2026-07-20T04:25:45.186253+00:00",
+  "deviation_from_production": 0.2104734092653107,
   "flow_score": 0.0004993962407677855,
   "flow_bias": "neutru",
   "flow_strength": "slab",
@@ -201,7 +201,7 @@
   },
   "model_price_context": {
     "date": "2026-07-20",
-    "spot_price_usd": 64753.0,
+    "spot_price_usd": 64646.0,
     "production_cost_usd": 53405.55150173558,
     "ic_close_usd": 64710.4,
     "ic_struct": 67.81731279872544,
@@ -223,7 +223,7 @@
       "price_p10": 59584.972772113826,
       "price_p50": 102146.37091013248,
       "price_p90": 271504.1064124135,
-      "spot_deviation_from_p50": -0.3660763527568772,
+      "spot_deviation_from_p50": -0.36712386916932166,
       "distance_median": 0.3450097851851617,
       "regime_counts": {
         "bear_struct": 129,
@@ -243,7 +243,7 @@
       "price_p10": 58712.32832867342,
       "price_p50": 100308.9473524926,
       "price_p90": 282168.90898450324,
-      "spot_deviation_from_p50": -0.35446436525294733,
+      "spot_deviation_from_p50": -0.355531069697806,
       "distance_median": 0.6875226957393913,
       "regime_counts": {
         "bear_late": 116
@@ -261,10 +261,10 @@
     }
   },
   "fg": {
-    "structural": 60.31,
+    "structural": 60.26,
     "tactical_24h": 50.0,
-    "combined": 60.31,
-    "tension": 10.31,
+    "combined": 60.26,
+    "tension": 10.26,
     "structural_zone": "greed",
     "tactical_zone": "neutral",
     "combined_zone": "greed",
@@ -294,9 +294,9 @@
     },
     "similar_context_samples": 250,
     "regime": "bear_late",
-    "current_deviation": -0.3660763527568772,
+    "current_deviation": -0.36712386916932166,
     "label": "Semnal structural, nu intraday",
-    "generated_at": "2026-07-20T04:06:44.751051+00:00"
+    "generated_at": "2026-07-20T04:25:46.627764+00:00"
   },
   "trader_signal": {
     "key": "wait",
@@ -320,6 +320,6 @@
       "unrepaired_structure": true
     },
     "source": "coeziv_state + risk_window + participation_cohesion",
-    "generated_at": "2026-07-20T04:06:44.751313+00:00"
+    "generated_at": "2026-07-20T04:25:46.628103+00:00"
   }
 }
