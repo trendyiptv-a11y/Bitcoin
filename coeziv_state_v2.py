@@ -10,6 +10,7 @@ import pandas as pd
 
 import coeziv_state as base
 from cohesive_fair_price import compute_cohesive_fair_price_v2
+from trader_signal_card import build_trader_signal_card
 
 try:
     from tradingview_anchors import compute_tradingview_yearly_anchors
@@ -288,6 +289,16 @@ def main() -> None:
     if model_price_explanation:
         message = f"{message} {model_price_explanation}"
 
+    trader_signal_card = build_trader_signal_card(
+        signal=signal,
+        flow=flow,
+        liq=liq,
+        stats=stats,
+        market_regime=market_regime,
+        dev_pct_model=dev_pct_model,
+        deviation_from_production=deviation_from_production,
+    )
+
     state: Dict[str, Any] = {
         "timestamp": ts.isoformat() if isinstance(ts, pd.Timestamp) else str(ts),
         "price_usd": price_for_text,
@@ -299,6 +310,7 @@ def main() -> None:
         "model_price_deviation": dev_pct_model,
         "model_price_explanation": model_price_explanation,
         "signal": signal,
+        "trader_signal_card": trader_signal_card,
         "message": message,
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "signal_history": signal_history,
@@ -355,6 +367,7 @@ def main() -> None:
 
     print("Stare coezivă V2 generată:", output_path)
     print("Semnal:", signal, "| Sursă preț:", price_source)
+    print("Card semnal auditat:", trader_signal_card.get("key"), "| status:", trader_signal_card.get("data_status"))
     print("Preț spot/mesaj:", f"{price_for_text:,.2f} USD")
     print("IC close:", f"{ic_close_price:,.2f} USD")
     print("Preț coeziv model:", f"{model_price:,.2f} USD", "| metodă:", model_price_method)
