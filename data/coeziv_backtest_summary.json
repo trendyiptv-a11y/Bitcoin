@@ -1,8 +1,8 @@
 {
   "meta": {
-    "rows": 5649,
+    "rows": 5650,
     "from": "2011-02-01T00:00:00+00:00",
-    "to": "2026-07-20T00:00:00+00:00",
+    "to": "2026-07-21T00:00:00+00:00",
     "horizons_days": [
       1,
       7,
@@ -128,66 +128,66 @@
       }
     },
     "flat": {
-      "count": 3651,
+      "count": 3652,
       "horizons": {
         "1d": {
-          "samples": 3650,
+          "samples": 3651,
           "correct": 754,
-          "wrong": 2896,
+          "wrong": 2897,
           "flat": 0,
-          "accuracy": 0.20657534246575343,
-          "wrong_rate": 0.7934246575342466,
+          "accuracy": 0.20651876198301836,
+          "wrong_rate": 0.7934812380169817,
           "flat_rate": 0.0,
-          "mean_return": 0.003949357848103422,
-          "median_return": 0.0015927540087309344,
-          "p10_return": -0.0353103469775458,
-          "p90_return": 0.04326261443664693
+          "mean_return": 0.0039513735339578,
+          "median_return": 0.0016078496042215562,
+          "p10_return": -0.0353033042906461,
+          "p90_return": 0.04325622710683641
         },
         "7d": {
-          "samples": 3644,
+          "samples": 3645,
           "correct": 217,
-          "wrong": 3427,
+          "wrong": 3428,
           "flat": 0,
-          "accuracy": 0.059549945115257956,
-          "wrong_rate": 0.9404500548847421,
+          "accuracy": 0.05953360768175583,
+          "wrong_rate": 0.9404663923182441,
           "flat_rate": 0.0,
-          "mean_return": 0.024409762452676134,
-          "median_return": 0.009115018686950416,
-          "p10_return": -0.09550618054073526,
-          "p90_return": 0.1492270929792551
+          "mean_return": 0.02440726217603984,
+          "median_return": 0.009056122448979798,
+          "p10_return": -0.09550590566561838,
+          "p90_return": 0.14922063765058108
         },
         "30d": {
-          "samples": 3621,
+          "samples": 3622,
           "correct": 83,
-          "wrong": 3538,
+          "wrong": 3539,
           "flat": 0,
-          "accuracy": 0.02292184479425573,
-          "wrong_rate": 0.9770781552057443,
+          "accuracy": 0.022915516289342904,
+          "wrong_rate": 0.9770844837106571,
           "flat_rate": 0.0,
-          "mean_return": 0.14826492060479146,
-          "median_return": 0.03813745311993566,
-          "p10_return": -0.18060284411082161,
-          "p90_return": 0.4893111638954868
+          "mean_return": 0.14823580532780836,
+          "median_return": 0.038109784727504925,
+          "p10_return": -0.18054335268621463,
+          "p90_return": 0.4892557871509086
         },
         "90d": {
-          "samples": 3570,
+          "samples": 3571,
           "correct": 39,
-          "wrong": 3531,
+          "wrong": 3532,
           "flat": 0,
-          "accuracy": 0.010924369747899159,
-          "wrong_rate": 0.9890756302521009,
+          "accuracy": 0.010921310557266872,
+          "wrong_rate": 0.9890786894427331,
           "flat_rate": 0.0,
-          "mean_return": 0.6270740266855894,
-          "median_return": 0.1649482231808126,
-          "p10_return": -0.26978132273329763,
-          "p90_return": 1.3015664529429631
+          "mean_return": 0.6268545859599014,
+          "median_return": 0.16491019521588735,
+          "p10_return": -0.26976917151433044,
+          "p90_return": 1.3010597504374153
         }
       }
     }
   },
   "equity_simulation": {
     "final_equity_coeziv": 1115.8360538285197,
-    "final_equity_buy_hold": 91437.6148085347,
+    "final_equity_buy_hold": 92473.78832838773,
     "max_drawdown": -0.7027826086956521,
     "position_changes": 211,
     "note": "Simulare orientativă: poziția din ziua precedentă aplicată pe randamentul zilei curente; cost la schimbare poziție."
@@ -254,9 +254,9 @@
         "regime": "bear_late",
         "signal": "flat",
         "entry_price": 0.68,
-        "ic_struct": 64.6132058771464,
-        "ic_dir": 37.57774706288873,
-        "ic_flux": 32.31350979718117,
+        "ic_struct": 64.60176991150442,
+        "ic_dir": 37.588529970633964,
+        "ic_flux": 32.30795669358996,
         "windows": {
           "30d": {
             "available": true,
@@ -293,9 +293,9 @@
         "regime": "bear_struct",
         "signal": "short",
         "entry_price": 12.05,
-        "ic_struct": 49.61940166401133,
-        "ic_dir": 21.319972356599862,
-        "ic_flux": 30.079064970780337,
+        "ic_struct": 49.610619469026545,
+        "ic_dir": 21.316289514596647,
+        "ic_flux": 30.07389585839492,
         "windows": {
           "30d": {
             "available": true,
@@ -332,9 +332,9 @@
         "regime": "accum_bear",
         "signal": "flat",
         "entry_price": 8.21,
-        "ic_struct": 19.153832536732164,
-        "ic_dir": 2.4706288873531443,
-        "ic_flux": 3.0594706084565075,
+        "ic_struct": 19.150442477876105,
+        "ic_dir": 2.4702021074451546,
+        "ic_flux": 3.058944835882457,
         "windows": {
           "30d": {
             "available": true,
@@ -371,9 +371,9 @@
         "regime": "accum_bear",
         "signal": "flat",
         "entry_price": 5.032,
-        "ic_struct": 8.51478137723491,
-        "ic_dir": 1.0711817553559089,
-        "ic_flux": 7.476796149879689,
+        "ic_struct": 8.513274336283185,
+        "ic_dir": 1.0709967179132838,
+        "ic_flux": 7.475511256229595,
         "windows": {
           "30d": {
             "available": true,
@@ -410,9 +410,9 @@
         "regime": "bear_struct",
         "signal": "flat",
         "entry_price": 3.248,
-        "ic_struct": 24.23437776597628,
-        "ic_dir": 0.8120248790601244,
-        "ic_flux": 4.950154692334138,
+        "ic_struct": 24.23008849557522,
+        "ic_dir": 0.8118846087407151,
+        "ic_flux": 4.949304004124414,
         "windows": {
           "30d": {
             "available": true,
@@ -449,9 +449,9 @@
         "regime": "bear_struct",
         "signal": "flat",
         "entry_price": 2.97,
-        "ic_struct": 27.49159143211188,
-        "ic_dir": 3.8009675190048378,
-        "ic_flux": 9.436232382261949,
+        "ic_struct": 27.486725663716815,
+        "ic_dir": 3.800310934531007,
+        "ic_flux": 9.434610757862174,
         "windows": {
           "30d": {
             "available": true,
@@ -488,9 +488,9 @@
         "regime": "accum_bear",
         "signal": "flat",
         "entry_price": 4.86,
-        "ic_struct": 6.903876792352629,
-        "ic_dir": 43.57290946786455,
-        "ic_flux": 19.00996906153317,
+        "ic_struct": 6.902654867256637,
+        "ic_dir": 43.58265676282605,
+        "ic_flux": 19.00670218250559,
         "windows": {
           "30d": {
             "available": true,
@@ -527,9 +527,9 @@
         "regime": "accum_bear",
         "signal": "short",
         "entry_price": 4.86,
-        "ic_struct": 13.931669322003895,
-        "ic_dir": 26.053904630269525,
-        "ic_flux": 47.14678583705741,
+        "ic_struct": 13.929203539823009,
+        "ic_dir": 26.06667818276041,
+        "ic_flux": 47.13868362261557,
         "windows": {
           "30d": {
             "available": true,
@@ -566,9 +566,9 @@
         "regime": "accum_bear",
         "signal": "short",
         "entry_price": 4.904,
-        "ic_struct": 8.443972384492831,
-        "ic_dir": 41.27505183137526,
-        "ic_flux": 80.30250945342041,
+        "ic_struct": 8.442477876106194,
+        "ic_dir": 41.28519606149594,
+        "ic_flux": 80.28870940024059,
         "windows": {
           "30d": {
             "available": true,
@@ -605,9 +605,9 @@
         "regime": "bear_late",
         "signal": "flat",
         "entry_price": 12.03,
-        "ic_struct": 65.32129580456719,
-        "ic_dir": 44.07394609536973,
-        "ic_flux": 87.74492952904778,
+        "ic_struct": 65.30973451327434,
+        "ic_dir": 44.08360684055968,
+        "ic_flux": 87.72985048977488,
         "windows": {
           "30d": {
             "available": true,
@@ -644,9 +644,9 @@
         "regime": "bear_struct",
         "signal": "short",
         "entry_price": 10.89,
-        "ic_struct": 39.97167640290317,
-        "ic_dir": 35.331720801658605,
-        "ic_flux": 70.5053282915091,
+        "ic_struct": 39.9646017699115,
+        "ic_dir": 35.34289169113836,
+        "ic_flux": 70.49321189207768,
         "windows": {
           "30d": {
             "available": true,
@@ -683,9 +683,9 @@
         "regime": "bear_late",
         "signal": "flat",
         "entry_price": 122.5,
-        "ic_struct": 61.28518321826872,
-        "ic_dir": 28.731859018659296,
-        "ic_flux": 37.50429700928154,
+        "ic_struct": 61.27433628318584,
+        "ic_dir": 28.744169977543617,
+        "ic_flux": 37.49785186458154,
         "windows": {
           "30d": {
             "available": true,
@@ -722,9 +722,9 @@
         "regime": "bear_struct",
         "signal": "short",
         "entry_price": 90.51,
-        "ic_struct": 33.98831651619756,
-        "ic_dir": 30.874222529371114,
-        "ic_flux": 36.45582674458577,
+        "ic_struct": 33.982300884955755,
+        "ic_dir": 30.886163413370184,
+        "ic_flux": 36.44956178037464,
         "windows": {
           "30d": {
             "available": true,
@@ -761,9 +761,9 @@
         "regime": "accum_bear",
         "signal": "flat",
         "entry_price": 104.0,
-        "ic_struct": 19.596388741370156,
-        "ic_dir": 21.803731859018658,
-        "ic_flux": 14.437951185974555,
+        "ic_struct": 19.5929203539823,
+        "ic_dir": 21.799965451718776,
+        "ic_flux": 14.435470012029555,
         "windows": {
           "30d": {
             "available": true,
@@ -800,9 +800,9 @@
         "regime": "bear_late",
         "signal": "flat",
         "entry_price": 961.05,
-        "ic_struct": 63.922818197911134,
-        "ic_dir": 39.5473393227367,
-        "ic_flux": 26.246132691646608,
+        "ic_struct": 63.91150442477876,
+        "ic_dir": 39.55778200034548,
+        "ic_flux": 26.241622271868025,
         "windows": {
           "30d": {
             "available": true,
@@ -839,9 +839,9 @@
         "regime": "accum_bear",
         "signal": "flat",
         "entry_price": 174.0,
-        "ic_struct": 13.843158081076297,
-        "ic_dir": 0.12093987560469938,
-        "ic_flux": 0.5328291509109704,
+        "ic_struct": 13.84070796460177,
+        "ic_dir": 0.12091898428053205,
+        "ic_flux": 0.5327375837772763,
         "windows": {
           "30d": {
             "available": true,
@@ -878,9 +878,9 @@
         "regime": "accum_bear",
         "signal": "flat",
         "entry_price": 562.45,
-        "ic_struct": 8.8688263409453,
-        "ic_dir": 3.6627505183137528,
-        "ic_flux": 0.481265039532488,
+        "ic_struct": 8.867256637168142,
+        "ic_dir": 3.6621178096389704,
+        "ic_flux": 0.4811823337343242,
         "windows": {
           "30d": {
             "available": true,
@@ -917,9 +917,9 @@
         "regime": "accum_bear",
         "signal": "flat",
         "entry_price": 443.18,
-        "ic_struct": 4.761904761904762,
-        "ic_dir": 11.886662059433311,
-        "ic_flux": 14.627019594362324,
+        "ic_struct": 4.761061946902655,
+        "ic_dir": 11.88460874071515,
+        "ic_flux": 14.62450592885375,
         "windows": {
           "30d": {
             "available": true,
@@ -956,9 +956,9 @@
         "regime": "accum_bear",
         "signal": "short",
         "entry_price": 600.5,
-        "ic_struct": 16.445388564347674,
-        "ic_dir": 43.780234968901176,
-        "ic_flux": 87.64180130629082,
+        "ic_struct": 16.442477876106196,
+        "ic_dir": 43.7899464501641,
+        "ic_flux": 87.62673998968896,
         "windows": {
           "30d": {
             "available": true,
@@ -995,9 +995,9 @@
         "regime": "accum_bear",
         "signal": "short",
         "entry_price": 509.71,
-        "ic_struct": 2.3721012568596214,
-        "ic_dir": 27.643400138217,
-        "ic_flux": 48.762461326916466,
+        "ic_struct": 2.3716814159292037,
+        "ic_dir": 27.65589911901883,
+        "ic_flux": 48.754081457295065,
         "windows": {
           "30d": {
             "available": true,
@@ -1034,9 +1034,9 @@
         "regime": "bear_struct",
         "signal": "short",
         "entry_price": 436.86,
-        "ic_struct": 35.95326606479023,
-        "ic_dir": 10.38355217691776,
-        "ic_flux": 58.98934341698178,
+        "ic_struct": 35.94690265486726,
+        "ic_dir": 10.38175850751425,
+        "ic_flux": 58.97920604914934,
         "windows": {
           "30d": {
             "available": true,
@@ -1073,9 +1073,9 @@
         "regime": "bear_late",
         "signal": "flat",
         "entry_price": 355.78,
-        "ic_struct": 62.0817843866171,
-        "ic_dir": 8.880442294402211,
-        "ic_flux": 51.34066689584049,
+        "ic_struct": 62.07079646017699,
+        "ic_dir": 8.878908274313353,
+        "ic_flux": 51.331843959443205,
         "windows": {
           "30d": {
             "available": true,
@@ -1112,9 +1112,9 @@
         "regime": "bear_struct",
         "signal": "short",
         "entry_price": 352.01,
-        "ic_struct": 49.70791290493893,
-        "ic_dir": 17.50172771250864,
-        "ic_flux": 28.308697146785832,
+        "ic_struct": 49.69911504424779,
+        "ic_dir": 17.498704439454137,
+        "ic_flux": 28.303832273586522,
         "windows": {
           "30d": {
             "available": true,
@@ -1151,9 +1151,9 @@
         "regime": "bear_struct",
         "signal": "short",
         "entry_price": 330.84,
-        "ic_struct": 42.538502389803504,
-        "ic_dir": 31.617138908085696,
-        "ic_flux": 73.83980749398418,
+        "ic_struct": 42.530973451327434,
+        "ic_dir": 31.628951459664883,
+        "ic_flux": 73.8271180615226,
         "windows": {
           "30d": {
             "available": true,
@@ -1190,9 +1190,9 @@
         "regime": "bear_struct",
         "signal": "flat",
         "entry_price": 228.17,
-        "ic_struct": 59.78049212249956,
-        "ic_dir": 6.409813407049067,
-        "ic_flux": 6.9783430732210405,
+        "ic_struct": 59.769911504424776,
+        "ic_dir": 6.408706166868198,
+        "ic_flux": 6.977143839147615,
         "windows": {
           "30d": {
             "available": true,
@@ -1229,9 +1229,9 @@
         "regime": "bear_late",
         "signal": "flat",
         "entry_price": 244.52,
-        "ic_struct": 71.8534253850239,
-        "ic_dir": 11.212854181064271,
-        "ic_flux": 23.839807493984182,
+        "ic_struct": 71.85840707964601,
+        "ic_dir": 11.210917256866471,
+        "ic_flux": 23.835710603196432,
         "windows": {
           "30d": {
             "available": true,
@@ -1268,9 +1268,9 @@
         "regime": "bear_struct",
         "signal": "flat",
         "entry_price": 246.37,
-        "ic_struct": 59.03699769870774,
-        "ic_dir": 39.82377332411887,
-        "ic_flux": 43.33104159504985,
+        "ic_struct": 59.02654867256637,
+        "ic_dir": 39.83416825012956,
+        "ic_flux": 43.32359511943633,
         "windows": {
           "30d": {
             "available": true,
@@ -1307,9 +1307,9 @@
         "regime": "bear_late",
         "signal": "flat",
         "entry_price": 231.09,
-        "ic_struct": 69.65834661001948,
-        "ic_dir": 36.36834830684174,
-        "ic_flux": 77.17428669645926,
+        "ic_struct": 69.66371681415929,
+        "ic_dir": 36.37934012782864,
+        "ic_flux": 77.16102423096751,
         "windows": {
           "30d": {
             "available": true,
@@ -1346,9 +1346,9 @@
         "regime": "bear_struct",
         "signal": "flat",
         "entry_price": 240.98,
-        "ic_struct": 56.45246946362188,
-        "ic_dir": 37.80234968901175,
-        "ic_flux": 83.74011687865246,
+        "ic_struct": 56.442477876106196,
+        "ic_dir": 37.81309379858352,
+        "ic_flux": 83.72572606977144,
         "windows": {
           "30d": {
             "available": true,
@@ -1385,9 +1385,9 @@
         "regime": "accum_bear",
         "signal": "short",
         "entry_price": 260.52,
-        "ic_struct": 9.028146574614976,
-        "ic_dir": 44.81686247408431,
-        "ic_flux": 83.58542454451702,
+        "ic_struct": 9.026548672566372,
+        "ic_dir": 44.82639488685438,
+        "ic_flux": 83.57106031964256,
         "windows": {
           "30d": {
             "available": true,
@@ -1424,9 +1424,9 @@
         "regime": "bear_struct",
         "signal": "flat",
         "entry_price": 229.91,
-        "ic_struct": 56.70030093821915,
-        "ic_dir": 19.920525224602628,
-        "ic_flux": 59.88312134754211,
+        "ic_struct": 56.690265486725664,
+        "ic_dir": 19.91708412506478,
+        "ic_flux": 59.87283038322736,
         "windows": {
           "30d": {
             "available": true,
@@ -1463,9 +1463,9 @@
         "regime": "bear_struct",
         "signal": "flat",
         "entry_price": 252.33,
-        "ic_struct": 50.115064613205874,
-        "ic_dir": 36.506565307532824,
-        "ic_flux": 98.52182880715023,
+        "ic_struct": 50.10619469026549,
+        "ic_dir": 36.517533252720675,
+        "ic_flux": 98.52208283210173,
         "windows": {
           "30d": {
             "available": true,
@@ -1502,9 +1502,9 @@
         "regime": "bear_struct",
         "signal": "flat",
         "entry_price": 379.69,
-        "ic_struct": 51.15949725615153,
-        "ic_dir": 42.96821008984105,
-        "ic_flux": 35.11515984874528,
+        "ic_struct": 51.150442477876105,
+        "ic_dir": 42.97806184142339,
+        "ic_flux": 35.10912527925761,
         "windows": {
           "30d": {
             "available": true,
@@ -1541,9 +1541,9 @@
         "regime": "bear_struct",
         "signal": "short",
         "entry_price": 431.3,
-        "ic_struct": 37.35174367144627,
-        "ic_dir": 40.342087076710435,
-        "ic_flux": 80.6978343073221,
+        "ic_struct": 37.34513274336283,
+        "ic_dir": 40.35239246847469,
+        "ic_flux": 80.68396631723664,
         "windows": {
           "30d": {
             "available": true,
@@ -1580,9 +1580,9 @@
         "regime": "bear_struct",
         "signal": "short",
         "entry_price": 426.26,
-        "ic_struct": 37.776597627898745,
-        "ic_dir": 42.743607463718035,
-        "ic_flux": 99.98281196287384,
+        "ic_struct": 37.769911504424776,
+        "ic_dir": 42.75349801347383,
+        "ic_flux": 99.98281491665234,
         "windows": {
           "30d": {
             "available": true,
@@ -1619,9 +1619,9 @@
         "regime": "bear_late",
         "signal": "flat",
         "entry_price": 513.43,
-        "ic_struct": 71.34006018764383,
-        "ic_dir": 28.524533517622668,
-        "ic_flux": 38.93090409075283,
+        "ic_struct": 71.34513274336283,
+        "ic_dir": 28.536880290205563,
+        "ic_flux": 38.924213782436844,
         "windows": {
           "30d": {
             "available": true,
@@ -1658,9 +1658,9 @@
         "regime": "bear_struct",
         "signal": "short",
         "entry_price": 571.99,
-        "ic_struct": 35.616923349265356,
-        "ic_dir": 23.514167242570835,
-        "ic_flux": 80.31969749054659,
+        "ic_struct": 35.610619469026545,
+        "ic_dir": 23.51010537225773,
+        "ic_flux": 80.30589448358825,
         "windows": {
           "30d": {
             "available": true,
@@ -1697,9 +1697,9 @@
         "regime": "bear_struct",
         "signal": "short",
         "entry_price": 611.82,
-        "ic_struct": 30.536378120021244,
-        "ic_dir": 44.88597097442985,
-        "ic_flux": 99.38123066345824,
+        "ic_struct": 30.530973451327434,
+        "ic_dir": 44.895491449300394,
+        "ic_flux": 99.38133699948445,
         "windows": {
           "30d": {
             "available": true,
@@ -1736,9 +1736,9 @@
         "regime": "bear_late",
         "signal": "flat",
         "entry_price": 939.7,
-        "ic_struct": 72.84475128341299,
-        "ic_dir": 42.467173462335865,
-        "ic_flux": 22.258508078377446,
+        "ic_struct": 72.84955752212389,
+        "ic_dir": 42.477111763689756,
+        "ic_flux": 22.25468293521223,
         "windows": {
           "30d": {
             "available": true,
@@ -1775,9 +1775,9 @@
         "regime": "bear_struct",
         "signal": "flat",
         "entry_price": 10107.26,
-        "ic_struct": 51.97380067268543,
-        "ic_dir": 31.703524533517623,
-        "ic_flux": 11.687865245788927,
+        "ic_struct": 51.9646017699115,
+        "ic_dir": 31.715322162722405,
+        "ic_flux": 11.685856676404882,
         "windows": {
           "30d": {
             "available": true,
@@ -1814,9 +1814,9 @@
         "regime": "bear_struct",
         "signal": "flat",
         "entry_price": 10929.37,
-        "ic_struct": 22.14551248008497,
-        "ic_dir": 15.791292328956462,
-        "ic_flux": 10.29563423856996,
+        "ic_struct": 22.141592920353983,
+        "ic_dir": 15.788564518915184,
+        "ic_flux": 10.29386492524489,
         "windows": {
           "30d": {
             "available": true,
@@ -1853,9 +1853,9 @@
         "regime": "accum_bear",
         "signal": "short",
         "entry_price": 6943.77,
-        "ic_struct": 3.3634271552487167,
-        "ic_dir": 8.275742916378714,
-        "ic_flux": 24.51014094190444,
+        "ic_struct": 3.3628318584070795,
+        "ic_dir": 8.274313352910692,
+        "ic_flux": 24.505928853754938,
         "windows": {
           "30d": {
             "available": true,
@@ -1892,9 +1892,9 @@
         "regime": "accum_bear",
         "signal": "short",
         "entry_price": 9248.45,
-        "ic_struct": 2.8854664542396886,
-        "ic_dir": 21.561852107809262,
-        "ic_flux": 25.97112409762805,
+        "ic_struct": 2.8849557522123894,
+        "ic_dir": 21.558127483157712,
+        "ic_flux": 25.96666093830555,
         "windows": {
           "30d": {
             "available": true,
@@ -1931,9 +1931,9 @@
         "regime": "accum_bear",
         "signal": "short",
         "entry_price": 7643.26,
-        "ic_struct": 8.390865639936273,
-        "ic_dir": 43.45196959225985,
-        "ic_flux": 61.80818150567205,
+        "ic_struct": 8.389380530973451,
+        "ic_dir": 43.46173777854552,
+        "ic_flux": 61.797559718164635,
         "windows": {
           "30d": {
             "available": true,
@@ -1970,9 +1970,9 @@
         "regime": "bear_struct",
         "signal": "short",
         "entry_price": 6615.66,
-        "ic_struct": 21.472827049035228,
-        "ic_dir": 7.930200414651002,
-        "ic_flux": 35.527672739773124,
+        "ic_struct": 21.469026548672566,
+        "ic_dir": 7.928830540680601,
+        "ic_flux": 35.5215672796013,
         "windows": {
           "30d": {
             "available": true,
@@ -2009,9 +2009,9 @@
         "regime": "bear_struct",
         "signal": "short",
         "entry_price": 7610.9,
-        "ic_struct": 21.826872012745618,
-        "ic_dir": 40.10020732550104,
-        "ic_flux": 48.264008250257824,
+        "ic_struct": 21.82300884955752,
+        "ic_dir": 40.11055449991363,
+        "ic_flux": 48.25571404021309,
         "windows": {
           "30d": {
             "available": true,
@@ -2048,9 +2048,9 @@
         "regime": "bear_struct",
         "signal": "short",
         "entry_price": 6705.03,
-        "ic_struct": 29.314922995220392,
-        "ic_dir": 39.72011057360055,
-        "ic_flux": 48.418700584393264,
+        "ic_struct": 29.309734513274336,
+        "ic_dir": 39.73052340646053,
+        "ic_flux": 48.410379790341985,
         "windows": {
           "30d": {
             "available": true,
@@ -2087,9 +2087,9 @@
         "regime": "bear_struct",
         "signal": "short",
         "entry_price": 6632.87,
-        "ic_struct": 41.9012214551248,
-        "ic_dir": 34.62335867311679,
-        "ic_flux": 87.07459608112754,
+        "ic_struct": 41.89380530973451,
+        "ic_dir": 34.63465192606668,
+        "ic_flux": 87.05963223921636,
         "windows": {
           "30d": {
             "available": true,
@@ -2126,9 +2126,9 @@
         "regime": "bear_struct",
         "signal": "short",
         "entry_price": 6467.05,
-        "ic_struct": 36.69676048858205,
-        "ic_dir": 35.86731167933656,
-        "ic_flux": 90.95909247163974,
+        "ic_struct": 36.690265486725664,
+        "ic_dir": 35.87839005009501,
+        "ic_flux": 90.96064615913387,
         "windows": {
           "30d": {
             "available": true,
@@ -2165,9 +2165,9 @@
         "regime": "bear_late",
         "signal": "flat",
         "entry_price": 3948.44,
-        "ic_struct": 94.1228536024075,
-        "ic_dir": 3.9910158949550794,
-        "ic_flux": 17.89274664833276,
+        "ic_struct": 94.12389380530973,
+        "ic_dir": 3.9903264812575574,
+        "ic_flux": 17.88967176490806,
         "windows": {
           "30d": {
             "available": true,
@@ -2204,9 +2204,9 @@
         "regime": "bear_late",
         "signal": "flat",
         "entry_price": 3835.86,
-        "ic_struct": 87.67923526287838,
-        "ic_dir": 3.9046302695231514,
-        "ic_flux": 24.785149535922997,
+        "ic_struct": 87.68141592920354,
+        "ic_dir": 3.9039557782000345,
+        "ic_flux": 24.78089018731741,
         "windows": {
           "30d": {
             "available": true,
@@ -2243,9 +2243,9 @@
         "regime": "bear_late",
         "signal": "flat",
         "entry_price": 3508.68,
-        "ic_struct": 68.79093644892902,
-        "ic_dir": 26.468555632342778,
-        "ic_flux": 62.014437951185975,
+        "ic_struct": 68.79646017699115,
+        "ic_dir": 26.481257557436518,
+        "ic_flux": 62.003780718336486,
         "windows": {
           "30d": {
             "available": true,
@@ -2282,9 +2282,9 @@
         "regime": "bear_struct",
         "signal": "short",
         "entry_price": 3731.28,
-        "ic_struct": 49.814126394052046,
-        "ic_dir": 37.163096060815484,
-        "ic_flux": 57.82055689240289,
+        "ic_struct": 49.80530973451327,
+        "ic_dir": 37.17395059595785,
+        "ic_flux": 57.81062038150885,
         "windows": {
           "30d": {
             "available": true,
@@ -2321,9 +2321,9 @@
         "regime": "bear_struct",
         "signal": "short",
         "entry_price": 10131.67,
-        "ic_struct": 49.548592671269255,
-        "ic_dir": 33.897719419488595,
-        "ic_flux": 40.70127191474734,
+        "ic_struct": 49.53982300884956,
+        "ic_dir": 33.90913802038349,
+        "ic_flux": 40.69427736724523,
         "windows": {
           "30d": {
             "available": true,
@@ -2360,9 +2360,9 @@
         "regime": "bear_struct",
         "signal": "short",
         "entry_price": 10176.38,
-        "ic_struct": 36.590546999468934,
-        "ic_dir": 38.804422944022114,
-        "ic_flux": 81.00721897559299,
+        "ic_struct": 36.584070796460175,
+        "ic_dir": 38.814993954050784,
+        "ic_flux": 80.99329781749441,
         "windows": {
           "30d": {
             "available": true,
@@ -2399,9 +2399,9 @@
         "regime": "accum_bear",
         "signal": "short",
         "entry_price": 8247.25,
-        "ic_struct": 8.036820676225881,
-        "ic_dir": 18.21008984105045,
-        "ic_flux": 49.46717084908904,
+        "ic_struct": 8.035398230088495,
+        "ic_dir": 18.206944204525826,
+        "ic_flux": 49.45866987454889,
         "windows": {
           "30d": {
             "available": true,
@@ -2438,9 +2438,9 @@
         "regime": "accum_bear",
         "signal": "short",
         "entry_price": 8133.57,
-        "ic_struct": 5.452292441140025,
-        "ic_dir": 16.8279198341396,
-        "ic_flux": 33.49948435888622,
+        "ic_struct": 5.451327433628318,
+        "ic_dir": 16.82501295560546,
+        "ic_flux": 33.49372744457811,
         "windows": {
           "30d": {
             "available": true,
@@ -2477,9 +2477,9 @@
         "regime": "bear_struct",
         "signal": "short",
         "entry_price": 7159.26,
-        "ic_struct": 24.57072048150115,
-        "ic_dir": 24.032480995162405,
-        "ic_flux": 49.07184599518735,
+        "ic_struct": 24.56637168141593,
+        "ic_dir": 24.04560373121437,
+        "ic_flux": 49.06341295755284,
         "windows": {
           "30d": {
             "available": true,
@@ -2516,9 +2516,9 @@
         "regime": "bear_struct",
         "signal": "short",
         "entry_price": 8057.67,
-        "ic_struct": 23.933439546822445,
-        "ic_dir": 40.60124395300622,
-        "ic_flux": 45.90924716397387,
+        "ic_struct": 23.92920353982301,
+        "ic_dir": 40.61150457764726,
+        "ic_flux": 45.90135762158447,
         "windows": {
           "30d": {
             "available": true,
@@ -2555,9 +2555,9 @@
         "regime": "bear_struct",
         "signal": "flat",
         "entry_price": 7201.57,
-        "ic_struct": 44.71587891662241,
-        "ic_dir": 10.780926053904631,
-        "ic_flux": 4.142316947404609,
+        "ic_struct": 44.70796460176991,
+        "ic_dir": 10.779063741578856,
+        "ic_flux": 4.141605086784665,
         "windows": {
           "30d": {
             "available": true,
@@ -2594,9 +2594,9 @@
         "regime": "bear_struct",
         "signal": "short",
         "entry_price": 9120.39,
-        "ic_struct": 30.146928659939814,
-        "ic_dir": 44.367657221838286,
-        "ic_flux": 60.9659676864902,
+        "ic_struct": 30.141592920353983,
+        "ic_dir": 44.37726723095526,
+        "ic_flux": 60.955490634129575,
         "windows": {
           "30d": {
             "available": true,
@@ -2633,9 +2633,9 @@
         "regime": "bear_struct",
         "signal": "short",
         "entry_price": 10694.12,
-        "ic_struct": 33.89980527526996,
-        "ic_dir": 36.472011057360056,
-        "ic_flux": 53.83293227913372,
+        "ic_struct": 33.89380530973451,
+        "ic_dir": 36.482984971497665,
+        "ic_flux": 53.82368104485307,
         "windows": {
           "30d": {
             "available": true,
@@ -2672,9 +2672,9 @@
         "regime": "bear_late",
         "signal": "flat",
         "entry_price": 56496.06,
-        "ic_struct": 69.26889714993804,
-        "ic_dir": 41.3441603317208,
-        "ic_flux": 52.75008594018563,
+        "ic_struct": 69.27433628318585,
+        "ic_dir": 41.35429262394196,
+        "ic_flux": 52.74102079395085,
         "windows": {
           "30d": {
             "available": true,
@@ -2711,9 +2711,9 @@
         "regime": "bear_struct",
         "signal": "flat",
         "entry_price": 40597.4,
-        "ic_struct": 41.91892370331032,
-        "ic_dir": 9.295093296475466,
-        "ic_flux": 15.36610519078721,
+        "ic_struct": 41.91150442477876,
+        "ic_dir": 9.293487648989462,
+        "ic_flux": 15.363464512802892,
         "windows": {
           "30d": {
             "available": true,
@@ -2750,9 +2750,9 @@
         "regime": "accum_bear",
         "signal": "flat",
         "entry_price": 35515.38,
-        "ic_struct": 4.266241812710215,
-        "ic_dir": 5.545957152729786,
-        "ic_flux": 18.116191130972837,
+        "ic_struct": 4.265486725663717,
+        "ic_dir": 5.54499913629297,
+        "ic_flux": 18.113077848427565,
         "windows": {
           "30d": {
             "available": true,
@@ -2789,9 +2789,9 @@
         "regime": "accum_bear",
         "signal": "short",
         "entry_price": 30847.55,
-        "ic_struct": 18.339529120198264,
-        "ic_dir": 13.199723565998617,
-        "ic_flux": 34.42763836369886,
+        "ic_struct": 18.336283185840706,
+        "ic_dir": 13.197443427189498,
+        "ic_flux": 34.421721945351436,
         "windows": {
           "30d": {
             "available": true,
@@ -2828,9 +2828,9 @@
         "regime": "accum_bear",
         "signal": "short",
         "entry_price": 41056.79,
-        "ic_struct": 18.675871835723136,
-        "ic_dir": 37.09398756046994,
-        "ic_flux": 33.24166380199381,
+        "ic_struct": 18.672566371681416,
+        "ic_dir": 37.104854033511835,
+        "ic_flux": 33.235951194363295,
         "windows": {
           "30d": {
             "available": true,
@@ -2867,9 +2867,9 @@
         "regime": "bear_struct",
         "signal": "short",
         "entry_price": 49243.39,
-        "ic_struct": 46.910957691626834,
-        "ic_dir": 34.77885279889426,
-        "ic_flux": 38.690271570986596,
+        "ic_struct": 46.902654867256636,
+        "ic_dir": 34.79011919157022,
+        "ic_flux": 38.68362261556968,
         "windows": {
           "30d": {
             "available": true,
@@ -2906,9 +2906,9 @@
         "regime": "accum_bear",
         "signal": "short",
         "entry_price": 46450.79,
-        "ic_struct": 9.64772526110816,
-        "ic_dir": 12.819626814098134,
-        "ic_flux": 56.18769336541767,
+        "ic_struct": 9.646017699115044,
+        "ic_dir": 12.817412333736396,
+        "ic_flux": 56.1780374634817,
         "windows": {
           "30d": {
             "available": true,
@@ -2945,9 +2945,9 @@
         "regime": "bear_struct",
         "signal": "short",
         "entry_price": 36918.19,
-        "ic_struct": 29.739776951672862,
-        "ic_dir": 12.145818935729094,
-        "ic_flux": 57.4252320385012,
+        "ic_struct": 29.734513274336283,
+        "ic_dir": 12.143720849887718,
+        "ic_flux": 57.4153634645128,
         "windows": {
           "30d": {
             "available": true,
@@ -2984,9 +2984,9 @@
         "regime": "bear_struct",
         "signal": "short",
         "entry_price": 39154.4,
-        "ic_struct": 30.005310674455657,
-        "ic_dir": 21.25086385625432,
-        "ic_flux": 25.747679614987973,
+        "ic_struct": 30.0,
+        "ic_dir": 21.24719295215063,
+        "ic_flux": 25.743254854786045,
         "windows": {
           "30d": {
             "available": true,
@@ -3023,9 +3023,9 @@
         "regime": "accum_bear",
         "signal": "short",
         "entry_price": 43177.78,
-        "ic_struct": 13.471410869180385,
-        "ic_dir": 44.78230822391154,
-        "ic_flux": 54.14231694740461,
+        "ic_struct": 13.469026548672566,
+        "ic_dir": 44.79184660563137,
+        "ic_flux": 54.133012545110844,
         "windows": {
           "30d": {
             "available": true,
@@ -3062,9 +3062,9 @@
         "regime": "bear_struct",
         "signal": "short",
         "entry_price": 36009.89,
-        "ic_struct": 20.9948663480262,
-        "ic_dir": 33.81133379405667,
-        "ic_flux": 55.41423169474046,
+        "ic_struct": 20.991150442477878,
+        "ic_dir": 33.82276731732596,
+        "ic_flux": 55.404708712837255,
         "windows": {
           "30d": {
             "available": true,
@@ -3101,9 +3101,9 @@
         "regime": "bear_late",
         "signal": "flat",
         "entry_price": 29897.9,
-        "ic_struct": 65.76385200920517,
-        "ic_dir": 8.552176917760885,
-        "ic_flux": 31.058783086971474,
+        "ic_struct": 65.75221238938053,
+        "ic_dir": 8.550699602694767,
+        "ic_flux": 31.05344560921121,
         "windows": {
           "30d": {
             "available": true,
@@ -3140,9 +3140,9 @@
         "regime": "bear_late",
         "signal": "flat",
         "entry_price": 20158.69,
-        "ic_struct": 88.21030270844398,
-        "ic_dir": 3.092605390463027,
-        "ic_flux": 22.8429013406669,
+        "ic_struct": 88.21238938053098,
+        "ic_dir": 3.0920711694593193,
+        "ic_flux": 22.838975769032473,
         "windows": {
           "30d": {
             "available": true,
@@ -3179,9 +3179,9 @@
         "regime": "bear_late",
         "signal": "flat",
         "entry_price": 22622.99,
-        "ic_struct": 72.08355461143566,
-        "ic_dir": 12.940566689702834,
-        "ic_flux": 49.67342729460296,
+        "ic_struct": 72.08849557522124,
+        "ic_dir": 12.938331318016928,
+        "ic_flux": 49.66489087472074,
         "windows": {
           "30d": {
             "available": true,
@@ -3218,9 +3218,9 @@
         "regime": "bear_struct",
         "signal": "flat",
         "entry_price": 19834.79,
-        "ic_struct": 52.89431757833245,
-        "ic_dir": 38.64892881824464,
-        "ic_flux": 58.64558267445857,
+        "ic_struct": 52.88495575221239,
+        "ic_dir": 38.659526688547245,
+        "ic_flux": 58.63550438219625,
         "windows": {
           "30d": {
             "available": true,
@@ -3257,9 +3257,9 @@
         "regime": "bear_struct",
         "signal": "short",
         "entry_price": 19632.35,
-        "ic_struct": 47.33581164807931,
-        "ic_dir": 23.997926744989634,
-        "ic_flux": 43.2622894465452,
+        "ic_struct": 47.32743362831859,
+        "ic_dir": 24.011055449991364,
+        "ic_flux": 43.25485478604571,
         "windows": {
           "30d": {
             "available": true,
@@ -3296,9 +3296,9 @@
         "regime": "bear_struct",
         "signal": "flat",
         "entry_price": 20150.33,
-        "ic_struct": 52.04460966542751,
-        "ic_dir": 42.17346233586731,
-        "ic_flux": 90.44345135785494,
+        "ic_struct": 52.0353982300885,
+        "ic_dir": 42.183451373294176,
+        "ic_flux": 90.44509365870425,
         "windows": {
           "30d": {
             "available": true,
@@ -3335,9 +3335,9 @@
         "regime": "bear_late",
         "signal": "flat",
         "entry_price": 17094.49,
-        "ic_struct": 92.35262878385555,
-        "ic_dir": 24.37802349689012,
-        "ic_flux": 26.33207287727741,
+        "ic_struct": 92.35398230088495,
+        "ic_dir": 24.391086543444462,
+        "ic_flux": 26.327547688606288,
         "windows": {
           "30d": {
             "available": true,
@@ -3374,9 +3374,9 @@
         "regime": "bear_late",
         "signal": "flat",
         "entry_price": 16613.87,
-        "ic_struct": 99.92919100725793,
-        "ic_dir": 19.28127159640636,
-        "ic_flux": 93.07322103815744,
+        "ic_struct": 99.929203539823,
+        "ic_dir": 19.277940922439107,
+        "ic_flux": 93.07441141089534,
         "windows": {
           "30d": {
             "available": true,
@@ -3413,9 +3413,9 @@
         "regime": "bear_struct",
         "signal": "short",
         "entry_price": 27036.57,
-        "ic_struct": 39.51141795007966,
-        "ic_dir": 38.78714581893573,
-        "ic_flux": 78.25713303540735,
+        "ic_struct": 39.50442477876106,
+        "ic_dir": 38.79771981343928,
+        "ic_flux": 78.24368448186974,
         "windows": {
           "30d": {
             "available": true,
@@ -3452,9 +3452,9 @@
         "regime": "bear_struct",
         "signal": "short",
         "entry_price": 25574.36,
-        "ic_struct": 21.579040538148345,
-        "ic_dir": 21.337249481686246,
-        "ic_flux": 76.41801306290822,
+        "ic_struct": 21.575221238938052,
+        "ic_dir": 21.333563655208152,
+        "ic_flux": 76.40488056367073,
         "windows": {
           "30d": {
             "available": true,
@@ -3491,9 +3491,9 @@
         "regime": "bear_struct",
         "signal": "flat",
         "entry_price": 29217.05,
-        "ic_struct": 50.07966011683484,
-        "ic_dir": 44.5922598479613,
-        "ic_flux": 94.32794774836714,
+        "ic_struct": 50.07079646017699,
+        "ic_dir": 44.60183105890482,
+        "ic_flux": 94.3289224952741,
         "windows": {
           "30d": {
             "available": true,
@@ -3530,9 +3530,9 @@
         "regime": "bear_struct",
         "signal": "short",
         "entry_price": 26010.35,
-        "ic_struct": 25.172596919808814,
-        "ic_dir": 21.665514858327576,
-        "ic_flux": 90.58095565486421,
+        "ic_struct": 25.168141592920353,
+        "ic_dir": 21.66177232682674,
+        "ic_flux": 90.58257432548548,
         "windows": {
           "30d": {
             "available": true,
@@ -3569,9 +3569,9 @@
         "regime": "accum_bear",
         "signal": "short",
         "entry_price": 26297.93,
-        "ic_struct": 1.2745618693574083,
-        "ic_dir": 28.058051140290257,
-        "ic_flux": 85.21828807150223,
+        "ic_struct": 1.2743362831858407,
+        "ic_dir": 28.07047849369494,
+        "ic_flux": 85.2036432376697,
         "windows": {
           "30d": {
             "available": true,
@@ -3608,9 +3608,9 @@
         "regime": "bear_struct",
         "signal": "flat",
         "entry_price": 43181.71,
-        "ic_struct": 57.56771109930961,
-        "ic_dir": 43.48652384243262,
-        "ic_flux": 63.04572017875559,
+        "ic_struct": 57.557522123893804,
+        "ic_dir": 43.49628605976853,
+        "ic_flux": 63.034885719195735,
         "windows": {
           "30d": {
             "available": true,
@@ -3647,9 +3647,9 @@
         "regime": "bear_late",
         "signal": "flat",
         "entry_price": 63111.34,
-        "ic_struct": 69.233492653567,
-        "ic_dir": 41.30960608154803,
-        "ic_flux": 63.42385699553111,
+        "ic_struct": 69.23893805309734,
+        "ic_dir": 41.31974434271895,
+        "ic_flux": 63.412957552844134,
         "windows": {
           "30d": {
             "available": true,
@@ -3686,9 +3686,9 @@
         "regime": "bear_struct",
         "signal": "flat",
         "entry_price": 68330.84,
-        "ic_struct": 56.4701717118074,
-        "ic_dir": 37.733241188666206,
-        "ic_flux": 53.86730835338604,
+        "ic_struct": 56.46017699115044,
+        "ic_dir": 37.7439972361375,
+        "ic_flux": 53.85805121154838,
         "windows": {
           "30d": {
             "available": true,
@@ -3725,9 +3725,9 @@
         "regime": "bear_struct",
         "signal": "short",
         "entry_price": 61617.1,
-        "ic_struct": 44.308727208355464,
-        "ic_dir": 37.543192812715965,
-        "ic_flux": 90.85596424888277,
+        "ic_struct": 44.30088495575221,
+        "ic_dir": 37.55398168941095,
+        "ic_flux": 90.85753565904795,
         "windows": {
           "30d": {
             "available": true,
@@ -3764,9 +3764,9 @@
         "regime": "bear_struct",
         "signal": "short",
         "entry_price": 67900.8,
-        "ic_struct": 31.10285006195787,
-        "ic_dir": 39.87560469937802,
-        "ic_flux": 68.95840495015469,
+        "ic_struct": 31.097345132743364,
+        "ic_dir": 39.88599067196407,
+        "ic_flux": 68.94655439078879,
         "windows": {
           "30d": {
             "available": true,
@@ -3803,9 +3803,9 @@
         "regime": "bear_struct",
         "signal": "short",
         "entry_price": 62854.7,
-        "ic_struct": 22.92441140024783,
-        "ic_dir": 42.553559087767795,
-        "ic_flux": 40.16844276383637,
+        "ic_struct": 22.920353982300885,
+        "ic_dir": 42.56348246674728,
+        "ic_flux": 40.16153978346795,
         "windows": {
           "30d": {
             "available": true,
@@ -3842,9 +3842,9 @@
         "regime": "accum_bear",
         "signal": "short",
         "entry_price": 63139.2,
-        "ic_struct": 14.268012037528766,
-        "ic_dir": 31.582584657912925,
-        "ic_flux": 73.59917497421795,
+        "ic_struct": 14.265486725663717,
+        "ic_dir": 31.594403178441873,
+        "ic_flux": 73.58652689465544,
         "windows": {
           "30d": {
             "available": true,
@@ -3881,9 +3881,9 @@
         "regime": "bear_late",
         "signal": "flat",
         "entry_price": 94449.9,
-        "ic_struct": 69.18038590901044,
-        "ic_dir": 44.955079474775395,
-        "ic_flux": 71.74286696459265,
+        "ic_struct": 69.1858407079646,
+        "ic_dir": 44.964588011746415,
+        "ic_flux": 71.73053789310879,
         "windows": {
           "30d": {
             "available": true,
@@ -3920,9 +3920,9 @@
         "regime": "bear_struct",
         "signal": "flat",
         "entry_price": 95767.1,
-        "ic_struct": 51.00017702248186,
-        "ic_dir": 33.36212854181064,
-        "ic_flux": 79.47748367136472,
+        "ic_struct": 50.991150442477874,
+        "ic_dir": 33.37363966142684,
+        "ic_flux": 79.46382539955319,
         "windows": {
           "30d": {
             "available": true,
@@ -3959,9 +3959,9 @@
         "regime": "bear_struct",
         "signal": "short",
         "entry_price": 81112.3,
-        "ic_struct": 20.87095061072756,
-        "ic_dir": 22.909467864547338,
-        "ic_flux": 40.90752836026126,
+        "ic_struct": 20.86725663716814,
+        "ic_dir": 22.90551045085507,
+        "ic_flux": 40.90049836741708,
         "windows": {
           "30d": {
             "available": true,
@@ -3998,9 +3998,9 @@
         "regime": "accum_bear",
         "signal": "short",
         "entry_price": 85284.1,
-        "ic_struct": 2.7261462205700124,
-        "ic_dir": 26.848652384243263,
-        "ic_flux": 54.29700928154005,
+        "ic_struct": 2.725663716814159,
+        "ic_dir": 26.86128865088962,
+        "ic_flux": 54.28767829523973,
         "windows": {
           "30d": {
             "available": true,
@@ -4037,9 +4037,9 @@
         "regime": "bear_struct",
         "signal": "flat",
         "entry_price": 110144.9,
-        "ic_struct": 58.80686847229598,
-        "ic_dir": 43.6247408431237,
-        "ic_flux": 86.55895496734273,
+        "ic_struct": 58.796460176991154,
+        "ic_dir": 43.63447918466056,
+        "ic_flux": 86.54407973878673,
         "windows": {
           "30d": {
             "available": true,
@@ -4076,9 +4076,9 @@
         "regime": "bear_struct",
         "signal": "short",
         "entry_price": 113300.0,
-        "ic_struct": 39.38750221278102,
-        "ic_dir": 35.27988942639945,
-        "ic_flux": 97.83430732210381,
+        "ic_struct": 39.38053097345133,
+        "ic_dir": 35.291069269303854,
+        "ic_flux": 97.83467949819557,
         "windows": {
           "30d": {
             "available": true,
@@ -4115,9 +4115,9 @@
         "regime": "bear_struct",
         "signal": "short",
         "entry_price": 111000.0,
-        "ic_struct": 33.581164807930605,
-        "ic_dir": 41.13683483068417,
-        "ic_flux": 72.17256789274666,
+        "ic_struct": 33.575221238938056,
+        "ic_dir": 41.147002936603904,
+        "ic_flux": 72.16016497680013,
         "windows": {
           "30d": {
             "available": true,
@@ -4154,9 +4154,9 @@
         "regime": "bear_struct",
         "signal": "short",
         "entry_price": 86777.4,
-        "ic_struct": 27.597804921224995,
-        "ic_dir": 13.8217000691085,
-        "ic_flux": 74.08044001375043,
+        "ic_struct": 27.5929203539823,
+        "ic_dir": 13.819312489203663,
+        "ic_flux": 74.06770922838976,
         "windows": {
           "30d": {
             "available": true,
@@ -4193,9 +4193,9 @@
         "regime": "bear_struct",
         "signal": "flat",
         "entry_price": 87416.4,
-        "ic_struct": 53.867941228536026,
-        "ic_dir": 15.635798203178991,
-        "ic_flux": 79.54623581986937,
+        "ic_struct": 53.85840707964602,
+        "ic_dir": 15.633097253411643,
+        "ic_flux": 79.53256573294381,
         "windows": {
           "30d": {
             "available": true,
@@ -4232,9 +4232,9 @@
         "regime": "bear_struct",
         "signal": "short",
         "entry_price": 89454.2,
-        "ic_struct": 37.15701894140556,
-        "ic_dir": 43.693849343469246,
-        "ic_flux": 90.32313509797181,
+        "ic_struct": 37.150442477876105,
+        "ic_dir": 43.70357574710658,
+        "ic_flux": 90.32479807527066,
         "windows": {
           "30d": {
             "available": true,
@@ -4271,9 +4271,9 @@
         "regime": "bear_late",
         "signal": "flat",
         "entry_price": 67966.6,
-        "ic_struct": 63.12621702956275,
-        "ic_dir": 14.737387698686938,
-        "ic_flux": 30.354073564798895,
+        "ic_struct": 63.11504424778761,
+        "ic_dir": 14.734841941613405,
+        "ic_flux": 30.34885719195738,
         "windows": {
           "30d": {
             "available": true,
@@ -4310,9 +4310,9 @@
         "regime": "bear_struct",
         "signal": "flat",
         "entry_price": 70887.2,
-        "ic_struct": 55.01858736059479,
-        "ic_dir": 16.15411195577056,
-        "ic_flux": 59.26435201100034,
+        "ic_struct": 55.008849557522126,
+        "ic_dir": 16.15132147175678,
+        "ic_flux": 59.254167382711806,
         "windows": {
           "30d": {
             "available": true,
@@ -4349,9 +4349,9 @@
         "regime": "bear_struct",
         "signal": "short",
         "entry_price": 66669.7,
-        "ic_struct": 34.39546822446451,
-        "ic_dir": 40.11748445058742,
-        "ic_flux": 85.6651770367824,
+        "ic_struct": 34.389380530973455,
+        "ic_dir": 40.12782864052513,
+        "ic_flux": 85.65045540470871,
         "windows": {
           "30d": {
             "available": true,
@@ -4388,9 +4388,9 @@
         "regime": "bear_late",
         "signal": "flat",
         "entry_price": 61484.4,
-        "ic_struct": 72.36679058240397,
-        "ic_dir": 15.065653075328266,
-        "ic_flux": 80.07906497078034,
+        "ic_struct": 72.3716814159292,
+        "ic_dir": 15.063050613231992,
+        "ic_flux": 80.06530331672109,
         "windows": {
           "30d": {
             "available": true,
