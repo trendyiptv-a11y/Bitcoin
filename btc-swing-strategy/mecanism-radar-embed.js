@@ -335,6 +335,7 @@
 
   function boot() {
     bindScrollPause();
+    bindScrollPause();
     load();
     clearInterval(refreshTimer);
     clearInterval(liveSyncTimer);
