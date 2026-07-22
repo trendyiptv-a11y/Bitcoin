@@ -216,6 +216,7 @@
       #${ID} .range-track{position:relative;height:10px;border-radius:999px;background:linear-gradient(90deg,rgba(255,93,108,.90) 0%,rgba(255,93,108,.90) var(--bottom-start,8%),rgba(255,180,84,.92) var(--bottom-start,8%),rgba(255,180,84,.92) var(--bottom-end,18%),rgba(45,212,191,.74) var(--bottom-end,18%),rgba(45,212,191,.74) var(--live-pos,58%),rgba(109,255,176,.32) var(--live-pos,58%),rgba(109,255,176,.32) 100%);box-shadow:inset 0 0 0 1px rgba(255,255,255,.07);overflow:visible}#${ID} .range-marker{position:absolute;top:50%;left:var(--live-pos,50%);width:16px;height:16px;border-radius:999px;background:#e5e7eb;border:2px solid currentColor;transform:translate(-50%,-50%);box-shadow:0 0 18px currentColor;color:#ffb454}#${ID} .range-labels{display:flex;justify-content:space-between;gap:6px;color:#94a3b8;font-size:8.7px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;margin-top:6px;line-height:1.15}#${ID} .range-labels span{min-width:0;overflow-wrap:anywhere}
       #${ID}.tone-green{border-color:rgba(109,255,176,.24);--radar-alert:rgba(109,255,176,.46)}#${ID}.tone-orange{border-color:rgba(255,180,84,.24);--radar-alert:rgba(255,180,84,.46)}#${ID}.tone-red{border-color:rgba(255,93,108,.26);--radar-alert:rgba(255,93,108,.50)}
       body.light-mode #${ID}{background:radial-gradient(circle at 50% -18%,rgba(14,165,233,.10),transparent 55%),linear-gradient(180deg,rgba(255,255,255,.94),rgba(248,250,252,.84));border-color:rgba(14,165,233,.25);box-shadow:0 10px 24px rgba(15,23,42,.10)}body.light-mode #${ID} .radar-title{color:#0f172a}body.light-mode #${ID} .radar-range{background:rgba(255,255,255,.78);border-color:rgba(15,23,42,.12)}body.light-mode #${ID} .range-head{color:#0f172a}
+      body.radar-scroll-paused #${ID} .radar-sweep,body.radar-scroll-paused #${ID} .radar-pulse,body.radar-scroll-paused #${ID} .radar-dot,body.radar-scroll-paused #${ID}.state-changed,body.radar-scroll-paused #${ID}.state-changed .radar-sweep,body.radar-scroll-paused #${ID}.state-changed .radar-pulse,body.radar-scroll-paused #${ID}.state-changed .radar-icon{animation-play-state:paused!important}body.radar-scroll-paused #${ID}.state-changed .radar-stage{filter:none!important}
       @media(max-width:380px){#${ID} .radar-stage{width:156px;height:156px}#${ID} .radar-badge{font-size:9.5px;padding:6px 7px}#${ID} .range-head{font-size:9.2px}#${ID} .range-labels{font-size:8px}}@media(max-width:768px){#${ID},#${ID} .radar-stage,#${ID} svg{backface-visibility:hidden;-webkit-backface-visibility:hidden;transform:translate3d(0,0,0);-webkit-transform:translate3d(0,0,0)}#${ID} .radar-pulse,#${ID} .radar-sweep,#${ID} .radar-dot{filter:none!important}}
     `;
     document.head.appendChild(s);
@@ -315,12 +316,31 @@
     }
   }
 
+
+  let scrollPauseTimer = null;
+  function bindScrollPause() {
+    if (document.body && document.body.dataset.radarScrollPauseBound === "1") return;
+    if (document.body) document.body.dataset.radarScrollPauseBound = "1";
+    const pause = () => {
+      if (!document.body) return;
+      document.body.classList.add("radar-scroll-paused");
+      clearTimeout(scrollPauseTimer);
+      scrollPauseTimer = setTimeout(() => {
+        if (document.body) document.body.classList.remove("radar-scroll-paused");
+      }, 480);
+    };
+    window.addEventListener("scroll", pause, { passive: true });
+    window.addEventListener("touchmove", pause, { passive: true });
+  }
+
   function boot() {
+    bindScrollPause();
     load();
     clearInterval(refreshTimer);
     clearInterval(liveSyncTimer);
     refreshTimer = setInterval(() => { if (lastLang !== lang()) render(lastState, lastRisk, lastSummary); else load(); }, 60 * 1000);
-    liveSyncTimer = setInterval(() => render(lastState, lastRisk, lastSummary), 1000);
+    // Mobile-safe: rotation stays CSS-based; 1s JS re-render disabled.
+    liveSyncTimer = null;
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
