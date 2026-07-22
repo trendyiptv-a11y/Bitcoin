@@ -47,6 +47,7 @@ jobs:
           python build_daily_cohesiv_interpretation.py
           python patch_standard_regime_ui.py
           python patch_mecanism_model_price_ui.py
+          python patch_mobile_safe_btc_page.py
 
       - name: Clean pycache and pyc files
         run: |
