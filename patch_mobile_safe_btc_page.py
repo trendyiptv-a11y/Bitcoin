@@ -15,6 +15,10 @@ LOCAL_SCRIPTS_TO_VERSION = (
     "mecanism-radar-embed.js",
     "guide-nav-i18n.js",
 )
+VISUAL_SUMMARY_SCRIPTS = (
+    "visual-model-summary.js",
+    "visual-model-summary-fix.js",
+)
 
 
 def replace_once(text: str, old: str, new: str, label: str) -> str:
@@ -52,6 +56,25 @@ def ensure_mobile_safe_css(text: str) -> str:
 
     print("[mobile-safe] compact visual summary css: no style tag found")
     return text
+
+
+def restore_visual_summary_scripts(text: str) -> str:
+    """Undo the temporary disable from commit 00f4adf.
+
+    The previous emergency patch replaced the visual summary scripts with HTML
+    comments. This function restores the real script tags before cache-busting is
+    applied, so the compact visual card returns.
+    """
+    restored = text
+    for name in VISUAL_SUMMARY_SCRIPTS:
+        comment_pattern = re.compile(
+            rf'\n\s*<!--\s*Mobile-safe:\s*{re.escape(name)}\s+disabled\s+to\s+prevent\s+Android\s+renderer\s+crashes\.\s*-->\s*',
+            re.I,
+        )
+        script = f'\n<script src="./{name}?v={LOCAL_SCRIPT_VERSION}" defer></script>\n'
+        restored, count = comment_pattern.subn(script, restored)
+        print(f"[mobile-safe] restore {name}: {count}")
+    return restored
 
 
 def apply_local_script_cache_busting(text: str) -> str:
@@ -105,6 +128,9 @@ def patch_html() -> None:
         flags=re.S,
     )
     print(f"[mobile-safe] daily card: cleaned blocks={n}")
+
+    # Restore the compact visual summary if a previous emergency rollback disabled it.
+    text = restore_visual_summary_scripts(text)
 
     # Extra compact mode: hide the 7/30 day horizon panel and the two narrative
     # expanders from the visual summary. Signal + legend remain untouched.
