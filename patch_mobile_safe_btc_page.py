@@ -6,6 +6,15 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 HTML = ROOT / "btc-swing-strategy" / "mecanism.html"
 RADAR = ROOT / "btc-swing-strategy" / "mecanism-radar-embed.js"
+LOCAL_SCRIPT_VERSION = "20260722-1"
+LOCAL_SCRIPTS_TO_VERSION = (
+    "i18n-en.js",
+    "visual-model-summary.js",
+    "visual-model-summary-fix.js",
+    "mecanism-cylinder-embed.js",
+    "mecanism-radar-embed.js",
+    "guide-nav-i18n.js",
+)
 
 
 def replace_once(text: str, old: str, new: str, label: str) -> str:
@@ -43,6 +52,20 @@ def ensure_mobile_safe_css(text: str) -> str:
 
     print("[mobile-safe] compact visual summary css: no style tag found")
     return text
+
+
+def apply_local_script_cache_busting(text: str) -> str:
+    """Force browsers/Vercel previews to fetch a consistent local JS set.
+
+    This prevents Android Chrome/WebView from mixing a fresh HTML file with older
+    cached local JS files after Vercel domain/deploy changes.
+    """
+    versioned = text
+    for name in LOCAL_SCRIPTS_TO_VERSION:
+        pattern = re.compile(rf'(src="\./{re.escape(name)})(?:\?v=[^"#]+)?(")')
+        versioned, count = pattern.subn(rf'\1?v={LOCAL_SCRIPT_VERSION}\2', versioned)
+        print(f"[mobile-safe] cache bust {name}: {count}")
+    return versioned
 
 
 def patch_html() -> None:
@@ -86,6 +109,9 @@ def patch_html() -> None:
     # Extra compact mode: hide the 7/30 day horizon panel and the two narrative
     # expanders from the visual summary. Signal + legend remain untouched.
     text = ensure_mobile_safe_css(text)
+
+    # Keep every local JS script on the same deployment version.
+    text = apply_local_script_cache_busting(text)
 
     if text == original:
         print("[mobile-safe] mecanism.html: no changes needed")
