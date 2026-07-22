@@ -1667,8 +1667,6 @@ body.light-mode .app-download-close { background: rgba(255,255,255,0.9); }
 /* GOOGLE_PLAY_PROMO_END */
 
 </style>
-
-  <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
 </head>
 <body>
   <div class="shell">
@@ -1819,28 +1817,7 @@ body.light-mode .app-download-close { background: rgba(255,255,255,0.9); }
     <!-- DAILY_COHESIV_INTERPRETATION_CARD_START -->
     <div class="card card-secondary" id="daily-ai-card">
       <div class="card-inner" id="daily-cylinder-root">
-        <div class="daily-ai-header">
-          <div class="daily-ai-title">INTERPRETARE COEZIVĂ ZILNICĂ</div>
-          <div class="daily-ai-subtitle">Se încarcă radarul vizual al interpretării zilei.</div>
-        </div>
-        <div id="daily-ai-state" class="daily-ai-state">Se încarcă...</div>
-        <div id="daily-ai-summary" class="daily-ai-summary">
-          Interpretarea zilnică va apărea după prima analiză aprobată.
-        </div>
-        <div id="daily-ai-footer" class="daily-ai-footer">
-          Interpretare structurală experimentală, nu recomandare financiară.
-        </div>
-
-                                                                                                                                                                                                <!-- DAILY_FULL_INTERPRETATION_EXPANDER_START -->
-        <button id="daily-ai-full-toggle" class="daily-full-toggle" type="button" aria-expanded="false">
-          Vezi interpretarea completă
-        </button>
-        <div id="daily-ai-full-panel" class="daily-full-panel" aria-hidden="true"></div>
-        <!-- DAILY_FULL_INTERPRETATION_EXPANDER_END -->
-        <button id="daily-ai-full-toggle" class="daily-full-toggle" type="button" aria-expanded="false">
-          Vezi interpretarea completă
-        </button>
-        <div id="daily-ai-full-panel" class="daily-full-panel" aria-hidden="true"></div>
+        Se încarcă semnalul auditat...
       </div>
     </div>
     <!-- DAILY_COHESIV_INTERPRETATION_CARD_END -->
@@ -3662,11 +3639,11 @@ else if (LIQ_REGIME === "normală" || LIQ_REGIME === "moderată")
 
     loadRiskWindow();
       updateLivePrice();
-      loadOHLC();
+      // Mobile-safe: OHLC/Plotly chart disabled.
 
       setInterval(updateLivePrice, 10 * 1000);
       setInterval(loadState, 5 * 60 * 1000);
-      setInterval(loadOHLC, 60 * 1000);
+      // Mobile-safe: OHLC polling disabled.
     }
 
     document.addEventListener("DOMContentLoaded", start);
