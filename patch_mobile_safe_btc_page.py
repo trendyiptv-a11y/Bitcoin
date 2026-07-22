@@ -5,6 +5,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 HTML = ROOT / "btc-swing-strategy" / "mecanism.html"
+RADAR = ROOT / "btc-swing-strategy" / "mecanism-radar-embed.js"
 
 
 def replace_once(text: str, old: str, new: str, label: str) -> str:
@@ -44,7 +45,7 @@ def ensure_mobile_safe_css(text: str) -> str:
     return text
 
 
-def main() -> None:
+def patch_html() -> None:
     text = HTML.read_text(encoding="utf-8")
     original = text
 
@@ -87,10 +88,91 @@ def main() -> None:
     text = ensure_mobile_safe_css(text)
 
     if text == original:
-        print("[mobile-safe] no changes needed")
+        print("[mobile-safe] mecanism.html: no changes needed")
     else:
         HTML.write_text(text, encoding="utf-8")
         print(f"[mobile-safe] patched {HTML}")
+
+
+def patch_radar() -> None:
+    if not RADAR.exists():
+        print(f"[mobile-safe] radar file missing: {RADAR}")
+        return
+
+    text = RADAR.read_text(encoding="utf-8")
+    original = text
+
+    # Keep the friendly rotation, but pause GPU-heavy SVG animations during scroll.
+    scroll_css = (
+        "      body.radar-scroll-paused #${ID} .radar-sweep,"
+        "body.radar-scroll-paused #${ID} .radar-pulse,"
+        "body.radar-scroll-paused #${ID} .radar-dot,"
+        "body.radar-scroll-paused #${ID}.state-changed,"
+        "body.radar-scroll-paused #${ID}.state-changed .radar-sweep,"
+        "body.radar-scroll-paused #${ID}.state-changed .radar-pulse,"
+        "body.radar-scroll-paused #${ID}.state-changed .radar-icon"
+        "{animation-play-state:paused!important}"
+        "body.radar-scroll-paused #${ID}.state-changed .radar-stage{filter:none!important}\n"
+    )
+
+    if "radar-scroll-paused" not in text:
+        text = text.replace(
+            "      @media(max-width:380px){#${ID} .radar-stage",
+            scroll_css + "      @media(max-width:380px){#${ID} .radar-stage",
+            1,
+        )
+        print("[mobile-safe] radar scroll-pause css: inserted")
+    else:
+        print("[mobile-safe] radar scroll-pause css: already present")
+
+    scroll_js = '''
+  let scrollPauseTimer = null;
+  function bindScrollPause() {
+    if (document.body && document.body.dataset.radarScrollPauseBound === "1") return;
+    if (document.body) document.body.dataset.radarScrollPauseBound = "1";
+    const pause = () => {
+      if (!document.body) return;
+      document.body.classList.add("radar-scroll-paused");
+      clearTimeout(scrollPauseTimer);
+      scrollPauseTimer = setTimeout(() => {
+        if (document.body) document.body.classList.remove("radar-scroll-paused");
+      }, 480);
+    };
+    window.addEventListener("scroll", pause, { passive: true });
+    window.addEventListener("touchmove", pause, { passive: true });
+  }
+'''
+
+    if "function bindScrollPause()" not in text:
+        text = text.replace("  function boot() {\n", scroll_js + "\n  function boot() {\n", 1)
+        print("[mobile-safe] radar scroll-pause js: inserted")
+    else:
+        print("[mobile-safe] radar scroll-pause js: already present")
+
+    # CSS rotation is independent. This 1s JavaScript re-render is the expensive part.
+    text = replace_once(
+        text,
+        "    liveSyncTimer = setInterval(() => render(lastState, lastRisk, lastSummary), 1000);\n",
+        "    // Mobile-safe: rotation stays CSS-based; 1s JS re-render disabled.\n    liveSyncTimer = null;\n",
+        "disable radar 1s render loop",
+    )
+    text = replace_once(
+        text,
+        "    load();\n",
+        "    bindScrollPause();\n    load();\n",
+        "bind radar scroll pause at boot",
+    )
+
+    if text == original:
+        print("[mobile-safe] mecanism-radar-embed.js: no changes needed")
+    else:
+        RADAR.write_text(text, encoding="utf-8")
+        print(f"[mobile-safe] patched {RADAR}")
+
+
+def main() -> None:
+    patch_html()
+    patch_radar()
 
 
 if __name__ == "__main__":
