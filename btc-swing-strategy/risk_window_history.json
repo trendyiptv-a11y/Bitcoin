@@ -1,6 +1,6 @@
 {
   "title": "RISK_WINDOW_HISTORY",
-  "generated_at": "2026-07-22T13:44:53.180034+00:00",
+  "generated_at": "2026-07-23T03:58:34.514460+00:00",
   "regimes": [
     "accum_bear",
     "bear_late",
@@ -12,7 +12,7 @@
     "since": "2025-12-01",
     "events": 4,
     "max_streak_days": 74,
-    "current_streak_days": 51,
+    "current_streak_days": 52,
     "current_is_record": false,
     "matching_or_longer_than_current": 2,
     "top_streaks": [
@@ -39,11 +39,11 @@
       },
       {
         "start": "2026-06-02",
-        "end": "2026-07-22",
-        "days": 51,
+        "end": "2026-07-23",
+        "days": 52,
         "is_current": true,
         "start_price": 66669.7,
-        "end_price": 66315.8,
+        "end_price": 65654.8,
         "regimes": [
           "bear_late",
           "bear_struct"
@@ -98,6 +98,7 @@
       }
     ]
   },
+  "structural_source": "btc-swing-strategy/adaptive_bottom_zone_summary.json",
   "history": [
     {
       "start": "2011-04-04",
@@ -1939,10 +1940,29 @@
     },
     {
       "start": "2025-08-25",
-      "end": "2025-09-30",
-      "days": 37,
+      "end": "2025-08-25",
+      "days": 1,
       "is_current": false,
       "start_price": 110144.9,
+      "end_price": 110144.9,
+      "regimes": [
+        "bear_struct"
+      ],
+      "signals": [
+        "flat"
+      ],
+      "window_days": 180,
+      "major_drawdown_threshold": -0.2,
+      "min_drawdown": -0.4293144757496715,
+      "confirmed_major_drawdown": true,
+      "days_to_confirmation": 87
+    },
+    {
+      "start": "2025-08-27",
+      "end": "2025-09-30",
+      "days": 35,
+      "is_current": false,
+      "start_price": 111268.6,
       "end_price": 113995.0,
       "regimes": [
         "bear_struct"
@@ -1953,9 +1973,9 @@
       ],
       "window_days": 180,
       "major_drawdown_threshold": -0.2,
-      "min_drawdown": -0.4293144757496715,
+      "min_drawdown": -0.43507782069694423,
       "confirmed_major_drawdown": true,
-      "days_to_confirmation": 87
+      "days_to_confirmation": 85
     },
     {
       "start": "2025-10-07",
@@ -2058,11 +2078,11 @@
     },
     {
       "start": "2026-06-02",
-      "end": "2026-07-22",
-      "days": 51,
+      "end": "2026-07-23",
+      "days": 52,
       "is_current": true,
       "start_price": 66669.7,
-      "end_price": 66315.8,
+      "end_price": 65654.8,
       "regimes": [
         "bear_late",
         "bear_struct"
