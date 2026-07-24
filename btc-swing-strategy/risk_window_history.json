@@ -1,6 +1,6 @@
 {
   "title": "RISK_WINDOW_HISTORY",
-  "generated_at": "2026-07-23T07:26:45.867166+00:00",
+  "generated_at": "2026-07-24T03:57:31.882311+00:00",
   "regimes": [
     "accum_bear",
     "bear_late",
@@ -12,7 +12,7 @@
     "since": "2025-12-01",
     "events": 4,
     "max_streak_days": 74,
-    "current_streak_days": 52,
+    "current_streak_days": 53,
     "current_is_record": false,
     "matching_or_longer_than_current": 2,
     "top_streaks": [
@@ -39,11 +39,11 @@
       },
       {
         "start": "2026-06-02",
-        "end": "2026-07-23",
-        "days": 52,
+        "end": "2026-07-24",
+        "days": 53,
         "is_current": true,
         "start_price": 66669.7,
-        "end_price": 65654.8,
+        "end_price": 65343.5,
         "regimes": [
           "bear_late",
           "bear_struct"
@@ -98,6 +98,7 @@
       }
     ]
   },
+  "structural_source": "btc-swing-strategy/adaptive_bottom_zone_summary.json",
   "history": [
     {
       "start": "2011-04-04",
@@ -2077,11 +2078,11 @@
     },
     {
       "start": "2026-06-02",
-      "end": "2026-07-23",
-      "days": 52,
+      "end": "2026-07-24",
+      "days": 53,
       "is_current": true,
       "start_price": 66669.7,
-      "end_price": 65654.8,
+      "end_price": 65343.5,
       "regimes": [
         "bear_late",
         "bear_struct"
