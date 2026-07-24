@@ -1,11 +1,11 @@
 {
-  "timestamp_utc": "2026-07-23T01:11:56.720325+00:00",
-  "J_tot": 0.174,
-  "J_tech": 0.348,
+  "timestamp_utc": "2026-07-24T01:07:54.620405+00:00",
+  "J_tot": 0.168,
+  "J_tech": 0.336,
   "J_soc": 0.0,
   "tech_C_hash": 0.0,
   "tech_C_nodes": 0.5,
-  "tech_C_mempool": 0.6599999999999999,
+  "tech_C_mempool": 0.62,
   "soc_C_custody": 0.0,
   "soc_C_gov": 0.0
 }
